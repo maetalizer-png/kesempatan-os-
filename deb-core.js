@@ -3,6 +3,8 @@
    INTI DEBAT — upgrade UI, modal riwayat, CSS, instansiasi
    DEB_DebateArena, render panel, init. Dimuat PALING TERAKHIR.
    ============================================================ */
+    window.KESEMPATAN = window.KESEMPATAN || {};
+
     function DEB_upgradeDebateUI() {
         const container = document.getElementById('interactiveDebatePanel');
         if (!container) {
@@ -131,9 +133,9 @@
                     hour: '2-digit',
                     minute: '2-digit'
                 });
-                html += '<div style="background:rgba(255,255,255,0.03); border-radius:12px; padding:14px; margin-bottom:10px; border-left:3px solid #00FFA3;"><div style="display:flex; justify-content:space-between; flex-wrap:wrap; gap:4px;"><span style="font-weight:bold; color:#00FFA3;">' + DEB_SecurityManager.sanitizeHTML(item.agentA) + ' vs ' + DEB_SecurityManager.sanitizeHTML(item.agentB) + '</span><span style="font-size:11px; color:#666;">' + date + '</span></div><div style="font-size:13px; color:#A0B3C9;">Topic: ' + DEB_SecurityManager.sanitizeHTML(item.topic) + '</div>' + (item.winner ? '<div style="font-size:13px; color:#00FFA3;">Winner: ' + DEB_SecurityManager.sanitizeHTML(item.winner) + '</div>' : '') + '<div style="margin-top:6px; display:flex; gap:6px; flex-wrap:wrap;"><button onclick="window.DebateArena?.exporter?.exportToJSON(' + JSON.stringify(item).replace(/"/g,'&quot;') + ')" style="padding:3px 10px; background:rgba(0,255,163,0.05); border:1px solid rgba(0,255,163,0.1); border-radius:6px; color:#00FFA3; cursor:pointer; font-size:10px;">JSON</button><button onclick="window.DebateArena?.exporter?.exportToPDF(' + JSON.stringify(item).replace(/"/g,'&quot;') + ')" style="padding:3px 10px; background:rgba(0,255,163,0.05); border:1px solid rgba(0,255,163,0.1); border-radius:6px; color:#00FFA3; cursor:pointer; font-size:10px;">PDF</button><button onclick="if(confirm(\'Hapus?\')){window.DebateArena?.history?.delete(' + item.id + ');location.reload();}" style="padding:3px 10px; background:rgba(255,107,107,0.05); border:1px solid rgba(255,107,107,0.1); border-radius:6px; color:#FF6B6B; cursor:pointer; font-size:10px;"></button></div></div>';
+                html += '<div style="background:rgba(255,255,255,0.03); border-radius:12px; padding:14px; margin-bottom:10px; border-left:3px solid #00FFA3;"><div style="display:flex; justify-content:space-between; flex-wrap:wrap; gap:4px;"><span style="font-weight:bold; color:#00FFA3;">' + DEB_SecurityManager.sanitizeHTML(item.agentA) + ' vs ' + DEB_SecurityManager.sanitizeHTML(item.agentB) + '</span><span style="font-size:11px; color:#666;">' + date + '</span></div><div style="font-size:13px; color:#A0B3C9;">Topic: ' + DEB_SecurityManager.sanitizeHTML(item.topic) + '</div>' + (item.winner ? '<div style="font-size:13px; color:#00FFA3;">Winner: ' + DEB_SecurityManager.sanitizeHTML(item.winner) + '</div>' : '') + '<div style="margin-top:6px; display:flex; gap:6px; flex-wrap:wrap;"><button onclick="window.KESEMPATAN.DebateArena?.exporter?.exportToJSON(' + JSON.stringify(item).replace(/"/g,'&quot;') + ')" style="padding:3px 10px; background:rgba(0,255,163,0.05); border:1px solid rgba(0,255,163,0.1); border-radius:6px; color:#00FFA3; cursor:pointer; font-size:10px;">JSON</button><button onclick="window.KESEMPATAN.DebateArena?.exporter?.exportToPDF(' + JSON.stringify(item).replace(/"/g,'&quot;') + ')" style="padding:3px 10px; background:rgba(0,255,163,0.05); border:1px solid rgba(0,255,163,0.1); border-radius:6px; color:#00FFA3; cursor:pointer; font-size:10px;">PDF</button><button onclick="if(confirm(\'Hapus?\')){window.KESEMPATAN.DebateArena?.history?.delete(' + item.id + ');location.reload();}" style="padding:3px 10px; background:rgba(255,107,107,0.05); border:1px solid rgba(255,107,107,0.1); border-radius:6px; color:#FF6B6B; cursor:pointer; font-size:10px;"></button></div></div>';
             });
-            html += '<div style="margin-top:12px; display:flex; gap:8px; justify-content:center;"><button onclick="if(confirm(\'Hapus semua?\')){window.DebateArena?.history?.clear();location.reload();}" style="padding:6px 14px; background:rgba(255,107,107,0.1); border:1px solid #FF6B6B; border-radius:8px; color:#FF6B6B; cursor:pointer; font-size:11px;">Hapus Semua</button><button onclick="this.closest(\'div[style*=\"fixed\"]\').remove()" style="padding:6px 14px; background:rgba(0,255,163,0.05); border:1px solid rgba(0,255,163,0.1); border-radius:8px; color:#00FFA3; cursor:pointer; font-size:11px;">Tutup</button></div>';
+            html += '<div style="margin-top:12px; display:flex; gap:8px; justify-content:center;"><button onclick="if(confirm(\'Hapus semua?\')){window.KESEMPATAN.DebateArena?.history?.clear();location.reload();}" style="padding:6px 14px; background:rgba(255,107,107,0.1); border:1px solid #FF6B6B; border-radius:8px; color:#FF6B6B; cursor:pointer; font-size:11px;">Hapus Semua</button><button onclick="this.closest(\'div[style*=\"fixed\"]\').remove()" style="padding:6px 14px; background:rgba(0,255,163,0.05); border:1px solid rgba(0,255,163,0.1); border-radius:8px; color:#00FFA3; cursor:pointer; font-size:11px;">Tutup</button></div>';
         }
         content.innerHTML = html;
         modal.appendChild(content);
@@ -162,7 +164,7 @@
     // 18. INITIALIZATION
     // ============================================================
     const debate = new DEB_DebateArena();
-    window.DebateArena = debate;
+    window.KESEMPATAN.DebateArena = debate;
 
     function DEB_renderDebatePanel() {
         const container = document.getElementById('interactiveDebatePanel');
@@ -326,8 +328,7 @@
             modelSelect.value = DEB_CONFIG.DEFAULT_MODEL;
         }
 
-        window.clearDebateCache = DEB_clearCache;
-        window.getDebateCacheStats = DEB_getCacheStats;
+        window.KESEMPATAN.DebateCache = { clear: DEB_clearCache, getStats: DEB_getCacheStats };
 
         setTimeout(DEB_upgradeDebateUI, 200);
     }

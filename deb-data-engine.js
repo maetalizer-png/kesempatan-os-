@@ -327,7 +327,7 @@
                     obsContext.marketInsight = (insight && insight.summary) ? insight.summary.replace(/<[^>]+>/g, '') : '';
                 }
             }
-        } catch (e) {}
+        } catch (e) { console.warn('[Debate] Observation context fetch failed:', e.message); }
         try {
             if (window.NoisePage && typeof window.NoisePage.checkText === 'function' && topic) {
                 const check = window.NoisePage.checkText(topic);
@@ -335,7 +335,7 @@
                     obsContext.credibilityNote = 'Topik mengandung kata yang perlu diverifikasi: ' + check.reason;
                 }
             }
-        } catch (e) {}
+        } catch (e) { console.warn('[Debate] Noise credibility check failed:', e.message); }
 
         const result = {
             static: staticData,

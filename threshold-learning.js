@@ -1044,8 +1044,8 @@ function installLearningHooks() {
         const originalStart = window.KESEMPATAN.WorkflowEngine.start;
         window.KESEMPATAN.WorkflowEngine.start = async function(payload, uploadedContent) {
             const result = await originalStart.call(this, payload, uploadedContent);
-            if (window.lastAggregated && window.HITL) {
-                const results = window.HITL.getAllResults ? window.HITL.getAllResults() : [];
+            if (window.lastAggregated && window.KESEMPATAN?.HITL) {
+                const results = window.KESEMPATAN.HITL.getAllResults ? window.KESEMPATAN.HITL.getAllResults() : [];
                 for (let i = 0; i < results.length; i++) {
                     const item = results[i];
                     if (item && item.agent) {

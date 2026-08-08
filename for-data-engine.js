@@ -231,7 +231,7 @@ async function FOR_fetchFromVectorMemory(query, topK) {
             } else if (typeof memory.add === 'function') {
                 await memory.add(metadata);
             }
-        } catch (_) {}
+        } catch (e) { console.warn('[Forum] Save to memory failed:', e.message); }
     }
 
 async function FOR_fetchFromDatabase(query, limit) {
@@ -343,7 +343,7 @@ async function FOR_getAllContext(query, options) {
                     obsContext.marketInsight = (insight && insight.summary) ? insight.summary.replace(/<[^>]+>/g, '') : '';
                 }
             }
-        } catch (e) {}
+        } catch (e) { console.warn('[Forum] Observation context fetch failed:', e.message); }
         try {
             if (window.NoisePage && typeof window.NoisePage.checkText === 'function' && query) {
                 const check = window.NoisePage.checkText(query);
@@ -351,7 +351,7 @@ async function FOR_getAllContext(query, options) {
                     obsContext.credibilityNote = 'Query mengandung kata yang perlu diverifikasi: ' + check.reason;
                 }
             }
-        } catch (e) {}
+        } catch (e) { console.warn('[Forum] Noise credibility check failed:', e.message); }
 
         const result = {
             static: staticData,

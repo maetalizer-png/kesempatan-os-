@@ -1,5 +1,9 @@
 (function() {
 'use strict';
+
+const KESEMPATAN = window.KESEMPATAN || {};
+window.KESEMPATAN = KESEMPATAN;
+
 if (window.__HITLLoaded) return;
 window.__HITLLoaded = true;
 
@@ -377,7 +381,7 @@ function renderHITLInReport(results, onConfirm) {
                     explainTitle = explanation.threshold.reason.replace(/"/g, '&quot;');
                 }
             }
-        } catch (error) {}
+        } catch (error) { console.warn('[HITL] AutoLearning explain failed:', error.message); }
 
         const explainIcon = explainTitle
             ? '<span title="' + explainTitle + '" class="hitl-explain">?</span>'
@@ -505,8 +509,8 @@ function renderHITLInReport(results, onConfirm) {
             if (window.showToast) window.showToast(approvedList.length + ' agents processed', 'success');
             if (typeof state.onConfirm === 'function') {
                 state.onConfirm(approvedList);
-            } else if (typeof window.__hitlCallback === 'function') {
-                window.__hitlCallback(approvedList);
+            } else if (typeof window._hitlCallback === 'function') {
+                window._hitlCallback(approvedList);
             } else {
                 window.__hitlApprovedResults = approvedList;
                 if (window.showToast) window.showToast('Results saved, continue to aggregation', 'success');
@@ -589,19 +593,13 @@ const HITL = Object.freeze({
     addHITLButtonToReport: addHITLButtonToReport
 });
 
-window.KESEMPATAN = window.KESEMPATAN || {};
-window.KESEMPATAN.HITL = HITL;
-window.HITL = HITL;
-window.renderHitlPanel = renderHitlPanel;
-window.autoApproveResults = autoApproveResults;
-window.renderHITLInReport = renderHITLInReport;
-window.addHITLButtonToReport = addHITLButtonToReport;
+KESEMPATAN.HITL = HITL;
 
-window.__setWorkflowResultsForHITL = function(results) {
+KESEMPATAN.setWorkflowResultsForHITL = function(results) {
     window.__lastWorkflowResults = results;
     setTimeout(function() {
         addHITLButtonToReport(results);
-        const globalInternalLogger = window.KESEMPATAN?.InternalLogger || window.InternalLogger;
+        const globalInternalLogger = KESEMPATAN.InternalLogger || window.InternalLogger;
         if (globalInternalLogger) globalInternalLogger.info('HITL', 'HITL button added to report');
     }, 600);
 };

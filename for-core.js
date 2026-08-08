@@ -462,8 +462,8 @@ function FOR_sendPushNotification(title, body, link) {
             setTimeout(function() {
                 notification.close();
             }, 8000);
-        } catch (_) {
-            // Silent fail
+        } catch (e) {
+            console.warn('[Forum] Push notification failed:', e.message);
         }
     }
 

@@ -49,5 +49,4 @@ window.KESEMPATAN = window.KESEMPATAN || {};
 window.KESEMPATAN.Collab = Object.freeze({
 renderUI: renderUI
 });
-window.Collab = window.KESEMPATAN.Collab;
 })();

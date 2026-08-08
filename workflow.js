@@ -9,7 +9,7 @@ window.__WorkflowLoaded = true;
 const { CONFIG, Utils } = window;
 const { Logger, RetryEngine, KnowledgeBase, safeParseResponse, escapeHtml, showToast, InternalLogger } = Utils || {};
 const { updateChart } = window.ChartManager || {};
-const { autoApproveResults, hidePanel: hideHitlPanel } = window.HITL || {};
+const { autoApproveResults, hidePanel: hideHitlPanel } = window.KESEMPATAN?.HITL || {};
 const { setData: setExportData } = window.ExportManager || {};
 const { WorkflowState, WorkflowLLMBridge } = KESEMPATAN;
 // WorkflowParallel is read live via KESEMPATAN.WorkflowParallel (not destructured):
@@ -417,8 +417,8 @@ function renderReport(agg, note) {
 
     if (window.__lastWorkflowResults && window.__lastWorkflowResults.length > 0) {
         setTimeout(function() {
-            if (typeof window.addHITLButtonToReport === 'function') {
-                window.addHITLButtonToReport(window.__lastWorkflowResults);
+            if (typeof window.KESEMPATAN?.HITL?.addHITLButtonToReport === 'function') {
+                window.KESEMPATAN.HITL.addHITLButtonToReport(window.__lastWorkflowResults);
             }
         }, 500);
     }
@@ -479,8 +479,8 @@ function forceGenerateReport(results, payload) {
         allResults = results.map(function(r) {
             return { agent: r.agent, originalResult: r, approved: true, editedScore: r.score || 50 };
         });
-    } else if (window.HITL && window.HITL.getAllResults) {
-        const hitlResults = window.HITL.getAllResults();
+    } else if (window.KESEMPATAN?.HITL && window.KESEMPATAN.HITL.getAllResults) {
+        const hitlResults = window.KESEMPATAN.HITL.getAllResults();
         if (hitlResults && hitlResults.length > 0) allResults = hitlResults;
     }
 
@@ -562,8 +562,8 @@ function forceGenerateReport(results, payload) {
 
     window.__lastWorkflowResults = results;
     setTimeout(function() {
-        if (typeof window.addHITLButtonToReport === 'function') {
-            window.addHITLButtonToReport(results);
+        if (typeof window.KESEMPATAN?.HITL?.addHITLButtonToReport === 'function') {
+            window.KESEMPATAN.HITL.addHITLButtonToReport(results);
         }
     }, 600);
 
