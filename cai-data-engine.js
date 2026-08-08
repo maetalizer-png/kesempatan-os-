@@ -488,10 +488,10 @@ async function CAI_getAllContext(query, options) {
         // ber-id/skor seperti static/memory/database).
         let obsContext = { marketInsight: '', credibilityNote: '' };
         try {
-            if (window.OBS && typeof window.OBS.getSignals === 'function' && typeof window.OBS.generateAIInsight === 'function') {
-                const signals = window.OBS.getSignals();
+            if (window.KESEMPATAN?.Observation && typeof window.KESEMPATAN?.Observation.getSignals === 'function' && typeof window.KESEMPATAN?.Observation.generateAIInsight === 'function') {
+                const signals = window.KESEMPATAN?.Observation.getSignals();
                 if (signals && signals.length > 0) {
-                    const insight = window.OBS.generateAIInsight(signals);
+                    const insight = window.KESEMPATAN?.Observation.generateAIInsight(signals);
                     obsContext.marketInsight = (insight && insight.summary) ? insight.summary.replace(/<[^>]+>/g, '') : '';
                 }
             }

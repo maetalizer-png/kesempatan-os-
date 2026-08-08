@@ -2,6 +2,9 @@
 (function() {
     'use strict';
 
+    const KESEMPATAN = window.KESEMPATAN || {};
+    window.KESEMPATAN = KESEMPATAN;
+
     if (window.__OBS_CONFIG) return;
     window.__OBS_CONFIG = true;
 
@@ -78,5 +81,5 @@
         'Umum': { color: '#8A94A6', emoji: 'newspaper', score: 45 }
     });
 
-    window.OBS_CONFIG = { CONFIG, AUTO_TRIGGER_CONFIG, RSS_SOURCES, REGION_GROUPS, FALLBACK_SIGNALS, CATEGORIES };
+    KESEMPATAN.ObservationConfig = { CONFIG, AUTO_TRIGGER_CONFIG, RSS_SOURCES, REGION_GROUPS, FALLBACK_SIGNALS, CATEGORIES };
 })();

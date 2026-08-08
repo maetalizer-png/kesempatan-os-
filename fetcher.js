@@ -2,14 +2,17 @@
 (function() {
     'use strict';
 
+    const KESEMPATAN = window.KESEMPATAN || {};
+    window.KESEMPATAN = KESEMPATAN;
+
     if (window.__OBS_FETCHER) return;
     window.__OBS_FETCHER = true;
 
-    const OBS = window.OBS || {};
-    const CONFIG = window.OBS_CONFIG.CONFIG;
-    const RSS_SOURCES = window.OBS_CONFIG.RSS_SOURCES;
-    const FALLBACK_SIGNALS = window.OBS_CONFIG.FALLBACK_SIGNALS;
-    const CATEGORIES = window.OBS_CONFIG.CATEGORIES;
+    const OBS = KESEMPATAN.Observation || {};
+    const CONFIG = KESEMPATAN.ObservationConfig.CONFIG;
+    const RSS_SOURCES = KESEMPATAN.ObservationConfig.RSS_SOURCES;
+    const FALLBACK_SIGNALS = KESEMPATAN.ObservationConfig.FALLBACK_SIGNALS;
+    const CATEGORIES = KESEMPATAN.ObservationConfig.CATEGORIES;
 
     const CIRCUIT_KEY = 'kes_obs_circuit_v1';
     let _circuit = {};
@@ -18,7 +21,7 @@
     } catch (e) { _circuit = {}; }
 
     function saveCircuit() {
-        try { localStorage.setItem(CIRCUIT_KEY, JSON.stringify(_circuit)); } catch (e) {}
+        try { localStorage.setItem(CIRCUIT_KEY, JSON.stringify(_circuit)); } catch (e) { console.warn('[Observation] Save circuit state failed:', e.message); }
     }
 
     function isInCooldown(sourceName) {
@@ -245,7 +248,7 @@
                 try {
                     const d = new Date(item.pubDate);
                     if (!isNaN(d.getTime())) timestamp = d.getTime();
-                } catch (e) {}
+                } catch (e) { console.warn('[Observation] Parse pubDate failed:', e.message); }
 
                 resultItems.push({
                     id: 'sig_' + Date.now() + '_' + Math.random().toString(36).substr(2, 6),
@@ -355,7 +358,7 @@
 
         try {
             localStorage.setItem(CONFIG.STORAGE_KEY, JSON.stringify(state.signals));
-        } catch (e) {}
+        } catch (e) { console.warn('[Observation] Save signals failed:', e.message); }
 
         return state.signals;
     }
@@ -366,7 +369,7 @@
         state.isRefreshing = true;
 
         const btn = document.getElementById('refreshObsBtn');
-        if (btn && window.OBS.UI && window.OBS.UI.icon) btn.innerHTML = window.OBS.UI.icon('loader', 12, null, 'animation:spin 0.8s linear infinite;');
+        if (btn && KESEMPATAN.Observation.UI && KESEMPATAN.Observation.UI.icon) btn.innerHTML = KESEMPATAN.Observation.UI.icon('loader', 12, null, 'animation:spin 0.8s linear infinite;');
 
         try {
             await generateSignals();
@@ -379,7 +382,7 @@
         }
 
         state.isRefreshing = false;
-        if (btn && window.OBS.UI && window.OBS.UI.icon) btn.innerHTML = window.OBS.UI.icon('refresh-cw', 12) + ' Refresh';
+        if (btn && KESEMPATAN.Observation.UI && KESEMPATAN.Observation.UI.icon) btn.innerHTML = KESEMPATAN.Observation.UI.icon('refresh-cw', 12) + ' Refresh';
     }
 
     OBS.detectCategory = detectCategory;
@@ -391,5 +394,5 @@
     OBS.fetchRSSDirect = fetchRSSDirect;
     OBS.extractRssUrl = extractRssUrl;
 
-    window.OBS = OBS;
+    KESEMPATAN.Observation = OBS;
 })();

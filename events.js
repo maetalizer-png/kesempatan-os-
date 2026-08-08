@@ -2,11 +2,14 @@
 (function() {
     'use strict';
 
+    const KESEMPATAN = window.KESEMPATAN || {};
+    window.KESEMPATAN = KESEMPATAN;
+
     if (window.__OBS_EVENTS) return;
     window.__OBS_EVENTS = true;
 
-    const OBS = window.OBS || {};
-    const AUTO_TRIGGER_CONFIG = window.OBS_CONFIG.AUTO_TRIGGER_CONFIG;
+    const OBS = KESEMPATAN.Observation || {};
+    const AUTO_TRIGGER_CONFIG = KESEMPATAN.ObservationConfig.AUTO_TRIGGER_CONFIG;
     const state = OBS.getState();
     const autoTriggerState = state.autoTriggerState;
 
@@ -100,5 +103,5 @@
         attachEvents
     };
 
-    window.OBS = OBS;
+    KESEMPATAN.Observation = OBS;
 })();

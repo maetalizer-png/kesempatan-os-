@@ -2,13 +2,16 @@
 (function() {
     'use strict';
 
+    const KESEMPATAN = window.KESEMPATAN || {};
+    window.KESEMPATAN = KESEMPATAN;
+
     if (window.__OBS_ANALYZER) return;
     window.__OBS_ANALYZER = true;
 
-    const OBS = window.OBS || {};
-    const CONFIG = window.OBS_CONFIG.CONFIG;
-    const AUTO_TRIGGER_CONFIG = window.OBS_CONFIG.AUTO_TRIGGER_CONFIG;
-    const CATEGORIES = window.OBS_CONFIG.CATEGORIES;
+    const OBS = KESEMPATAN.Observation || {};
+    const CONFIG = KESEMPATAN.ObservationConfig.CONFIG;
+    const AUTO_TRIGGER_CONFIG = KESEMPATAN.ObservationConfig.AUTO_TRIGGER_CONFIG;
+    const CATEGORIES = KESEMPATAN.ObservationConfig.CATEGORIES;
 
     const state = OBS.getState();
     const autoTriggerState = state.autoTriggerState;
@@ -258,5 +261,5 @@
     OBS.autoTriggerWorkflow = autoTriggerWorkflow;
     OBS.autoTriggerState = autoTriggerState;
 
-    window.OBS = OBS;
+    KESEMPATAN.Observation = OBS;
 })();

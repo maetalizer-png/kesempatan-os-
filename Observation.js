@@ -1,6 +1,8 @@
 
 (function() {
     'use strict';
+    const KESEMPATAN = window.KESEMPATAN || {};
+    window.KESEMPATAN = KESEMPATAN;
 
     if (window.__ObservationLoaderLoaded) return;
     window.__ObservationLoaderLoaded = true;
@@ -24,10 +26,10 @@
     function loadNext() {
         if (loaded >= total) {
             if (!hasError) {
-                if (window.ObservationPage && typeof window.ObservationPage.init === 'function') {
+                if (KESEMPATAN.ObservationPage && typeof KESEMPATAN.ObservationPage.init === 'function') {
                     if (!window.__OBS_INIT_DONE) {
                         window.__OBS_INIT_DONE = true;
-                        window.ObservationPage.init();
+                        KESEMPATAN.ObservationPage.init();
                     }
                 }
             } else {

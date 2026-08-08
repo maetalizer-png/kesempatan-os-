@@ -2,10 +2,13 @@
 (function() {
     'use strict';
 
+    const KESEMPATAN = window.KESEMPATAN || {};
+    window.KESEMPATAN = KESEMPATAN;
+
     if (window.__OBS_EXPORT) return;
     window.__OBS_EXPORT = true;
 
-    const OBS = window.OBS || {};
+    const OBS = KESEMPATAN.Observation || {};
     const state = OBS.getState();
 
     function exportJSON() {
@@ -54,5 +57,5 @@
         exportCSV
     };
 
-    window.OBS = OBS;
+    KESEMPATAN.Observation = OBS;
 })();

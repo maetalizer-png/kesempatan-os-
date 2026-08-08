@@ -2,10 +2,13 @@
 (function() {
     'use strict';
 
+    const KESEMPATAN = window.KESEMPATAN || {};
+    window.KESEMPATAN = KESEMPATAN;
+
     if (window.__OBS_STATE) return;
     window.__OBS_STATE = true;
 
-    const OBS = window.OBS || {};
+    const OBS = KESEMPATAN.Observation || {};
 
     class EventEmitter {
         constructor() {
@@ -71,5 +74,5 @@
     OBS.getChartInstance = () => state.chartInstance;
     OBS.setChartInstance = (c) => { state.chartInstance = c; };
 
-    window.OBS = OBS;
+    KESEMPATAN.Observation = OBS;
 })();

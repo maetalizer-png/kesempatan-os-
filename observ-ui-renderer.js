@@ -2,12 +2,15 @@
 (function() {
     'use strict';
 
+    const KESEMPATAN = window.KESEMPATAN || {};
+    window.KESEMPATAN = KESEMPATAN;
+
     if (window.__OBS_UI_RENDERER) return;
     window.__OBS_UI_RENDERER = true;
 
-    const OBS = window.OBS || {};
-    const CONFIG = window.OBS_CONFIG.CONFIG;
-    const CATEGORIES = window.OBS_CONFIG.CATEGORIES;
+    const OBS = KESEMPATAN.Observation || {};
+    const CONFIG = KESEMPATAN.ObservationConfig.CONFIG;
+    const CATEGORIES = KESEMPATAN.ObservationConfig.CATEGORIES;
     const state = OBS.getState();
 
     const ICON_PATHS = {
@@ -91,7 +94,7 @@
 
     const sourceIconMap = (function() {
         const map = {};
-        (window.OBS_CONFIG.RSS_SOURCES || []).forEach(function(src) {
+        (KESEMPATAN.ObservationConfig.RSS_SOURCES || []).forEach(function(src) {
             map[src.name] = src.icon || 'newspaper';
         });
         return map;
@@ -131,7 +134,7 @@
         const verdict = (window.NoisePage && typeof window.NoisePage.getVerdict === 'function')
             ? window.NoisePage.getVerdict(s.id) : null;
         const ageMin = (Date.now() - new Date(s.timestamp).getTime()) / 60000;
-        const minConfidence = (window.OBS_CONFIG.AUTO_TRIGGER_CONFIG && window.OBS_CONFIG.AUTO_TRIGGER_CONFIG.minConfidence) || 85;
+        const minConfidence = (KESEMPATAN.ObservationConfig.AUTO_TRIGGER_CONFIG && KESEMPATAN.ObservationConfig.AUTO_TRIGGER_CONFIG.minConfidence) || 85;
 
         if (verdict && verdict.status === 'blocked') {
             return { label: 'Ditandai mencurigakan', color: '#D64545', iconName: 'shield-x' };
@@ -166,8 +169,8 @@
     }
 
     function buildSourceNetwork(state) {
-        const sources = window.OBS_CONFIG.RSS_SOURCES || [];
-        const groups = window.OBS_CONFIG.REGION_GROUPS || {};
+        const sources = KESEMPATAN.ObservationConfig.RSS_SOURCES || [];
+        const groups = KESEMPATAN.ObservationConfig.REGION_GROUPS || {};
         const byRegion = {};
         sources.forEach(function(src) {
             const region = src.region || 'nasional';
@@ -191,7 +194,7 @@
     function computeObservationLevel(pool) {
         if (!pool.length) return { label: 'TENANG', color: '#00C97C', speed: '8s', intensity: 0.24 };
         let sum = 0, high = 0;
-        const minConfidence = (window.OBS_CONFIG.AUTO_TRIGGER_CONFIG && window.OBS_CONFIG.AUTO_TRIGGER_CONFIG.minConfidence) || 85;
+        const minConfidence = (KESEMPATAN.ObservationConfig.AUTO_TRIGGER_CONFIG && KESEMPATAN.ObservationConfig.AUTO_TRIGGER_CONFIG.minConfidence) || 85;
         pool.forEach(function(s) {
             const a = getAnalysis(s);
             sum += a.confidence;
@@ -940,5 +943,5 @@
         iconStar
     };
 
-    window.OBS = OBS;
+    KESEMPATAN.Observation = OBS;
 })();

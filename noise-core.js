@@ -207,11 +207,11 @@
 
     async function fetchSources() {
         const results = [];
-        if (CONFIG.SOURCES && CONFIG.SOURCES.OBSERVATION && window.OBS && typeof window.OBS.getSignals === 'function') {
+        if (CONFIG.SOURCES && CONFIG.SOURCES.OBSERVATION && window.KESEMPATAN?.Observation && typeof window.KESEMPATAN?.Observation.getSignals === 'function') {
             try {
-                let obsSignals = window.OBS.getSignals();
-                if ((!obsSignals || obsSignals.length === 0) && typeof window.OBS.generateSignals === 'function') {
-                    obsSignals = await window.OBS.generateSignals();
+                let obsSignals = window.KESEMPATAN?.Observation.getSignals();
+                if ((!obsSignals || obsSignals.length === 0) && typeof window.KESEMPATAN?.Observation.generateSignals === 'function') {
+                    obsSignals = await window.KESEMPATAN?.Observation.generateSignals();
                 }
                 if (obsSignals && obsSignals.length) {
                     obsSignals.forEach(function(sig) {
@@ -496,8 +496,8 @@
             _state.lastScan = Date.now();
             saveState();
             autoExportIfNeeded();
-            if (window.OBS && typeof window.OBS.render === 'function') {
-                window.OBS.render();
+            if (window.KESEMPATAN?.Observation && typeof window.KESEMPATAN?.Observation.render === 'function') {
+                window.KESEMPATAN?.Observation.render();
             }
             if (window.NoiseUI) {
                 if (window.NoiseUI.updateStatsUI) window.NoiseUI.updateStatsUI();
