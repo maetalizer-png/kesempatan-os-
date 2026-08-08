@@ -1,9 +1,13 @@
 (function() {
 'use strict';
+
+const KESEMPATAN = window.KESEMPATAN || {};
+window.KESEMPATAN = KESEMPATAN;
+
 if (window.__VisualAIState) return;
 window.__VisualAIState = true;
 
-const config = window.VisualAIConfig || {};
+const config = KESEMPATAN.VisualConfig || {};
 const STORAGE_KEYS = config.STORAGE_KEYS || {};
 const DEFAULT = config.DEFAULT_VALUES || {};
 
@@ -110,7 +114,5 @@ const VisualAIState = {
     storage: SafeStorage
 };
 
-window.KESEMPATAN = window.KESEMPATAN || {};
-window.KESEMPATAN.VisualState = VisualAIState;
-window.VisualAIState = VisualAIState;
+KESEMPATAN.VisualState = VisualAIState;
 })();

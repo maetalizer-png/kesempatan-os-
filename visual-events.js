@@ -1,18 +1,22 @@
 (function() {
 'use strict';
+
+const KESEMPATAN = window.KESEMPATAN || {};
+window.KESEMPATAN = KESEMPATAN;
+
 if (window.__VisualAIEvents) return;
 window.__VisualAIEvents = true;
 
-const state = window.VisualAIState;
-const core = window.VisualAICore;
-const renderer = window.VisualAIRenderer;
+const state = KESEMPATAN.VisualState;
+const core = KESEMPATAN.VisualCore;
+const renderer = KESEMPATAN.VisualRenderer;
 const showToast = window.Utils?.showToast || function() {};
 
 let visualEngine = null;
 
 function getEngine() {
     if (!visualEngine) {
-        const Engine = window.VisualAIEngine;
+        const Engine = KESEMPATAN.VisualEngine;
         if (Engine && typeof Engine.create === 'function') {
             visualEngine = Engine.create();
         }
@@ -439,7 +443,7 @@ function attachEvents() {
                             successCount++;
                         }
                     }
-                } catch(e) {}
+                } catch(e) { console.warn('[VisualAI] Batch item failed:', e.message); }
                 const percent = Math.round(((i + 1) / total) * 100);
                 if (progressContainer) {
                     const done = i + 1;
@@ -806,12 +810,7 @@ function attachEvents() {
     });
 }
 
-window.KESEMPATAN = window.KESEMPATAN || {};
-window.KESEMPATAN.VisualEvents = {
-    attach: attachEvents,
-    handleFiles: handleFiles
-};
-window.VisualAIEvents = {
+KESEMPATAN.VisualEvents = {
     attach: attachEvents,
     handleFiles: handleFiles
 };

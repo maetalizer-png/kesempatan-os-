@@ -1,9 +1,13 @@
 (function() {
-'use strict';
-if (window.__VoiceCloneState) return;
-window.__VoiceCloneState = true;
+    'use strict';
 
-const config = window.VoiceCloneConfig;
+    const KESEMPATAN = window.KESEMPATAN || {};
+    window.KESEMPATAN = KESEMPATAN;
+
+    if (window.__VoiceCloneState) return;
+    window.__VoiceCloneState = true;
+
+const config = KESEMPATAN.VoiceConfig;
 const STORAGE_KEYS = config.STORAGE_KEYS;
 const VOICE_CONFIG = config.VOICE_CONFIG;
 
@@ -52,7 +56,7 @@ const analyticsData = localStorage.getItem(STORAGE_KEYS.ANALYTICS);
 if (analyticsData) analytics = Object.assign({}, config.ANALYTICS_DEFAULTS, JSON.parse(analyticsData));
 const favData = localStorage.getItem(STORAGE_KEYS.FAVORITES);
 if (favData) favorites = JSON.parse(favData);
-} catch(e) {}
+} catch(e) { console.warn('[VoiceClone] Load settings failed:', e.message); }
 return true;
 };
 
@@ -65,10 +69,10 @@ else localStorage.removeItem(STORAGE_KEYS.ACTIVE_CLONE);
 localStorage.setItem(STORAGE_KEYS.HISTORY, JSON.stringify(history));
 localStorage.setItem(STORAGE_KEYS.ANALYTICS, JSON.stringify(analytics));
 localStorage.setItem(STORAGE_KEYS.FAVORITES, JSON.stringify(favorites));
-} catch(e) {}
+} catch(e) { console.warn('[VoiceClone] Save settings failed:', e.message); }
 };
 
-window.VoiceCloneState = {
+KESEMPATAN.VoiceState = {
 getSettings: function() { return settings; },
 getClones: function() { return clones; },
 getActiveCloneId: function() { return activeCloneId; },
@@ -126,7 +130,4 @@ setCloneAudioChunks: function(val) { cloneAudioChunks = val; },
 load: loadSettings,
 save: saveSettings
 };
-
-window.KESEMPATAN = window.KESEMPATAN || {};
-window.KESEMPATAN.VoiceState = window.VoiceCloneState;
 })();

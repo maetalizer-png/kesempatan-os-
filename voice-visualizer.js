@@ -1,11 +1,14 @@
 (function() {
-'use strict';
-if (window.__VoiceCloneVisualizer) return;
-window.__VoiceCloneVisualizer = true;
+    'use strict';
 
-const state = window.VoiceCloneState;
-const config = window.VoiceCloneConfig;
-const core = window.VoiceCloneCore;
+    const KESEMPATAN = window.KESEMPATAN || {};
+    window.KESEMPATAN = KESEMPATAN;
+
+    if (window.__VoiceCloneVisualizer) return;
+    window.__VoiceCloneVisualizer = true;
+
+const state = KESEMPATAN.VoiceState;
+const config = KESEMPATAN.VoiceConfig;
 
 const playBGM = function() {
     const track = config.VOICE_CONFIG.bgMusic[state.getSettings().bgMusic];
@@ -28,13 +31,13 @@ const playBGM = function() {
             source.start();
             state.setBgAudio(source);
             if (audioContext.state === 'suspended') audioContext.resume();
-        }).catch(function() {});
+        }).catch(function(e) { console.warn('[VoiceClone] playBGM failed:', e.message); });
 };
 
 const stopBGM = function() {
     const bgAudio = state.getBgAudio();
     if (bgAudio) {
-        try { bgAudio.stop(); } catch(e) {}
+        try { bgAudio.stop(); } catch(e) { console.warn('[VoiceClone] stopBGM failed:', e.message); }
         state.setBgAudio(null);
     }
 };
@@ -59,8 +62,8 @@ const initWaveform = function() {
             const x = (e.clientX - rect.left) / rect.width;
             const duration = state.getAudioDuration() || 60;
             const seekTime = x * duration;
-            if (window.VoiceCloneCore && window.VoiceCloneCore.skipTime) {
-                window.VoiceCloneCore.skipTime(seekTime - state.getAudioPosition());
+            if (KESEMPATAN.VoiceCore && KESEMPATAN.VoiceCore.skipTime) {
+                KESEMPATAN.VoiceCore.skipTime(seekTime - state.getAudioPosition());
             }
         });
     }
@@ -148,7 +151,7 @@ const stopWaveformAnimation = function() {
     drawWaveformSilent();
 };
 
-window.VoiceCloneVisualizer = {
+KESEMPATAN.VoiceVisualizer = {
     playBGM: playBGM, stopBGM: stopBGM,
     initWaveform: initWaveform,
     drawWaveformSilent: drawWaveformSilent,
@@ -156,7 +159,4 @@ window.VoiceCloneVisualizer = {
     startWaveformAnimation: startWaveformAnimation,
     stopWaveformAnimation: stopWaveformAnimation
 };
-
-window.KESEMPATAN = window.KESEMPATAN || {};
-window.KESEMPATAN.VoiceVisualizer = window.VoiceCloneVisualizer;
 })();

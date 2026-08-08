@@ -1,11 +1,15 @@
 (function() {
 'use strict';
+
+const KESEMPATAN = window.KESEMPATAN || {};
+window.KESEMPATAN = KESEMPATAN;
+
 if (window.__VisualAIEngine) return;
 window.__VisualAIEngine = true;
 
-const state = window.VisualAIState;
-const core = window.VisualAICore;
-const config = window.VisualAIConfig;
+const state = KESEMPATAN.VisualState;
+const core = KESEMPATAN.VisualCore;
+const config = KESEMPATAN.VisualConfig;
 
 function disposeObject3D(object) {
     if (!object) return;
@@ -447,7 +451,5 @@ class VisualEngine {
     }
 }
 
-window.KESEMPATAN = window.KESEMPATAN || {};
-window.KESEMPATAN.VisualEngine = { create: function() { return new VisualEngine(); } };
-window.VisualAIEngine = { create: function() { return new VisualEngine(); } };
+KESEMPATAN.VisualEngine = { create: function() { return new VisualEngine(); } };
 })();

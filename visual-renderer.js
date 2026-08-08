@@ -1,11 +1,15 @@
 (function() {
 'use strict';
+
+const KESEMPATAN = window.KESEMPATAN || {};
+window.KESEMPATAN = KESEMPATAN;
+
 if (window.__VisualAIRenderer) return;
 window.__VisualAIRenderer = true;
 
-const state = window.VisualAIState;
-const core = window.VisualAICore;
-const layout = window.VisualAILayout;
+const state = KESEMPATAN.VisualState;
+const core = KESEMPATAN.VisualCore;
+const layout = KESEMPATAN.VisualLayout;
 const showToast = window.Utils?.showToast || function() {};
 
 const modernStyle = document.createElement('style');
@@ -95,12 +99,12 @@ function renderUI() {
     };
     container.innerHTML = layout.buildVisualLayout(layoutState);
     renderGallery();
-    if (window.VisualAIEvents && typeof window.VisualAIEvents.attach === 'function') {
-        window.VisualAIEvents.attach();
+    if (KESEMPATAN.VisualEvents && typeof KESEMPATAN.VisualEvents.attach === 'function') {
+        KESEMPATAN.VisualEvents.attach();
     }
     if (state.getHistory().length > 0 && core && typeof core.loadThreeJS === 'function') {
         core.loadThreeJS().then(function() {
-            const engine = window.VisualAIEngine && window.VisualAIEngine.create ? window.VisualAIEngine.create() : null;
+            const engine = KESEMPATAN.VisualEngine && KESEMPATAN.VisualEngine.create ? KESEMPATAN.VisualEngine.create() : null;
             const timelineContainer = document.getElementById('timelineContainer');
             if (engine && timelineContainer) engine.createTimeline(state.getHistory(), 'timelineContainer');
         });
@@ -113,7 +117,5 @@ async function init() {
     renderUI();
 }
 
-window.KESEMPATAN = window.KESEMPATAN || {};
-window.KESEMPATAN.VisualRenderer = { render: renderUI, init: init, ensureContainer: ensureContainer, renderGallery: renderGallery };
-window.VisualAIRenderer = { render: renderUI, init: init, ensureContainer: ensureContainer, renderGallery: renderGallery };
+KESEMPATAN.VisualRenderer = { render: renderUI, init: init, ensureContainer: ensureContainer, renderGallery: renderGallery };
 })();

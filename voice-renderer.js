@@ -1,14 +1,15 @@
 (function() {
-'use strict';
-if (window.__VoiceCloneRenderer) return;
-window.__VoiceCloneRenderer = true;
+    'use strict';
 
-const state = window.VoiceCloneState;
-const config = window.VoiceCloneConfig;
-const core = window.VoiceCloneCore;
-const visualizer = window.VoiceCloneVisualizer;
-const layout = window.VoiceCloneUILayout;
-const showToast = window.Utils?.showToast || function() {};
+    const KESEMPATAN = window.KESEMPATAN || {};
+    window.KESEMPATAN = KESEMPATAN;
+
+    if (window.__VoiceCloneRenderer) return;
+    window.__VoiceCloneRenderer = true;
+
+const state = KESEMPATAN.VoiceState;
+const visualizer = KESEMPATAN.VoiceVisualizer;
+const layout = KESEMPATAN.VoiceLayout;
 
 function ensureContainer() {
     let container = document.getElementById('voiceClonePanel');
@@ -54,8 +55,8 @@ function render() {
         speedPreset: state.getSpeedPreset()
     };
     container.innerHTML = layout.buildVoiceLayout(layoutState);
-    if (window.VoiceCloneEvents && typeof window.VoiceCloneEvents.attach === 'function') {
-        window.VoiceCloneEvents.attach(container);
+    if (KESEMPATAN.VoiceEvents && typeof KESEMPATAN.VoiceEvents.attach === 'function') {
+        KESEMPATAN.VoiceEvents.attach(container);
     }
     visualizer.initWaveform();
     renderHistory();
@@ -69,8 +70,5 @@ function toggleTheme() {
     render();
 }
 
-window.VoiceCloneRenderer = { render: render, renderHistory: renderHistory, toggleTheme: toggleTheme };
-
-window.KESEMPATAN = window.KESEMPATAN || {};
-window.KESEMPATAN.VoiceRenderer = window.VoiceCloneRenderer;
+KESEMPATAN.VoiceRenderer = { render: render, renderHistory: renderHistory, toggleTheme: toggleTheme };
 })();

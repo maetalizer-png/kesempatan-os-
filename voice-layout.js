@@ -1,9 +1,13 @@
 (function() {
 'use strict';
+
+const KESEMPATAN = window.KESEMPATAN || {};
+window.KESEMPATAN = KESEMPATAN;
+
 if (window.__VoiceCloneUILayout) return;
 window.__VoiceCloneUILayout = true;
 
-const config = window.VoiceCloneConfig;
+const config = KESEMPATAN.VoiceConfig;
 if (!config) return;
 
 const LANGUAGES = config.LANGUAGES;
@@ -125,7 +129,7 @@ for (let i = 0; i < clones.length; i++) {
 const c = clones[i];
 const isOn = activeCloneId == c.id;
 html += '<span class="v-clone-chip"><span class="v-clone-chip-in">' +
-'<span style="' + (isOn ? 'color:var(--primary,#00FFA3);font-weight:bold;' : '') + '">' + (window.VoiceCloneCore && window.VoiceCloneCore.sanitizeHtml ? window.VoiceCloneCore.sanitizeHtml(c.name) : c.name) + '</span>' +
+'<span style="' + (isOn ? 'color:var(--primary,#00FFA3);font-weight:bold;' : '') + '">' + (KESEMPATAN.VoiceCore && KESEMPATAN.VoiceCore.sanitizeHtml ? KESEMPATAN.VoiceCore.sanitizeHtml(c.name) : c.name) + '</span>' +
 '<button class="v-chip-btn v-play-clone" data-id="' + c.id + '">Play</button>' +
 '<button class="v-chip-btn use v-use-clone' + (isOn ? ' on' : '') + '" data-id="' + c.id + '">' + (isOn ? '✓' : 'Pakai') + '</button>' +
 '<button class="v-chip-del v-del-clone" data-id="' + c.id + '">✕</button>' +
@@ -159,7 +163,5 @@ html += '</div>';
 return html;
 }
 
-window.KESEMPATAN = window.KESEMPATAN || {};
-window.KESEMPATAN.VoiceLayout = { buildVoiceLayout: buildVoiceLayout, injectCSS: injectCSS };
-window.VoiceCloneUILayout = { buildVoiceLayout: buildVoiceLayout, injectCSS: injectCSS };
+KESEMPATAN.VoiceLayout = { buildVoiceLayout: buildVoiceLayout, injectCSS: injectCSS };
 })();

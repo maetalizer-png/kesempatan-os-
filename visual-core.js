@@ -1,9 +1,13 @@
 (function() {
 'use strict';
+
+const KESEMPATAN = window.KESEMPATAN || {};
+window.KESEMPATAN = KESEMPATAN;
+
 if (window.__VisualAICore) return;
 window.__VisualAICore = true;
 
-const config = window.VisualAIConfig;
+const config = KESEMPATAN.VisualConfig;
 
 const THREE_JS_URL = 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js';
 let THREE = window.THREE || null;
@@ -102,7 +106,7 @@ class AIInternal {
                     this.cache[cacheKey] = result;
                     return result;
                 }
-            } catch (e) {}
+            } catch (e) { console.warn('[VisualAI] generateWithFallback failed:', e.message); }
         }
         try {
             const cacheKey = prompt.substring(0, 100) + agent;
@@ -339,7 +343,7 @@ class AIInternal {
     }
 }
 
-window.VisualAICore = {
+KESEMPATAN.VisualCore = {
     loadThreeJS: loadThreeJS,
     threeReady: function() { return threeReady; },
     threeLoadFailed: function() { return threeLoadFailed; },
@@ -348,7 +352,4 @@ window.VisualAICore = {
     AIInternal: AIInternal,
     createAI: function() { return new AIInternal(); }
 };
-
-window.KESEMPATAN = window.KESEMPATAN || {};
-window.KESEMPATAN.VisualCore = window.VisualAICore;
 })();

@@ -1,5 +1,9 @@
 (function() {
 'use strict';
+
+const KESEMPATAN = window.KESEMPATAN || {};
+window.KESEMPATAN = KESEMPATAN;
+
 if (window.__VisualAIConfig) return;
 window.__VisualAIConfig = true;
 
@@ -66,7 +70,5 @@ const VisualAIConfig = {
     SOCIAL_COLORS: SOCIAL_COLORS
 };
 
-window.KESEMPATAN = window.KESEMPATAN || {};
-window.KESEMPATAN.VisualConfig = VisualAIConfig;
-window.VisualAIConfig = VisualAIConfig;
+KESEMPATAN.VisualConfig = VisualAIConfig;
 })();

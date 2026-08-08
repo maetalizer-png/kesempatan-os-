@@ -1,15 +1,19 @@
 (function() {
-'use strict';
-if (window.__VoiceCloneEvents) return;
-window.__VoiceCloneEvents = true;
+    'use strict';
 
-const state = window.VoiceCloneState;
-const core = window.VoiceCloneCore;
-const renderer = window.VoiceCloneRenderer;
-const visualizer = window.VoiceCloneVisualizer;
+    const KESEMPATAN = window.KESEMPATAN || {};
+    window.KESEMPATAN = KESEMPATAN;
+
+    if (window.__VoiceCloneEvents) return;
+    window.__VoiceCloneEvents = true;
+
+const state = KESEMPATAN.VoiceState;
+const core = KESEMPATAN.VoiceCore;
+const renderer = KESEMPATAN.VoiceRenderer;
+const visualizer = KESEMPATAN.VoiceVisualizer;
 const showToast = window.Utils?.showToast || function() {};
-const VOICE_CONFIG = window.VoiceCloneConfig.VOICE_CONFIG;
-const LANGUAGES = window.VoiceCloneConfig.LANGUAGES;
+const VOICE_CONFIG = KESEMPATAN.VoiceConfig.VOICE_CONFIG;
+const LANGUAGES = KESEMPATAN.VoiceConfig.LANGUAGES;
 
 const attachEvents = function(container) {
 if (!container) return;
@@ -228,8 +232,5 @@ if (typeof window.showPage === 'function') window.showPage('dashboard');
 }
 };
 
-window.VoiceCloneEvents = { attach: attachEvents };
-
-window.KESEMPATAN = window.KESEMPATAN || {};
-window.KESEMPATAN.VoiceEvents = window.VoiceCloneEvents;
+KESEMPATAN.VoiceEvents = { attach: attachEvents };
 })();

@@ -1,14 +1,16 @@
 (function() {
-'use strict';
-if (window.__VoiceCloneCore) return;
-window.__VoiceCloneCore = true;
+    'use strict';
 
-const state = window.VoiceCloneState;
-const config = window.VoiceCloneConfig;
-const visualizer = window.VoiceCloneVisualizer;
+    const KESEMPATAN = window.KESEMPATAN || {};
+    window.KESEMPATAN = KESEMPATAN;
+
+    if (window.__VoiceCloneCore) return;
+    window.__VoiceCloneCore = true;
+
+const state = KESEMPATAN.VoiceState;
+const config = KESEMPATAN.VoiceConfig;
 const showToast = window.Utils?.showToast || function() {};
 const VOICE_CONFIG = config.VOICE_CONFIG;
-const LANGUAGES = config.LANGUAGES;
 
 let availableVoices = [];
 let voicesLoaded = false;
@@ -73,7 +75,7 @@ function startRecording() {
                 if (clones.length > 5) clones.pop();
                 state.setClones(clones);
                 state.save();
-                if (window.VoiceCloneRenderer) window.VoiceCloneRenderer.render();
+                if (KESEMPATAN.VoiceRenderer) KESEMPATAN.VoiceRenderer.render();
                 showToast('Voice clone tersimpan!', 'success');
             };
             reader.readAsDataURL(blob);
@@ -98,17 +100,17 @@ function playClone(id) {
     audio.play();
 }
 
-function useClone(id) { state.setActiveCloneId(id); state.save(); if (window.VoiceCloneRenderer) window.VoiceCloneRenderer.render(); showToast('Clone diaktifkan', 'success'); }
+function useClone(id) { state.setActiveCloneId(id); state.save(); if (KESEMPATAN.VoiceRenderer) KESEMPATAN.VoiceRenderer.render(); showToast('Clone diaktifkan', 'success'); }
 
 function deleteClone(id) {
     state.setClones(state.getClones().filter(function(c) { return String(c.id) !== String(id); }));
     if (String(state.getActiveCloneId()) === String(id)) state.setActiveCloneId(null);
     state.save();
-    if (window.VoiceCloneRenderer) window.VoiceCloneRenderer.render();
+    if (KESEMPATAN.VoiceRenderer) KESEMPATAN.VoiceRenderer.render();
     showToast('Clone dihapus', 'success');
 }
 
-function clearActiveClone() { state.setActiveCloneId(null); state.save(); if (window.VoiceCloneRenderer) window.VoiceCloneRenderer.render(); }
+function clearActiveClone() { state.setActiveCloneId(null); state.save(); if (KESEMPATAN.VoiceRenderer) KESEMPATAN.VoiceRenderer.render(); }
 
 function toggleFavorite(id) {
     const favs = state.getFavorites();
@@ -116,7 +118,7 @@ function toggleFavorite(id) {
     if (idx > -1) favs.splice(idx, 1); else favs.push(id);
     state.setFavorites(favs);
     state.save();
-    if (window.VoiceCloneRenderer) window.VoiceCloneRenderer.render();
+    if (KESEMPATAN.VoiceRenderer) KESEMPATAN.VoiceRenderer.render();
 }
 
 function isFavorite(id) { return state.getFavorites().indexOf(id) !== -1; }
@@ -129,7 +131,7 @@ function applySpeedPreset(id) {
     state.setSettings(settings);
     state.setSpeedPreset(id);
     state.save();
-    if (window.VoiceCloneRenderer) window.VoiceCloneRenderer.render();
+    if (KESEMPATAN.VoiceRenderer) KESEMPATAN.VoiceRenderer.render();
 }
 
 function exportSettings() {
@@ -151,9 +153,9 @@ function importSettings(file) {
             if (data.clones) state.setClones(data.clones);
             if (data.favorites) state.setFavorites(data.favorites);
             state.save();
-            if (window.VoiceCloneRenderer) window.VoiceCloneRenderer.render();
+            if (KESEMPATAN.VoiceRenderer) KESEMPATAN.VoiceRenderer.render();
             showToast('Settings diimpor!', 'success');
-        } catch (err) { showToast('Gagal impor', 'error'); }
+        } catch (err) { showToast('Gagal impor: ' + err.message, 'error'); }
     };
     reader.readAsText(file);
 }
@@ -182,20 +184,25 @@ const AIInternal = (function() {
         const apiKey = getApiKey();
         if (!apiKey || isOfflineMode()) return null;
         try {
-            const res = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+            const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
                 method: 'POST',
                 headers: { 'Authorization': 'Bearer ' + apiKey, 'Content-Type': 'application/json' },
                 body: JSON.stringify({ model: 'deepseek/deepseek-chat', messages: [{ role: 'user', content: prompt }], max_tokens: 800, temperature: 0.7 })
             });
-            const data = await res.json();
+            const data = await response.json();
             if (data.choices && data.choices[0]) return data.choices[0].message.content;
             return null;
-        } catch (e) { return null; }
+        } catch (e) { console.warn('[VoiceClone] callAI failed:', e.message); return null; }
     }
     async function analyzeImage(file) { return { style: 'modern', mood: 'enerjik' }; }
     async function generateAgent(features) {
         const ai = await callAI('Buat agen AI dari gambar gaya ' + features.style + '. Output JSON {name, role, systemPrompt}.');
-        if (ai) { try { const p = JSON.parse(ai); if (p.name) return p; } catch (e) {} }
+        if (ai) {
+            try {
+                const parsed = JSON.parse(ai);
+                if (parsed.name) return parsed;
+            } catch (e) { console.warn('[VoiceClone] generateAgent parse failed:', e.message); }
+        }
         return { name: 'Visual Agent ' + Date.now().toString().slice(-4), role: 'Visual Analyst', systemPrompt: 'Anda agen AI visual.' };
     }
     async function generateTags(features) { return ['#' + (features.style || 'Visual'), '#Kreatif', '#AI']; }
@@ -207,9 +214,9 @@ const AIInternal = (function() {
 
 let recognition = null;
 function startListening() {
-    const SR = window.webkitSpeechRecognition || window.SpeechRecognition;
-    if (!SR) { showToast('Browser tidak mendukung voice input', 'error'); return; }
-    recognition = new SR();
+    const SpeechRecognitionApi = window.webkitSpeechRecognition || window.SpeechRecognition;
+    if (!SpeechRecognitionApi) { showToast('Browser tidak mendukung voice input', 'error'); return; }
+    recognition = new SpeechRecognitionApi();
     recognition.lang = 'id-ID';
     recognition.onresult = function(e) {
         const text = e.results[0][0].transcript;
@@ -217,9 +224,13 @@ function startListening() {
     };
     recognition.start();
 }
-function stopListening() { if (recognition) { try { recognition.stop(); } catch (e) {} } }
+function stopListening() {
+    if (recognition) {
+        try { recognition.stop(); } catch (e) { console.warn('[VoiceClone] stopListening failed:', e.message); }
+    }
+}
 
-window.VoiceCloneCore = {
+KESEMPATAN.VoiceCore = {
     speak: speak, stopSpeaking: stopSpeaking,
     startRecording: startRecording, stopRecording: stopRecording,
     playClone: playClone, useClone: useClone, deleteClone: deleteClone, clearActiveClone: clearActiveClone,
@@ -234,9 +245,4 @@ window.VoiceCloneCore = {
     getEvolutionSuggestion: AIInternal.getEvolutionSuggestion,
     startListening: startListening, stopListening: stopListening
 };
-window.VoiceCloneVoiceCore = window.VoiceCloneCore;
-window.VoiceCloneAICore = window.VoiceCloneCore;
-
-window.KESEMPATAN = window.KESEMPATAN || {};
-window.KESEMPATAN.VoiceCore = window.VoiceCloneCore;
 })();

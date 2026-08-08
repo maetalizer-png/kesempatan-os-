@@ -1,7 +1,11 @@
 (function() {
-'use strict';
-if (window.__VoiceCloneConfig) return;
-window.__VoiceCloneConfig = true;
+    'use strict';
+
+    const KESEMPATAN = window.KESEMPATAN || {};
+    window.KESEMPATAN = KESEMPATAN;
+
+    if (window.__VoiceCloneConfig) return;
+    window.__VoiceCloneConfig = true;
 
 const THEMES = {
 dark: { bg: '#03050A', text: '#FFFFFF', card: 'rgba(0,255,163,0.05)', border: 'rgba(0,255,163,0.2)', input: '#0a0f1c' },
@@ -93,13 +97,10 @@ const AGENT_DISPLAY = {
 'SundanyaAsep': 'Sundanya Asep'
 };
 
-window.VoiceCloneConfig = {
+KESEMPATAN.VoiceConfig = {
 THEMES: THEMES, LANGUAGES: LANGUAGES, VOICE_CONFIG: VOICE_CONFIG, STORAGE_KEYS: STORAGE_KEYS,
 CLONE_CONFIG_DEFAULTS: CLONE_CONFIG_DEFAULTS, HISTORY_CONFIG_DEFAULTS: HISTORY_CONFIG_DEFAULTS,
 FAVORITES_DEFAULTS: FAVORITES_DEFAULTS, ANALYTICS_DEFAULTS: ANALYTICS_DEFAULTS,
 AGENT_PERSONALITIES: AGENT_PERSONALITIES, AGENT_DISPLAY: AGENT_DISPLAY
 };
-
-window.KESEMPATAN = window.KESEMPATAN || {};
-window.KESEMPATAN.VoiceConfig = window.VoiceCloneConfig;
 })();
