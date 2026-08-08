@@ -6,13 +6,13 @@
     window.__ObservationLoaderLoaded = true;
 
     const MODULES = [
-        'obs-config.js',
-        'obs-state.js',
+        'observ-config.js',
+        'observ-state.js',
         'fetcher.js',
         'analyzer.js',
-        'obs-ui-renderer.js',
-        'obs-chart.js',
-        'obs-export.js',
+        'observ-ui-renderer.js',
+        'observ-chart.js',
+        'observ-export.js',
         'events.js',
         'renderer.js'
     ];
