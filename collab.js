@@ -32,14 +32,14 @@ container.innerHTML =
 const createBtn = document.getElementById('createProjectBtn');
 const joinBtn = document.getElementById('joinProjectBtn');
 const sendBtn = document.getElementById('sendChatBtn');
-if (createBtn && typeof window.createProject === 'function') {
-createBtn.onclick = window.createProject;
+if (createBtn && window.KESEMPATAN?.Main?.createProject) {
+createBtn.onclick = window.KESEMPATAN.Main.createProject;
 }
-if (joinBtn && typeof window.joinProject === 'function') {
-joinBtn.onclick = window.joinProject;
+if (joinBtn && window.KESEMPATAN?.Main?.joinProject) {
+joinBtn.onclick = window.KESEMPATAN.Main.joinProject;
 }
-if (sendBtn && typeof window.sendChatMessage === 'function') {
-sendBtn.onclick = window.sendChatMessage;
+if (sendBtn && window.KESEMPATAN?.Main?.sendChatMessage) {
+sendBtn.onclick = window.KESEMPATAN.Main.sendChatMessage;
 }
 if (window.CollabClient && typeof window.CollabClient.attachEvents === 'function') {
 window.CollabClient.attachEvents();

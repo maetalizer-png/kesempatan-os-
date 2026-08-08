@@ -453,8 +453,8 @@ function CAG_getAgentDisplayName(agent) {
 
 function CAG_getFullAgentPool() {
         let boxes = document.querySelectorAll('.agent-checkbox[data-agent]');
-        if (boxes.length === 0 && window.renderAllAgents) {
-            window.renderAllAgents();
+        if (boxes.length === 0 && window.KESEMPATAN?.AgentRenderer?.renderAllAgents) {
+            window.KESEMPATAN?.AgentRenderer?.renderAllAgents();
             boxes = document.querySelectorAll('.agent-checkbox[data-agent]');
         }
         const seen = {};

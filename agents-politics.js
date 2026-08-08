@@ -37,7 +37,7 @@ if (typeof window.extendPoliticsAgents === 'undefined') {
         window.KESEMPATAN.Agents = window.KESEMPATAN.Agents || {};
         window.KESEMPATAN.Agents.Politics = window.AGENTS_POLITICS;
 
-        if (typeof window.renderAllAgents === 'function') window.renderAllAgents();
+        if (window.KESEMPATAN?.AgentRenderer?.renderAllAgents) window.KESEMPATAN.AgentRenderer.renderAllAgents();
     };
 
     if (document.readyState === 'loading') {

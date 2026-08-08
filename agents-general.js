@@ -44,7 +44,7 @@ if (typeof window.extendGeneralAgents === 'undefined') {
         window.KESEMPATAN.Agents = window.KESEMPATAN.Agents || {};
         window.KESEMPATAN.Agents.General = window.AGENTS_GENERAL;
 
-        if (typeof window.renderAllAgents === 'function') window.renderAllAgents();
+        if (window.KESEMPATAN?.AgentRenderer?.renderAllAgents) window.KESEMPATAN.AgentRenderer.renderAllAgents();
     };
 
     if (document.readyState === 'loading') {

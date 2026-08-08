@@ -1,9 +1,12 @@
 (function() {
 'use strict';
+const KESEMPATAN = window.KESEMPATAN || {};
+window.KESEMPATAN = KESEMPATAN;
+
 if (window.__MainLoaded) return;
 window.__MainLoaded = true;
 
-const Utils = window.KESEMPATAN?.Utils || window.Utils || {};
+const Utils = KESEMPATAN.Utils || window.Utils || {};
 const Logger = Utils.Logger || {
     system: function() {},
     success: function(type, message) {
@@ -60,7 +63,7 @@ const escapeHtml = Utils.escapeHtml || function(str) {
     });
 };
 
-window.saveReportToHistory = function(aggregated, topic) {
+function saveReportToHistory(aggregated, topic) {
     if (!aggregated) return;
     const history = JSON.parse(localStorage.getItem('kes_report_history') || '[]');
     const report = {
@@ -76,10 +79,10 @@ window.saveReportToHistory = function(aggregated, topic) {
     history.unshift(report);
     if (history.length > 50) history.pop();
     localStorage.setItem('kes_report_history', JSON.stringify(history));
-    if (typeof window.renderHistoryPanel === 'function') window.renderHistoryPanel();
-};
+    renderHistoryPanel();
+}
 
-window.renderHistoryPanel = function() {
+function renderHistoryPanel() {
     const history = JSON.parse(localStorage.getItem('kes_report_history') || '[]');
     const historyList = document.getElementById('historyList');
     if (!historyList) return;
@@ -99,10 +102,10 @@ window.renderHistoryPanel = function() {
     }).join('');
     document.querySelectorAll('.history-item').forEach(function(element) {
         element.addEventListener('click', function() {
-            window.loadReportFromHistory(parseInt(element.dataset.id, 10));
+            loadReportFromHistory(parseInt(element.dataset.id, 10));
         });
     });
-};
+}
 
 function renderReportSummaryToContainer(report) {
     const container = document.getElementById('reportContainer');
@@ -142,7 +145,7 @@ function restoreLastReportOnLoad() {
     }
 }
 
-window.loadReportFromHistory = function(id) {
+function loadReportFromHistory(id) {
     const history = JSON.parse(localStorage.getItem('kes_report_history') || '[]');
     const report = history.find(function(item) { return item.id === id; });
     if (!report) return;
@@ -161,13 +164,15 @@ window.loadReportFromHistory = function(id) {
     const container = document.getElementById('reportContainer');
     if (container) container.dataset.reportRendered = 'true';
     showToast('Memuat: ' + report.topic, 'success');
-    if (typeof window.showPage === 'function') window.showPage('report');
-};
+    if (window.KESEMPATAN?.Router?.showPage) window.KESEMPATAN.Router.showPage('report');
+}
 
 function resetReportDisplay() {
     window.lastAggregated = null;
     window.__lastAggregated = null;
-    try { localStorage.removeItem('kes_last_aggregated'); } catch (error) {}
+    try { localStorage.removeItem('kes_last_aggregated'); } catch (error) {
+        Logger.warn('REPORT', 'Clear last aggregated failed: ' + error.message);
+    }
     const container = document.getElementById('reportContainer');
     if (container) {
         container.innerHTML = '';
@@ -184,38 +189,37 @@ function resetReportDisplay() {
     const updateChart = window.KESEMPATAN?.ChartManager?.updateChart || window.updateChart;
     if (typeof updateChart === 'function') updateChart({});
 }
-window.resetReportDisplay = resetReportDisplay;
 
-window.clearAllHistory = function() {
+function clearAllHistory() {
     if (confirm('Hapus semua riwayat laporan?')) {
         localStorage.removeItem('kes_report_history');
         resetReportDisplay();
-        if (typeof window.renderHistoryPanel === 'function') window.renderHistoryPanel();
+        renderHistoryPanel();
         showToast('Semua riwayat dihapus', 'success');
     }
-};
+}
 
-window.showHistoryPanel = function() {
+function showHistoryPanel() {
     const panel = document.getElementById('historyPanel');
     if (panel) {
-        if (typeof window.renderHistoryPanel === 'function') window.renderHistoryPanel();
+        renderHistoryPanel();
         panel.style.display = 'block';
     }
-};
+}
 
-window.createProject = function() {
+function createProject() {
     const serverUrl = document.getElementById('serverUrlInput')?.value || 'ws://localhost:3000';
     showToast('Mencoba membuat project di ' + serverUrl + '...', 'info');
     showToast("Fitur kolaborasi: Jalankan 'node server.js' terlebih dahulu", 'info');
-};
+}
 
-window.joinProject = function() {
+function joinProject() {
     const serverUrl = document.getElementById('serverUrlInput')?.value || 'ws://localhost:3000';
     showToast('Mencoba join project di ' + serverUrl + '...', 'info');
     showToast("Fitur kolaborasi: Jalankan 'node server.js' terlebih dahulu", 'info');
-};
+}
 
-window.sendChatMessage = function() {
+function sendChatMessage() {
     const message = document.getElementById('chatInput')?.value;
     if (!message) {
         showToast('Ketik pesan terlebih dahulu', 'error');
@@ -223,9 +227,9 @@ window.sendChatMessage = function() {
     }
     showToast('Pesan terkirim: "' + message.substring(0, 50) + '"', 'success');
     document.getElementById('chatInput').value = '';
-};
+}
 
-window.testNotification = function() {
+function testNotification() {
     if (Notification.permission === 'granted') {
         new Notification('KESEMPATAN OS', {
             body: 'Notifikasi berhasil! KESEMPATAN OS siap digunakan.',
@@ -235,7 +239,7 @@ window.testNotification = function() {
     } else if (Notification.permission === 'default') {
         Notification.requestPermission().then(function(permission) {
             if (permission === 'granted') {
-                window.testNotification();
+                testNotification();
             } else {
                 showToast('Izin notifikasi ditolak', 'error');
             }
@@ -243,7 +247,7 @@ window.testNotification = function() {
     } else {
         showToast('Izin notifikasi sudah ditolak. Aktifkan di pengaturan browser.', 'error');
     }
-};
+}
 
 function setup3DHooks() {
     const scoreEngine = window.KESEMPATAN?.ChartManager?.ScoreEngine || window.ScoreEngine;
@@ -341,12 +345,8 @@ function setupFileUpload() {
 
 function bindNotificationTestButton() {
     const testBtn = document.getElementById('testNotificationBtn');
-    if (testBtn && typeof window.testNotification === 'function') {
-        testBtn.onclick = window.testNotification;
-    }
+    if (testBtn) testBtn.onclick = testNotification;
 }
-
-function setupPageNavigation() {}
 
 function setupEventListeners() {
     const buttonIds = ['executeBtn', 'mainExecuteBtn'];
@@ -493,7 +493,6 @@ async function initApp() {
     initApiKeyStatus();
     setupFileUpload();
     bindNotificationTestButton();
-    setupPageNavigation();
 
     const ResponseCacheManager = window.KESEMPATAN?.ResponseCache || window.ResponseCacheManager;
     if (ResponseCacheManager && ResponseCacheManager.updateStatsDisplay) {
@@ -502,9 +501,9 @@ async function initApp() {
 
     setup3DHooks();
 
-    if (typeof window.renderAllAgents === 'function') {
+    if (KESEMPATAN.AgentRenderer?.renderAllAgents) {
         try {
-            window.renderAllAgents();
+            KESEMPATAN.AgentRenderer.renderAllAgents();
             Logger.system('Agen berhasil dirender dari data (agent-renderer.js)');
         } catch (error) {
             Logger.error('RENDER', 'Gagal render agen: ' + error.message);
@@ -536,8 +535,20 @@ window.addEventListener('unhandledrejection', function(event) {
     }
 });
 
-window.KESEMPATAN = window.KESEMPATAN || {};
-window.KESEMPATAN.Main = Object.freeze({ initApp: initApp, waitForModules: waitForModules });
+KESEMPATAN.Main = Object.freeze({
+    initApp: initApp,
+    waitForModules: waitForModules,
+    saveReportToHistory: saveReportToHistory,
+    renderHistoryPanel: renderHistoryPanel,
+    loadReportFromHistory: loadReportFromHistory,
+    resetReportDisplay: resetReportDisplay,
+    clearAllHistory: clearAllHistory,
+    showHistoryPanel: showHistoryPanel,
+    createProject: createProject,
+    joinProject: joinProject,
+    sendChatMessage: sendChatMessage,
+    testNotification: testNotification
+});
 
 document.addEventListener('DOMContentLoaded', function() {
     setTimeout(waitForModules, 100);

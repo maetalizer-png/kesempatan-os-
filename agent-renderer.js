@@ -1,43 +1,10 @@
 (function() {
     'use strict';
+    const KESEMPATAN = window.KESEMPATAN || {};
+    window.KESEMPATAN = KESEMPATAN;
+
     if (window.__AgentRendererLoaded) return;
     window.__AgentRendererLoaded = true;
-
-    const InternalLogger = Object.freeze({
-        _logs: [],
-        _maxLogs: 100,
-        _levels: Object.freeze({ DEBUG: 0, INFO: 1, WARN: 2, ERROR: 3, CRITICAL: 4 }),
-        _level: 1,
-        log: function(level, module, message, data) {
-            const entry = Object.freeze({
-                timestamp: Date.now(),
-                level: level,
-                module: module,
-                message: message,
-                data: data || null,
-                id: Date.now().toString(36) + Math.random().toString(36).substring(2, 8)
-            });
-            this._logs.push(entry);
-            if (this._logs.length > this._maxLogs) this._logs.shift();
-            return entry;
-        },
-        debug: function(module, message, data) { return this.log(this._levels.DEBUG, module, message, data); },
-        info: function(module, message, data) { return this.log(this._levels.INFO, module, message, data); },
-        warn: function(module, message, data) { return this.log(this._levels.WARN, module, message, data); },
-        error: function(module, message, data) { return this.log(this._levels.ERROR, module, message, data); },
-        critical: function(module, message, data) { return this.log(this._levels.CRITICAL, module, message, data); },
-        getLogs: function(level, limit) {
-            limit = limit || 100;
-            let result = this._logs;
-            if (level !== undefined) {
-                result = result.filter(function(log) { return log.level >= level; });
-            }
-            return result.slice(-limit);
-        },
-        clear: function() { this._logs = []; },
-        setLevel: function(level) { this._level = level; },
-        getLevel: function() { return this._level; }
-    });
 
     function getAgentsFromConfig() {
         const agents = {
@@ -99,15 +66,9 @@
         setTimeout(updateAgentCount, 100);
     }
 
-    window.KESEMPATAN = window.KESEMPATAN || {};
-    window.KESEMPATAN.AgentRenderer = Object.freeze({
+    KESEMPATAN.AgentRenderer = Object.freeze({
         renderAllAgents: renderAllAgents,
         renderAgentTab: renderAgentTab,
-        updateAgentCount: updateAgentCount,
-        InternalLogger: InternalLogger
+        updateAgentCount: updateAgentCount
     });
-
-    window.renderAllAgents = renderAllAgents;
-    window.renderAgentTab = renderAgentTab;
-    window.updateAgentCount = updateAgentCount;
 })();

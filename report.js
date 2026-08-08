@@ -212,8 +212,8 @@ function setupEventDelegation(container, agg) {
                         window.__lastAggregated = null;
                         localStorage.removeItem('kes_last_aggregated');
                         localStorage.removeItem('kes_report_history');
-                        if (typeof window.resetReportDisplay === 'function') window.resetReportDisplay();
-                        if (typeof window.renderHistoryPanel === 'function') window.renderHistoryPanel();
+                        if (window.KESEMPATAN?.Main?.resetReportDisplay) window.KESEMPATAN.Main.resetReportDisplay();
+                        if (window.KESEMPATAN?.Main?.renderHistoryPanel) window.KESEMPATAN.Main.renderHistoryPanel();
                         _state.lastDataHash = null;
                         showToast('Laporan dihapus', 'success');
                         render();

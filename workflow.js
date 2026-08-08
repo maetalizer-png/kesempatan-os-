@@ -437,7 +437,7 @@ function finalizeAggregation(itemsOrResults, topic, note, successToast) {
     if (updateChart && aggregated.metrics) updateChart(aggregated.metrics);
     if (appDatabase) appDatabase.saveReport(topic, aggregated.score, aggregated);
     if (setExportData) setExportData(aggregated, note || '');
-    if (typeof window.saveReportToHistory === 'function') window.saveReportToHistory(aggregated, topic);
+    if (window.KESEMPATAN?.Main?.saveReportToHistory) window.KESEMPATAN.Main.saveReportToHistory(aggregated, topic);
     if (hideHitlPanel) hideHitlPanel();
     if (showToast && successToast) showToast(successToast, 'success');
     return aggregated;
@@ -544,8 +544,8 @@ function forceGenerateReport(results, payload) {
     if (window.ScoreEngine) window.ScoreEngine.updateFromAggregated(aggregated);
     if (updateChart && aggregated.metrics) updateChart(aggregated.metrics);
     if (setExportData) setExportData(aggregated, 'Force generate');
-    if (typeof window.saveReportToHistory === 'function') {
-        window.saveReportToHistory(aggregated, payload?.topic || 'Opportunity');
+    if (window.KESEMPATAN?.Main?.saveReportToHistory) {
+        window.KESEMPATAN.Main.saveReportToHistory(aggregated, payload?.topic || 'Opportunity');
     }
     try {
         localStorage.setItem('kes_last_aggregated', JSON.stringify(aggregated));

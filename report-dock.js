@@ -17,7 +17,7 @@ const showToast = Utils.showToast || function(msg, type) {
 };
 
 function showHistoryPanelAndScroll() {
-    window.showHistoryPanel();
+    window.KESEMPATAN.Main.showHistoryPanel();
     const panel = document.getElementById('historyPanel');
     if (panel) panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
@@ -75,7 +75,7 @@ function renderReportDock() {
                 return;
             }
             const topicInput = document.getElementById('topicInput');
-            window.saveReportToHistory(window.lastAggregated, topicInput ? topicInput.value : 'Untitled');
+            window.KESEMPATAN.Main.saveReportToHistory(window.lastAggregated, topicInput ? topicInput.value : 'Untitled');
         });
     }
 
@@ -134,7 +134,7 @@ function renderHistoryPanelShell() {
     const clearBtn = document.getElementById('clearHistoryBtn');
     if (clearBtn) {
         clearBtn.addEventListener('click', function() {
-            window.clearAllHistory();
+            window.KESEMPATAN.Main.clearAllHistory();
         });
     }
 }

@@ -46,7 +46,7 @@ if (typeof window.extendScienceAgents === 'undefined') {
         window.KESEMPATAN.Agents = window.KESEMPATAN.Agents || {};
         window.KESEMPATAN.Agents.Science = window.AGENTS_SCIENCE;
 
-        if (typeof window.renderAllAgents === 'function') window.renderAllAgents();
+        if (window.KESEMPATAN?.AgentRenderer?.renderAllAgents) window.KESEMPATAN.AgentRenderer.renderAllAgents();
     };
 
     if (document.readyState === 'loading') {

@@ -9,8 +9,8 @@ window.askAllAgents = async function(question) {
         if (FOR_forumRunning) {
             return;
         }
-        if (document.querySelectorAll('.agent-checkbox[data-agent]').length === 0 && window.renderAllAgents) {
-            window.renderAllAgents();
+        if (document.querySelectorAll('.agent-checkbox[data-agent]').length === 0 && window.KESEMPATAN?.AgentRenderer?.renderAllAgents) {
+            window.KESEMPATAN?.AgentRenderer?.renderAllAgents();
         }
         const checkboxes = document.querySelectorAll('.agent-checkbox:checked');
         const agents = Array.from(checkboxes).map(function(cb) {

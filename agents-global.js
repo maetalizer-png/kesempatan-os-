@@ -42,7 +42,7 @@ if (typeof window.extendGlobalAgents === 'undefined') {
         window.KESEMPATAN.Agents = window.KESEMPATAN.Agents || {};
         window.KESEMPATAN.Agents.Global = window.AGENTS_GLOBAL;
 
-        if (typeof window.renderAllAgents === 'function') window.renderAllAgents();
+        if (window.KESEMPATAN?.AgentRenderer?.renderAllAgents) window.KESEMPATAN.AgentRenderer.renderAllAgents();
     };
 
     if (document.readyState === 'loading') {

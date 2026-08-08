@@ -22,12 +22,12 @@ const { showToast: DEB_showToast } = window.Utils || {};
 
     function DEB_getFullAgentPool() {
         let boxes = document.querySelectorAll('.agent-checkbox[data-agent]');
-        if (boxes.length === 0 && window.renderAllAgents) {
+        if (boxes.length === 0 && window.KESEMPATAN?.AgentRenderer?.renderAllAgents) {
             // Dashboard belum sempat dibuka sesi ini -> checkbox agen belum
             // ter-render ke DOM sama sekali. Render paksa sekali di sini
             // supaya roster lengkap tetap tersedia tanpa user harus buka
             // Dashboard dulu sebelum masuk Debat.
-            window.renderAllAgents();
+            window.KESEMPATAN?.AgentRenderer?.renderAllAgents();
             boxes = document.querySelectorAll('.agent-checkbox[data-agent]');
         }
         const seen = {};

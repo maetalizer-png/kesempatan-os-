@@ -52,8 +52,8 @@ window.extendBisnisAgents = async function() {
     window.KESEMPATAN.Agents.Bisnis = window.AGENTS_BISNIS;
     window.KESEMPATAN.Agents.Config = window.AGENTS_CONFIG;
 
-    if (typeof window.renderAllAgents === 'function') {
-        window.renderAllAgents();
+    if (window.KESEMPATAN?.AgentRenderer?.renderAllAgents) {
+        window.KESEMPATAN.AgentRenderer.renderAllAgents();
     }
 };
 
