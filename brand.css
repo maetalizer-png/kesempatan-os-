@@ -1,0 +1,74 @@
+.logo-centered {
+  text-align: center;
+  margin-bottom: 0px;
+}
+
+.logo-top-wrapper {
+  display: block;
+  text-align: center;
+  margin-bottom: 20px;
+  line-height: 0;
+  animation: fadeIn 0.4s ease-in-out;
+}
+.logo-top-wrapper img {
+  width: 150px !important;
+  height: 150px !important;
+  display: inline-block !important;
+  margin: 0 auto !important;
+  transition: transform 0.2s ease;
+}
+.logo-top-wrapper img:hover {
+  transform: scale(1.05);
+}
+@media (max-width: 768px) {
+  .logo-top-wrapper img { width: 120px !important; height: 120px !important; }
+}
+@media (max-width: 480px) {
+  .logo-top-wrapper img { width: 90px !important; height: 90px !important; }
+}
+
+.logo-centered .logo {
+  display: block;
+  max-width: 600px;
+  margin: 0 auto 14px auto;
+}
+
+.logo-centered .logo img {
+  width: 100%;
+  height: auto;
+  display: block;
+  filter: drop-shadow(0 0 40px rgba(0, 255, 166, 0.08));
+}
+
+/* brand-logo.svg (teks "KESEMPATAN OS") — beri sedikit jarak dari ikon atom di atasnya */
+.logo-centered .logo img[src*="brand-logo"] {
+  margin-top: 6px;
+}
+
+.logo-centered .subtitle {
+  display: block;
+  max-width: 100%;
+  margin: 0 auto;
+}
+
+.logo-centered .subtitle img {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 600 / 48;
+  display: block;
+  vertical-align: top; /* cegah gap tersembunyi dari baseline default img */
+}
+
+@media (max-width: 768px) {
+  .logo-centered .logo { max-width: 84%; }
+}
+
+@media (max-width: 480px) {
+  .logo-centered .logo { max-width: 76%; }
+}
+
+@media (min-width: 1200px) {
+  .logo-centered .subtitle {
+    max-width: 600px;
+  }
+}

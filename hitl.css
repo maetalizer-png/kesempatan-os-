@@ -1,0 +1,440 @@
+/* ============================================================
+COMPONENTS/HITL.CSS — Human-in-the-Loop Panel (BENTUK A/B)
+Panel & kartu agen = BENTUK A (chamfer simetris + rim neon 1px
+nyambung, inner gelap). Tombol = BENTUK B (chamfer asimetris).
+Baris aksi: Cancel + Process Aggregation SEJAJAR sampingan
+(flex berbagi baris, tinggi sama, rata kanan). Glow hanya saat
+hover; hover dibungkus media-query (HP tidak lengket).
+Mandiri: definisi clip lokal, tidak numpang forms.css.
+============================================================ */
+:root {
+--hl-clip: polygon(
+0 10px, 10px 0, calc(100% - 10px) 0, 100% 10px,
+100% calc(100% - 10px), calc(100% - 10px) 100%,
+10px 100%, 0 calc(100% - 10px)
+);
+--hl-clip-asym: polygon(
+10px 0, 100% 0,
+100% calc(100% - 10px), calc(100% - 10px) 100%,
+0 100%, 0 10px
+);
+--hl-clip-sm: polygon(
+0 6px, 6px 0, calc(100% - 6px) 0, 100% 6px,
+100% calc(100% - 6px), calc(100% - 6px) 100%,
+6px 100%, 0 calc(100% - 6px)
+);
+}
+@keyframes hitlFadeSlideUp {
+from { opacity: 0; transform: translateY(16px); }
+to   { opacity: 1; transform: none; }
+}
+/* ---- panel utama = BENTUK A (rim nyambung) ---- */
+#hitlReportPanel {
+position: relative;
+isolation: isolate;
+clip-path: var(--hl-clip);
+border: 0;
+border-radius: 0;
+background: rgba(26,255,156,.3);
+padding: 16px;
+margin-top: 24px;
+box-shadow: none;
+animation: hitlFadeSlideUp .4s ease;
+transition: background .25s ease, filter .3s ease;
+}
+#hitlReportPanel::before {
+content: '';
+position: absolute;
+inset: 1px;
+clip-path: var(--hl-clip);
+background: #05080c;
+z-index: -1;
+}
+/* ---- header ---- */
+.hitl-header {
+display: flex;
+justify-content: space-between;
+align-items: center;
+flex-wrap: wrap;
+gap: 10px;
+margin-bottom: 14px;
+}
+.hitl-header-left { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.hitl-header-right { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.hitl-title {
+margin: 0;
+font-size: 14px;
+font-weight: 800;
+letter-spacing: 1.2px;
+text-transform: uppercase;
+color: var(--primary);
+text-shadow: 0 0 10px var(--primary-glow);
+}
+.hitl-badge {
+clip-path: var(--hl-clip-sm);
+border-radius: 0;
+background: rgba(0,255,163,0.25);
+color: var(--primary);
+padding: 4px 12px;
+font-size: 11px;
+font-weight: 800;
+}
+.hitl-badge.partial {
+background: rgba(255,255,0,0.15);
+color: #FFD700;
+}
+.hitl-progress { color: #A0B3C9; font-size: 12px; }
+.hitl-toggle {
+position: relative;
+isolation: isolate;
+clip-path: var(--hl-clip-asym);
+border: 0;
+border-radius: 0;
+background: rgba(255,255,255,.25);
+padding: 4px 14px;
+font-size: 11px;
+color: #A0B3C9;
+cursor: pointer;
+transition: background .25s ease;
+}
+.hitl-toggle::before {
+content: '';
+position: absolute;
+inset: 1px;
+clip-path: var(--hl-clip-asym);
+background: #0a1218;
+z-index: -1;
+}
+/* ---- infobar = kotak A kecil ---- */
+.hitl-infobar {
+clip-path: var(--hl-clip-sm);
+background: rgba(0,255,163,0.08);
+padding: 10px 14px;
+margin-bottom: 14px;
+font-size: 12px;
+color: #A0B3C9;
+display: flex;
+justify-content: space-between;
+align-items: center;
+flex-wrap: wrap;
+gap: 8px;
+}
+.hitl-infobar-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.hitl-approve-all,
+.hitl-reject-all {
+position: relative;
+isolation: isolate;
+clip-path: var(--hl-clip-asym);
+border: 0;
+border-radius: 0;
+padding: 5px 14px;
+font-size: 11px;
+font-weight: 700;
+cursor: pointer;
+transition: background .25s ease, transform .15s ease;
+}
+.hitl-approve-all { background: rgba(0,255,163,.5); color: var(--primary); }
+.hitl-approve-all::before {
+content: '';
+position: absolute;
+inset: 1px;
+clip-path: var(--hl-clip-asym);
+background: #06100b;
+z-index: -1;
+}
+.hitl-reject-all { background: rgba(255,68,68,.5); color: #FF6B6B; }
+.hitl-reject-all::before {
+content: '';
+position: absolute;
+inset: 1px;
+clip-path: var(--hl-clip-asym);
+background: #160608;
+z-index: -1;
+}
+/* ---- list + scrollbar tipis ---- */
+.hitl-list {
+max-height: 400px;
+overflow-y: auto;
+margin-bottom: 14px;
+scrollbar-width: thin;
+scrollbar-color: rgba(26,255,156,.45) transparent;
+}
+.hitl-list::-webkit-scrollbar { width: 2px; }
+.hitl-list::-webkit-scrollbar-thumb { background: rgba(26,255,156,.45); border-radius: 10px; }
+/* ---- kartu agen = BENTUK A kecil ---- */
+.hitl-report-item {
+position: relative;
+isolation: isolate;
+clip-path: var(--hl-clip-sm);
+background: rgba(26,255,156,.3);
+padding: 12px 14px;
+margin-bottom: 8px;
+transition: background .25s ease, filter .25s ease;
+}
+.hitl-report-item::before {
+content: '';
+position: absolute;
+inset: 1px;
+clip-path: var(--hl-clip-sm);
+background: #07130d;
+z-index: -1;
+}
+.hitl-report-item.rejected { background: rgba(255,68,68,.45); }
+.hitl-report-item.rejected::before { background: #120708; }
+.hitl-item-main,
+.hitl-item-side {
+display: flex;
+align-items: center;
+gap: 10px;
+flex-wrap: wrap;
+}
+.hitl-item-side { margin-top: 8px; }
+.hitl-item-name { color: var(--primary); font-weight: 700; font-size: 13px; }
+.hitl-report-item.rejected .hitl-item-name { color: #FF6B6B; }
+.hitl-conf {
+clip-path: var(--hl-clip-sm);
+background: rgba(255,255,255,0.05);
+padding: 3px 10px;
+font-size: 11px;
+color: #A0B3C9;
+}
+.hitl-explain { cursor: help; font-size: 11px; color: #A0B3C9; margin-left: 4px; }
+.hitl-score-label { font-size: 11px; color: #A0B3C9; }
+.hitl-score-input {
+clip-path: var(--hl-clip-sm);
+border: 0;
+border-radius: 0;
+background: rgba(0,255,163,0.08);
+color: var(--primary);
+text-align: center;
+font-size: 12px;
+padding: 4px 6px;
+width: 55px;
+margin: 0;
+}
+.hitl-score-input:focus { outline: none; background: rgba(0,255,163,0.15); }
+.hitl-status-label {
+font-size: 11px;
+font-weight: 800;
+letter-spacing: .5px;
+text-transform: uppercase;
+min-width: 60px;
+text-align: center;
+color: var(--primary);
+}
+.hitl-report-item.rejected .hitl-status-label { color: #FF6B6B; }
+.hitl-approve-checkbox {
+accent-color: var(--primary);
+cursor: pointer;
+width: 18px;
+height: 18px;
+margin: 0;
+}
+/* ============================================================
+BARIS AKSI — Cancel & Process Aggregation SEJAJAR sampingan.
+Keduanya flex berbagi baris (tinggi sama via stretch), rata
+kanan; hanya melipat ke bawah di layar sangat sempit.
+============================================================ */
+.hitl-actions-row {
+display: flex;
+justify-content: flex-end;
+align-items: stretch;
+gap: 12px;
+margin-top: 14px;
+flex-wrap: wrap;
+}
+.hitl-cancel,
+.hitl-confirm {
+display: inline-flex;
+align-items: center;
+justify-content: center;
+text-align: center;
+flex: 1 1 140px;      /* berbagi baris yang sama */
+max-width: 280px;     /* biar tidak melar aneh di layar lebar */
+}
+.hitl-cancel {
+position: relative;
+isolation: isolate;
+clip-path: var(--hl-clip-asym);
+border: 0;
+border-radius: 0;
+background: rgba(255,255,255,.25);
+color: #A0B3C9;
+padding: 8px 20px;
+font-size: 13px;
+cursor: pointer;
+transition: background .25s ease, transform .15s ease;
+}
+.hitl-cancel::before {
+content: '';
+position: absolute;
+inset: 1px;
+clip-path: var(--hl-clip-asym);
+background: #0a1218;
+z-index: -1;
+}
+.hitl-confirm {
+position: relative;
+isolation: isolate;
+clip-path: var(--hl-clip-asym);
+border: 0;
+border-radius: 0;
+background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+color: #03130b;
+padding: 8px 28px;
+font-size: 14px;
+font-weight: 800;
+cursor: pointer;
+overflow: hidden;
+filter: drop-shadow(0 0 6px var(--primary-glow));
+transition: transform .15s ease, filter .25s ease;
+}
+.hitl-confirm::after {
+content: '';
+position: absolute;
+top: 0; left: 0;
+width: 60%; height: 100%;
+background: linear-gradient(100deg, transparent, rgba(255,255,255,.35), transparent);
+transform: translateX(-160%);
+transition: transform .6s ease;
+pointer-events: none;
+}
+/* ---- tombol ungu "Review & Approve" = BENTUK B ---- */
+.hitl-report-button-wrap {
+margin-top: 16px;
+display: flex;
+justify-content: center;
+}
+#hitlShowPanelBtn {
+position: relative;
+isolation: isolate;
+clip-path: var(--hl-clip-asym);
+border: 0;
+border-radius: 0;
+background: linear-gradient(135deg, #9B59B6, #8E44AD);
+color: white;
+padding: 10px 30px;
+font-size: 14px;
+font-weight: 800;
+cursor: pointer;
+overflow: hidden;
+filter: drop-shadow(0 0 6px rgba(155,89,182,.35));
+transition: transform .15s ease, filter .25s ease;
+}
+#hitlShowPanelBtn::after {
+content: '';
+position: absolute;
+top: 0; left: 0;
+width: 60%; height: 100%;
+background: linear-gradient(100deg, transparent, rgba(255,255,255,.3), transparent);
+transform: translateX(-160%);
+transition: transform .6s ease;
+pointer-events: none;
+}
+/* ---- jalur legacy (#hitlPanel) ---- */
+.hitl-legacy-title {
+color: var(--primary);
+text-shadow: 0 0 10px var(--primary-glow);
+letter-spacing: 1.2px;
+text-transform: uppercase;
+font-size: 13px;
+margin-bottom: 12px;
+}
+.hitl-item {
+position: relative;
+isolation: isolate;
+clip-path: var(--hl-clip-sm);
+background: rgba(26,255,156,.3);
+padding: 12px 14px;
+margin-bottom: 10px;
+}
+.hitl-item::before {
+content: '';
+position: absolute;
+inset: 1px;
+clip-path: var(--hl-clip-sm);
+background: #07130d;
+z-index: -1;
+}
+.hitl-item-header {
+display: flex;
+justify-content: space-between;
+align-items: center;
+flex-wrap: wrap;
+gap: 8px;
+}
+.hitl-agent-name { color: var(--primary); font-weight: 700; font-size: 13px; }
+.hitl-actions { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.hitl-actions .approve-btn,
+.hitl-actions .reject-btn {
+position: relative;
+isolation: isolate;
+clip-path: var(--hl-clip-asym);
+border: 0;
+border-radius: 0;
+padding: 5px 14px;
+font-weight: 700;
+font-size: 12px;
+cursor: pointer;
+}
+.hitl-actions .approve-btn { background: rgba(0,255,163,.5); color: var(--primary); }
+.hitl-actions .approve-btn::before {
+content: '';
+position: absolute;
+inset: 1px;
+clip-path: var(--hl-clip-asym);
+background: #06100b;
+z-index: -1;
+}
+.hitl-actions .reject-btn { background: rgba(255,68,68,.5); color: #FF6B6B; }
+.hitl-actions .reject-btn::before {
+content: '';
+position: absolute;
+inset: 1px;
+clip-path: var(--hl-clip-asym);
+background: #160608;
+z-index: -1;
+}
+.hitl-summary { font-size: 12px; color: #A0B3C9; margin-top: 6px; }
+.hitl-rationale { font-size: 11px; color: #666; margin-top: 4px; }
+#confirmAggregationBtn,
+.hitl-confirm-btn {
+position: relative;
+isolation: isolate;
+clip-path: var(--hl-clip-asym);
+border: 0;
+border-radius: 0;
+margin-top: 12px;
+padding: 10px 24px;
+background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+color: #03050A;
+font-weight: 800;
+cursor: pointer;
+font-size: 14px;
+width: 100%;
+}
+/* ---- hover hanya perangkat berkursor ---- */
+@media (hover: hover) and (pointer: fine) {
+#hitlReportPanel:hover { background: rgba(26,255,156,.5); filter: drop-shadow(0 0 7px var(--primary-glow)); }
+.hitl-report-item:hover { background: rgba(26,255,156,.55); filter: drop-shadow(0 0 6px var(--primary-glow)); }
+.hitl-report-item.rejected:hover { background: rgba(255,68,68,.6); }
+.hitl-toggle:hover { background: rgba(255,255,255,.45); }
+.hitl-approve-all:hover { background: rgba(0,255,163,.7); transform: translateY(-1px); }
+.hitl-reject-all:hover { background: rgba(255,68,68,.7); transform: translateY(-1px); }
+.hitl-cancel:hover { background: rgba(255,255,255,.45); }
+.hitl-confirm:hover { transform: translateY(-2px); filter: drop-shadow(0 0 14px var(--primary-glow)); }
+.hitl-confirm:hover::after { transform: translateX(260%); }
+#hitlShowPanelBtn:hover { transform: translateY(-2px); filter: drop-shadow(0 0 14px rgba(155,89,182,.5)); }
+#hitlShowPanelBtn:hover::after { transform: translateX(260%); }
+}
+/* ---- responsive ---- */
+@media (max-width: 768px) {
+#hitlReportPanel { padding: 12px; }
+.hitl-item, .hitl-report-item { padding: 10px 12px; }
+.hitl-header { flex-direction: column; align-items: flex-start; }
+.hitl-cancel, .hitl-confirm { max-width: none; }
+}
+@media (max-width: 360px) {
+/* layar sangat sempit: baru boleh menumpuk */
+.hitl-cancel, .hitl-confirm { flex: 1 1 100%; }
+}

@@ -1,0 +1,16 @@
+/* ============================================================
+   CARD-HEADINGS.CSS — Heading di dalam card
+   ============================================================ */
+.card h2 {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 16px;
+  color: var(--primary);
+  border-left: 3px solid var(--primary);
+  padding-left: 12px;
+}
+.card h3 {
+  font-size: 12px;
+  margin: 16px 0 10px;
+  color: var(--primary);
+}

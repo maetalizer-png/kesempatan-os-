@@ -1,0 +1,11 @@
+/* ============================================================
+   LIGHT-MODE.CSS — Override komponen saat mode terang
+   ============================================================ */
+body.light .container { background: rgba(255, 255, 255, 0.85); }
+body.light .card { background: rgba(255, 255, 255, 0.85); border: none !important; }
+body.light .app-icon-circle { background: rgba(0, 0, 0, 0.08); border-color: rgba(0, 0, 0, 0.05); }
+body.light .app-icon-label { color: #555; }
+body.light .fieldset-legend { color: #1A2A3A; }
+body.light .result-container { background: rgba(0, 0, 0, 0.08) !important; }
+body.light .chat-messages { background: rgba(0, 0, 0, 0.05); }
+body.light .history-item { background: rgba(0, 150, 120, 0.05); }

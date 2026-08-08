@@ -1,0 +1,106 @@
+/* ============================================================
+KESEMPATAN OS - CHECKBOX / BADGE KHUSUS  (bentuk B)
+.agent-badge default = rim neon + bentuk B (clip asimetris).
+Inner gelap default ada di agent-grid.css (::before). Di sini
+kita set warna rim default + layout. PromptOptimizer = bentuk B
+tengah. RahmadRaharjo = rim EMAS + inner via ::after (karena
+::before kepakai emoji 🎤). Semua border-radius/border lama
+dihapus (bentuk sekarang dari clip-path).
+============================================================ */
+:root {
+    --ag-clip-asym: polygon(
+        10px 0, 100% 0,
+        100% calc(100% - 10px), calc(100% - 10px) 100%,
+        0 100%, 0 10px
+    );
+}
+
+/* ========== BADGE DEFAULT (rim + layout) ========== */
+.agent-badge {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    gap: 8px !important;
+    padding: 8px 12px !important;
+    min-height: 38px !important;
+    font-size: 11px !important;
+    /* bentuk B + rim (tanpa !important pada background agar hover/active menang) */
+    background: rgba(0, 255, 163, 0.3);
+}
+
+/* ========== CHECKBOX ========== */
+.agent-checkbox {
+    flex-shrink: 0 !important;
+    width: 16px !important;
+    height: 16px !important;
+    margin: 0 !important;
+    accent-color: #00FFA3 !important;
+    position: relative;
+    z-index: 1;
+}
+
+/* ========== PROMPTOPTIMIZER — TENGAH, BENTUK B ========== */
+.agent-badge[data-agent="PromptOptimizer"] {
+    display: block !important;
+    text-align: center !important;
+    grid-column: 1 / -1 !important;
+    width: 90% !important;
+    max-width: 220px !important;
+    margin: 8px auto !important;
+    background: rgba(0, 255, 163, 0.45);   /* rim lebih tegas */
+    padding: 6px 0 !important;
+}
+.agent-badge[data-agent="PromptOptimizer"] .agent-checkbox {
+    display: inline-block !important;
+    vertical-align: middle !important;
+    margin-right: 8px !important;
+}
+
+/* ========== RAHMAD RAHARJO — RIM EMAS, BENTUK B ========== */
+.agent-badge[data-agent="RahmadRaharjo"] {
+    display: block !important;
+    text-align: center !important;
+    grid-column: 1 / -1 !important;
+    width: 90% !important;
+    max-width: 260px !important;
+    margin: 12px auto !important;
+    background: #FFD700;                    /* rim = emas */
+    color: #FFD700 !important;
+    font-weight: bold !important;
+    padding: 8px 0 !important;
+}
+/* ::before di sini = emoji (BUKAN inner) => kembalikan ke inline */
+.agent-badge[data-agent="RahmadRaharjo"]::before {
+    content: "🎤 " !important;
+    position: static !important;
+    inset: auto !important;
+    clip-path: none !important;
+    background: none !important;
+    z-index: auto !important;
+    font-size: 11px;
+}
+/* inner emas-nya pindah ke ::after (inset 2px = rim emas 2px) */
+.agent-badge[data-agent="RahmadRaharjo"]::after {
+    content: '' !important;
+    position: absolute !important;
+    inset: 2px !important;
+    clip-path: var(--ag-clip-asym) !important;
+    background: linear-gradient(135deg, #0c2419, #08180f) !important; /* hijau gelap opaque */
+    z-index: -1 !important;
+}
+.agent-badge[data-agent="RahmadRaharjo"] .agent-checkbox {
+    display: inline-block !important;
+    vertical-align: middle !important;
+    margin-right: 8px !important;
+}
+
+/* ========== RESPONSIVE HP ========== */
+@media (max-width: 768px) {
+    .agent-badge { padding: 6px 8px !important; font-size: 10px !important; }
+    .agent-checkbox { width: 14px !important; height: 14px !important; }
+    .agent-badge[data-agent="PromptOptimizer"],
+    .agent-badge[data-agent="RahmadRaharjo"] {
+        grid-column: 1 / 3 !important;
+        max-width: 200px !important;
+    }
+}
