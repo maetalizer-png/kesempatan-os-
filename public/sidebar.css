@@ -1,0 +1,208 @@
+/* ============================================================
+   SIDEBAR.CSS — Semua gaya untuk sidebar KESEMPATAN OS
+   ============================================================ */
+
+/* --- Tombol Hamburger --- */
+.hamburger {
+  display: none;
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  z-index: 1100;
+  background: var(--primary);
+  border: none;
+  color: var(--bg-dark);
+  font-size: 22px;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  cursor: pointer;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+}
+
+/* --- Sidebar Container --- */
+.sidebar {
+  width: 260px;
+  background: var(--bg-sidebar);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  padding: 20px 16px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  height: calc(100vh - 40px);
+  border-radius: 28px 0 0 28px;
+  transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 1000;
+  /* FIX: garis hijau tebal yg terlihat adalah scrollbar bawaan
+     browser (overflow-y:auto tanpa styling) — disembunyikan di
+     sini, scroll tetap berfungsi normal */
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.sidebar::-webkit-scrollbar {
+  display: none;
+  width: 0;
+}
+
+/* --- Menu --- */
+.menu {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 8px;
+}
+.menu button {
+  position: relative;
+  isolation: isolate;
+  clip-path: var(--ag-clip-asym);
+  background: rgba(224, 230, 237, 0.15);
+  border: 0;
+  color: #C0D0E5;
+  padding: 9px 12px;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 500;
+  text-align: left;
+  transition: var(--transition);
+}
+.menu button::before {
+  content: '';
+  position: absolute;
+  inset: 1px;
+  clip-path: var(--ag-clip-asym);
+  background: rgba(10, 16, 28, 0.92) !important;
+  z-index: -1;
+}
+.menu button.active,
+.menu button:hover {
+  background: var(--primary);
+  color: var(--primary);
+  transform: translateX(4px);
+}
+
+/* --- Submenu --- */
+.submenu {
+  margin-left: 20px;
+  display: none;
+}
+.submenu.open {
+  display: block;
+}
+.submenu button {
+  margin-top: 4px;
+  padding: 5px 8px;
+  font-size: 11px;
+  background: var(--primary-tint-05);
+  border: none;
+  width: 100%;
+  text-align: left;
+  border-radius: var(--radius-xs);
+  cursor: pointer;
+}
+
+/* --- Footer Sidebar (Autonomy Mode) --- */
+.sidebar-footer {
+  text-align: center;
+  font-size: 9px;
+  color: var(--text-muted);
+  margin-top: 20px;
+}
+.sidebar-footer-controls {
+  margin-top: 16px;
+  padding-top: 12px;
+  border-top: 1px solid var(--primary-tint-20);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.footer-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.autonomy-footer select {
+  background: rgba(0,0,0,0.5);
+  border: 1px solid var(--primary-tint-30);
+  color: var(--primary);
+  padding: 4px 8px;
+  border-radius: 16px;
+  font-size: 11px;
+}
+
+/* ============================================================
+   RESPONSIVE SIDEBAR (Mobile)
+   ============================================================ */
+@media (max-width: 768px) {
+  .hamburger {
+    display: block !important;
+    position: fixed !important;
+    width: 46px !important;
+    height: 46px !important;
+    font-size: 24px !important;
+    top: 10px !important;
+    left: 10px !important;
+    border-radius: 12px !important;
+    z-index: 9999 !important;
+  }
+
+  .sidebar {
+    width: 250px !important;
+    padding: 72px 10px 12px 10px !important;
+    padding-bottom: 80px !important;
+    overflow-y: auto !important;
+    height: 100vh !important;
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    transform: translateX(-110%);
+    will-change: transform;
+    border-radius: 0 !important;
+    background: rgba(7, 12, 25, 0.97) !important;
+  }
+  .sidebar.open {
+    transform: translateX(0) !important;
+  }
+
+  .menu {
+    gap: 4px !important;
+    margin-top: 6px !important;
+  }
+  .menu button {
+    padding: 8px 12px !important;
+    font-size: 14px !important;
+    border-radius: 10px !important;
+    border: 1px solid rgba(224, 230, 237, 0.05) !important;
+  }
+
+  .submenu {
+    margin-left: 16px !important;
+  }
+  .submenu button {
+    padding: 6px 10px !important;
+    font-size: 13px !important;
+    border-radius: 8px !important;
+  }
+
+  .sidebar-footer {
+    font-size: 9px !important;
+    padding-top: 10px !important;
+    margin-top: 10px !important;
+  }
+  .sidebar-footer-controls {
+    gap: 5px !important;
+  }
+  .autonomy-footer select {
+    font-size: 10px !important;
+    padding: 3px 8px !important;
+    width: 100%;
+  }
+  .footer-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}

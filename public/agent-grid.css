@@ -1,0 +1,354 @@
+/* AGENT-GRID.CSS — EKOSISTEM MULTI-AGEN (komentar bersih, tertutup benar) */
+/* SELECT AGENT = segmen pill, teks PUTIH + glow putih halus.              */
+/* total agents = KAPITAL (via text-transform), warna abu tetap.           */
+/* Tombol B + tab/badge B. Hover dibungkus media-query (HP tidak lengket). */
+
+:root {
+    --ag-clip-asym: polygon(
+        10px 0, 100% 0,
+        100% calc(100% - 10px), calc(100% - 10px) 100%,
+        0 100%, 0 10px
+    );
+}
+
+/* napas panel */
+#agentPoolContainer {
+    box-sizing: border-box !important;
+    padding: 4px 12px !important;
+}
+
+/* controls tanpa pembungkus (2 baris: tombol + pill stats) */
+.agent-controls {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+    margin: 10px 0 6px;
+    padding: 0;
+    background: none;
+    border: 0;
+    border-radius: 0;
+}
+.agent-buttons {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    flex-wrap: wrap;
+    width: 100%;
+}
+
+/* tombol bentuk B + reset fokus/tap */
+.btn-agent-select,
+.btn-agent-deselect {
+    position: relative;
+    isolation: isolate;
+    clip-path: var(--ag-clip-asym);
+    border: 0;
+    border-radius: 0;
+    padding: 11px 26px;
+    min-width: 140px;
+    font-size: 13px;
+    font-weight: 800;
+    letter-spacing: .4px;
+    text-align: center;
+    cursor: pointer;
+    overflow: hidden;
+    -webkit-appearance: none;
+    appearance: none;
+    -webkit-tap-highlight-color: transparent;
+    outline: none;
+    transition: transform .15s ease, filter .25s ease, background .25s ease, color .2s ease;
+}
+.btn-agent-select:focus,
+.btn-agent-deselect:focus,
+.btn-agent-select:focus-visible,
+.btn-agent-deselect:focus-visible { outline: none; }
+.ac-btn-label { position: relative; z-index: 3; }
+
+/* primary */
+.btn-agent-select {
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+    color: #03130b;
+    filter: drop-shadow(0 0 6px rgba(26, 255, 156, .25));
+}
+.btn-agent-select::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 60%; height: 100%;
+    background: linear-gradient(100deg, transparent, rgba(255,255,255,.35), transparent);
+    transform: translateX(-160%);
+    z-index: 2;
+    pointer-events: none;
+    transition: transform .6s ease;
+}
+.btn-agent-select:active { transform: scale(.97); }
+
+/* secondary */
+.btn-agent-deselect {
+    background: rgba(255, 86, 98, .40);
+    color: #ff8a93;
+}
+.btn-agent-deselect::before {
+    content: '';
+    position: absolute;
+    inset: 1px;
+    clip-path: var(--ag-clip-asym);
+    background: #160608;
+    z-index: 0;
+}
+.btn-agent-deselect::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 60%; height: 100%;
+    background: linear-gradient(100deg, transparent, rgba(255,120,130,.25), transparent);
+    transform: translateX(-160%);
+    z-index: 2;
+    pointer-events: none;
+    transition: transform .6s ease;
+}
+.btn-agent-deselect:active { transform: scale(.97); }
+
+/* pill stats — memuat SELECT AGENT + hitungan, center, wrap rapi */
+.agent-stats {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    row-gap: 6px;
+    gap: 8px;
+    padding: 8px 18px;
+    background: rgba(26, 255, 156, 0.05);
+    border: 1px solid rgba(26, 255, 156, 0.12);
+    border-radius: 30px;
+    font-size: 12px;
+    line-height: 1;
+    animation: acStatsIn .5s cubic-bezier(.2,.9,.3,1) backwards;
+}
+@keyframes acStatsIn {
+    from { opacity: 0; transform: translateY(6px); }
+    to   { opacity: 1; transform: none; }
+}
+
+/* segmen SELECT AGENT (parent: hijau jadi acuan ikon/struktur) */
+.ac-stat-head {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--primary);
+    font-weight: 800;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    font-size: 11px;
+    text-shadow: 0 0 8px var(--primary-glow);
+}
+/* TEKS SELECT AGENT = PUTIH + glow putih halus (bukan putih mati) */
+.ac-stat-head-text {
+    color: #fff;
+    text-shadow: 0 0 8px rgba(255, 255, 255, .22);
+    transition: text-shadow .25s ease;
+}
+
+/* angka + label */
+.ac-stat-num { color: var(--primary); font-weight: 800; }
+/* total agents = KAPITAL, abu tetap, jarak huruf biar rapi */
+.ac-stat-lbl {
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: .5px;
+}
+.ac-stat-div {
+    width: 1px;
+    height: 13px;
+    margin: 0 2px;
+    background: rgba(26, 255, 156, 0.25);
+    transition: background .25s ease;
+}
+
+/* hover hanya perangkat berkursor */
+@media (hover: hover) and (pointer: fine) {
+    .btn-agent-select:hover {
+        transform: translateY(-2px);
+        filter: drop-shadow(0 0 14px rgba(26, 255, 156, .5));
+    }
+    .btn-agent-select:hover::after { transform: translateX(260%); }
+    .btn-agent-deselect:hover {
+        background: rgba(255, 86, 98, .85);
+        color: #ffd2d6;
+        transform: translateY(-2px);
+        filter: drop-shadow(0 0 12px rgba(255, 86, 98, .4));
+    }
+    .btn-agent-deselect:hover::before { background: #220a0d; }
+    .btn-agent-deselect:hover::after { transform: translateX(260%); }
+    .tab-btn:hover {
+        background: rgba(0, 255, 163, 0.6);
+        color: #E0E8F0;
+        transform: translateY(-2px);
+        filter: drop-shadow(0 0 6px rgba(0, 255, 163, 0.25));
+    }
+    .agent-badge:hover {
+        background: var(--primary) !important;
+        transform: translateY(-3px) scale(1.03) !important;
+        filter: drop-shadow(0 0 10px rgba(0, 255, 163, 0.3));
+    }
+    .agent-badge:hover::before { background: #0a1a12; }
+    /* teks putih merespons: glow putih menebal saat kursor di blok */
+    .agent-controls:hover .ac-stat-head-text {
+        text-shadow: 0 0 13px rgba(255, 255, 255, .45);
+    }
+    .agent-controls:hover .ac-stat-div { background: rgba(26, 255, 156, .45); }
+}
+
+/* tabs bentuk B */
+.agents-tabs {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    margin-bottom: 20px;
+    padding: 0;
+    background: none;
+    border: 0;
+    border-radius: 0;
+}
+.tab-btn {
+    position: relative;
+    isolation: isolate;
+    clip-path: var(--ag-clip-asym);
+    background: rgba(0, 255, 163, 0.35);
+    padding: 12px 6px;
+    border: 0;
+    border-radius: 0;
+    color: #99AABB;
+    font-size: 12px;
+    font-weight: 500;
+    text-align: center;
+    cursor: pointer;
+    letter-spacing: 0.3px;
+    filter: none;
+    -webkit-tap-highlight-color: transparent;
+    outline: none;
+    transition: background .25s ease, filter .3s ease, transform .2s ease, color .2s ease;
+}
+.tab-btn:focus, .tab-btn:focus-visible { outline: none; }
+.tab-btn::before {
+    content: '';
+    position: absolute;
+    inset: 1px;
+    clip-path: var(--ag-clip-asym);
+    background: #06100b;
+    z-index: -1;
+}
+.tab-btn::after {
+    content: '';
+    position: absolute;
+    bottom: 4px;
+    left: 25%;
+    width: 50%;
+    height: 2px;
+    background: var(--primary);
+    border-radius: 4px;
+    transform: scaleX(0);
+    transition: transform 0.3s ease;
+    box-shadow: 0 0 12px var(--primary-glow);
+    z-index: 1;
+}
+.tab-btn.active::after { transform: scaleX(1); }
+.tab-btn.active {
+    background: var(--primary);
+    color: #03050A;
+    font-weight: 600;
+    transform: scale(1.02);
+    filter: drop-shadow(0 0 14px rgba(0, 255, 163, 0.35));
+}
+.tab-btn.active::before { background: var(--primary); }
+.tab-btn:active { transform: scale(0.95) !important; transition: transform 0.1s ease; }
+
+.agent-tab-panel { display: none; animation: fadeSlideUp 0.35s cubic-bezier(0.2, 0.9, 0.3, 1); }
+.agent-tab-panel.active-panel { display: block; }
+@keyframes fadeSlideUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+/* grid */
+.agents-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    margin-top: 12px;
+    margin-bottom: 20px;
+}
+
+/* badge bentuk B */
+.agent-badge {
+    position: relative !important;
+    isolation: isolate !important;
+    clip-path: var(--ag-clip-asym) !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    filter: none;
+    -webkit-tap-highlight-color: transparent;
+    transition: background .25s ease, filter .3s ease, transform .2s ease, color .2s ease !important;
+    /* FIX (laptop/desktop): sebelumnya kolom grid 1fr melar tanpa
+       batas di layar lebar (card dashboard sekarang full-width),
+       bikin tiap kotak agen jadi persegi panjang aneh & checkbox
+       ketarik jauh dari labelnya. Dibatasi max-width + rata tengah
+       dalam kolomnya sendiri — sisa ruang kosong di kolom jadi
+       jarak antar kotak yang wajar, bukan kotaknya yang melar. */
+    max-width: 260px;
+    width: 100%;
+    justify-self: center;
+}
+.agent-badge::before {
+    content: '';
+    position: absolute;
+    inset: 1px;
+    clip-path: var(--ag-clip-asym);
+    background: #07130d;
+    z-index: -1;
+}
+.agent-badge.active {
+    background: var(--primary) !important;
+    color: var(--primary) !important;
+    filter: drop-shadow(0 0 12px rgba(0, 255, 163, 0.25));
+}
+.agent-badge.active::before { background: #0c2016; }
+
+/* responsive */
+@media (max-width: 1024px) {
+    .agents-grid { grid-template-columns: repeat(3, 1fr); }
+}
+@media (max-width: 768px) {
+    .agents-tabs { grid-template-columns: repeat(2, 1fr); gap: 6px; }
+    .tab-btn { padding: 10px 6px; font-size: 11px; }
+    .tab-btn::after { bottom: 3px; left: 20%; width: 60%; height: 2px; }
+    .agents-grid { grid-template-columns: repeat(2, 1fr) !important; gap: 6px !important; }
+    .agent-badge { padding: 6px 8px !important; font-size: 10px !important; min-height: 34px !important; max-width: none; }
+    .btn-agent-select, .btn-agent-deselect { padding: 9px 18px !important; font-size: 12px !important; min-width: 110px !important; }
+    .agent-controls { gap: 12px; }
+    .agent-stats { font-size: 11px !important; padding: 7px 14px !important; }
+    .ac-stat-head { font-size: 10px; letter-spacing: 1px; }
+}
+@media (max-width: 480px) {
+    .agents-tabs { gap: 5px; }
+    .tab-btn { padding: 8px 4px; font-size: 10px; }
+    .tab-btn::after { bottom: 2px; left: 15%; width: 70%; height: 2px; }
+    .agents-grid { grid-template-columns: repeat(2, 1fr) !important; gap: 5px !important; }
+    .agent-badge { padding: 4px 6px !important; font-size: 9px !important; min-height: 30px !important; }
+    .btn-agent-select, .btn-agent-deselect { padding: 8px 14px !important; font-size: 11px !important; min-width: 96px !important; }
+    .agent-stats { font-size: 10px !important; padding: 7px 12px !important; gap: 6px; }
+    .ac-stat-div { height: 11px; margin: 0 1px; }
+    .ac-stat-head { font-size: 9px; }
+}
+@media (min-width: 769px) {
+    .agent-badge { padding: 8px 12px !important; font-size: 11px !important; }
+}
+/* FIX (laptop/desktop lebar, >=1400px): tambah kolom supaya ruang
+   layar dipakai lebih efisien (makin banyak kotak sejajar), BUKAN
+   makin lebar tiap kotak — max-width di .agent-badge tetap berlaku. */
+@media (min-width: 1400px) {
+    .agents-grid { grid-template-columns: repeat(6, 1fr); }
+}
+
+.tab-btn, .agent-badge, .btn-agent-select, .btn-agent-deselect { will-change: transform; }

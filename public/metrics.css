@@ -1,0 +1,176 @@
+/* ============================================================
+FILE    : css/components/metrics.css
+KEGUNAAN: Panel 10 Engine Score + Total Score — kotak chamfer
+          Varian A (rim neon redup + inner gelap polos, tanpa
+          hatch), napas 12px kebal-cache di container, entrance
+          stagger, dan badge prioritas = BENTUK A (rim chamfer
+          nyambung, bukan pill radius lagi).
+============================================================ */
+:root {
+--km-clip: polygon(
+0 8px, 8px 0, calc(100% - 8px) 0, 100% 8px,
+100% calc(100% - 8px), calc(100% - 8px) 100%,
+8px 100%, 0 calc(100% - 8px)
+);
+}
+/* ---- NAPAS: nempel di container (kebal cache JS) ---- */
+#metricsPanelContainer {
+box-sizing: border-box !important;
+padding: 4px 12px !important; /* kiri-kanan 12px, sejajar panel lain */
+}
+/* netralisir bungkus lama biar tidak dobel (aman kalau tidak ada) */
+.km-wrap, .km-wrap * { box-sizing: border-box; }
+.km-wrap { padding: 0 !important; margin: 0; width: 100%; }
+/* ---- heading panel: netralkan border-left global, rata kiri ---- */
+.km-h {
+margin: 0 0 12px !important;
+padding: 0 !important;
+border: 0 !important;
+background: none !important;
+font-size: clamp(15px, 4vw, 19px);
+font-weight: 800;
+letter-spacing: .3px;
+color: var(--primary);
+text-shadow: 0 0 10px var(--primary-glow);
+}
+/* ---- grid: jarak ringkas ---- */
+.matrix-grid {
+display: grid;
+grid-template-columns: repeat(2, 1fr);
+gap: 8px;
+}
+/* ---- metric-row = rim outer (chamfer, garis redup, hover menyala) ---- */
+.metric-row {
+position: relative;
+clip-path: var(--km-clip);
+background: rgba(26,255,156,.3);
+padding: 1px;
+border: 0;
+border-radius: 0;
+filter: none;
+transition: background .25s ease, filter .3s ease, transform .15s ease;
+animation: kmIn .5s ease backwards;
+}
+.metric-row:hover {
+background: rgba(26,255,156,.6);
+filter: drop-shadow(0 0 7px var(--primary-glow));
+transform: translateY(-2px);
+}
+/* ---- inner: gelap POLOS (TANPA hatch pojok), ringkas ---- */
+.km-rim-in {
+position: relative;
+clip-path: var(--km-clip);
+background: #05080c;
+padding: 9px 11px;
+display: flex;
+flex-direction: column;
+height: 100%;
+}
+.metric-name {
+font-size: 10px;
+color: var(--text-dim);
+margin-bottom: 3px;
+letter-spacing: .2px;
+line-height: 1.3;
+}
+.metric-score {
+font-weight: 800;
+font-size: 17px;
+color: var(--primary);
+margin-bottom: 5px;
+line-height: 1;
+text-shadow: 0 0 8px var(--primary-glow);
+}
+.metric-progress {
+height: 2px;
+background: var(--primary-tint-20);
+border-radius: 2px;
+margin-top: auto;
+overflow: hidden;
+}
+.metric-progress-fill {
+height: 100%;
+background: var(--primary);
+box-shadow: 0 0 6px var(--primary-glow);
+transition: width .6s ease;
+width: 0%;
+}
+/* ---- entrance berurutan (backwards => aman, tidak stuck hidden) ---- */
+.matrix-grid .metric-row:nth-child(1)  { animation-delay: .02s; }
+.matrix-grid .metric-row:nth-child(2)  { animation-delay: .05s; }
+.matrix-grid .metric-row:nth-child(3)  { animation-delay: .08s; }
+.matrix-grid .metric-row:nth-child(4)  { animation-delay: .11s; }
+.matrix-grid .metric-row:nth-child(5)  { animation-delay: .14s; }
+.matrix-grid .metric-row:nth-child(6)  { animation-delay: .17s; }
+.matrix-grid .metric-row:nth-child(7)  { animation-delay: .20s; }
+.matrix-grid .metric-row:nth-child(8)  { animation-delay: .23s; }
+.matrix-grid .metric-row:nth-child(9)  { animation-delay: .26s; }
+.matrix-grid .metric-row:nth-child(10) { animation-delay: .29s; }
+/* ---- total skor: label EN kecil + angka glow + /100 redup ---- */
+.total-score-wrapper {
+display: flex;
+justify-content: space-between;
+align-items: center;
+margin-top: 16px;
+padding-top: 12px;
+border-top: 1px solid rgba(224, 230, 237, 0.2);
+flex-wrap: wrap;
+gap: 10px;
+}
+.total-score-label {
+display: flex;
+align-items: baseline;
+gap: 8px;
+flex-wrap: wrap;
+}
+.total-score-text {
+font-size: 11px;
+font-weight: 800;
+letter-spacing: 1.2px;
+text-transform: uppercase;
+color: var(--text-dim);
+}
+#finalScoreDisplay {
+font-size: 28px;
+font-weight: 800;
+color: var(--primary);
+text-shadow: 0 0 12px var(--primary-glow);
+}
+.total-score-max {
+font-size: 12px;
+font-weight: 600;
+color: var(--text-dim);
+}
+/* ---- badge prioritas (NO DATA / HIGH / dst) = BENTUK A ---- */
+.priority-badge {
+position: relative;
+isolation: isolate;
+clip-path: var(--km-clip);
+border: 0;
+border-radius: 0;
+background: rgba(26,255,156,.3);
+padding: 6px 16px;
+font-weight: 800;
+font-size: 11px;
+letter-spacing: 1.2px;
+text-transform: uppercase;
+color: var(--primary);
+text-shadow: 0 0 8px var(--primary-glow);
+transition: background .25s ease, filter .3s ease;
+}
+.priority-badge::before {
+content: '';
+position: absolute;
+inset: 1px;
+clip-path: var(--km-clip);
+background: #05080c;
+z-index: -1;
+}
+.priority-badge:hover {
+background: rgba(26,255,156,.55);
+filter: drop-shadow(0 0 7px var(--primary-glow));
+}
+@keyframes kmIn {
+from { opacity: 0; transform: translateY(8px); }
+to   { opacity: 1; transform: none; }
+}

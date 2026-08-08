@@ -1,0 +1,519 @@
+/* ============================================================
+COMPONENTS/FORMS.CSS — Input, Threshold, Upload (ASLI / UTUH)
+[A] komponen asli lengkap (form global + threshold asli + api-key
+    + upload). TIDAK dihapus.
+[B] blok kolom .kx-* (keadaan mantap: badge=A, tile=B kecil,
+    garis pembatas bawah, napas 12px, tanpa lampu).
+[C] EKSEKUSI = bentuk B CTA. THRESHOLD = kotak A + chip A kecil.
+    SLIDER = ROLLBACK ke versi SOLID yang "mantap": rel 16px =
+    thumb 16px (satu massa kokoh, chamfer A 6px), TANPA inset-
+    shadow, TANPA thumb menonjol/scale. Glow thumb menebal saat
+    sentuh (feedback hidup, tidak goyang). NOTE hidden (pengaman).
+    CSS-only; logika slider utuh.
+============================================================ */
+
+/* ===================== [A] FORM ELEMENTS ===================== */
+input, textarea, select {
+    width: 100%;
+    background: rgba(3, 5, 10, 0.7);
+    border: 1px solid var(--primary-tint-30);
+    color: var(--text-light);
+    padding: 10px 14px;
+    border-radius: 18px;
+    margin-bottom: 12px;
+    font-size: 13px;
+}
+input:focus, textarea:focus, select:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 2px var(--primary-glow);
+}
+.api-key-wrapper {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    margin-bottom: 12px;
+}
+.api-key-wrapper input { flex: 1; margin-bottom: 0; }
+.api-status {
+    font-size: 16px;
+    cursor: help;
+    min-width: 28px;
+    text-align: center;
+}
+.api-status.valid { color: var(--primary); animation: blink 0.5s ease; }
+.api-status.invalid { color: var(--color-red); }
+.file-upload { margin-bottom: 12px; }
+.file-upload label { display: block; font-size: 12px; margin-bottom: 6px; color: var(--text-dim); }
+.upload-status { font-size: 11px; margin-top: 4px; color: var(--color-green); }
+
+/* ===================== [A] THRESHOLD (ASLI, di-override [C]) ===================== */
+.threshold-section {
+    background: var(--primary-tint-05);
+    border-radius: var(--radius-sm);
+    padding: 14px 16px;
+    margin: 16px 0;
+    border: none !important;
+}
+.threshold-header { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+.threshold-icon { font-size: 18px; }
+.threshold-title { flex: 1; font-size: 13px; font-weight: 600; color: var(--text-light); }
+.threshold-value {
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--primary);
+    background: var(--primary-tint-15);
+    padding: 2px 14px;
+    border-radius: 20px;
+    min-width: 55px;
+    text-align: center;
+}
+.threshold-slider-wrapper { padding: 0 4px; }
+.threshold-slider-wrapper input[type="range"] {
+    width: 100%;
+    height: 6px;
+    -webkit-appearance: none;
+    appearance: none;
+    background: linear-gradient(to right, var(--primary), var(--primary-dark));
+    border-radius: 4px;
+    outline: none;
+    margin: 4px 0;
+}
+.threshold-slider-wrapper input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--primary);
+    cursor: pointer;
+    border: 2px solid var(--bg-dark);
+    box-shadow: 0 0 10px var(--primary-glow);
+}
+.threshold-slider-wrapper input[type="range"]::-moz-range-thumb {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--primary);
+    cursor: pointer;
+    border: 2px solid var(--bg-dark);
+}
+.threshold-note {
+    font-size: 11px;
+    color: var(--text-light);
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid var(--primary-tint-10);
+}
+.threshold-note span { color: var(--primary); font-weight: 700; }
+
+
+/* ============================================================
+   [B] KOLOM "PARAMETER INPUT" (prefix kx-) — keadaan mantap
+   ============================================================ */
+:root {
+    /* A = chamfer simetris (kotak teks) */
+    --kx-clip: polygon(
+        0 10px, 10px 0, calc(100% - 10px) 0, 100% 10px,
+        100% calc(100% - 10px), calc(100% - 10px) 100%,
+        10px 100%, 0 calc(100% - 10px)
+    );
+    /* B = asimetris (tile aksi + tombol eksekusi) */
+    --kx-clip-asym: polygon(
+        10px 0, 100% 0,
+        100% calc(100% - 10px), calc(100% - 10px) 100%,
+        0 100%, 0 10px
+    );
+}
+.kx-wrap, .kx-wrap * { box-sizing: border-box; }
+
+.kx-wrap {
+    position: relative;
+    margin: 0 0 16px;
+    padding: 2px 12px 16px;
+}
+.kx-wrap::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 1px;
+    background: rgba(224, 230, 237, 0.14);
+}
+
+.kx-grp  { margin-bottom: 16px; }
+.kx-grp:last-child { margin-bottom: 0; }
+
+.kx-lico svg, .kx-tico svg { display: block; width: 100%; height: 100%; }
+
+.kx-wrap .kx-h {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin: 0 0 14px;
+    padding: 0 !important;
+    border: 0 !important;
+    background: none;
+}
+.kx-htext {
+    flex: 1 1 auto;
+    min-width: 0;
+    font-size: clamp(13px, 3.5vw, 17px);
+    font-weight: 800;
+    letter-spacing: .2px;
+    color: var(--primary);
+    text-shadow: 0 0 10px var(--primary-glow);
+}
+
+/* badge mode = BENTUK A */
+.kx-h .workflow-mode-badge {
+    flex: 0 0 auto;
+    border-radius: 0;
+    clip-path: polygon(
+        0 6px, 6px 0, calc(100% - 6px) 0, 100% 6px,
+        100% calc(100% - 6px), calc(100% - 6px) 100%,
+        6px 100%, 0 calc(100% - 6px)
+    );
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 12px;
+    font-weight: 800;
+    white-space: nowrap;
+    text-shadow: none;
+}
+.kx-h .workflow-mode-badge.auto       { background: var(--primary); color: #04130b; }
+.kx-h .workflow-mode-badge.parallel   { background: linear-gradient(180deg,#ffe45c,#f5c518); color: #1c1500; }
+.kx-h .workflow-mode-badge.sequential { background: #34e0d0; color: #02201d; }
+.kx-h .workflow-mode-badge.manual     { background: #ff9d4d; color: #2a1400; }
+
+.kx-lbl {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    margin: 0 0 8px;
+    font-size: 11.5px;
+    font-weight: 700;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    color: var(--primary);
+}
+.kx-lico {
+    flex: 0 0 auto;
+    width: 18px;
+    height: 18px;
+    color: var(--primary);
+    filter: drop-shadow(0 0 4px var(--primary-glow));
+}
+
+.kx-rim {
+    position: relative;
+    clip-path: var(--kx-clip);
+    background: rgba(26,255,156,.3);
+    padding: 1px;
+    filter: none;
+    transition: background .25s ease, filter .3s ease, transform .12s ease;
+}
+.kx-rim-in {
+    position: relative;
+    clip-path: var(--kx-clip);
+    background: #05080c;
+}
+.kx-box .kx-rim-in {
+    background:
+        repeating-linear-gradient(135deg, transparent 0 3px, rgba(26,255,156,.22) 3px 4px) right bottom / 15px 15px no-repeat,
+        #05080c;
+}
+.kx-rim.kx-file,
+.kx-rim.kx-vcell,
+.kx-rim.kx-file > .kx-rim-in,
+.kx-rim.kx-vcell > .kx-rim-in {
+    clip-path: var(--kx-clip-asym);
+}
+.kx-rim:hover { background: rgba(26,255,156,.55); }
+.kx-rim:focus-within {
+    background: var(--primary);
+    filter: drop-shadow(0 0 8px var(--primary-glow));
+}
+
+#topicInput, #promptInput {
+    position: relative;
+    z-index: 1;
+    display: block;
+    width: 100%;
+    margin: 0;
+    padding: 13px 14px;
+    background: transparent;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+    outline: none;
+    color: var(--text-light);
+    font-family: inherit;
+    font-size: 14px;
+    line-height: 1.55;
+    resize: none;
+}
+#topicInput  { min-height: 80px; }
+#promptInput { min-height: 128px; }
+#topicInput:focus, #promptInput:focus { box-shadow: none; border-color: transparent; }
+#topicInput::placeholder, #promptInput::placeholder { color: var(--text-dim, #7c8a82); opacity: .85; }
+#topicInput, #promptInput { caret-color: var(--primary); }
+
+.kx-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+.kx-wrap .kx-rim-in .kx-tbody,
+.kx-wrap .kx-rim-in .kx-btn {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    width: 100%;
+    min-height: 34px !important;
+    padding: 8px 14px !important;
+    box-sizing: border-box;
+    text-align: left;
+    line-height: 1.2;
+}
+.kx-wrap .kx-tico {
+    flex: 0 0 18px;
+    width: 18px;
+    height: 18px;
+    color: var(--primary);
+}
+.kx-wrap .kx-ttxt {
+    flex: 1 1 auto;
+    min-width: 0;
+    display: block;
+    font-weight: 800;
+    letter-spacing: .4px;
+    font-size: 12.5px;
+    text-transform: uppercase;
+    color: var(--text-light);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.kx-tsub { display: none; }
+
+.kx-file { cursor: pointer; }
+.kx-file input[type="file"] {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    opacity: 0;
+    cursor: pointer;
+    z-index: 3;
+}
+
+.kx-wrap .kx-rim-in .kx-btn {
+    margin: 0 !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    color: var(--text-light) !important;
+    font-family: inherit;
+    cursor: pointer;
+    -webkit-appearance: none;
+    appearance: none;
+}
+.kx-stop .kx-tico { color: var(--color-red, #ff465a); }
+
+.kx-mic .kx-tico svg { animation: kxPulse 2.6s ease-in-out infinite; }
+.kx-mic:hover .kx-tico svg { animation: none; opacity: 1; }
+.kx-stop .kx-tico svg { animation: kxPulse 1s ease-in-out infinite; }
+
+
+/* ============================================================
+   [C] EKSEKUSI (B) + THRESHOLD (full A, slider SOLID) + note hidden
+   ============================================================ */
+:root {
+    /* A sedang = chamfer simetris (chip % + track slider solid) */
+    --kx-clip-sm: polygon(
+        0 6px, 6px 0, calc(100% - 6px) 0, 100% 6px,
+        100% calc(100% - 6px), calc(100% - 6px) 100%,
+        6px 100%, 0 calc(100% - 6px)
+    );
+}
+
+/* napas panel: sejajar 12px */
+#executePanelContainer,
+#thresholdContainer {
+    box-sizing: border-box !important;
+    padding-left: 12px !important;
+    padding-right: 12px !important;
+}
+
+/* ---- tombol EKSEKUSI = bentuk B, CTA utama ---- */
+#mainExecuteBtn {
+    position: relative !important;
+    display: block !important;
+    width: 100% !important;
+    clip-path: var(--kx-clip-asym) !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    padding: 15px 24px !important;
+    margin: 0 !important;
+    font-size: 15px !important;
+    font-weight: 800 !important;
+    letter-spacing: .5px !important;
+    text-align: center !important;
+    overflow: hidden !important;
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark)) !important;
+    color: #03130b !important;
+    cursor: pointer !important;
+    filter: drop-shadow(0 0 6px var(--primary-glow));
+    animation: keCta 2.8s ease-in-out infinite;
+    transition: transform .15s ease, filter .25s ease;
+}
+#mainExecuteBtn::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 60%; height: 100%;
+    background: linear-gradient(100deg, transparent, rgba(255,255,255,.35), transparent);
+    transform: translateX(-160%);
+    transition: transform .6s ease;
+    pointer-events: none;
+}
+#mainExecuteBtn:hover {
+    transform: translateY(-2px);
+    filter: drop-shadow(0 0 16px var(--primary-glow));
+    animation: none;
+}
+#mainExecuteBtn:hover::after { transform: translateX(260%); }
+#mainExecuteBtn:active { transform: scale(.98); }
+@keyframes keCta {
+    0%, 100% { filter: drop-shadow(0 0 5px var(--primary-glow)); }
+    50%      { filter: drop-shadow(0 0 12px var(--primary-glow)); }
+}
+
+/* ---- kotak THRESHOLD = BENTUK A ---- */
+.threshold-section {
+    position: relative !important;
+    isolation: isolate;
+    clip-path: var(--kx-clip) !important;
+    border-radius: 0 !important;
+    border: 0 !important;
+    background: rgba(26,255,156,.3) !important;
+    padding: 14px 16px !important;
+    margin: 14px 0 !important;
+    filter: none;
+    transition: background .25s ease, filter .3s ease;
+}
+.threshold-section::before {
+    content: '';
+    position: absolute;
+    inset: 1px;
+    clip-path: var(--kx-clip);
+    background: #07130d;
+    z-index: 0;
+}
+.threshold-section:hover {
+    background: rgba(26,255,156,.5) !important;
+    filter: drop-shadow(0 0 7px var(--primary-glow));
+}
+.threshold-header,
+.threshold-slider-wrapper { position: relative; z-index: 1; }
+
+/* chip % = BENTUK A sedang */
+.threshold-value {
+    clip-path: var(--kx-clip-sm) !important;
+    border-radius: 0 !important;
+    font-size: 14px !important;
+    padding: 3px 10px !important;
+    min-width: 46px !important;
+    line-height: 1.2 !important;
+    text-shadow: 0 0 8px var(--primary-glow);
+}
+
+/* ============================================================
+   SLIDER SOLID (rollback "mantap") — rel 16px = thumb 16px,
+   chamfer A 6px, satu massa kokoh. Reset total warisan global
+   [A] (border/padding/bg/radius = 0). Thumb border-box pas 16px
+   => tidak overflow => chamfer tidak memotong thumb. Glow thumb
+   menebal + cerah saat sentuh (hidup, tanpa scale/goyang).
+   ============================================================ */
+.threshold-slider-wrapper {
+    padding: 0 !important;
+    margin: 10px 0 2px !important;
+}
+.threshold-slider-wrapper input[type="range"] {
+    -webkit-appearance: none !important;
+    appearance: none !important;
+    display: block !important;
+    width: 100% !important;
+    height: 16px !important;          /* = tinggi thumb */
+    margin: 0 !important;
+    padding: 0 !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    outline: none !important;
+    cursor: pointer !important;
+}
+/* WebKit track: chamfer A, isi penuh, tanpa border */
+.threshold-slider-wrapper input[type="range"]::-webkit-slider-runnable-track {
+    height: 16px !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    clip-path: var(--kx-clip-sm) !important;
+    background: linear-gradient(to right, var(--primary), var(--primary-dark)) !important;
+}
+/* WebKit thumb: bulat, border-box pas 16px, margin-top 0 => center */
+.threshold-slider-wrapper input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none !important;
+    appearance: none !important;
+    box-sizing: border-box !important;
+    width: 16px !important;
+    height: 16px !important;
+    margin-top: 0 !important;
+    border-radius: 50% !important;
+    background: var(--primary) !important;
+    border: 2px solid var(--bg-dark) !important;
+    box-shadow: 0 0 8px var(--primary-glow) !important;
+    cursor: pointer !important;
+    transition: box-shadow .2s ease, background .2s ease !important;
+}
+.threshold-slider-wrapper input[type="range"]:hover::-webkit-slider-thumb,
+.threshold-slider-wrapper input[type="range"]:active::-webkit-slider-thumb {
+    box-shadow: 0 0 16px var(--primary-glow) !important;
+    background: #5cffc4 !important;
+}
+/* Firefox track: chamfer A */
+.threshold-slider-wrapper input[type="range"]::-moz-range-track {
+    height: 16px !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    clip-path: var(--kx-clip-sm) !important;
+    background: linear-gradient(to right, var(--primary), var(--primary-dark)) !important;
+}
+/* Firefox thumb: bulat, border-box pas 16px (auto-center) */
+.threshold-slider-wrapper input[type="range"]::-moz-range-thumb {
+    box-sizing: border-box !important;
+    width: 16px !important;
+    height: 16px !important;
+    border-radius: 50% !important;
+    background: var(--primary) !important;
+    border: 2px solid var(--bg-dark) !important;
+    box-shadow: 0 0 8px var(--primary-glow) !important;
+    cursor: pointer !important;
+}
+.threshold-slider-wrapper input[type="range"]:hover::-moz-range-thumb,
+.threshold-slider-wrapper input[type="range"]:active::-moz-range-thumb {
+    box-shadow: 0 0 16px var(--primary-glow) !important;
+    background: #5cffc4 !important;
+}
+
+/* ---- JARING PENGAMAN: note disembunyikan walau JS lama ke-cache ---- */
+.threshold-note { display: none !important; }
+
+@keyframes kxPulse { 0%,100% { opacity: .55; } 50% { opacity: 1; } }

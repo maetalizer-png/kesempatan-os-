@@ -1,0 +1,31 @@
+{
+  "name": "kesempatan-os",
+  "version": "2.0.0",
+  "description": "KESEMPATAN OS - Platform Multi-Agent AI Berbahasa Indonesia",
+  "type": "module",
+  "main": "src/main.js",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "lint": "eslint src --ext .js",
+    "format": "prettier --write src/**/*.js",
+    "test": "vitest"
+  },
+  "keywords": [
+    "ai",
+    "multi-agent",
+    "indonesian",
+    "llm",
+    "pwa"
+  ],
+  "author": "KESEMPATAN OS Team",
+  "license": "KESEMPATAN OS v2.0",
+  "devDependencies": {
+    "eslint": "^8.56.0",
+    "prettier": "^3.1.0",
+    "terser": "^5.49.2",
+    "vite": "^5.0.0",
+    "vitest": "^1.0.0"
+  }
+}

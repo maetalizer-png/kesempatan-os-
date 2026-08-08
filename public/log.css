@@ -1,0 +1,117 @@
+/* ============================================================
+COMPONENTS/LOG.CSS — Log Eksekusi (chamfer Varian A + napas)
+Bentuk = chamfer simetris (--kl-clip), garis tipis redup, glow
+hanya saat hover. log-box = inner gelap POLOS (tanpa grip) +
+scroll. Scrollbar TIPIS 2px, redup saat diam. Tanpa LIVE.
+BARU: GARIS PEMBATS di atas KES LOG via #logPanelContainer::before
+(full-width, sejajar garis pembatas panel input; napas atas
+supaya tidak nempel panel di atasnya). Mandiri (tidak numpang
+forms.css). #systemLog tetap container scroll isi workflow.js.
+============================================================ */
+:root {
+    --kl-clip: polygon(
+        0 10px, 10px 0, calc(100% - 10px) 0, 100% 10px,
+        100% calc(100% - 10px), calc(100% - 10px) 100%,
+        10px 100%, 0 calc(100% - 10px)
+    );
+}
+.kl-wrap, .kl-wrap * { box-sizing: border-box; }
+
+/* ---- GARIS PEMBATS atas KES LOG (full-width container) ---- */
+#logPanelContainer {
+    position: relative;
+    padding: 16px 0 0;     /* napas atas = jarak panel-atas -> garis -> judul */
+    margin: 8px 0 0;
+}
+#logPanelContainer::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: rgba(224, 230, 237, 0.14);
+}
+
+/* napas horizontal log (vertikal 0 -> diatur #logPanelContainer) */
+.kl-wrap {
+    width: 100%;
+    margin: 0;
+    padding: 0 12px;
+}
+
+/* ---- judul: ikon + teks (tanpa LIVE) ---- */
+.kl-title {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    margin: 0 0 10px;
+    padding: 0;
+}
+.kl-ico {
+    flex: 0 0 auto;
+    width: 18px;
+    height: 18px;
+    color: var(--primary);
+    filter: drop-shadow(0 0 4px var(--primary-glow));
+}
+.kl-ico svg { display: block; width: 100%; height: 100%; }
+.kl-title-text {
+    flex: 1 1 auto;
+    min-width: 0;
+    font-size: clamp(13px, 3.5vw, 16px);
+    font-weight: 800;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    color: var(--primary);
+    text-shadow: 0 0 10px var(--primary-glow);
+}
+
+/* ---- rim outer: garis neon redup, chamfer mulus ---- */
+.kl-rim {
+    position: relative;
+    clip-path: var(--kl-clip);
+    background: rgba(26,255,156,.3);
+    padding: 1px;
+    filter: none;
+    transition: background .25s ease, filter .3s ease;
+}
+.kl-rim:hover {
+    background: rgba(26,255,156,.55);
+    filter: drop-shadow(0 0 7px var(--primary-glow));
+}
+
+/* ---- log-box = inner rim: gelap POLOS + scroll ---- */
+.log-box {
+    clip-path: var(--kl-clip);
+    background: #05080c;
+    border: 0;
+    border-radius: 0;
+    padding: 12px;
+    height: 220px;
+    overflow-y: auto;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    line-height: 1.5;
+    word-break: break-word;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(26,255,156,.45) transparent;
+}
+.log-box:hover { scrollbar-color: var(--primary) transparent; }
+
+/* scrollbar TIPIS (2px) + redup saat diam */
+.log-box::-webkit-scrollbar { width: 2px; }
+.log-box::-webkit-scrollbar-track { background: transparent; }
+.log-box::-webkit-scrollbar-thumb {
+    background: rgba(26,255,156,.45);
+    border-radius: 10px;
+    transition: background .2s ease;
+}
+.log-box::-webkit-scrollbar-thumb:hover,
+.log-box::-webkit-scrollbar-thumb:active {
+    background: var(--primary);
+}
+
+.log-header { color: var(--primary); margin-bottom: 4px; }
+.log-entry { margin-bottom: 4px; }
+.text-dim { color: var(--text-muted); }

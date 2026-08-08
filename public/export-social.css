@@ -1,0 +1,220 @@
+/* ============================================================
+   COMPONENTS/EXPORT-SOCIAL.CSS — Social Share & Export
+   ============================================================ */
+
+/* ========== SOCIAL ROW ========== */
+.social-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px 24px;
+  justify-content: center;
+  margin: 12px auto 18px auto;
+  /* FIX (laptop/desktop): card dashboard sekarang full-width, tanpa
+     batas ini dock ikon jadi tersebar sangat lebar mengikuti lebar
+     card. Dibatasi supaya tetap sekelompok rapi spt di HP, cuma
+     dipusatkan di tengah card yang lebih lebar. */
+  max-width: 520px;
+}
+.social-row .app-icon {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+  width: 60px;
+  transition: all 0.2s ease;
+}
+.social-row .app-icon-circle {
+  width: 44px;
+  height: 44px;
+  position: relative;
+  isolation: isolate;
+  clip-path: var(--kx-clip);
+  background: var(--primary-tint-30);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  transition: all 0.2s ease;
+}
+.social-row .app-icon-circle::before {
+  content: '';
+  position: absolute;
+  inset: 1px;
+  clip-path: var(--kx-clip);
+  background: rgba(18, 24, 32, 0.92);
+  z-index: -1;
+}
+.social-row .app-icon-circle:hover {
+  transform: scale(1.05);
+  background: var(--primary-tint-30);
+  filter: brightness(1.3);
+}
+.social-row .app-icon-label {
+  font-size: 9px;
+  color: var(--text-dim);
+  text-align: center;
+  font-weight: 500;
+}
+/* Judul "REPORT DOCK" — style SAMA PERSIS dgn .export-label-group
+   (disalin, bukan dipakai bareng, biar 2 file tetap independen),
+   width:100% supaya di .social-row (flex-wrap) ambil 1 baris
+   sendiri, ikon-ikon otomatis jatuh ke baris di bawahnya. */
+.dock-label-group {
+  width: 100%;
+  color: var(--text-dim);
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 6px;
+  padding: 0 16px 8px;
+  border-bottom: 2px solid var(--primary-tint-10);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  user-select: none;
+}
+.dock-label-group:hover { color: var(--primary); }
+.dock-label-group::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(to right, var(--primary-tint-15), transparent);
+}
+/* Panah toggle — dibungkus span terpisah, JANGAN ketiban ::after
+   (garis gradient) yang sudah pakai flex:1 di atas. */
+.section-toggle-arrow {
+  flex: 0 0 auto;
+  order: 2;
+  font-size: 10px;
+  transition: transform 0.2s ease;
+}
+.dock-label-group::after { order: 1; }
+/* Wrapper ikon dock — dulu ikon langsung anak .social-row (flex),
+   sekarang dibungkus 1 lapis (#dockIconsWrapper) utk toggle
+   buka/tutup, jadi perlu display:flex sendiri di sini supaya ikon
+   tetap sebaris persis seperti sebelumnya. */
+.dock-icons-wrapper {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px 24px;
+  justify-content: center;
+  width: 100%;
+}
+
+/* WA & TG sengaja TIDAK diberi warna khas (hijau/biru) — disamakan
+   netral dgn Simpan/History sesuai permintaan "tidak ada warnanya" */
+
+/* ========== EXPORT ========== */
+.export-section {
+  margin: 12px auto;
+  /* FIX (laptop/desktop): .export-grid pakai kolom 1fr (lebar
+     otomatis) — di card yang sekarang full-width, tiap kolom jadi
+     sangat lebar & ikon (ukuran tetap 40px) duduk di tengahnya,
+     kelihatan seperti "jaraknya jauh banget" antar ikon padahal
+     ikonnya sendiri tidak berubah ukuran. Dibatasi max-width
+     supaya kolomnya tetap wajar spt di HP, cuma section-nya yang
+     dipusatkan di tengah card yang lebih lebar. */
+  max-width: 520px;
+}
+.export-label-group {
+  color: var(--text-dim);
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 10px;
+  padding: 0 16px 8px;
+  border-bottom: 2px solid var(--primary-tint-10);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  justify-content: center;
+  cursor: pointer;
+  user-select: none;
+}
+.export-label-group:hover { color: var(--primary); }
+.export-label-group::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  order: 1;
+  background: linear-gradient(to right, var(--primary-tint-15), transparent);
+}
+.export-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 12px 8px;
+  margin-bottom: 4px;
+  padding: 0 4px;
+}
+.export-icon-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  cursor: pointer;
+  padding: 2px 0;
+  transition: all 0.2s ease;
+  min-width: 40px;
+}
+.export-icon-wrapper:hover { transform: translateY(-3px); }
+.export-icon-wrapper:active { transform: scale(0.95); }
+.export-icon {
+  width: 40px;
+  height: 40px;
+  position: relative;
+  isolation: isolate;
+  clip-path: var(--kx-clip);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 15px;
+  font-weight: 700;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+  /* Semua ikon export SENGAJA seragam netral (bukan warna brand
+     masing-masing) sesuai permintaan "tidak ada warnanya" — beda
+     format cukup dibedakan lewat teks singkatan (JSON/PDF/dst).
+     Elemen ini sendiri jadi lapisan BORDIR (hijau penuh, ikut
+     bentuk clip-path termasuk sudut terpotong) — isi sebenarnya
+     ada di ::before (inset 1px). */
+  background: var(--primary-tint-30);
+  color: var(--text-light);
+}
+.export-icon::before {
+  content: '';
+  position: absolute;
+  inset: 1px;
+  clip-path: var(--kx-clip);
+  background: rgba(18, 24, 32, 0.92);
+  z-index: -1;
+}
+.export-icon::after {
+  content: '';
+  position: absolute;
+  inset: 1px;
+  background: linear-gradient(135deg, rgba(255,255,255,0.08) 0%, transparent 60%);
+  pointer-events: none;
+  clip-path: var(--kx-clip);
+}
+.export-icon-wrapper:hover .export-icon {
+  transform: scale(1.05);
+  filter: brightness(1.3);
+}
+.export-label {
+  font-size: 9px;
+  font-weight: 500;
+  color: var(--text-dim);
+  text-align: center;
+  transition: color 0.2s ease;
+  letter-spacing: 0.2px;
+  line-height: 1.2;
+  max-width: 56px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.export-icon-wrapper:hover .export-label { color: var(--primary); }
