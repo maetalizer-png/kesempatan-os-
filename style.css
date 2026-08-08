@@ -1,0 +1,156 @@
+/* ============================================================
+   STYLE.CSS — CORE FOUNDATION (WAJIB DIMUAT PERTAMA)
+   🔥 Hanya variabel, reset, base, keyframes, & global utilities.
+   ============================================================ */
+
+/* ============================================================
+   1. ROOT VARIABLES
+   ============================================================ */
+:root {
+  --primary: #00FFA3;
+  --primary-dark: #00AA6E;
+  --primary-glow: rgba(0, 255, 163, 0.3);
+  --bg-dark: #03050A;
+  --bg-card: rgba(12, 18, 32, 0.90);
+  --bg-sidebar: rgba(7, 12, 25, 0.85);
+  --text-light: #E8F0F8;
+  --text-dim: #C8D8E8;
+  --text-muted: rgba(224, 230, 237, 0.65);
+  --color-red: #FF5252;
+  --color-dark-red: #FF4444;
+  --color-soft-red: #FF8888;
+  --color-orange: #FFA500;
+  --color-yellow: #FFD700;
+  --color-green: #7CFC00;
+  --color-purple: #9B59B6;
+  --color-blue: #2962FF;
+  --color-html: #E44D26;
+  --color-pdf: #E53935;
+  --radius: 24px;
+  --radius-sm: 16px;
+  --radius-xs: 12px;
+  --radius-pill: 999px;
+  --spacing: 20px;
+  --spacing-sm: 12px;
+  --spacing-xs: 8px;
+  --font-base: 14px;
+  --font-mobile: 15px;
+  --transition: all 0.2s ease;
+  --primary-tint-05: rgba(0, 255, 163, 0.05);
+  --primary-tint-10: rgba(0, 255, 163, 0.1);
+  --primary-tint-15: rgba(0, 255, 163, 0.15);
+  --primary-tint-20: rgba(0, 255, 163, 0.2);
+  --primary-tint-30: rgba(0, 255, 163, 0.3);
+}
+
+/* ============================================================
+   2. RESET & BASE
+   ============================================================ */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html, body {
+  overflow-x: hidden;
+  width: 100%;
+  max-width: 100%;
+  background: var(--bg-dark);
+}
+
+body {
+  background: var(--bg-dark);
+  font-family: 'Inter', sans-serif;
+  color: var(--text-light);
+  line-height: 1.5;
+  font-size: var(--font-base);
+  padding: 20px;
+  min-height: 100vh;
+  text-shadow: 0 1px 10px rgba(0, 0, 0, 0.5); /* 🆕 Teks selalu terbaca */
+}
+
+/* ============================================================
+   3. KEYFRAMES (GLOBAL)
+   ============================================================ */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(0.8); }
+}
+
+@keyframes blink {
+  0% { transform: scale(1); opacity: 0.5; }
+  50% { transform: scale(1.2); opacity: 1; }
+  100% { transform: scale(1); opacity: 0.5; }
+}
+
+@keyframes slideIn {
+  from { transform: translateX(100%); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes hitlFadeSlideUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ============================================================
+   4. GLOBAL UTILITIES + MIKRO-INTERAKSI
+   ============================================================ */
+.execute-btn {
+  width: 100%;
+  padding: 10px;
+  border: none;
+  border-radius: var(--radius-pill);
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+  color: var(--bg-dark);
+  font-weight: 700;
+  font-size: 12px;
+  letter-spacing: 1px;
+  cursor: pointer;
+  text-transform: uppercase;
+  transition: transform 0.1s ease, box-shadow 0.2s ease; /* 🆕 Transisi lebih cepat */
+}
+.execute-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px var(--primary-glow);
+}
+.execute-btn:active {
+  transform: scale(0.96) !important; /* 🆕 Efek "ditekan" seperti aplikasi native */
+  box-shadow: none;
+}
+.execute-btn.secondary {
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--text-light);
+  border: 1px solid var(--primary-tint-30);
+}
+.execute-btn.success {
+  background: var(--primary-dark);
+}
+
+/* ============================================================
+   5. SCROLLBAR (GLOBAL)
+   ============================================================ */
+::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar-track { background: #0a0f1c; border-radius: 8px; }
+::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 8px; }
+
+/* ============================================================
+   6. LIGHT MODE DASAR
+   ============================================================ */
+body.light {
+  background: #E8EDF5;
+  color: #1A2A3A;
+}
+
+/* ============================================================
+   7. RESULT CONTAINER (ATURAN UTAMA) — TANPA BORDER
+   ============================================================ */
+.result-container {
+  background: transparent !important;
+  border-radius: 20px;
+  padding: 0px;
+  min-height: 120px;
+  border: none !important;
+}

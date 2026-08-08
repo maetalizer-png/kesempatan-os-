@@ -3,148 +3,147 @@
   <img src="https://img.shields.io/badge/license-KESEMPATAN%20OS%20v1.0-blue" alt="License">
   <img src="https://img.shields.io/badge/agents-55-orange" alt="Agents">
   <img src="https://img.shields.io/badge/platform-web%20%7C%20mobile%20%7C%20pwa-lightgrey" alt="Platform">
-  <img src="https://img.shields.io/badge/built%20with-phone%20%2B%20spare%20time-brightgreen" alt="Built with">
+  <img src="https://img.shields.io/badge/built%20with-phone%20%2B%20gabut-brightgreen" alt="Built with">
 </div>
 
 <div align="center">
-  <sub><strong>Built 100% on a phone • Day 70 • Still under active development</strong></sub>
+  <sub><strong>Dikerjakan 100% dari HP • Hari ke-70 • Masih terus berkembang</strong></sub>
   <br>
-  <sub><em>"It started as a side project to kill time. It just kept going."</em></sub>
+  <sub><em>"Awalnya cuma gabut. Eh, malah keterusan sampai sekarang."</em></sub>
 </div>
 
 # KESEMPATAN OS
 
-**Autonomous Opportunity Intelligence System** — an Indonesian-built multi-agent AI platform featuring 55 agents, 55 autonomous AI Workers, a self-built local LLM engine, Sequential/Parallel execution modes, and a wide range of interactive features (Chat, Forum, Debate, Tournament, Rap Battle, Podcast, Voice & Clone).
+**Autonomous Opportunity Intelligence System** — platform multi-agent AI berbahasa Indonesia dengan 55 agen, 55 AI Workers otonom, mesin LLM lokal buatan sendiri, mode eksekusi Sequential/Parallel, dan berbagai fitur interaktif (Chat, Forum, Debat, Turnamen, Rap Battle, Podcast, Voice & Clone).
 
-## About KESEMPATAN OS
+## Tentang KESEMPATAN OS
 
-KESEMPATAN OS is an autonomous intelligence system that uses **55 AI agents** spanning multiple fields of expertise (business, science, technology, politics, law, and more) to analyze business opportunities, markets, and innovation.
+KESEMPATAN OS adalah sistem intelijen otonom yang menggunakan **55 agen AI** dari berbagai bidang keahlian (bisnis, sains, teknologi, politik, hukum, dll.) untuk menganalisis peluang bisnis, pasar, dan inovasi.
 
-### Core Capabilities
-- Run all 55 agents in Sequential or Parallel mode
-- Opportunity scoring across 10 evaluation dimensions (Demand, Competition, Monetization, Virality, Sustainability, Scalability, Timing, Attention, Execution, Long-term)
-- Radar chart visualization, 3D Intelligence Sphere, and Time Analytics
-- Human-in-the-Loop (HITL) — manual review or auto-approve based on a confidence threshold
-- A system that learns from user decisions (auto-learning, adaptive thresholds)
-- 55 AI Workers running autonomously 24/7 on their own schedules
+### Kemampuan Inti
+- Menjalankan 55 agen secara Sequential atau Parallel
+- Skor peluang dari 10 dimensi penilaian (Demand, Competition, Monetization, Virality, Sustainability, Scalability, Timing, Attention, Execution, Long-term)
+- Visualisasi radar chart, 3D Intelligence Sphere, dan Time Analytics
+- Human-in-the-Loop (HITL) — review manual atau auto-approve berdasarkan threshold confidence
+- Sistem belajar dari keputusan pengguna (auto-learning, threshold adaptif)
+- 55 AI Workers yang berjalan otomatis 24/7 dengan schedule sendiri
 
-## KESEMPATAN LLM — A Self-Built Local AI Engine
+## KESEMPATAN LLM — Mesin AI Lokal Buatan Sendiri
 
-KESEMPATAN LLM is a language model engine written from scratch in pure JavaScript — not a wrapper around any external AI provider. It runs entirely in the browser via a Web Worker, with a complete transformer architecture (attention, feed-forward layers, BPE tokenizer, sampling, KV-cache) and the ability to train itself further from the platform's own agent data.
+KESEMPATAN LLM adalah engine bahasa (LLM) yang ditulis dari nol dalam JavaScript murni — bukan wrapper dari provider AI mana pun. Berjalan sepenuhnya di browser lewat Web Worker, dengan arsitektur transformer lengkap (attention, feed-forward, tokenizer BPE, sampling, KV-cache) beserta kemampuan melatih dirinya sendiri dari data agen yang ada.
 
-**Honest status, as of now:**
-- Stable — no longer freezes or hangs, runs in a separate Web Worker away from the UI thread
-- Current scale: ~49.6 million parameters — enough to produce sentences that are starting to read coherently
-- Learns continuously across sessions (training progress is saved permanently to IndexedDB)
-- Still very much learning — its answer quality isn't yet as consistent as major AI providers, so the system automatically falls back to an external provider when needed
-- This is a genuine experiment in building AI from the ground up, not just wiring up an API
+**Status jujur saat ini:**
+- Stabil — tidak lagi macet/freeze, berjalan di Web Worker terpisah dari UI
+- Skala saat ini: ~49,6 juta parameter, cukup untuk menghasilkan kalimat yang mulai koheren
+- Bisa belajar berkelanjutan antar sesi (progres training tersimpan permanen di IndexedDB)
+- Masih dalam tahap belajar — kualitas jawabannya belum sekonsisten provider AI besar; sistem otomatis jatuh ke provider luar sebagai cadangan
+- Ini eksperimen nyata membangun kecerdasan buatan dari nol, bukan sekadar menyambungkan API
 
-## Key Features
+## Fitur Utama
 
-**Analysis & Visualization**
-- 10 scoring engines, an interactive radar chart, 3D Intelligence Sphere, Time Analytics with trend lines
+**Analisis & Visualisasi**
+- 10 Engine Penilaian, Radar Chart interaktif, 3D Intelligence Sphere, Time Analytics dengan trend line
 - Observation Engine, Noise Filtering, Memory Manager (vector memory), Response Cache
 
-**Interactive Features (KESTRAKTIVE)**
-- CHAT AI — Q&A with the assistant (streaming responses + voice output)
-- CHAT AGENT — talk directly with any 1 of the 55 agents
-- AGENT FORUM — one question answered by every selected agent
-- AGENT DEBATE — two agents argue it out, judged by an AI or the user
-- AGENT TOURNAMENT — elimination bracket (Full 55 / Top 16 / Top 8)
-- RAP BATTLE — two agents face off in rap-style debate
+**Fitur Interaktif (KESTRAKTIVE)**
+- CHAT AI — tanya jawab dengan asisten (streaming + voice output)
+- CHAT AGEN — ngobrol langsung dengan 1 dari 55 agen
+- FORUM AGEN — satu pertanyaan dijawab semua agen terpilih
+- DEBAT AGEN — 2 agen beradu argumen dengan juri AI/user
+- TURNAMEN AGEN — bracket elimination (Full 55 / Top 16 / Top 8)
+- RAP BATTLE — 2 agen berdebat dengan gaya rap
 
 **AI Tools (KESPREMAI)**
-- AI PODCAST — turn analysis results into an audio podcast
-- VOICE & CLONE — 19 voice characters, 14 languages, record your own voice (up to 5 clones), Live Voice Chat with internal AI agents
-- VISUALISATION — interactive data visualization
-- CUSTOM & AUTO AGENT — build agents manually, via AI, or from an image
-- OFFLINE MODE — local-only operation
+- AI PODCAST — ubah hasil analisis jadi podcast suara
+- VOICE & CLONE — 19 karakter suara, 14 bahasa, rekam suara sendiri (maks 5 clone), Live Voice Chat dengan agen AI internal
+- VISUALISATION — visualisasi data interaktif
+- CUSTOM & AUTO AGEN — buat agen manual, via AI, atau dari gambar
+- MODE OFFLINE — mode kerja lokal
 
 **Market & Media**
-- KESMARKET: Live Crypto, News Aggregator (local sources via RSS, no API key required)
-- KESMEDIA: Social Share, Editor (AI Art Generator, Background Remover, Style Transfer), Thema (accent color themes)
+- KESMARKET: Live Crypto, News Aggregator (sumber lokal via RSS, tanpa API key)
+- KESMEDIA: Social Share, Editor (AI Art Generator, Background Remover, Style Transfer), Thema (warna aksen)
 
-**System & Integration**
-- 55 autonomous AI Workers (Worker Management + Activity Log)
-- WebSocket team collaboration, Public API server, a standalone CHAT KESEMPATAN OS page
-- Export to 10 formats: JSON, HTML, PDF, CSV, Excel (XLSX), PowerPoint (PPTX), Google Docs, Google Sheets, Notion, Email
+**Sistem & Integrasi**
+- 55 AI Workers otonom (Manajemen Worker + Log Aktivitas)
+- WebSocket kolaborasi, Public API server, halaman CHAT KESEMPATAN OS mandiri
+- Export 10 format: JSON, HTML, PDF, CSV, Excel (XLSX), PowerPoint (PPTX), Google Docs, Google Sheets, Notion, Email
 
 **PWA Support**
-- Installable to your phone or desktop home screen
-- **Install-only service worker (no caching)** — every file update is visible immediately, with no stale cached files left behind; analysis content still requires an internet connection
+- Bisa diinstall ke homescreen HP/desktop
+- Service worker **install-only (tanpa caching)** — setiap update file langsung terlihat, tidak ada file lama nyangkut; konten analisis tetap membutuhkan koneksi internet
 
-## Installation & Setup
+## Cara Install & Jalankan
 
-    # 1. Clone the repository
+    # 1. Clone repository
     git clone https://github.com/username/kesempatan-os.git
     cd kesempatan-os
-    # 2. Open index.html in a browser (or serve it with a local live server)
+    # 2. Buka index.html di browser (atau live server lokal)
 
-Requirements: a modern browser with WebGL and Web Worker support. External API keys are optional — KESEMPATAN LLM runs without any API key.
+Persyaratan: browser modern dengan WebGL & Web Worker. API key eksternal opsional (KESEMPATAN LLM jalan tanpa API key).
 
-## Project Structure
+## Struktur Proyek
 
     KESEMPATAN-OS/
      ├── index.html, style.css, manifest.json, sw.js (install-only)
-     ├── chat-kesempatan.html   # Standalone chat page
-     ├── js/                    # Core app shell modules
+     ├── chat-kesempatan.html   # Halaman chat mandiri
+     ├── js/                    # Modul inti app shell
      ├── kesem-llm/             # KESEMPATAN LLM (Web Worker)
      ├── memory/                # Vector Memory
-     ├── kes-database/          # Core database (IndexedDB)
-     ├── agents/                # 55 agents, 5 category files
-     ├── workers/               # 55 autonomous AI Workers
+     ├── kes-database/          # Database inti (IndexedDB)
+     ├── agents/                # 55 agen, 5 file kategori
+     ├── workers/               # 55 AI Workers otonom
      ├── voice-ai/              # Voice, Clone, Podcast, Live Chat
-     ├── interactive/           # Chat AI/Agent, Forum, Debate, Tournament
+     ├── interactive/           # Chat AI/Agen, Forum, Debat, Turnamen
      ├── podcast/, rap/, visual-ai/, observ/, noise/, custom-ai/
      └── USER_GUIDE.md, README.md, LICENCE.txt
 
-## API & AI Providers
+## API & Provider AI
 
-KESEMPATAN LLM (local) is the primary pathway once it's ready — no API key needed. Until then, the system falls back to one of **21 external providers** (each optional, each requiring its own API key): Groq, Google Gemini, HuggingFace, DeepSeek, Anthropic Claude, OpenAI, Alibaba Qwen, Cohere, Mistral, AI21, Perplexity, OpenRouter, and more (full list and per-token pricing available on the Settings page).
+KESEMPATAN LLM (lokal) adalah jalur utama kalau sudah siap — tanpa API key. Kalau belum, sistem jatuh ke salah satu dari **21 provider eksternal** (opsional, API key masing-masing): Groq, Google Gemini, HuggingFace, DeepSeek, Anthropic Claude, OpenAI, Alibaba Qwen, Cohere, Mistral, AI21, Perplexity, OpenRouter, dll. (daftar lengkap & harga per-token di halaman Settings).
 
-## Third-Party Component Attribution
+## Atribusi Komponen Pihak Ketiga
 
-| Component | Purpose | License |
+| Komponen | Fungsi | Lisensi |
 |---|---|---|
-| Chart.js | Radar/line charts (CDN) | MIT |
-| three.js | 3D visualization (CDN) | MIT |
-| html2canvas / jsPDF | PDF export (CDN) | MIT |
-| lamejs | MP3 export (CDN) | Per its official repository |
-| Font Awesome Free | Icons (CDN) | FA Free License |
-| Inter (Google Fonts) | Typeface | SIL OFL |
+| Chart.js | Radar/line chart (CDN) | MIT |
+| three.js | Visualisasi 3D (CDN) | MIT |
+| html2canvas / jsPDF | Export PDF (CDN) | MIT |
+| lamejs | Export MP3 (CDN) | Sesuai repo resminya |
+| Font Awesome Free | Ikon (CDN) | FA Free License |
+| Inter (Google Fonts) | Font | SIL OFL |
 
-External AI services are governed entirely by their own respective providers' terms — see LICENCE.txt, Section 6.3.
+Layanan AI eksternal diatur sepenuhnya oleh syarat & ketentuan penyedia masing-masing — lihat LICENCE.txt pasal 6.3.
 
-## Development Status — The Honest Version
+## Status Pengembangan — Jujur Apa Adanya
 
-- KESEMPATAN LLM is still learning — quality keeps improving but isn't yet as consistent as major providers
-- The Service Worker is now install-only with no caching — the stale-file issue is permanently resolved; the PWA installs and updates cleanly
-- Agent count is 55; AI providers expanded to 21 options
-- Database encryption still uses a fixed key (per-device key rotation is planned)
-- Several advanced features (constrained JSON output, GPU integration) are still on the roadmap
+- KESEMPATAN LLM masih dalam tahap belajar — kualitas terus meningkat tapi belum sekonsisten provider besar
+- Service Worker kini install-only tanpa caching — isu file lama tersaji selesai permanen; PWA benar-benar bisa diinstall
+- Jumlah agen 55,provider AI diperluas jadi 21 pilihan
+- Skema enkripsi database masih kunci tetap (per-perangkat dalam rencana)
+- Beberapa fitur lanjutan (constrained JSON output, integrasi GPU) masih dalam rencana
 
 ## Troubleshooting
 
-| Issue | Solution |
+| Masalah | Solusi |
 |---|---|
-| Invalid API key | Make sure the key is correct and has available credit |
-| Agent not responding | Check your internet connection, refresh the browser |
-| 3D sphere not showing | Make sure your browser supports WebGL |
-| IndexedDB error | Clear site data in your browser settings, then reload |
-| Updates not showing | The service worker no longer caches; if needed, force a clean load via `?nosw=1` |
-| No voice output | Check your volume and make sure your browser supports the Web Speech API |
+| API Key tidak valid | Pastikan key benar dan memiliki kredit |
+| Agen tidak merespon | Cek koneksi internet, refresh browser |
+| 3D sphere tidak muncul | Pastikan browser mendukung WebGL |
+| IndexedDB error | Hapus data situs di pengaturan browser, reload |
+| Update tidak kelihatan | SW kini tanpa cache; bila perlu bersih-bersih paksa buka ?nosw=1 |
+| Voice tidak keluar | Cek volume, pastikan browser mendukung Web Speech API |
 
-## License
+## Lisensi
 
-KESEMPATAN OS is licensed under the **KESEMPATAN OS SOFTWARE LICENSE AGREEMENT Version 1.0**. Free for non-commercial use; commercial use requires written permission. Contact: maetalizer@gmail.com. See `LICENCE.txt`.
+KESEMPATAN OS dilisensikan di bawah **KESEMPATAN OS SOFTWARE LICENSE AGREEMENT Version 1.0**. Gratis untuk non-komersial; penggunaan komersial wajib izin tertulis. Kontak: maetalizer@gmail.com. Lihat `LICENCE.txt`.
 
-## The Story Behind It
+## Cerita di Balik Layar
 
-This project started out of curiosity and spare-time energy — an experiment to see how far I could get building something entirely from a phone, with no laptop. It turned out to be addictive: one feature led to another, until eventually I was building my own AI engine from scratch. It's now day 70, and it's still going.
+Proyek ini dimulai dari rasa penasaran dan energi "gabut" — coba-coba lihat sejauh apa bisa membangun sesuatu langsung dari HP, tanpa laptop. Ternyata malah keterusan: dari satu fitur ke fitur lain, sampai akhirnya membangun mesin AI sendiri dari nol. Sekarang hari ke-70, dan masih terus berjalan.
 
-This is the first time I've ever built anything like this. I have no background in this field — I didn't understand software architecture, had no idea how to build an AI, and didn't know where to start. Everything was learned along the way: try, fail, fix, repeat. The result is probably still far from perfect, but it's proof that if you're willing to start — even from zero, with nothing but a phone — something real can come out of it.
+Ini adalah pertama kalinya saya membuat sesuatu seperti ini. Saya tidak punya latar belakang di dunia ini — tidak mengerti arsitektur software, tidak paham cara membangun AI, tidak tahu harus mulai dari mana. Semua dipelajari sambil berjalan: coba, gagal, perbaiki, ulangi. Hasilnya mungkin belum maksimal dan masih jauh dari sempurna, tapi ini bukti bahwa kalau mau mulai, bahkan dari nol dan cuma bermodal HP, sesuatu bisa terwujud.
 
 <div align="center">
-  <sub><strong>Copyright © 2026 KESEMPATAN OS. All Rights Reserved.</strong><br>Created by Rahmad Raharjo</sub>
+  <sub><strong>Hak Cipta © 2026 KESEMPATAN OS. All Rights Reserved.</strong><br>Dibuat oleh Rahmad Raharjo</sub>
 </div>
-

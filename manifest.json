@@ -1,0 +1,83 @@
+{
+  "name": "KESEMPATAN OS",
+  "short_name": "KESEMPATAN OS",
+  "description": "Autonomous Opportunity Intelligence System - platform multi-agent AI untuk analisis peluang bisnis, pasar, dan inovasi.",
+  "categories": ["business", "productivity", "technology"],
+  "theme_color": "#00FFA3",
+  "background_color": "#0a0f1c",
+  "display": "standalone",
+  "display_override": ["window-controls-overlay", "standalone", "minimal-ui"],
+  "orientation": "any",
+  "scope": "/",
+  "start_url": "/index.html",
+  "lang": "id",
+  "dir": "ltr",
+  "id": "kesempatan-os-app",
+
+  "icons": [
+    { "src": "icons/icon-72x72.png", "sizes": "72x72", "type": "image/png", "purpose": "any maskable" },
+    { "src": "icons/icon-96x96.png", "sizes": "96x96", "type": "image/png", "purpose": "any maskable" },
+    { "src": "icons/icon-128x128.png", "sizes": "128x128", "type": "image/png", "purpose": "any maskable" },
+    { "src": "icons/icon-144x144.png", "sizes": "144x144", "type": "image/png", "purpose": "any maskable" },
+    { "src": "icons/icon-152x152.png", "sizes": "152x152", "type": "image/png", "purpose": "any maskable" },
+    { "src": "icons/icon-192x192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+    { "src": "icons/icon-256x256.png", "sizes": "256x256", "type": "image/png", "purpose": "any maskable" },
+    { "src": "icons/icon-384x384.png", "sizes": "384x384", "type": "image/png", "purpose": "any maskable" },
+    { "src": "icons/icon-512x512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ],
+
+  "shortcuts": [
+    {
+      "name": "Mulai Analisis Baru",
+      "short_name": "Analisis",
+      "description": "Buka dashboard untuk memulai analisis peluang baru",
+      "url": "/index.html"
+    },
+    {
+      "name": "Riwayat Laporan",
+      "short_name": "Riwayat",
+      "description": "Lihat riwayat laporan analisis sebelumnya",
+      "url": "/index.html?page=history"
+    }
+  ],
+
+  "share_target": {
+    "action": "/index.html?share=1",
+    "method": "GET",
+    "enctype": "application/x-www-form-urlencoded",
+    "params": {
+      "title": "title",
+      "text": "text",
+      "url": "url"
+    }
+  },
+
+  "file_handlers": [
+    {
+      "action": "/index.html?file=1",
+      "accept": {
+        "application/json": [".json"],
+        "text/csv": [".csv"],
+        "text/plain": [".txt"]
+      }
+    }
+  ],
+
+  "prefer_related_applications": false,
+
+  "i18n": {
+    "en": {
+      "name": "KESEMPATAN OS",
+      "short_name": "KESEMPATAN OS",
+      "description": "Autonomous Opportunity Intelligence System - multi-agent AI platform for business opportunity analysis."
+    },
+    "id": {
+      "name": "KESEMPATAN OS",
+      "short_name": "KESEMPATAN OS",
+      "description": "Sistem Intelijen Peluang Otonom - platform multi-agent AI untuk analisis peluang bisnis."
+    }
+  },
+
+  "privacy_policy_url": "",
+  "terms_of_service_url": ""
+}
