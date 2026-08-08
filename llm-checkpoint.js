@@ -290,7 +290,7 @@
             });
             db.close();
         } catch (e) {
-            // Gagal hapus bukan masalah fatal.
+            Logger.warn('LLMCheckpoint', 'Gagal hapus checkpoint (bukan masalah fatal): ' + e.message);
         }
     }
 
