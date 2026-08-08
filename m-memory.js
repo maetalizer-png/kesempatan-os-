@@ -1,0 +1,116 @@
+/* ============================================================
+KESEMPATAN OS - MEMORY ENTRY POINT
+File: memory/m-memory.js
+============================================================ */
+(function () {
+'use strict';
+
+if (window.__MemoryEntryLoaded) {
+    return;
+}
+
+window.__MemoryEntryLoaded = true;
+
+const Logger = (window.Utils && window.Utils.Logger) || {
+    info: function () {},
+    warn: function () {},
+    error: function () {}
+};
+
+// ============================================================
+// DAFTAR MODULE
+// PENTING: path di bawah RELATIF TERHADAP HALAMAN HTML,
+// bukan relatif terhadap file ini. Karena file ini berada di
+// folder memory/ dan HTML memuat "memory/m-memory.js", maka
+// path module tetap "memory/m-*.js". JANGAN diubah jadi
+// "./m-*.js" atau "m-*.js" kecuali struktur folder/HTML berubah.
+// ============================================================
+const modules = [
+    'memory/m-config.js',
+    'memory/m-utilities.js',
+    'memory/m-metrics.js',
+    'memory/m-engines.js',
+    'memory/m-quantization.js',
+    'memory/m-indexers.js',
+    'memory/m-embeddings.js',
+    'memory/m-federated-learning.js',
+    'memory/m-tuner.js',
+    'memory/m-core.js',
+    'memory/m-index.js',
+    'memory/m-governance.js'
+];
+
+let loaded = 0;
+const total = modules.length;
+let hasError = false;
+const failedModules = [];
+
+// ============================================================
+// COMPLETE HANDLER
+// ============================================================
+function handleComplete() {
+    if (!hasError) {
+        Logger.info('MemoryEntry', 'All ' + total + ' modules loaded');
+
+        if (typeof document !== 'undefined') {
+            document.dispatchEvent(new CustomEvent('memory-ready'));
+        }
+
+        if (typeof window._onMemoryReady === 'function') {
+            window._onMemoryReady();
+        }
+
+        return;
+    }
+
+    Logger.warn('MemoryEntry', 'Loaded with errors: ' + failedModules.join(', '));
+
+    if (typeof document !== 'undefined') {
+        document.dispatchEvent(new CustomEvent('memory-load-error', {
+            detail: {
+                failedModules: failedModules
+            }
+        }));
+    }
+}
+
+// ============================================================
+// MODULE LOADER
+// ============================================================
+function loadNext() {
+    if (loaded >= total) {
+        handleComplete();
+        return;
+    }
+
+    const src = modules[loaded];
+    const script = document.createElement('script');
+
+    script.src = src;
+    script.async = false;
+
+    script.onload = function () {
+        loaded++;
+        Logger.info('MemoryEntry', 'Loaded: ' + src + ' (' + loaded + '/' + total + ')');
+        loadNext();
+    };
+
+    script.onerror = function () {
+        hasError = true;
+        failedModules.push(src);
+        Logger.error('MemoryEntry', 'Failed to load: ' + src);
+        loaded++;
+        loadNext();
+    };
+
+    document.head.appendChild(script);
+}
+
+// ============================================================
+// START
+// ============================================================
+Logger.info('MemoryEntry', 'Loading ' + total + ' memory modules');
+
+loadNext();
+
+})();
