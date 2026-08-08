@@ -5,13 +5,17 @@ Encryption, CRDT, Versioning, Snapshot, MultiTenancy
 (function () {
 'use strict';
 
+const KESEMPATAN = window.KESEMPATAN || {};
+window.KESEMPATAN = KESEMPATAN;
+KESEMPATAN.KesDatabase = KESEMPATAN.KesDatabase || {};
+
 if (window.__SecurityLoaded) {
     return;
 }
 
 window.__SecurityLoaded = true;
 
-const Config = window.DB_CONFIG || {};
+const Config = KESEMPATAN.KesDatabase.DB_CONFIG || {};
 
 const Logger = window.InternalLogger || {
     debug: function () {},
@@ -21,7 +25,7 @@ const Logger = window.InternalLogger || {
     critical: function () {}
 };
 
-const Notify = window.NotificationSystem || {
+const Notify = KESEMPATAN.KesDatabase.NotificationSystem || {
     success: function () {},
     info: function () {},
     warning: function () {},
@@ -29,7 +33,7 @@ const Notify = window.NotificationSystem || {
     critical: function () {}
 };
 
-const { generateId } = window._dbUtils || {};
+const { generateId } = KESEMPATAN.KesDatabase._dbUtils || {};
 
 function createId() {
     if (typeof generateId === 'function') {
@@ -590,11 +594,11 @@ class MultiTenancy {
 // ============================================================
 // EXPOSE
 // ============================================================
-window.QuantumEncryption = QuantumEncryption;
-window.CRDT = CRDT;
-window.DataVersioning = DataVersioning;
-window.SnapshotManager = SnapshotManager;
-window.MultiTenancy = MultiTenancy;
+KESEMPATAN.KesDatabase.QuantumEncryption = QuantumEncryption;
+KESEMPATAN.KesDatabase.CRDT = CRDT;
+KESEMPATAN.KesDatabase.DataVersioning = DataVersioning;
+KESEMPATAN.KesDatabase.SnapshotManager = SnapshotManager;
+KESEMPATAN.KesDatabase.MultiTenancy = MultiTenancy;
 
 if (window.Utils && window.Utils.Logger) {
     window.Utils.Logger.info('Security', 'Loaded');

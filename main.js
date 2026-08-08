@@ -451,9 +451,9 @@ async function initApp() {
     Logger.system(CONFIG.APP_NAME);
     restoreLastReportOnLoad();
 
-    if (typeof getDatabase !== 'undefined') {
+    if (window.KESEMPATAN?.KesDatabase?.getDatabase) {
         try {
-            const db = await getDatabase();
+            const db = await window.KESEMPATAN.KesDatabase.getDatabase();
             if (window.KESEMPATAN?.ResponseCache?.setDatabase) window.KESEMPATAN.ResponseCache.setDatabase(db);
             else if (window.setCacheDatabase) window.setCacheDatabase(db);
             if (window.setMemoryDatabase) window.setMemoryDatabase(db);

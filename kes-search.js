@@ -5,13 +5,17 @@ Vector, Graph, FTS, Geo, TimeSeries, QueryParser, Optimizer, Stream
 (function () {
 'use strict';
 
+const KESEMPATAN = window.KESEMPATAN || {};
+window.KESEMPATAN = KESEMPATAN;
+KESEMPATAN.KesDatabase = KESEMPATAN.KesDatabase || {};
+
 if (window.__SearchLoaded) {
     return;
 }
 
 window.__SearchLoaded = true;
 
-const Config = window.DB_CONFIG || {};
+const Config = KESEMPATAN.KesDatabase.DB_CONFIG || {};
 
 const Logger = window.InternalLogger || {
     debug: function () {},
@@ -21,7 +25,7 @@ const Logger = window.InternalLogger || {
     critical: function () {}
 };
 
-const Notify = window.NotificationSystem || {
+const Notify = KESEMPATAN.KesDatabase.NotificationSystem || {
     success: function () {},
     info: function () {},
     warning: function () {},
@@ -1632,15 +1636,15 @@ class QueryStream {
 // ============================================================
 // EXPOSE
 // ============================================================
-window.VectorSearch = VectorSearch;
-window.GraphQuery = GraphQuery;
-window.FullTextSearch = FullTextSearch;
-window.GeospatialQuery = GeospatialQuery;
-window.TimeSeriesAnalytics = TimeSeriesAnalytics;
-window.QueryParser = QueryParser;
-window.AIQueryOptimizer = AIQueryOptimizer;
-window.IndexOptimizer = IndexOptimizer;
-window.QueryStream = QueryStream;
+KESEMPATAN.KesDatabase.VectorSearch = VectorSearch;
+KESEMPATAN.KesDatabase.GraphQuery = GraphQuery;
+KESEMPATAN.KesDatabase.FullTextSearch = FullTextSearch;
+KESEMPATAN.KesDatabase.GeospatialQuery = GeospatialQuery;
+KESEMPATAN.KesDatabase.TimeSeriesAnalytics = TimeSeriesAnalytics;
+KESEMPATAN.KesDatabase.QueryParser = QueryParser;
+KESEMPATAN.KesDatabase.AIQueryOptimizer = AIQueryOptimizer;
+KESEMPATAN.KesDatabase.IndexOptimizer = IndexOptimizer;
+KESEMPATAN.KesDatabase.QueryStream = QueryStream;
 
 if (window.Utils && window.Utils.Logger) {
     window.Utils.Logger.info('Search', 'Loaded');

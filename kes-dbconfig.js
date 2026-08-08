@@ -3,6 +3,9 @@ KESEMPATAN OS - DATABASE CONFIG
 ============================================================ */
 (function () {
 'use strict';
+const KESEMPATAN = window.KESEMPATAN || {};
+window.KESEMPATAN = KESEMPATAN;
+KESEMPATAN.KesDatabase = KESEMPATAN.KesDatabase || {};
 
 if (window.__DBConfigLoaded) {
     return;
@@ -10,7 +13,7 @@ if (window.__DBConfigLoaded) {
 
 window.__DBConfigLoaded = true;
 
-window.DB_CONFIG = Object.freeze({
+KESEMPATAN.KesDatabase.DB_CONFIG = Object.freeze({
     // ============================================================
     // KONTRAK FROZEN — penahan data IndexedDB
     // JANGAN rename 'name' tanpa migration antar-database

@@ -5,13 +5,17 @@ P2P, LiveQuery, CloudBackup
 (function () {
 'use strict';
 
+const KESEMPATAN = window.KESEMPATAN || {};
+window.KESEMPATAN = KESEMPATAN;
+KESEMPATAN.KesDatabase = KESEMPATAN.KesDatabase || {};
+
 if (window.__SyncLoaded) {
     return;
 }
 
 window.__SyncLoaded = true;
 
-const Config = window.DB_CONFIG || {};
+const Config = KESEMPATAN.KesDatabase.DB_CONFIG || {};
 
 const Logger = window.InternalLogger || {
     debug: function () {},
@@ -21,7 +25,7 @@ const Logger = window.InternalLogger || {
     critical: function () {}
 };
 
-const Notify = window.NotificationSystem || {
+const Notify = KESEMPATAN.KesDatabase.NotificationSystem || {
     success: function () {},
     info: function () {},
     warning: function () {},
@@ -29,7 +33,7 @@ const Notify = window.NotificationSystem || {
     critical: function () {}
 };
 
-const { generateId } = window._dbUtils || {};
+const { generateId } = KESEMPATAN.KesDatabase._dbUtils || {};
 
 function createId() {
     if (typeof generateId === 'function') {
@@ -585,9 +589,9 @@ class CloudBackup {
 // ============================================================
 // EXPOSE
 // ============================================================
-window.P2PSync = P2PSync;
-window.LiveQuery = LiveQuery;
-window.CloudBackup = CloudBackup;
+KESEMPATAN.KesDatabase.P2PSync = P2PSync;
+KESEMPATAN.KesDatabase.LiveQuery = LiveQuery;
+KESEMPATAN.KesDatabase.CloudBackup = CloudBackup;
 
 if (window.Utils && window.Utils.Logger) {
     window.Utils.Logger.info('Sync', 'Loaded');

@@ -3,6 +3,9 @@ KESEMPATAN OS - HELPERS
 ============================================================ */
 (function () {
 'use strict';
+const KESEMPATAN = window.KESEMPATAN || {};
+window.KESEMPATAN = KESEMPATAN;
+KESEMPATAN.KesDatabase = KESEMPATAN.KesDatabase || {};
 
 if (window.__HelpersLoaded) {
     return;
@@ -27,7 +30,7 @@ function sleep(ms) {
     });
 }
 
-const Config = window.DB_CONFIG || {};
+const Config = KESEMPATAN.KesDatabase.DB_CONFIG || {};
 
 // ============================================================
 // SMART CACHE
@@ -380,11 +383,14 @@ const NotificationSystem = (function () {
 // ============================================================
 // EXPOSE
 // ============================================================
+// InternalLogger stays a bare window global: dozens of unrelated files
+// (country/data loaders, hitl.js, response-cache.js, etc.) read it
+// directly as a shared cross-cutting logger.
 window.InternalLogger = InternalLogger;
-window.NotificationSystem = NotificationSystem;
-window.SmartCache = SmartCache;
 
-window._dbUtils = Object.freeze({
+KESEMPATAN.KesDatabase.NotificationSystem = NotificationSystem;
+KESEMPATAN.KesDatabase.SmartCache = SmartCache;
+KESEMPATAN.KesDatabase._dbUtils = Object.freeze({
     generateId: generateId,
     sleep: sleep
 });

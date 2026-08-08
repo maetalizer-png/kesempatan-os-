@@ -5,6 +5,10 @@ Monitoring, Audit, Benchmark
 (function () {
 'use strict';
 
+const KESEMPATAN = window.KESEMPATAN || {};
+window.KESEMPATAN = KESEMPATAN;
+KESEMPATAN.KesDatabase = KESEMPATAN.KesDatabase || {};
+
 if (window.__MonitorLoaded) {
     return;
 }
@@ -19,7 +23,7 @@ const Logger = window.InternalLogger || {
     critical: function () {}
 };
 
-const Notify = window.NotificationSystem || {
+const Notify = KESEMPATAN.KesDatabase.NotificationSystem || {
     success: function () {},
     info: function () {},
     warning: function () {},
@@ -27,7 +31,7 @@ const Notify = window.NotificationSystem || {
     critical: function () {}
 };
 
-const { generateId } = window._dbUtils || {};
+const { generateId } = KESEMPATAN.KesDatabase._dbUtils || {};
 
 function createId() {
     if (typeof generateId === 'function') {
@@ -486,9 +490,9 @@ class BenchmarkSuite {
 // ============================================================
 // EXPOSE
 // ============================================================
-window.MonitoringDashboard = MonitoringDashboard;
-window.AuditLog = AuditLog;
-window.BenchmarkSuite = BenchmarkSuite;
+KESEMPATAN.KesDatabase.MonitoringDashboard = MonitoringDashboard;
+KESEMPATAN.KesDatabase.AuditLog = AuditLog;
+KESEMPATAN.KesDatabase.BenchmarkSuite = BenchmarkSuite;
 
 if (window.Utils && window.Utils.Logger) {
     window.Utils.Logger.info('Monitor', 'Loaded');

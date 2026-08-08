@@ -5,13 +5,17 @@ GraphQL, QueryBuilder, Playground, Database Core
 (function () {
 'use strict';
 
+const KESEMPATAN = window.KESEMPATAN || {};
+window.KESEMPATAN = KESEMPATAN;
+KESEMPATAN.KesDatabase = KESEMPATAN.KesDatabase || {};
+
 if (window.__ApiLoaded) {
     return;
 }
 
 window.__ApiLoaded = true;
 
-const Config = window.DB_CONFIG || {};
+const Config = KESEMPATAN.KesDatabase.DB_CONFIG || {};
 
 const Logger = window.InternalLogger || {
     debug: function () {},
@@ -21,7 +25,7 @@ const Logger = window.InternalLogger || {
     critical: function () {}
 };
 
-const Notify = window.NotificationSystem || {
+const Notify = KESEMPATAN.KesDatabase.NotificationSystem || {
     success: function () {},
     info: function () {},
     warning: function () {},
@@ -29,7 +33,7 @@ const Notify = window.NotificationSystem || {
     critical: function () {}
 };
 
-const utils = window._dbUtils || {};
+const utils = KESEMPATAN.KesDatabase._dbUtils || {};
 
 const generateId = utils.generateId;
 
@@ -84,9 +88,9 @@ async function getComponentStats(component) {
 }
 
 function createCrdt() {
-    if (typeof window.CRDT === 'function') {
+    if (typeof KESEMPATAN.KesDatabase.CRDT === 'function') {
         try {
-            return new window.CRDT();
+            return new KESEMPATAN.KesDatabase.CRDT();
         } catch (_) {
             // fallback below
         }
@@ -332,7 +336,7 @@ class KESDatabase {
         this._crdt = createCrdt();
 
         this._components = {
-            quantumEncryption: window.QuantumEncryption || null,
+            quantumEncryption: KESEMPATAN.KesDatabase.QuantumEncryption || null,
             crdt: this._crdt,
             dataVersioning: null,
             snapshotManager: null,
@@ -391,86 +395,86 @@ class KESDatabase {
     _initComponent(name) {
         switch (name) {
             case 'smartCache':
-                if (!this._components.smartCache && typeof window.SmartCache === 'function') {
-                    this._components.smartCache = new window.SmartCache();
+                if (!this._components.smartCache && typeof KESEMPATAN.KesDatabase.SmartCache === 'function') {
+                    this._components.smartCache = new KESEMPATAN.KesDatabase.SmartCache();
                 }
                 break;
 
             case 'dataVersioning':
-                if (!this._components.dataVersioning && typeof window.DataVersioning === 'function') {
-                    this._components.dataVersioning = new window.DataVersioning(this);
+                if (!this._components.dataVersioning && typeof KESEMPATAN.KesDatabase.DataVersioning === 'function') {
+                    this._components.dataVersioning = new KESEMPATAN.KesDatabase.DataVersioning(this);
                 }
                 break;
 
             case 'snapshotManager':
-                if (!this._components.snapshotManager && typeof window.SnapshotManager === 'function') {
-                    this._components.snapshotManager = new window.SnapshotManager(this);
+                if (!this._components.snapshotManager && typeof KESEMPATAN.KesDatabase.SnapshotManager === 'function') {
+                    this._components.snapshotManager = new KESEMPATAN.KesDatabase.SnapshotManager(this);
                 }
                 break;
 
             case 'multiTenancy':
-                if (!this._components.multiTenancy && typeof window.MultiTenancy === 'function') {
-                    this._components.multiTenancy = new window.MultiTenancy(this);
+                if (!this._components.multiTenancy && typeof KESEMPATAN.KesDatabase.MultiTenancy === 'function') {
+                    this._components.multiTenancy = new KESEMPATAN.KesDatabase.MultiTenancy(this);
                 }
                 break;
 
             case 'vectorSearch':
-                if (!this._components.vectorSearch && typeof window.VectorSearch === 'function') {
-                    this._components.vectorSearch = new window.VectorSearch(this);
+                if (!this._components.vectorSearch && typeof KESEMPATAN.KesDatabase.VectorSearch === 'function') {
+                    this._components.vectorSearch = new KESEMPATAN.KesDatabase.VectorSearch(this);
                 }
                 break;
 
             case 'graphQuery':
-                if (!this._components.graphQuery && typeof window.GraphQuery === 'function') {
-                    this._components.graphQuery = new window.GraphQuery(this);
+                if (!this._components.graphQuery && typeof KESEMPATAN.KesDatabase.GraphQuery === 'function') {
+                    this._components.graphQuery = new KESEMPATAN.KesDatabase.GraphQuery(this);
                 }
                 break;
 
             case 'fts':
-                if (!this._components.fts && typeof window.FullTextSearch === 'function') {
-                    this._components.fts = new window.FullTextSearch(this);
+                if (!this._components.fts && typeof KESEMPATAN.KesDatabase.FullTextSearch === 'function') {
+                    this._components.fts = new KESEMPATAN.KesDatabase.FullTextSearch(this);
                 }
                 break;
 
             case 'geoQuery':
-                if (!this._components.geoQuery && typeof window.GeospatialQuery === 'function') {
-                    this._components.geoQuery = new window.GeospatialQuery(this, 'locations');
+                if (!this._components.geoQuery && typeof KESEMPATAN.KesDatabase.GeospatialQuery === 'function') {
+                    this._components.geoQuery = new KESEMPATAN.KesDatabase.GeospatialQuery(this, 'locations');
                 }
                 break;
 
             case 'timeSeries':
-                if (!this._components.timeSeries && typeof window.TimeSeriesAnalytics === 'function') {
-                    this._components.timeSeries = new window.TimeSeriesAnalytics(this);
+                if (!this._components.timeSeries && typeof KESEMPATAN.KesDatabase.TimeSeriesAnalytics === 'function') {
+                    this._components.timeSeries = new KESEMPATAN.KesDatabase.TimeSeriesAnalytics(this);
                 }
                 break;
 
             case 'queryParser':
-                if (!this._components.queryParser && typeof window.QueryParser === 'function') {
-                    this._components.queryParser = new window.QueryParser(this);
+                if (!this._components.queryParser && typeof KESEMPATAN.KesDatabase.QueryParser === 'function') {
+                    this._components.queryParser = new KESEMPATAN.KesDatabase.QueryParser(this);
                 }
                 break;
 
             case 'queryOptimizer':
-                if (!this._components.queryOptimizer && typeof window.AIQueryOptimizer === 'function') {
-                    this._components.queryOptimizer = new window.AIQueryOptimizer(this);
+                if (!this._components.queryOptimizer && typeof KESEMPATAN.KesDatabase.AIQueryOptimizer === 'function') {
+                    this._components.queryOptimizer = new KESEMPATAN.KesDatabase.AIQueryOptimizer(this);
                 }
                 break;
 
             case 'indexOptimizer':
-                if (!this._components.indexOptimizer && typeof window.IndexOptimizer === 'function') {
-                    this._components.indexOptimizer = new window.IndexOptimizer(this);
+                if (!this._components.indexOptimizer && typeof KESEMPATAN.KesDatabase.IndexOptimizer === 'function') {
+                    this._components.indexOptimizer = new KESEMPATAN.KesDatabase.IndexOptimizer(this);
                 }
                 break;
 
             case 'queryStream':
-                if (!this._components.queryStream && typeof window.QueryStream === 'function') {
-                    this._components.queryStream = new window.QueryStream(this);
+                if (!this._components.queryStream && typeof KESEMPATAN.KesDatabase.QueryStream === 'function') {
+                    this._components.queryStream = new KESEMPATAN.KesDatabase.QueryStream(this);
                 }
                 break;
 
             case 'monitoring':
-                if (!this._components.monitoring && typeof window.MonitoringDashboard === 'function') {
-                    this._components.monitoring = new window.MonitoringDashboard(this);
+                if (!this._components.monitoring && typeof KESEMPATAN.KesDatabase.MonitoringDashboard === 'function') {
+                    this._components.monitoring = new KESEMPATAN.KesDatabase.MonitoringDashboard(this);
 
                     this._components.monitoring.registerHealthCheck('database', {
                         check: async function () {
@@ -499,50 +503,50 @@ class KESDatabase {
                 break;
 
             case 'auditLog':
-                if (!this._components.auditLog && typeof window.AuditLog === 'function') {
-                    this._components.auditLog = new window.AuditLog(this);
+                if (!this._components.auditLog && typeof KESEMPATAN.KesDatabase.AuditLog === 'function') {
+                    this._components.auditLog = new KESEMPATAN.KesDatabase.AuditLog(this);
                 }
                 break;
 
             case 'benchmark':
-                if (!this._components.benchmark && typeof window.BenchmarkSuite === 'function') {
-                    this._components.benchmark = new window.BenchmarkSuite(this);
+                if (!this._components.benchmark && typeof KESEMPATAN.KesDatabase.BenchmarkSuite === 'function') {
+                    this._components.benchmark = new KESEMPATAN.KesDatabase.BenchmarkSuite(this);
                 }
                 break;
 
             case 'p2pSync':
-                if (!this._components.p2pSync && typeof window.P2PSync === 'function') {
-                    this._components.p2pSync = new window.P2PSync(this);
+                if (!this._components.p2pSync && typeof KESEMPATAN.KesDatabase.P2PSync === 'function') {
+                    this._components.p2pSync = new KESEMPATAN.KesDatabase.P2PSync(this);
                 }
                 break;
 
             case 'liveQuery':
-                if (!this._components.liveQuery && typeof window.LiveQuery === 'function') {
-                    this._components.liveQuery = new window.LiveQuery(this);
+                if (!this._components.liveQuery && typeof KESEMPATAN.KesDatabase.LiveQuery === 'function') {
+                    this._components.liveQuery = new KESEMPATAN.KesDatabase.LiveQuery(this);
                 }
                 break;
 
             case 'cloudBackup':
-                if (!this._components.cloudBackup && typeof window.CloudBackup === 'function') {
-                    this._components.cloudBackup = new window.CloudBackup(this);
+                if (!this._components.cloudBackup && typeof KESEMPATAN.KesDatabase.CloudBackup === 'function') {
+                    this._components.cloudBackup = new KESEMPATAN.KesDatabase.CloudBackup(this);
                 }
                 break;
 
             case 'graphQL':
-                if (!this._components.graphQL && typeof window.GraphQLAPI === 'function') {
-                    this._components.graphQL = new window.GraphQLAPI(this);
+                if (!this._components.graphQL && typeof KESEMPATAN.KesDatabase.GraphQLAPI === 'function') {
+                    this._components.graphQL = new KESEMPATAN.KesDatabase.GraphQLAPI(this);
                 }
                 break;
 
             case 'queryBuilder':
-                if (!this._components.queryBuilder && typeof window.QueryBuilder === 'function') {
-                    this._components.queryBuilder = new window.QueryBuilder(this);
+                if (!this._components.queryBuilder && typeof KESEMPATAN.KesDatabase.QueryBuilder === 'function') {
+                    this._components.queryBuilder = new KESEMPATAN.KesDatabase.QueryBuilder(this);
                 }
                 break;
 
             case 'playground':
-                if (!this._components.playground && typeof window.Playground === 'function') {
-                    this._components.playground = new window.Playground(this);
+                if (!this._components.playground && typeof KESEMPATAN.KesDatabase.Playground === 'function') {
+                    this._components.playground = new KESEMPATAN.KesDatabase.Playground(this);
                 }
                 break;
 
@@ -1418,8 +1422,8 @@ class KESDatabase {
     }
 
     getNotifications(unreadOnly, limit) {
-        if (window.NotificationSystem && typeof window.NotificationSystem.getNotifications === 'function') {
-            return window.NotificationSystem.getNotifications(unreadOnly, limit);
+        if (KESEMPATAN.KesDatabase.NotificationSystem && typeof KESEMPATAN.KesDatabase.NotificationSystem.getNotifications === 'function') {
+            return KESEMPATAN.KesDatabase.NotificationSystem.getNotifications(unreadOnly, limit);
         }
 
         return [];
@@ -1487,8 +1491,8 @@ class KESDatabase {
         this._pendingQueue.length = 0;
         this._subscribers.length = 0;
 
-        if (window.NotificationSystem && typeof window.NotificationSystem.clear === 'function') {
-            window.NotificationSystem.clear();
+        if (KESEMPATAN.KesDatabase.NotificationSystem && typeof KESEMPATAN.KesDatabase.NotificationSystem.clear === 'function') {
+            KESEMPATAN.KesDatabase.NotificationSystem.clear();
         }
 
         if (window.InternalLogger && typeof window.InternalLogger.clear === 'function') {
@@ -1622,12 +1626,12 @@ async function getDatabase() {
 // ============================================================
 // EXPOSE
 // ============================================================
-window.KESDatabaseEngine = KESDatabase;
-window.getDatabase = getDatabase;
-window.FrameworkHelpers = FrameworkHelpers;
-window.GraphQLAPI = GraphQLAPI;
-window.QueryBuilder = QueryBuilder;
-window.Playground = Playground;
+KESEMPATAN.KesDatabase.KESDatabaseEngine = KESDatabase;
+KESEMPATAN.KesDatabase.getDatabase = getDatabase;
+KESEMPATAN.KesDatabase.FrameworkHelpers = FrameworkHelpers;
+KESEMPATAN.KesDatabase.GraphQLAPI = GraphQLAPI;
+KESEMPATAN.KesDatabase.QueryBuilder = QueryBuilder;
+KESEMPATAN.KesDatabase.Playground = Playground;
 
 if (window.Utils && window.Utils.Logger) {
     window.Utils.Logger.info('API', 'Loaded');

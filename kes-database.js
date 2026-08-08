@@ -3,6 +3,8 @@ KESEMPATAN OS - DATABASE ENTRY POINT
 ============================================================ */
 (function () {
 'use strict';
+const KESEMPATAN = window.KESEMPATAN || {};
+window.KESEMPATAN = KESEMPATAN;
 
 if (window.__DatabaseEntryLoaded) {
     return;
@@ -10,7 +12,7 @@ if (window.__DatabaseEntryLoaded) {
 
 window.__DatabaseEntryLoaded = true;
 
-const Utils = window.Utils || {};
+const Utils = KESEMPATAN.Utils || window.Utils || {};
 const Logger = Utils.Logger || {
     info: function () {},
     warn: function () {},
@@ -152,7 +154,7 @@ function bootstrapDatabase() {
         Logger.warn('DatabaseEntry', 'One or more database modules failed to load');
     }
 
-    const initializer = window.getDatabase;
+    const initializer = window.KESEMPATAN?.KesDatabase?.getDatabase;
 
     if (typeof initializer !== 'function') {
         handleBootstrapError(new Error('Database initializer unavailable'));
