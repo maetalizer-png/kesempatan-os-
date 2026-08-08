@@ -80,6 +80,13 @@ function saveReportToHistory(aggregated, topic) {
     if (history.length > 50) history.pop();
     localStorage.setItem('kes_report_history', JSON.stringify(history));
     renderHistoryPanel();
+    // Durable backup in IndexedDB (existing encrypted 'reports' store) —
+    // localStorage stays the source of truth for the fast/synchronous path.
+    if (window.KESEMPATAN?.KesDatabase && window.KESDatabase && !window.KESDatabase._isDummy) {
+        window.KESDatabase.saveReport(report.topic, report.score, report).catch(function (error) {
+            Logger.warn('REPORT', 'IndexedDB report backup failed: ' + error.message);
+        });
+    }
 }
 
 function renderHistoryPanel() {
@@ -459,6 +466,20 @@ async function initApp() {
             if (window.setMemoryDatabase) window.setMemoryDatabase(db);
             if (window.setLearningDatabase) window.setLearningDatabase(db);
             if (window.KESEMPATAN?.WorkflowEngine?.setDatabase) window.KESEMPATAN.WorkflowEngine.setDatabase(db);
+
+            // One-time durable backup of pre-existing report history.
+            if (!db._isDummy) {
+                const flagKey = 'kes_idb_migrated_reports';
+                if (!localStorage.getItem(flagKey)) {
+                    const existing = JSON.parse(localStorage.getItem('kes_report_history') || '[]');
+                    for (const oldReport of existing) {
+                        await db.saveReport(oldReport.topic, oldReport.score, oldReport).catch(function (error) {
+                            Logger.warn('INIT', 'Migrate legacy report failed: ' + error.message);
+                        });
+                    }
+                    localStorage.setItem(flagKey, '1');
+                }
+            }
         } catch (error) {
             Logger.warn('INIT', 'getDatabase gagal (lanjut tanpa DB): ' + error.message);
         }

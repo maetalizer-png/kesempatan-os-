@@ -31,13 +31,25 @@ function saveWorkers() { localStorage.setItem('kes_ai_workers', JSON.stringify(w
 function loadStats() {
     try { workerStats = JSON.parse(localStorage.getItem('kes_worker_stats')) || {}; }
     catch (e) { workerStats = {}; }
+    if (window.KESEMPATAN?.KesDatabase?.migrateLegacySnapshotOnce) {
+        window.KESEMPATAN.KesDatabase.migrateLegacySnapshotOnce('worker_stats', 'kes_worker_stats');
+    }
     return workerStats;
 }
-function saveStats() { localStorage.setItem('kes_worker_stats', JSON.stringify(workerStats)); }
+function saveStats() {
+    localStorage.setItem('kes_worker_stats', JSON.stringify(workerStats));
+    // Durable backup in IndexedDB — localStorage stays the source of truth.
+    if (window.KESEMPATAN?.KesDatabase?.mirrorSnapshot) {
+        window.KESEMPATAN.KesDatabase.mirrorSnapshot('worker_stats', workerStats);
+    }
+}
 
 function loadLogs() {
     try { logs = JSON.parse(localStorage.getItem('kes_ai_workers_logs')) || []; }
     catch (e) { logs = []; }
+    if (window.KESEMPATAN?.KesDatabase?.migrateArrayOnce) {
+        window.KESEMPATAN.KesDatabase.migrateArrayOnce('worker_logs', logs);
+    }
     return logs;
 }
 function saveLogs() { localStorage.setItem('kes_ai_workers_logs', JSON.stringify(logs.slice(0, 200))); }

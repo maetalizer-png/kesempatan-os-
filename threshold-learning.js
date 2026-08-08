@@ -705,6 +705,9 @@ const AutoLearningUltimate = {
         if (!this.data.approvalHistory) this.data.approvalHistory = [];
         if (!this.data.agentPerformance) this.data.agentPerformance = {};
         if (!this.data.optimizedThresholds) this.data.optimizedThresholds = {};
+        if (window.KESEMPATAN?.KesDatabase?.migrateLegacySnapshotOnce) {
+            window.KESEMPATAN.KesDatabase.migrateLegacySnapshotOnce('learning_data', getStorageKey());
+        }
     },
     save: function() {
         this.data.lastUpdated = Date.now();
@@ -737,6 +740,9 @@ const AutoLearningUltimate = {
             const key = getStorageKey();
             localStorage.setItem(key, JSON.stringify(this.data));
             this._lastKnownDiskUpdate = this.data.lastUpdated;
+            if (window.KESEMPATAN?.KesDatabase?.mirrorSnapshot) {
+                window.KESEMPATAN.KesDatabase.mirrorSnapshot('learning_data', this.data);
+            }
         } catch(e) {
             InternalLogger.error('AutoLearning', 'Save failed: ' + e.message);
         }

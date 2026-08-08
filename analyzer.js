@@ -185,21 +185,31 @@
     function saveTriggerHistory(signal, analyzed) {
         try {
             const history = JSON.parse(localStorage.getItem('kes_obs_trigger_history') || '[]');
-            history.unshift({
+            const entry = {
                 timestamp: Date.now(),
                 title: signal.title,
                 confidence: analyzed.confidence,
                 sentiment: analyzed.sentiment.label,
                 category: signal.category,
                 source: signal.source
-            });
+            };
+            history.unshift(entry);
             if (history.length > 20) history.pop();
             localStorage.setItem('kes_obs_trigger_history', JSON.stringify(history));
-        } catch(e) {}
+            // Durable backup in IndexedDB — localStorage stays the source of truth.
+            if (window.KESEMPATAN?.KesDatabase?.mirrorHistoryItem) {
+                window.KESEMPATAN.KesDatabase.mirrorHistoryItem('obs_trigger_history', entry);
+            }
+        } catch (e) {
+            console.warn('[Observation] Save trigger history failed:', e.message);
+        }
     }
 
     function showTriggerHistory() {
         const history = JSON.parse(localStorage.getItem('kes_obs_trigger_history') || '[]');
+        if (window.KESEMPATAN?.KesDatabase?.migrateArrayOnce) {
+            window.KESEMPATAN.KesDatabase.migrateArrayOnce('obs_trigger_history', history);
+        }
         if (history.length === 0) {
             OBS.showToast('Belum ada auto-trigger', 'info');
             return;

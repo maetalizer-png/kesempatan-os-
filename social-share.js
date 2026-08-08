@@ -75,8 +75,22 @@ class SuperSocialShare {
         setInterval(function() { self.checkScheduledPosts(); }, 30000);
         this.restoreState();
     }
-    loadHistory() { try { return JSON.parse(localStorage.getItem('kes_super_share_history')) || []; } catch (e) { return []; } }
-    saveHistory() { localStorage.setItem('kes_super_share_history', JSON.stringify(this.shareHistory)); }
+    loadHistory() {
+        try {
+            const history = JSON.parse(localStorage.getItem('kes_super_share_history')) || [];
+            if (window.KESEMPATAN?.KesDatabase?.migrateArrayOnce) {
+                window.KESEMPATAN.KesDatabase.migrateArrayOnce('super_share_history', history);
+            }
+            return history;
+        } catch (e) { return []; }
+    }
+    saveHistory() {
+        localStorage.setItem('kes_super_share_history', JSON.stringify(this.shareHistory));
+        // Durable backup of the latest entry — localStorage stays the source of truth.
+        if (window.KESEMPATAN?.KesDatabase?.mirrorHistoryItem && this.shareHistory[0]) {
+            window.KESEMPATAN.KesDatabase.mirrorHistoryItem('super_share_history', this.shareHistory[0]);
+        }
+    }
     loadStats() { try { return JSON.parse(localStorage.getItem('kes_super_share_stats')) || {}; } catch (e) { return {}; } }
     saveStats() { localStorage.setItem('kes_super_share_stats', JSON.stringify(this.engagementStats)); }
     loadScheduled() { try { return JSON.parse(localStorage.getItem('kes_super_share_scheduled')) || []; } catch (e) { return []; } }

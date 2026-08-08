@@ -176,6 +176,12 @@
             }
 
         } catch (_) { console.warn('[Podcast] Non-fatal error:', _.message); }
+
+        // One-time durable backup of whatever episode history already
+        // exists (localStorage remains the source of truth either way).
+        if (window.KESEMPATAN?.KesDatabase?.migrateArrayOnce) {
+            window.KESEMPATAN.KesDatabase.migrateArrayOnce('podcast_history', state.podcastHistory);
+        }
     }
 
     // ========== MIGRASI DATA ==========

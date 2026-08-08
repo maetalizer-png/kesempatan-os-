@@ -424,16 +424,21 @@
     
     function trackPrediction(prediction, actual) {
         const isCorrect = prediction.includes('NAIK') === actual;
-        predictionHistory.push({
+        const entry = {
             prediction: prediction,
             actual: actual,
             isCorrect: isCorrect,
             timestamp: Date.now()
-        });
+        };
+        predictionHistory.push(entry);
         if (predictionHistory.length > 50) {
             predictionHistory.shift();
         }
         localStorage.setItem('kes_prediction_history', JSON.stringify(predictionHistory));
+        // Durable backup in IndexedDB — localStorage stays the source of truth.
+        if (window.KESEMPATAN?.KesDatabase?.mirrorHistoryItem) {
+            window.KESEMPATAN.KesDatabase.mirrorHistoryItem('prediction_history', entry);
+        }
     }
     
     function getAccuracy() {
@@ -1448,7 +1453,11 @@
             if (saved) {
                 predictionHistory = JSON.parse(saved);
             }
-        } catch(e) {
+            if (window.KESEMPATAN?.KesDatabase?.migrateArrayOnce) {
+                window.KESEMPATAN.KesDatabase.migrateArrayOnce('prediction_history', predictionHistory);
+            }
+        } catch (e) {
+            console.warn('[LiveCrypto] Load prediction history failed:', e.message);
         }
         
         setTimeout(function() {

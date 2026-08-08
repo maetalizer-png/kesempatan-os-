@@ -22,7 +22,11 @@ KESEMPATAN.KesDatabase.DB_CONFIG = Object.freeze({
     // onupgradeneeded, jangan untuk alasan kosmetik.
     // ============================================================
     name: 'KESEMPATAN_OS_DB',
-    version: 12,
+    // v13: added stores for the localStorage->IndexedDB write-behind
+    // mirror (report/podcast/rap-battle/observation/social-share/
+    // prediction history, worker logs/stats/knowledge, theme analytics,
+    // support tickets, and learning data) — see DB_STORES in kes-api.js.
+    version: 13,
     capacity: '10GB+',
     cacheTTL: 3600000,
     maxRetries: 5,

@@ -528,23 +528,32 @@
     function saveHistory(rapData) {
         try {
             let history = JSON.parse(localStorage.getItem(CONFIG.STORAGE_KEY) || '[]');
-            history.unshift({
+            const battle = {
                 id: Date.now(),
                 timestamp: new Date().toISOString(),
                 ...rapData
-            });
+            };
+            history.unshift(battle);
             if (history.length > CONFIG.MAX_HISTORY) {
                 history.length = CONFIG.MAX_HISTORY;
             }
             localStorage.setItem(CONFIG.STORAGE_KEY, JSON.stringify(history));
+            // Durable backup in IndexedDB — localStorage stays the source of truth.
+            if (window.KESEMPATAN?.KesDatabase?.mirrorHistoryItem) {
+                window.KESEMPATAN.KesDatabase.mirrorHistoryItem('rap_battle_history', battle);
+            }
         } catch (e) {
-            // Silent fail
+            console.warn('[RapBattle] Save history failed:', e.message);
         }
     }
 
     function loadHistory() {
         try {
-            return JSON.parse(localStorage.getItem(CONFIG.STORAGE_KEY) || '[]');
+            const history = JSON.parse(localStorage.getItem(CONFIG.STORAGE_KEY) || '[]');
+            if (window.KESEMPATAN?.KesDatabase?.migrateArrayOnce) {
+                window.KESEMPATAN.KesDatabase.migrateArrayOnce('rap_battle_history', history);
+            }
+            return history;
         } catch (e) {
             return [];
         }

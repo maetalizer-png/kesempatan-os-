@@ -531,7 +531,10 @@
                     this._punchlineWeights = data.punchlineWeights || {};
                     this._strategyWeights = data.strategyWeights || {};
                 }
-            } catch(e) {}
+            } catch(e) { console.warn('[RapOptimizer] Load learning data failed:', e.message); }
+            if (window.KESEMPATAN?.KesDatabase?.migrateLegacySnapshotOnce) {
+                window.KESEMPATAN.KesDatabase.migrateLegacySnapshotOnce('rap_learning_data', 'rap_learning_data');
+            }
         },
         
         learn: function(battleResult) {
@@ -589,12 +592,16 @@
         
         _save: function() {
             try {
-                localStorage.setItem('rap_learning_data', JSON.stringify({
+                const snapshot = {
                     history: this._history,
                     punchlineWeights: this._punchlineWeights,
                     strategyWeights: this._strategyWeights
-                }));
-            } catch(e) {}
+                };
+                localStorage.setItem('rap_learning_data', JSON.stringify(snapshot));
+                if (window.KESEMPATAN?.KesDatabase?.mirrorSnapshot) {
+                    window.KESEMPATAN.KesDatabase.mirrorSnapshot('rap_learning_data', snapshot);
+                }
+            } catch(e) { console.warn('[RapOptimizer] Save learning data failed:', e.message); }
         }
     };
     

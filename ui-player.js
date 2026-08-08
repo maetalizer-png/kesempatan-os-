@@ -548,7 +548,7 @@
     // ========== SAVE HISTORY ==========
     function savePodcastToHistory() {
         const topic = generator.getTopic ? generator.getTopic() : (document.getElementById('topicInput') ? document.getElementById('topicInput').value : 'Topik tidak disebutkan');
-        state.podcastHistory.push({
+        const episode = {
             episodeNumber: state.podcastHistory.length + 1, // 🆕 penomoran episode otomatis
             text: state.podcastText.substring(0, 200) + '...',
             fullText: state.podcastText,
@@ -564,9 +564,14 @@
             aiContext: state.aiContext,
             chapters: state.currentChapters,
             wordCount: state.podcastText.split(' ').length
-        });
+        };
+        state.podcastHistory.push(episode);
         core.saveHistory();
         updateGallery();
+        // Durable backup in IndexedDB — localStorage stays the fast/source-of-truth copy.
+        if (window.KESEMPATAN?.KesDatabase?.mirrorHistoryItem) {
+            window.KESEMPATAN.KesDatabase.mirrorHistoryItem('podcast_history', episode);
+        }
     }
 
     function loadHistoryItem(index) {

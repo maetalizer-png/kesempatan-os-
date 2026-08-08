@@ -101,11 +101,17 @@
         }
 
         loadAnalytics() {
+            if (window.KESEMPATAN?.KesDatabase?.migrateLegacySnapshotOnce) {
+                window.KESEMPATAN.KesDatabase.migrateLegacySnapshotOnce('theme_analytics', 'kes_theme_analytics');
+            }
             try { return JSON.parse(localStorage.getItem('kes_theme_analytics')) || {}; } catch (e) { return {}; }
         }
 
         saveAnalytics() {
             localStorage.setItem('kes_theme_analytics', JSON.stringify(this.analytics));
+            if (window.KESEMPATAN?.KesDatabase?.mirrorSnapshot) {
+                window.KESEMPATAN.KesDatabase.mirrorSnapshot('theme_analytics', this.analytics);
+            }
         }
 
         trackThemeUsage(themeId) {

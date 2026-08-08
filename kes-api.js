@@ -125,7 +125,27 @@ const DB_STORES = Object.freeze([
     'benchmark',
     'api_cache',
     'reports',
-    'workflow_state'
+    'workflow_state',
+
+    // ============================================================
+    // v13 — write-behind mirror stores for growth-prone localStorage
+    // keys (see mirrorHistoryItem/migrateLegacyArrayOnce below). Each
+    // store just needs a record shape of { id, timestamp, ...payload }.
+    // ============================================================
+    'podcast_history',
+    'rap_battle_history',
+    'obs_trigger_history',
+    'super_share_history',
+    'prediction_history',
+    'worker_logs',
+    'optimizations',
+    'support_tickets',
+    'worker_stats',
+    'theme_analytics',
+    'predictions',
+    'ai_core_knowledge',
+    'rap_learning_data',
+    'learning_data'
 ]);
 
 // ============================================================
@@ -1624,6 +1644,118 @@ async function getDatabase() {
 }
 
 // ============================================================
+// LOCALSTORAGE -> INDEXEDDB WRITE-BEHIND MIRROR
+//
+// localStorage stays the source of truth for every existing
+// synchronous read — nothing about those call sites changes.
+// These two helpers only ever ADD a durable, effectively-unbounded
+// copy in IndexedDB on top:
+//   - mirrorHistoryItem(): call right after a localStorage write,
+//     fire-and-forget. Never throws; a failure here just means
+//     that one entry didn't get backed up, localStorage is
+//     unaffected either way.
+//   - migrateLegacyArrayOnce(): run once (per storeName) to copy
+//     whatever's already sitting in localStorage into IndexedDB the
+//     first time this code runs on a given browser, guarded by a
+//     localStorage flag so it never re-runs.
+// ============================================================
+async function mirrorHistoryItem(storeName, item) {
+    if (!window.KESDatabase || window.KESDatabase._isDummy || typeof window.KESDatabase.bulkInsert !== 'function') {
+        return;
+    }
+    try {
+        const record = Object.assign({ id: createId(), timestamp: Date.now() }, item);
+        await window.KESDatabase.bulkInsert(storeName, [record]);
+    } catch (error) {
+        Logger.warn('KesDatabase', 'Mirror to "' + storeName + '" failed: ' + error.message);
+    }
+}
+
+// For data that's a single evolving snapshot (worker stats, learning
+// weights, etc.) rather than an append-only history — always writes to
+// the same fixed id, so it stays one record instead of growing forever.
+async function mirrorSnapshot(storeName, data) {
+    if (!window.KESDatabase || window.KESDatabase._isDummy || typeof window.KESDatabase.bulkInsert !== 'function') {
+        return;
+    }
+    try {
+        const record = Object.assign({ id: 'current', timestamp: Date.now() }, data);
+        await window.KESDatabase.bulkInsert(storeName, [record]);
+    } catch (error) {
+        Logger.warn('KesDatabase', 'Snapshot mirror to "' + storeName + '" failed: ' + error.message);
+    }
+}
+
+// Lower-level variant for callers who already have the array in memory
+// (e.g. a module whose "legacy" data lives inside a combined state blob
+// rather than directly under one localStorage key).
+async function migrateArrayOnce(storeName, items) {
+    const flagKey = 'kes_idb_migrated_' + storeName;
+    if (localStorage.getItem(flagKey)) {
+        return;
+    }
+    if (!window.KESDatabase || window.KESDatabase._isDummy || typeof window.KESDatabase.bulkInsert !== 'function') {
+        return;
+    }
+    try {
+        if (items && items.length > 0) {
+            const records = items.map(function (item) {
+                return Object.assign({ id: createId(), timestamp: Date.now() }, item);
+            });
+            await window.KESDatabase.bulkInsert(storeName, records);
+            Logger.info('KesDatabase', 'Migrated ' + records.length + ' legacy entries into "' + storeName + '"');
+        }
+        localStorage.setItem(flagKey, '1');
+    } catch (error) {
+        Logger.warn('KesDatabase', 'Legacy migration for "' + storeName + '" failed: ' + error.message);
+    }
+}
+
+async function migrateLegacyArrayOnce(storeName, localStorageKey, extractItems) {
+    const flagKey = 'kes_idb_migrated_' + storeName;
+    if (localStorage.getItem(flagKey)) {
+        return;
+    }
+    if (!window.KESDatabase || window.KESDatabase._isDummy || typeof window.KESDatabase.bulkInsert !== 'function') {
+        return;
+    }
+    try {
+        const raw = localStorage.getItem(localStorageKey);
+        const items = raw ? extractItems(JSON.parse(raw)) : [];
+        if (items.length > 0) {
+            const records = items.map(function (item) {
+                return Object.assign({ id: createId(), timestamp: Date.now() }, item);
+            });
+            await window.KESDatabase.bulkInsert(storeName, records);
+            Logger.info('KesDatabase', 'Migrated ' + records.length + ' legacy entries into "' + storeName + '"');
+        }
+        localStorage.setItem(flagKey, '1');
+    } catch (error) {
+        Logger.warn('KesDatabase', 'Legacy migration for "' + storeName + '" failed: ' + error.message);
+    }
+}
+
+async function migrateLegacySnapshotOnce(storeName, localStorageKey) {
+    const flagKey = 'kes_idb_migrated_' + storeName;
+    if (localStorage.getItem(flagKey)) {
+        return;
+    }
+    if (!window.KESDatabase || window.KESDatabase._isDummy || typeof window.KESDatabase.bulkInsert !== 'function') {
+        return;
+    }
+    try {
+        const raw = localStorage.getItem(localStorageKey);
+        if (raw) {
+            await mirrorSnapshot(storeName, JSON.parse(raw));
+            Logger.info('KesDatabase', 'Migrated legacy snapshot into "' + storeName + '"');
+        }
+        localStorage.setItem(flagKey, '1');
+    } catch (error) {
+        Logger.warn('KesDatabase', 'Legacy snapshot migration for "' + storeName + '" failed: ' + error.message);
+    }
+}
+
+// ============================================================
 // EXPOSE
 // ============================================================
 KESEMPATAN.KesDatabase.KESDatabaseEngine = KESDatabase;
@@ -1632,6 +1764,11 @@ KESEMPATAN.KesDatabase.FrameworkHelpers = FrameworkHelpers;
 KESEMPATAN.KesDatabase.GraphQLAPI = GraphQLAPI;
 KESEMPATAN.KesDatabase.QueryBuilder = QueryBuilder;
 KESEMPATAN.KesDatabase.Playground = Playground;
+KESEMPATAN.KesDatabase.mirrorHistoryItem = mirrorHistoryItem;
+KESEMPATAN.KesDatabase.mirrorSnapshot = mirrorSnapshot;
+KESEMPATAN.KesDatabase.migrateLegacyArrayOnce = migrateLegacyArrayOnce;
+KESEMPATAN.KesDatabase.migrateArrayOnce = migrateArrayOnce;
+KESEMPATAN.KesDatabase.migrateLegacySnapshotOnce = migrateLegacySnapshotOnce;
 
 if (window.Utils && window.Utils.Logger) {
     window.Utils.Logger.info('API', 'Loaded');

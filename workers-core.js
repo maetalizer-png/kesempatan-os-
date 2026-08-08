@@ -271,12 +271,17 @@ AICore.prototype.getSummary = function() {
     };
 };
 AICore.prototype._save = function() {
-    localStorage.setItem('kes_ai_core_knowledge', JSON.stringify({
+    const snapshot = {
         knowledge: Array.from(this._knowledge),
         insights: this._insights,
         trainingData: this._trainingData.slice(-500),
         modelVersion: this._modelVersion
-    }));
+    };
+    localStorage.setItem('kes_ai_core_knowledge', JSON.stringify(snapshot));
+    // Durable backup in IndexedDB — localStorage stays the source of truth.
+    if (window.KESEMPATAN?.KesDatabase?.mirrorSnapshot) {
+        window.KESEMPATAN.KesDatabase.mirrorSnapshot('ai_core_knowledge', snapshot);
+    }
 };
 AICore.prototype._load = function() {
     try {
@@ -287,7 +292,12 @@ AICore.prototype._load = function() {
             this._trainingData = saved.trainingData || [];
             this._modelVersion = saved.modelVersion || '1.0';
         }
-    } catch (e) {}
+        if (window.KESEMPATAN?.KesDatabase?.migrateLegacySnapshotOnce) {
+            window.KESEMPATAN.KesDatabase.migrateLegacySnapshotOnce('ai_core_knowledge', 'kes_ai_core_knowledge');
+        }
+    } catch (e) {
+        console.warn('[WorkersAI] Load AI core knowledge failed:', e.message);
+    }
 };
 
 const OptimizationEngine = function(workersRef) {
@@ -306,8 +316,13 @@ OptimizationEngine.prototype.optimize = function() {
         const optimizations = self._analyzeWorker(worker, stats);
         if (optimizations.length > 0) {
             self._applyOptimizations(worker, optimizations);
-            optimized.push({ worker: worker.id, workerName: worker.name, optimizations: optimizations, timestamp: Date.now() });
-            self._optimizations.push({ worker: worker.id, workerName: worker.name, optimizations: optimizations, timestamp: Date.now() });
+            const entry = { worker: worker.id, workerName: worker.name, optimizations: optimizations, timestamp: Date.now() };
+            optimized.push(entry);
+            self._optimizations.push(entry);
+            // Durable backup in IndexedDB — localStorage stays the source of truth.
+            if (window.KESEMPATAN?.KesDatabase?.mirrorHistoryItem) {
+                window.KESEMPATAN.KesDatabase.mirrorHistoryItem('optimizations', entry);
+            }
         }
     });
     if (optimized.length > 0) {
@@ -345,7 +360,12 @@ OptimizationEngine.prototype._load = function() {
     try {
         const saved = JSON.parse(localStorage.getItem('kes_optimizations'));
         if (saved) this._optimizations = saved;
-    } catch (e) {}
+        if (window.KESEMPATAN?.KesDatabase?.migrateArrayOnce) {
+            window.KESEMPATAN.KesDatabase.migrateArrayOnce('optimizations', this._optimizations);
+        }
+    } catch (e) {
+        console.warn('[WorkersAI] Load optimizations failed:', e.message);
+    }
 };
 OptimizationEngine.prototype.getOptimizationHistory = function() { return this._optimizations.slice(-20); };
 OptimizationEngine.prototype.getStats = function() {
@@ -450,12 +470,17 @@ PredictionEngine.prototype._calculateConsistency = function(history) {
     return (consistency + patternScore) / 2;
 };
 PredictionEngine.prototype._save = function() {
-    localStorage.setItem('kes_predictions', JSON.stringify({
+    const snapshot = {
         predictions: Array.from(this._predictions),
         accuracy: this._accuracy,
         total: this._totalPredictions,
         correct: this._correctPredictions
-    }));
+    };
+    localStorage.setItem('kes_predictions', JSON.stringify(snapshot));
+    // Durable backup in IndexedDB — localStorage stays the source of truth.
+    if (window.KESEMPATAN?.KesDatabase?.mirrorSnapshot) {
+        window.KESEMPATAN.KesDatabase.mirrorSnapshot('predictions', snapshot);
+    }
 };
 PredictionEngine.prototype._load = function() {
     try {
@@ -466,7 +491,12 @@ PredictionEngine.prototype._load = function() {
             this._totalPredictions = saved.total || 0;
             this._correctPredictions = saved.correct || 0;
         }
-    } catch (e) {}
+        if (window.KESEMPATAN?.KesDatabase?.migrateLegacySnapshotOnce) {
+            window.KESEMPATAN.KesDatabase.migrateLegacySnapshotOnce('predictions', 'kes_predictions');
+        }
+    } catch (e) {
+        console.warn('[WorkersAI] Load predictions failed:', e.message);
+    }
 };
 PredictionEngine.prototype.updateAccuracy = function(workerId, actual) {
     const prediction = this._predictions.get(workerId);
@@ -747,9 +777,14 @@ AIWorkersCore.prototype._sendNotification = function(worker, result) {
     }
 };
 AIWorkersCore.prototype._addLog = function(worker, message) {
-    this.logs.unshift({ workerId: worker.id, workerName: worker.name, message: message, timestamp: Date.now() });
+    const entry = { workerId: worker.id, workerName: worker.name, message: message, timestamp: Date.now() };
+    this.logs.unshift(entry);
     if (this.logs.length > 200) this.logs.pop();
     this.saveLogs();
+    // Durable backup in IndexedDB — localStorage stays the source of truth.
+    if (window.KESEMPATAN?.KesDatabase?.mirrorHistoryItem) {
+        window.KESEMPATAN.KesDatabase.mirrorHistoryItem('worker_logs', entry);
+    }
 };
 AIWorkersCore.prototype._getLogs = function() { return this.logs; };
 AIWorkersCore.prototype._initSelfHealing = function() {
