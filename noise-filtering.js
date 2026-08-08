@@ -1,5 +1,9 @@
 (function() {
     'use strict';
+
+    const KESEMPATAN = window.KESEMPATAN || {};
+    window.KESEMPATAN = KESEMPATAN;
+
     if (window.__NoiseFilteringLoaded) {
         return;
     }
@@ -32,8 +36,8 @@
             if (!hasError) {
                 Logger.info('NoiseLoader', 'All noise modules loaded!');
                 document.dispatchEvent(new CustomEvent('noise-ready'));
-                if (window.NoiseUI && typeof window.NoiseUI.render === 'function') {
-                    window.NoiseUI.render();
+                if (KESEMPATAN.NoiseUI && typeof KESEMPATAN.NoiseUI.render === 'function') {
+                    KESEMPATAN.NoiseUI.render();
                 }
             } else {
                 Logger.warn('NoiseLoader', 'Loaded with errors, but continuing...');
@@ -69,8 +73,7 @@
         document.head.appendChild(script);
     }
 
-    window.KESEMPATAN = window.KESEMPATAN || {};
-    window.KESEMPATAN.NoiseFiltering = { modules: MODULES };
+    KESEMPATAN.NoiseFiltering = { modules: MODULES };
 
     loadNext();
 })();

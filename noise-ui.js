@@ -1,16 +1,20 @@
 (function() {
     'use strict';
+
+    const KESEMPATAN = window.KESEMPATAN || {};
+    window.KESEMPATAN = KESEMPATAN;
+
     if (window.__NoiseUILoaded) {
         return;
     }
     window.__NoiseUILoaded = true;
 
-    const Utils = window.__NoiseUtils?.Utils || {};
-    const InternalLogger = window.__NoiseUtils?.InternalLogger || { info: function() {} };
-    const NoiseState = window.__NoiseState || {};
-    const NoiseCore = window.NoiseCore || {};
-    const NoiseChart = window.NoiseChart || {};
-    const NoiseExport = window.NoiseExport || {};
+    const Utils = KESEMPATAN.NoiseUtils?.Utils || {};
+    const InternalLogger = KESEMPATAN.NoiseUtils?.InternalLogger || { info: function() {} };
+    const NoiseState = KESEMPATAN.NoiseState || {};
+    const NoiseCore = KESEMPATAN.NoiseCore || {};
+    const NoiseChart = KESEMPATAN.NoiseChart || {};
+    const NoiseExport = KESEMPATAN.NoiseExport || {};
     const _state = NoiseState.state || {};
     let _cleanupFns = NoiseState.getCleanupFns ? NoiseState.getCleanupFns() : [];
 
@@ -20,8 +24,8 @@
             setTimeout(render, 200);
             return;
         }
-        if (window.__NoiseUIRender && window.__NoiseUIRender.renderDashboard) {
-            window.__NoiseUIRender.renderDashboard();
+        if (KESEMPATAN.NoiseUIRender && KESEMPATAN.NoiseUIRender.renderDashboard) {
+            KESEMPATAN.NoiseUIRender.renderDashboard();
         }
         if (_state.isRunning && Utils.isOnline()) {
             if (!_state.intervalId) {
@@ -45,25 +49,24 @@
         InternalLogger.info('Noise', 'Destroyed');
     }
 
-    window.NoiseUI = {
+    KESEMPATAN.NoiseUI = {
         render: render,
-        renderDashboard: function() { if (window.__NoiseUIRender) window.__NoiseUIRender.renderDashboard(); },
+        renderDashboard: function() { if (KESEMPATAN.NoiseUIRender) KESEMPATAN.NoiseUIRender.renderDashboard(); },
         destroy: destroy,
-        updateSignalList: function(s) { if (window.__NoiseUIRender) window.__NoiseUIRender.updateSignalList(s); },
-        updateHistoryList: function(h) { if (window.__NoiseUIRender) window.__NoiseUIRender.updateHistoryList(h); },
+        updateSignalList: function(s) { if (KESEMPATAN.NoiseUIRender) KESEMPATAN.NoiseUIRender.updateSignalList(s); },
+        updateHistoryList: function(h) { if (KESEMPATAN.NoiseUIRender) KESEMPATAN.NoiseUIRender.updateHistoryList(h); },
         renderHistoryChart: NoiseChart.renderHistoryChart,
         renderVerdictRing: NoiseChart.renderVerdictRing,
-        updateStatsUI: function() { if (window.__NoiseUIRender) window.__NoiseUIRender.updateStatsUI(); },
-        updateStatusUI: function(s) { if (window.__NoiseUIRender) window.__NoiseUIRender.updateStatusUI(s); },
-        setStatusFilter: function(f) { if (window.__NoiseUIRender) window.__NoiseUIRender.setStatusFilter(f); },
-        setSentimentFilter: function(f) { if (window.__NoiseUIRender) window.__NoiseUIRender.setSentimentFilter(f); },
+        updateStatsUI: function() { if (KESEMPATAN.NoiseUIRender) KESEMPATAN.NoiseUIRender.updateStatsUI(); },
+        updateStatusUI: function(s) { if (KESEMPATAN.NoiseUIRender) KESEMPATAN.NoiseUIRender.updateStatusUI(s); },
+        setStatusFilter: function(f) { if (KESEMPATAN.NoiseUIRender) KESEMPATAN.NoiseUIRender.setStatusFilter(f); },
+        setSentimentFilter: function(f) { if (KESEMPATAN.NoiseUIRender) KESEMPATAN.NoiseUIRender.setSentimentFilter(f); },
         exportData: NoiseExport.exportData,
         clearHistory: NoiseExport.clearHistory,
         printDashboard: NoiseExport.printDashboard
     };
-    window.NoisePage = { render: render, destroy: destroy };
-
-    window.KESEMPATAN = window.KESEMPATAN || {};
-    window.KESEMPATAN.NoiseUI = window.NoiseUI;
-    window.KESEMPATAN.NoisePage = window.NoisePage;
+    KESEMPATAN.NoisePage = { render: render, destroy: destroy };
+    // Kept as a real global: 8 other modules (observ-ui-renderer, cai/cag/for/deb-data-engine,
+    // tor-tournament-arena, rap-engine, ui-generator) read window.NoisePage directly.
+    window.NoisePage = KESEMPATAN.NoisePage;
 })();

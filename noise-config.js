@@ -1,5 +1,9 @@
 (function() {
     'use strict';
+
+    const KESEMPATAN = window.KESEMPATAN || {};
+    window.KESEMPATAN = KESEMPATAN;
+
     if (window.__NoiseConfigLoaded) {
         return;
     }
@@ -75,13 +79,9 @@
             colorAttr + (extraStyle || '') + '">' + path + '</svg>';
     }
 
-    window.__NoiseConfig = {
+    KESEMPATAN.NoiseConfig = {
         CONFIG: CONFIG,
         NOISE_ICON_PATHS: NOISE_ICON_PATHS,
         noiseIcon: noiseIcon
     };
-    window.noiseIcon = noiseIcon;
-
-    window.KESEMPATAN = window.KESEMPATAN || {};
-    window.KESEMPATAN.NoiseConfig = window.__NoiseConfig;
 })();

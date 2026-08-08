@@ -1,13 +1,16 @@
 (function() {
     'use strict';
+
+    const KESEMPATAN = window.KESEMPATAN || {};
+    window.KESEMPATAN = KESEMPATAN;
+
     if (window.__NoiseStateLoaded) {
         return;
     }
     window.__NoiseStateLoaded = true;
 
-    const CONFIG = window.__NoiseConfig?.CONFIG || {};
-    const Utils = window.__NoiseUtils?.Utils || {};
-    const InternalLogger = window.__NoiseUtils?.InternalLogger || { info: function() {} };
+    const CONFIG = KESEMPATAN.NoiseConfig?.CONFIG || {};
+    const Utils = KESEMPATAN.NoiseUtils?.Utils || {};
 
     const IDB = {
         _db: null,
@@ -174,7 +177,7 @@
         _mounted = val;
     }
 
-    window.__NoiseState = {
+    KESEMPATAN.NoiseState = {
         IDB: IDB,
         state: _state,
         verdictRegistry: _verdictRegistry,
@@ -191,7 +194,4 @@
         getMounted: getMounted,
         setMounted: setMounted
     };
-
-    window.KESEMPATAN = window.KESEMPATAN || {};
-    window.KESEMPATAN.NoiseState = window.__NoiseState;
 })();

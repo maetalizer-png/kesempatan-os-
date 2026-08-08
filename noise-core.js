@@ -1,15 +1,19 @@
 (function() {
     'use strict';
+
+    const KESEMPATAN = window.KESEMPATAN || {};
+    window.KESEMPATAN = KESEMPATAN;
+
     if (window.__NoiseCoreLoaded) {
         return;
     }
     window.__NoiseCoreLoaded = true;
 
-    const CONFIG = window.__NoiseConfig?.CONFIG || {};
-    const Utils = window.__NoiseUtils?.Utils || {};
-    const InternalLogger = window.__NoiseUtils?.InternalLogger || { info: function() {} };
-    const NoiseState = window.__NoiseState || {};
-    const noiseIcon = window.noiseIcon || function() { return ''; };
+    const CONFIG = KESEMPATAN.NoiseConfig?.CONFIG || {};
+    const Utils = KESEMPATAN.NoiseUtils?.Utils || {};
+    const InternalLogger = KESEMPATAN.NoiseUtils?.InternalLogger || { info: function() {} };
+    const NoiseState = KESEMPATAN.NoiseState || {};
+    const noiseIcon = KESEMPATAN.NoiseConfig?.noiseIcon || function() { return ''; };
     const _state = NoiseState.state || {};
     const _verdictRegistry = NoiseState.verdictRegistry || new Map();
     const _aiCache = NoiseState.aiCache || new Map();
@@ -69,7 +73,7 @@
                     body: signal.content.substring(0, 200),
                     icon: '/favicon.ico'
                 });
-            } catch (e) {}
+            } catch (e) { InternalLogger.warn('Noise', 'Desktop notification failed: ' + e.message); }
         }
     }
 
@@ -461,7 +465,7 @@
             return;
         }
         _state.isScanning = true;
-        if (window.NoiseUI && window.NoiseUI.updateStatusUI) window.NoiseUI.updateStatusUI(true);
+        if (KESEMPATAN.NoiseUI && KESEMPATAN.NoiseUI.updateStatusUI) KESEMPATAN.NoiseUI.updateStatusUI(true);
         InternalLogger.info('Noise', 'Scanning...');
         try {
             const sources = await fetchSources();
@@ -499,12 +503,12 @@
             if (window.KESEMPATAN?.Observation && typeof window.KESEMPATAN?.Observation.render === 'function') {
                 window.KESEMPATAN?.Observation.render();
             }
-            if (window.NoiseUI) {
-                if (window.NoiseUI.updateStatsUI) window.NoiseUI.updateStatsUI();
-                if (window.NoiseUI.updateSignalList) window.NoiseUI.updateSignalList(_state.signals);
-                if (window.NoiseUI.updateHistoryList) window.NoiseUI.updateHistoryList(_state.history);
-                if (window.NoiseUI.renderHistoryChart) window.NoiseUI.renderHistoryChart();
-                if (window.NoiseUI.renderVerdictRing) window.NoiseUI.renderVerdictRing();
+            if (KESEMPATAN.NoiseUI) {
+                if (KESEMPATAN.NoiseUI.updateStatsUI) KESEMPATAN.NoiseUI.updateStatsUI();
+                if (KESEMPATAN.NoiseUI.updateSignalList) KESEMPATAN.NoiseUI.updateSignalList(_state.signals);
+                if (KESEMPATAN.NoiseUI.updateHistoryList) KESEMPATAN.NoiseUI.updateHistoryList(_state.history);
+                if (KESEMPATAN.NoiseUI.renderHistoryChart) KESEMPATAN.NoiseUI.renderHistoryChart();
+                if (KESEMPATAN.NoiseUI.renderVerdictRing) KESEMPATAN.NoiseUI.renderVerdictRing();
             }
             InternalLogger.info('Noise', 'Scan complete: ' + processed.length + ' signals');
         } catch (e) {
@@ -512,7 +516,7 @@
             Utils.showToast('Gagal scan', 'error');
         } finally {
             _state.isScanning = false;
-            if (window.NoiseUI && window.NoiseUI.updateStatusUI) window.NoiseUI.updateStatusUI(false);
+            if (KESEMPATAN.NoiseUI && KESEMPATAN.NoiseUI.updateStatusUI) KESEMPATAN.NoiseUI.updateStatusUI(false);
         }
     }
 
@@ -541,7 +545,7 @@
 
     loadState();
 
-    window.NoiseCore = {
+    KESEMPATAN.NoiseCore = {
         scan: scan,
         start: startScan,
         stop: stopScan,
@@ -557,7 +561,4 @@
         updateNotificationButton: updateNotificationButton,
         getState: function() { return _state; }
     };
-
-    window.KESEMPATAN = window.KESEMPATAN || {};
-    window.KESEMPATAN.NoiseCore = window.NoiseCore;
 })();

@@ -1,14 +1,18 @@
 (function() {
     'use strict';
+
+    const KESEMPATAN = window.KESEMPATAN || {};
+    window.KESEMPATAN = KESEMPATAN;
+
     if (window.__NoiseEventsLoaded) {
         return;
     }
     window.__NoiseEventsLoaded = true;
 
-    const Utils = window.__NoiseUtils?.Utils || {};
-    const NoiseState = window.__NoiseState || {};
-    const NoiseCore = window.NoiseCore || {};
-    const NoiseExport = window.NoiseExport || {};
+    const Utils = KESEMPATAN.NoiseUtils?.Utils || {};
+    const NoiseState = KESEMPATAN.NoiseState || {};
+    const NoiseCore = KESEMPATAN.NoiseCore || {};
+    const NoiseExport = KESEMPATAN.NoiseExport || {};
     const _state = NoiseState.state || {};
 
     function attachEvents(container) {
@@ -22,9 +26,9 @@
                 const filter = target.dataset.filter;
                 const sentiment = target.dataset.sentiment;
                 if (filter) {
-                    if (window.NoiseUI && window.NoiseUI.setStatusFilter) window.NoiseUI.setStatusFilter(filter);
+                    if (KESEMPATAN.NoiseUI && KESEMPATAN.NoiseUI.setStatusFilter) KESEMPATAN.NoiseUI.setStatusFilter(filter);
                 } else if (sentiment) {
-                    if (window.NoiseUI && window.NoiseUI.setSentimentFilter) window.NoiseUI.setSentimentFilter(sentiment);
+                    if (KESEMPATAN.NoiseUI && KESEMPATAN.NoiseUI.setSentimentFilter) KESEMPATAN.NoiseUI.setSentimentFilter(sentiment);
                 }
             });
         }
@@ -47,14 +51,14 @@
             startBtn.addEventListener('click', function(e) {
                 e.preventDefault();
                 if (NoiseCore.start) NoiseCore.start();
-                if (window.NoiseUI && window.NoiseUI.renderDashboard) window.NoiseUI.renderDashboard();
+                if (KESEMPATAN.NoiseUI && KESEMPATAN.NoiseUI.renderDashboard) KESEMPATAN.NoiseUI.renderDashboard();
             });
         }
         if (stopBtn) {
             stopBtn.addEventListener('click', function(e) {
                 e.preventDefault();
                 if (NoiseCore.stop) NoiseCore.stop();
-                if (window.NoiseUI && window.NoiseUI.renderDashboard) window.NoiseUI.renderDashboard();
+                if (KESEMPATAN.NoiseUI && KESEMPATAN.NoiseUI.renderDashboard) KESEMPATAN.NoiseUI.renderDashboard();
             });
         }
         if (exportBtn) {
@@ -116,15 +120,12 @@
                 _state.whitelist = whitelistVal;
                 if (NoiseCore.saveState) NoiseCore.saveState();
                 Utils.showToast('Pengaturan disimpan', 'success');
-                if (window.NoiseUI && window.NoiseUI.renderDashboard) window.NoiseUI.renderDashboard();
+                if (KESEMPATAN.NoiseUI && KESEMPATAN.NoiseUI.renderDashboard) KESEMPATAN.NoiseUI.renderDashboard();
             });
         }
     }
 
-    window.NoiseEvents = {
+    KESEMPATAN.NoiseEvents = {
         attachEvents: attachEvents
     };
-
-    window.KESEMPATAN = window.KESEMPATAN || {};
-    window.KESEMPATAN.NoiseEvents = window.NoiseEvents;
 })();

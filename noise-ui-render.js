@@ -1,15 +1,19 @@
 (function() {
     'use strict';
+
+    const KESEMPATAN = window.KESEMPATAN || {};
+    window.KESEMPATAN = KESEMPATAN;
+
     if (window.__NoiseUIRenderLoaded) return;
     window.__NoiseUIRenderLoaded = true;
 
-    const CONFIG = window.__NoiseConfig?.CONFIG || {};
-    const Utils = window.__NoiseUtils?.Utils || {};
-    const NoiseState = window.__NoiseState || {};
-    const NoiseCore = window.NoiseCore || {};
-    const NoiseChart = window.NoiseChart || {};
-    const NoiseEvents = window.NoiseEvents || {};
-    const noiseIcon = window.noiseIcon || function() { return ''; };
+    const CONFIG = KESEMPATAN.NoiseConfig?.CONFIG || {};
+    const Utils = KESEMPATAN.NoiseUtils?.Utils || {};
+    const NoiseState = KESEMPATAN.NoiseState || {};
+    const NoiseCore = KESEMPATAN.NoiseCore || {};
+    const NoiseChart = KESEMPATAN.NoiseChart || {};
+    const NoiseEvents = KESEMPATAN.NoiseEvents || {};
+    const noiseIcon = KESEMPATAN.NoiseConfig?.noiseIcon || function() { return ''; };
     const _state = NoiseState.state || {};
 
     function updateStatsUI() {
@@ -488,7 +492,7 @@
         if (NoiseEvents.attachEvents) NoiseEvents.attachEvents(inner);
     }
 
-    window.__NoiseUIRender = {
+    KESEMPATAN.NoiseUIRender = {
         renderDashboard: renderDashboard,
         updateStatsUI: updateStatsUI,
         updateStatusUI: updateStatusUI,
@@ -497,6 +501,4 @@
         setStatusFilter: setStatusFilter,
         setSentimentFilter: setSentimentFilter
     };
-    window.KESEMPATAN = window.KESEMPATAN || {};
-    window.KESEMPATAN.NoiseUIRender = window.__NoiseUIRender;
 })();

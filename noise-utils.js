@@ -1,11 +1,15 @@
 (function() {
     'use strict';
+
+    const KESEMPATAN = window.KESEMPATAN || {};
+    window.KESEMPATAN = KESEMPATAN;
+
     if (window.__NoiseUtilsLoaded) {
         return;
     }
     window.__NoiseUtilsLoaded = true;
 
-    const CONFIG = window.__NoiseConfig?.CONFIG || {};
+    const CONFIG = KESEMPATAN.NoiseConfig?.CONFIG || {};
 
     const InternalLogger = (function() {
         const _logs = [];
@@ -215,10 +219,8 @@
         }
     });
 
-    window.__NoiseUtils = {
+    KESEMPATAN.NoiseUtils = {
         InternalLogger: InternalLogger,
         Utils: Utils
     };
-    window.KESEMPATAN = window.KESEMPATAN || {};
-    window.KESEMPATAN.NoiseUtils = window.__NoiseUtils;
 })();

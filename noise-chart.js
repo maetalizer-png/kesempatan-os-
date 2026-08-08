@@ -1,12 +1,16 @@
 (function() {
     'use strict';
+
+    const KESEMPATAN = window.KESEMPATAN || {};
+    window.KESEMPATAN = KESEMPATAN;
+
     if (window.__NoiseChartLoaded) {
         return;
     }
     window.__NoiseChartLoaded = true;
 
-    const InternalLogger = window.__NoiseUtils?.InternalLogger || { info: function() {}, warn: function() {} };
-    const NoiseState = window.__NoiseState || {};
+    const InternalLogger = KESEMPATAN.NoiseUtils?.InternalLogger || { info: function() {}, warn: function() {} };
+    const NoiseState = KESEMPATAN.NoiseState || {};
     const _state = NoiseState.state || {};
 
     function renderHistoryChart() {
@@ -167,11 +171,8 @@
         }
     }
 
-    window.NoiseChart = {
+    KESEMPATAN.NoiseChart = {
         renderHistoryChart: renderHistoryChart,
         renderVerdictRing: renderVerdictRing
     };
-
-    window.KESEMPATAN = window.KESEMPATAN || {};
-    window.KESEMPATAN.NoiseChart = window.NoiseChart;
 })();

@@ -1,13 +1,17 @@
 (function() {
     'use strict';
+
+    const KESEMPATAN = window.KESEMPATAN || {};
+    window.KESEMPATAN = KESEMPATAN;
+
     if (window.__NoiseExportLoaded) {
         return;
     }
     window.__NoiseExportLoaded = true;
 
-    const Utils = window.__NoiseUtils?.Utils || {};
-    const NoiseState = window.__NoiseState || {};
-    const NoiseCore = window.NoiseCore || {};
+    const Utils = KESEMPATAN.NoiseUtils?.Utils || {};
+    const NoiseState = KESEMPATAN.NoiseState || {};
+    const NoiseCore = KESEMPATAN.NoiseCore || {};
     const _state = NoiseState.state || {};
 
     function exportData(format) {
@@ -55,7 +59,7 @@
             _state.stats = { total: 0, blocked: 0, filtered: 0, allowed: 0 };
             _state.scanCount = 0;
             if (NoiseCore.saveState) NoiseCore.saveState();
-            if (window.NoiseUI && window.NoiseUI.renderDashboard) window.NoiseUI.renderDashboard();
+            if (KESEMPATAN.NoiseUI && KESEMPATAN.NoiseUI.renderDashboard) KESEMPATAN.NoiseUI.renderDashboard();
             Utils.showToast('Riwayat dihapus', 'success');
         }
     }
@@ -64,12 +68,9 @@
         window.print();
     }
 
-    window.NoiseExport = {
+    KESEMPATAN.NoiseExport = {
         exportData: exportData,
         clearHistory: clearHistory,
         printDashboard: printDashboard
     };
-
-    window.KESEMPATAN = window.KESEMPATAN || {};
-    window.KESEMPATAN.NoiseExport = window.NoiseExport;
 })();
