@@ -1,9 +1,12 @@
 (function() {
 'use strict';
+const KESEMPATAN = window.KESEMPATAN || {};
+window.KESEMPATAN = KESEMPATAN;
+
 if (window.__WorkflowStateLoaded) return;
 window.__WorkflowStateLoaded = true;
 
-const { showToast } = window.Utils || {};
+const { showToast, InternalLogger } = window.Utils || {};
 
 let analyticsData = [];
 const WORKFLOW_STATE_KEY = 'kes_workflow_state';
@@ -38,10 +41,10 @@ function addWorkflowControls(mode) {
     document.body.appendChild(panel);
 
     document.getElementById('workflowPauseBtn')?.addEventListener('click', function() {
-        window.__WorkflowRuntimeFlags.paused = !window.__WorkflowRuntimeFlags.paused;
+        KESEMPATAN.Runtime.WorkflowRuntimeFlags.paused = !KESEMPATAN.Runtime.WorkflowRuntimeFlags.paused;
         const btn = document.getElementById('workflowPauseBtn');
         const status = document.getElementById('workflowStatus');
-        if (window.__WorkflowRuntimeFlags.paused) {
+        if (KESEMPATAN.Runtime.WorkflowRuntimeFlags.paused) {
             btn.textContent = '▶️ RESUME';
             btn.style.background = '#00FFA3';
             if (status) {
@@ -61,8 +64,8 @@ function addWorkflowControls(mode) {
     });
 
     document.getElementById('workflowStopBtn')?.addEventListener('click', function() {
-        window.__WorkflowRuntimeFlags.abort = true;
-        window.__WorkflowRuntimeFlags.paused = false;
+        KESEMPATAN.Runtime.WorkflowRuntimeFlags.abort = true;
+        KESEMPATAN.Runtime.WorkflowRuntimeFlags.paused = false;
         const status = document.getElementById('workflowStatus');
         if (status) {
             status.textContent = '⏹️ STOPPED';
@@ -73,7 +76,7 @@ function addWorkflowControls(mode) {
 
     document.getElementById('workflowModeToggleBtn')?.addEventListener('click', function() {
         const newMode = mode === 'sequential' ? 'parallel' : 'sequential';
-        window.__WorkflowRuntimeFlags.userMode = newMode;
+        KESEMPATAN.Runtime.WorkflowRuntimeFlags.userMode = newMode;
         localStorage.setItem('kes_workflow_mode', newMode);
         const label = newMode === 'parallel' ? '⚡ PARALEL' : '🐢 SEQUENTIAL';
         const color = newMode === 'parallel' ? '#FFD700' : '#00FFA3';
@@ -100,7 +103,7 @@ function saveWorkflowState(state, mode) {
             savedAt: Date.now()
         }));
     } catch (e) {
-        window.__InternalLogger.warn('Workflow', 'Save state failed: ' + e.message);
+        InternalLogger.warn('Workflow', 'Save state failed: ' + e.message);
     }
 }
 
@@ -109,7 +112,7 @@ function loadWorkflowState() {
         const saved = localStorage.getItem(WORKFLOW_STATE_KEY);
         if (saved) return JSON.parse(saved);
     } catch (e) {
-        window.__InternalLogger.warn('Workflow', 'Load state failed: ' + e.message);
+        InternalLogger.warn('Workflow', 'Load state failed: ' + e.message);
     }
     return null;
 }
@@ -117,7 +120,9 @@ function loadWorkflowState() {
 function clearWorkflowState() {
     try {
         localStorage.removeItem(WORKFLOW_STATE_KEY);
-    } catch (e) {}
+    } catch (e) {
+        InternalLogger.warn('Workflow', 'Clear state failed: ' + e.message);
+    }
 }
 
 function showResumeDialog(savedState) {
@@ -130,20 +135,23 @@ function saveAnalytics(data) {
     if (analyticsData.length > 100) analyticsData.shift();
     try {
         localStorage.setItem(ANALYTICS_KEY, JSON.stringify(analyticsData));
-    } catch (e) {}
+    } catch (e) {
+        InternalLogger.warn('Workflow', 'Save analytics failed: ' + e.message);
+    }
 }
 
 function loadAnalytics() {
     try {
         const saved = localStorage.getItem(ANALYTICS_KEY);
         if (saved) analyticsData = JSON.parse(saved);
-    } catch (e) {}
+    } catch (e) {
+        InternalLogger.warn('Workflow', 'Load analytics failed: ' + e.message);
+    }
 }
 
 loadAnalytics();
 
-window.KESEMPATAN = window.KESEMPATAN || {};
-window.KESEMPATAN.WorkflowState = Object.freeze({
+KESEMPATAN.WorkflowState = Object.freeze({
     addWorkflowControls: addWorkflowControls,
     removeWorkflowControls: removeWorkflowControls,
     saveWorkflowState: saveWorkflowState,
@@ -153,13 +161,4 @@ window.KESEMPATAN.WorkflowState = Object.freeze({
     saveAnalytics: saveAnalytics,
     loadAnalytics: loadAnalytics
 });
-
-window.addWorkflowControls = addWorkflowControls;
-window.removeWorkflowControls = removeWorkflowControls;
-window.saveWorkflowState = saveWorkflowState;
-window.loadWorkflowState = loadWorkflowState;
-window.clearWorkflowState = clearWorkflowState;
-window.showResumeDialog = showResumeDialog;
-window.saveAnalytics = saveAnalytics;
-window.loadAnalytics = loadAnalytics;
 })();

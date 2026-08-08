@@ -1034,9 +1034,9 @@ const AutoLearningUltimate = {
 };
 
 function installLearningHooks() {
-    if (window.WorkflowEngine && !window.WorkflowEngine.__thresholdHookInstalled) {
-        const originalStart = window.WorkflowEngine.start;
-        window.WorkflowEngine.start = async function(payload, uploadedContent) {
+    if (window.KESEMPATAN.WorkflowEngine && !window.KESEMPATAN.WorkflowEngine.__thresholdHookInstalled) {
+        const originalStart = window.KESEMPATAN.WorkflowEngine.start;
+        window.KESEMPATAN.WorkflowEngine.start = async function(payload, uploadedContent) {
             const result = await originalStart.call(this, payload, uploadedContent);
             if (window.lastAggregated && window.HITL) {
                 const results = window.HITL.getAllResults ? window.HITL.getAllResults() : [];
@@ -1049,7 +1049,7 @@ function installLearningHooks() {
             }
             return result;
         };
-        window.WorkflowEngine.__thresholdHookInstalled = true;
+        window.KESEMPATAN.WorkflowEngine.__thresholdHookInstalled = true;
     }
     if (window.recordFeedback && !window.recordFeedback.__thresholdHookInstalled) {
         const originalRecord = window.recordFeedback;

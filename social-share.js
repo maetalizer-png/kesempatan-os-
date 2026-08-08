@@ -463,9 +463,9 @@ function initSuperSocialShare() {
     window.SuperSocialShare.render();
 }
 
-if (window.WorkflowEngine) {
-    const originalStart = window.WorkflowEngine.start;
-    window.WorkflowEngine.start = async function(payload, uploadedContent) {
+if (window.KESEMPATAN.WorkflowEngine) {
+    const originalStart = window.KESEMPATAN.WorkflowEngine.start;
+    window.KESEMPATAN.WorkflowEngine.start = async function(payload, uploadedContent) {
         const result = await originalStart.call(this, payload, uploadedContent);
         if (window.lastAggregated && window.SuperSocialShare) window.SuperSocialShare.setResult(window.lastAggregated);
         return result;

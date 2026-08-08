@@ -1,9 +1,12 @@
 (function() {
 'use strict';
+const KESEMPATAN = window.KESEMPATAN || {};
+window.KESEMPATAN = KESEMPATAN;
+
 if (window.__WorkflowLLMBridgeLoaded) return;
 window.__WorkflowLLMBridgeLoaded = true;
 
-const { Logger, showToast } = window.Utils || {};
+const { Logger, showToast, InternalLogger } = window.Utils || {};
 
 const LLM_GENERATE_TIMEOUT_MS = 45000;
 const LLM_SLOW_DEVICE_KEY = 'kes_llm_slow_device_until';
@@ -21,7 +24,9 @@ function isDeviceKnownSlow() {
 function markDeviceSlow() {
     try {
         localStorage.setItem(LLM_SLOW_DEVICE_KEY, String(Date.now() + LLM_SLOW_DEVICE_TTL_MS));
-    } catch (e) {}
+    } catch (e) {
+        InternalLogger.warn('Workflow', 'Mark device slow failed: ' + e.message);
+    }
 }
 
 let __activeGenerateCount = 0;
@@ -68,12 +73,12 @@ function buildBootstrapCorpus() {
     if (window.AGENTS_CONFIG) {
         const names = Object.keys(window.AGENTS_CONFIG).slice(0, MAX_BOOTSTRAP_AGENTS);
         names.forEach(function(name) {
-            const cfg = window.AGENTS_CONFIG[name];
-            if (cfg && cfg.systemPrompt) {
-                texts.push(String(cfg.systemPrompt).slice(0, MAX_BOOTSTRAP_TEXT_LENGTH));
+            const agentConfig = window.AGENTS_CONFIG[name];
+            if (agentConfig && agentConfig.systemPrompt) {
+                texts.push(String(agentConfig.systemPrompt).slice(0, MAX_BOOTSTRAP_TEXT_LENGTH));
             }
-            if (cfg && Array.isArray(cfg.fewShotExamples)) {
-                cfg.fewShotExamples.forEach(function(ex) {
+            if (agentConfig && Array.isArray(agentConfig.fewShotExamples)) {
+                agentConfig.fewShotExamples.forEach(function(ex) {
                     if (typeof ex === 'string') {
                         texts.push(ex.slice(0, MAX_BOOTSTRAP_TEXT_LENGTH));
                     } else if (ex && typeof ex.output === 'string') {
@@ -237,16 +242,17 @@ async function searchPastReports(topic, db) {
             const text = (r.topic || '').toLowerCase();
             return keywords.some(function(kw) { return text.includes(kw); });
         }).slice(0, 2);
-    } catch (_) {
+    } catch (error) {
+        InternalLogger.warn('Workflow', 'Search past reports failed: ' + error.message);
         return [];
     }
 }
 
 function getAgentCacheKey(agent, model, prompt) {
     let hash = 0;
-    const str = agent + '|' + model + '|' + prompt.substring(0, 500);
-    for (let i = 0; i < str.length; i++) {
-        hash = ((hash << 5) - hash) + str.charCodeAt(i);
+    const cacheKeySource = agent + '|' + model + '|' + prompt.substring(0, 500);
+    for (let i = 0; i < cacheKeySource.length; i++) {
+        hash = ((hash << 5) - hash) + cacheKeySource.charCodeAt(i);
         hash = hash & hash;
     }
     return hash.toString(36);
@@ -261,7 +267,8 @@ async function tryGetCachedAgentResult(agent, model, prompt) {
         const ONE_HOUR = 3600000;
         if (Date.now() - entry.timestamp > ONE_HOUR) return null;
         return entry.response;
-    } catch (_) {
+    } catch (error) {
+        InternalLogger.warn('Workflow', 'Read agent cache failed: ' + error.message);
         return null;
     }
 }
@@ -274,11 +281,12 @@ async function cacheAgentResultIfValid(agent, model, prompt, parsed) {
     try {
         const key = getAgentCacheKey(agent, model, prompt);
         await window.KesCacheDB.setCachedResponse(key, agent, parsed);
-    } catch (_) {}
+    } catch (error) {
+        InternalLogger.warn('Workflow', 'Write agent cache failed: ' + error.message);
+    }
 }
 
-window.KESEMPATAN = window.KESEMPATAN || {};
-window.KESEMPATAN.WorkflowLLMBridge = Object.freeze({
+KESEMPATAN.WorkflowLLMBridge = Object.freeze({
     callGenerativeEngine: callGenerativeEngine,
     ensureKesempatanLLMReady: ensureKesempatanLLMReady,
     searchWorldData: searchWorldData,
@@ -287,12 +295,4 @@ window.KESEMPATAN.WorkflowLLMBridge = Object.freeze({
     tryGetCachedAgentResult: tryGetCachedAgentResult,
     cacheAgentResultIfValid: cacheAgentResultIfValid
 });
-
-window.callGenerativeEngine = callGenerativeEngine;
-window.ensureKesempatanLLMReady = ensureKesempatanLLMReady;
-window.searchWorldData = searchWorldData;
-window.searchPastReports = searchPastReports;
-window.getAgentCacheKey = getAgentCacheKey;
-window.tryGetCachedAgentResult = tryGetCachedAgentResult;
-window.cacheAgentResultIfValid = cacheAgentResultIfValid;
 })();

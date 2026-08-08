@@ -272,7 +272,7 @@ const WatchMode = class {
 const exists = function(module, fn) {
     try {
         const root = TestEnvironment.isBrowser ? window : globalThis;
-        const mod = root[module];
+        const mod = root.KESEMPATAN?.[module] || root[module];
         if (!mod) return false;
         if (fn === undefined) return true;
         return (typeof mod[fn] === 'function') || (mod[fn] !== undefined);

@@ -1,49 +1,19 @@
 (function() {
 "use strict";
+const KESEMPATAN = window.KESEMPATAN || {};
+window.KESEMPATAN = KESEMPATAN;
+
 if (window.__WorkflowLoaded) return;
 window.__WorkflowLoaded = true;
 
-const InternalLogger = Object.freeze({
-    _logs: [],
-    _maxLogs: 500,
-    _levels: Object.freeze({ DEBUG: 0, INFO: 1, WARN: 2, ERROR: 3, CRITICAL: 4 }),
-    _level: 1,
-    log: function(level, module, message, data) {
-        const entry = Object.freeze({
-            timestamp: Date.now(),
-            level: level,
-            module: module,
-            message: message,
-            data: data || null,
-            id: Date.now().toString(36) + Math.random().toString(36).substr(2, 6)
-        });
-        this._logs.push(entry);
-        if (this._logs.length > this._maxLogs) this._logs.shift();
-        return entry;
-    },
-    debug: function(module, message, data) { return this.log(this._levels.DEBUG, module, message, data); },
-    info: function(module, message, data) { return this.log(this._levels.INFO, module, message, data); },
-    warn: function(module, message, data) { return this.log(this._levels.WARN, module, message, data); },
-    error: function(module, message, data) { return this.log(this._levels.ERROR, module, message, data); },
-    critical: function(module, message, data) { return this.log(this._levels.CRITICAL, module, message, data); },
-    getLogs: function(level, limit) {
-        limit = limit || 100;
-        let result = this._logs;
-        if (level !== undefined) result = result.filter(function(log) { return log.level >= level; });
-        return result.slice(-limit);
-    },
-    clear: function() { this._logs = []; },
-    setLevel: function(level) { this._level = level; },
-    getLevel: function() { return this._level; }
-});
-
-window.__InternalLogger = InternalLogger;
-
 const { CONFIG, Utils } = window;
-const { Logger, RetryEngine, KnowledgeBase, safeParseResponse, escapeHtml, showToast } = Utils || {};
+const { Logger, RetryEngine, KnowledgeBase, safeParseResponse, escapeHtml, showToast, InternalLogger } = Utils || {};
 const { updateChart } = window.ChartManager || {};
 const { autoApproveResults, hidePanel: hideHitlPanel } = window.HITL || {};
 const { setData: setExportData } = window.ExportManager || {};
+const { WorkflowState, WorkflowLLMBridge } = KESEMPATAN;
+// WorkflowParallel is read live via KESEMPATAN.WorkflowParallel (not destructured):
+// workflow-parallel.js loads after this file, so a snapshot taken here would stay undefined.
 
 const WORKFLOW_CONFIG = Object.freeze({
     maxRetries: 3,
@@ -55,14 +25,14 @@ const WORKFLOW_CONFIG = Object.freeze({
     autoMode: localStorage.getItem('kes_workflow_auto_mode') !== 'false'
 });
 
-window.__WorkflowConfig = WORKFLOW_CONFIG;
-
 let currentUserMode = localStorage.getItem('kes_workflow_mode') || 'auto';
 let workflowLock = false;
 let workflowAbort = false;
 let workflowPaused = false;
 
-window.__WorkflowRuntimeFlags = {
+KESEMPATAN.Runtime = KESEMPATAN.Runtime || {};
+KESEMPATAN.Runtime.WorkflowConfig = WORKFLOW_CONFIG;
+KESEMPATAN.Runtime.WorkflowRuntimeFlags = {
     get abort() { return workflowAbort; },
     set abort(v) { workflowAbort = v; },
     get paused() { return workflowPaused; },
@@ -137,16 +107,16 @@ function updateMetricDisplays(result) {
 }
 
 async function buildPrompt(agent, context, uploadedData) {
-    const cfg = getAgentConfig(agent);
-    const similar = await searchVectorMemory(context.topic);
-    let memSection = similar.length ? "\nMemori:\n" + similar.map(function(m) {
-        return '- ' + (m.metadata.summary?.substring(0, 200) || '') + ' (skor:' + (m.metadata.score || 0) + ')';
+    const agentConfig = getAgentConfig(agent);
+    const similarMemories = await searchVectorMemory(context.topic);
+    let memSection = similarMemories.length ? "\nMemori:\n" + similarMemories.map(function(memory) {
+        return '- ' + (memory.metadata.summary?.substring(0, 200) || '') + ' (skor:' + (memory.metadata.score || 0) + ')';
     }).join("\n") : "";
-    const worldMatches = window.searchWorldData(context.topic);
+    const worldMatches = WorkflowLLMBridge.searchWorldData(context.topic);
     let worldSection = worldMatches.length ? "\nData referensi:\n" + worldMatches.map(function(w) {
         return '- ' + JSON.stringify(w).substring(0, 200);
     }).join("\n") : "";
-    const pastReports = await window.searchPastReports(context.topic, appDatabase);
+    const pastReports = await WorkflowLLMBridge.searchPastReports(context.topic, appDatabase);
     let historySection = pastReports.length ? "\nLaporan serupa sebelumnya:\n" + pastReports.map(function(r) {
         return '- ' + (r.topic || '') + ' (skor:' + (r.score || 0) + ')';
     }).join("\n") : "";
@@ -158,10 +128,10 @@ async function buildPrompt(agent, context, uploadedData) {
             kgHint = `\nKnowledge graph: ${summary.nodes} konsep, ${summary.edges} relasi.`;
         }
     }
-    let prompt = cfg.systemPrompt + "\n\n";
-    if (cfg.fewShotExamples && cfg.fewShotExamples.length > 0) {
+    let prompt = agentConfig.systemPrompt + "\n\n";
+    if (agentConfig.fewShotExamples && agentConfig.fewShotExamples.length > 0) {
         prompt += "Contoh format output yang diharapkan:\n";
-        cfg.fewShotExamples.forEach(function(ex) {
+        agentConfig.fewShotExamples.forEach(function(ex) {
             prompt += "Input: " + ex.input + "\nOutput: " + JSON.stringify(ex.output, null, 2) + "\n\n";
         });
     }
@@ -171,7 +141,9 @@ async function buildPrompt(agent, context, uploadedData) {
     if (typeof window.getLearningPrompt === 'function') {
         try {
             prompt = window.getLearningPrompt(agent, prompt, context.topic);
-        } catch (e) {}
+        } catch (e) {
+            InternalLogger.warn('Workflow', 'getLearningPrompt failed, using base prompt: ' + e.message);
+        }
     }
     return prompt;
 }
@@ -194,7 +166,7 @@ async function executeAgentWithRetryCore(agent, context, uploadedData, retryCoun
     try {
         const prompt = await buildPrompt(agent, context, uploadedData);
         const modelForCache = (window.CONFIG && window.CONFIG.DEFAULT_MODEL) || 'default';
-        const cached = await window.tryGetCachedAgentResult(agent, modelForCache, prompt);
+        const cached = await WorkflowLLMBridge.tryGetCachedAgentResult(agent, modelForCache, prompt);
         if (cached) {
             if (Logger) {
                 Logger.success("AGENT", agent + " selesai (dari CACHE, skor: " + cached.score + ", conf: " + cached.confidence + ") [" + modeLabel + "]");
@@ -204,13 +176,13 @@ async function executeAgentWithRetryCore(agent, context, uploadedData, retryCoun
             return cached;
         }
 
-        const generatePromise = window.callGenerativeEngine(prompt, agent, context.topic);
+        const generatePromise = WorkflowLLMBridge.callGenerativeEngine(prompt, agent, context.topic);
         const raw = await generatePromise;
         let parsed = safeParseResponse(raw);
         parsed.agent = agent;
         parsed = (KnowledgeBase && KnowledgeBase.enrich) ? KnowledgeBase.enrich(parsed, context.topic) : parsed;
 
-        await window.cacheAgentResultIfValid(agent, modelForCache, prompt, parsed);
+        await WorkflowLLMBridge.cacheAgentResultIfValid(agent, modelForCache, prompt, parsed);
         await saveVectorMemory(agent + ': ' + (parsed.summary || ''), {
             agent: agent,
             summary: parsed.summary,
@@ -313,9 +285,9 @@ function aggregateResults(approvedItems, topic) {
         if (r.risk) combined.risk.push.apply(combined.risk, r.risk);
         if (r.recommendation) combined.recommendation.push(r.recommendation);
 
-        for (const m of Object.keys(combined.metrics)) {
-            const val = (r.metrics && r.metrics[m] !== undefined) ? r.metrics[m] : (r[m] !== undefined ? r[m] : 50);
-            combined.metrics[m] += val * w;
+        for (const metricKey of Object.keys(combined.metrics)) {
+            const val = (r.metrics && r.metrics[metricKey] !== undefined) ? r.metrics[metricKey] : (r[metricKey] !== undefined ? r[metricKey] : 50);
+            combined.metrics[metricKey] += val * w;
         }
     }
 
@@ -331,8 +303,8 @@ function aggregateResults(approvedItems, topic) {
         return { ...FALLBACK, metrics: combined.metrics, score: 0, validCount: validCount, failedCount: failedCount, failedAgents: failedAgents };
     }
 
-    for (const m of Object.keys(combined.metrics)) {
-        combined.metrics[m] = Math.min(100, Math.round(combined.metrics[m] / combined.totalWeight));
+    for (const metricKey of Object.keys(combined.metrics)) {
+        combined.metrics[metricKey] = Math.min(100, Math.round(combined.metrics[metricKey] / combined.totalWeight));
     }
 
     const STOPWORDS_ID = new Set(['yang', 'dan', 'di', 'ke', 'dari', 'untuk', 'pada', 'dengan',
@@ -340,8 +312,8 @@ function aggregateResults(approvedItems, topic) {
         'tersebut', 'oleh', 'dalam', 'secara', 'hingga', 'sudah', 'belum', 'lebih', 'sangat',
         'agar', 'karena', 'jika', 'saat', 'antara', 'per', 'ada', 'tetap', 'maupun', 'serta']);
 
-    const tokenize = function(s) {
-        return s.toLowerCase()
+    const tokenize = function(text) {
+        return text.toLowerCase()
             .replace(/[^\p{L}\p{N}\s]/gu, ' ')
             .split(/\s+/)
             .filter(function(w) { return w.length > 2 && !STOPWORDS_ID.has(w); });
@@ -357,16 +329,16 @@ function aggregateResults(approvedItems, topic) {
         return union === 0 ? 0 : intersect / union;
     };
 
-    const countDigits = function(s) {
-        const m = s.match(/\d/g);
-        return m ? m.length : 0;
+    const countDigits = function(text) {
+        const digitMatches = text.match(/\d/g);
+        return digitMatches ? digitMatches.length : 0;
     };
 
     const NEAR_DUP_THRESHOLD = 0.55;
-    const unique = function(arr) {
+    const unique = function(items) {
         const buckets = [];
-        for (let i = 0; i < arr.length; i++) {
-            const x = arr[i];
+        for (let i = 0; i < items.length; i++) {
+            const x = items[i];
             if (!x || !x.trim()) continue;
             const trimmed = x.trim();
             const tokens = tokenize(trimmed);
@@ -577,7 +549,9 @@ function forceGenerateReport(results, payload) {
     }
     try {
         localStorage.setItem('kes_last_aggregated', JSON.stringify(aggregated));
-    } catch (e) {}
+    } catch (e) {
+        InternalLogger.warn('Workflow', 'Save last aggregated failed: ' + e.message);
+    }
     if (hideHitlPanel) hideHitlPanel();
     if (showToast) showToast('📊 Laporan siap! Skor: ' + finalScore + '/100', 'success');
 
@@ -606,7 +580,7 @@ const WorkflowEngine = {
         if (!validateInput(payload)) return;
         lastTopic = payload.topic;
 
-        await window.ensureKesempatanLLMReady();
+        await WorkflowLLMBridge.ensureKesempatanLLMReady();
 
         const apiKey = document.getElementById('apiKeyInput')?.value;
         const kesempatanLLMReady = window.KesempatanLLM && window.KesempatanLLM.isReady && window.KesempatanLLM.isReady();
@@ -630,10 +604,10 @@ const WorkflowEngine = {
             return;
         }
 
-        agents = window.prioritySortAgents(agents);
-        currentMode = window.selectMode(agents.length);
+        agents = KESEMPATAN.WorkflowParallel.prioritySortAgents(agents);
+        currentMode = KESEMPATAN.WorkflowParallel.selectMode(agents.length);
         const isParallel = currentMode === 'parallel';
-        const batchSize = isParallel ? window.getOptimalBatchSize() : 1;
+        const batchSize = isParallel ? KESEMPATAN.WorkflowParallel.getOptimalBatchSize() : 1;
 
         if (Logger) {
             Logger.system('📋 Workflow — Mode: ' + currentMode.toUpperCase() + ' | ' + agents.length + ' agen | Batch: ' + batchSize);
@@ -642,11 +616,11 @@ const WorkflowEngine = {
             showToast((isParallel ? '⚡' : '🐢') + ' Mode ' + currentMode.toUpperCase() + ' (' + agents.length + ' agen)', "info");
         }
 
-        const savedState = window.loadWorkflowState();
+        const savedState = WorkflowState.loadWorkflowState();
         let results = [];
         let completed = 0;
 
-        if (savedState && savedState.topic === payload.topic && savedState.mode === currentMode && window.showResumeDialog(savedState)) {
+        if (savedState && savedState.topic === payload.topic && savedState.mode === currentMode && WorkflowState.showResumeDialog(savedState)) {
             if (Logger) {
                 Logger.system('Resume workflow dari ' + savedState.completedCount + ' agen yang sudah selesai');
             }
@@ -656,7 +630,7 @@ const WorkflowEngine = {
                 return !savedState.completedAgents?.includes(a);
             });
             agents = remainingAgents;
-            window.clearWorkflowState();
+            WorkflowState.clearWorkflowState();
             if (showToast) showToast('📂 Lanjut dari ' + completed + ' agen', "info");
 
             for (let i = 0; i < results.length; i++) {
@@ -688,9 +662,9 @@ const WorkflowEngine = {
         if (progressSpan) progressSpan.textContent = completed + '/' + totalAgents;
         if (progressFill) progressFill.style.width = (completed / totalAgents * 100) + '%';
 
-        window.startTimer();
-        window.mulaiEstimasiWaktu(totalAgents, currentMode);
-        window.addWorkflowControls(currentMode);
+        KESEMPATAN.WorkflowParallel.startTimer();
+        KESEMPATAN.WorkflowParallel.mulaiEstimasiWaktu(totalAgents, currentMode);
+        WorkflowState.addWorkflowControls(currentMode);
 
         const logBox = document.getElementById("systemLog");
         let finalResults = [];
@@ -743,7 +717,7 @@ const WorkflowEngine = {
                     updateMetricDisplays(result);
                 }
 
-                window.saveWorkflowState({
+                WorkflowState.saveWorkflowState({
                     completedCount: completed,
                     totalAgents: totalAgents,
                     results: results,
@@ -791,7 +765,7 @@ const WorkflowEngine = {
                 markAgentCompleted(agent);
                 updateMetricDisplays(result);
 
-                window.saveWorkflowState({
+                WorkflowState.saveWorkflowState({
                     completedCount: completed,
                     totalAgents: totalAgents,
                     results: results,
@@ -801,26 +775,26 @@ const WorkflowEngine = {
                 }, currentMode);
 
                 if (i < agents.length - 1 && !workflowPaused && !workflowAbort) {
-                    const delay = window.getRateLimit(agent);
+                    const delay = KESEMPATAN.WorkflowParallel.getRateLimit(agent);
                     await new Promise(function(resolve) { setTimeout(resolve, delay); });
                 }
             }
         }
 
-        const totalTime = window.stopTimer(currentMode);
-        window.hentikanEstimasiWaktu(currentMode);
-        window.removeWorkflowControls();
+        const totalTime = KESEMPATAN.WorkflowParallel.stopTimer(currentMode);
+        KESEMPATAN.WorkflowParallel.hentikanEstimasiWaktu(currentMode);
+        WorkflowState.removeWorkflowControls();
 
         if (loadingDiv) loadingDiv.style.display = "none";
 
         if (workflowAbort) {
-            window.clearWorkflowState();
+            WorkflowState.clearWorkflowState();
             workflowLock = false;
             if (showToast) showToast("⏹️ Workflow dihentikan", "info");
             return;
         }
 
-        window.clearWorkflowState();
+        WorkflowState.clearWorkflowState();
 
         if (Logger) {
             Logger.system('✅ Workflow selesai dalam ' + totalTime.toFixed(1) + ' detik (' + currentMode + ')');
@@ -829,7 +803,7 @@ const WorkflowEngine = {
             showToast('✅ Selesai! ' + totalTime.toFixed(1) + ' detik (' + currentMode.toUpperCase() + ')', "success");
         }
 
-        window.saveAnalytics({
+        WorkflowState.saveAnalytics({
             mode: currentMode,
             score: results.reduce(function(s, r) { return s + (r.score || 0); }, 0) / results.length,
             time: totalTime,
@@ -938,19 +912,13 @@ const WorkflowEngine = {
             return true;
         }
         return false;
-    }
+    },
+
+    setDatabase: function(db) { appDatabase = db; },
+    setKnowledgeGraph: function(kg) { knowledgeGraph = kg; }
 };
 
-function setWorkflowDatabase(db) { appDatabase = db; }
-function setKnowledgeGraph(kg) { knowledgeGraph = kg; }
-
-window.KESEMPATAN = window.KESEMPATAN || {};
-window.KESEMPATAN.WorkflowEngine = WorkflowEngine;
-
-window.WorkflowEngine = WorkflowEngine;
-window.setWorkflowDatabase = setWorkflowDatabase;
-window.setKnowledgeGraph = setKnowledgeGraph;
-window.__WorkflowLoaded = true;
+KESEMPATAN.WorkflowEngine = WorkflowEngine;
 
 InternalLogger.info('Workflow', 'Workflow engine loaded');
 InternalLogger.info('Workflow', 'HITL panel siap');

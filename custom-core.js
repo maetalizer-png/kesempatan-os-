@@ -508,9 +508,9 @@
         return filtered;
     };
 
-    if (window.WorkflowEngine) {
-        const originalStart = window.WorkflowEngine.start;
-        window.WorkflowEngine.start = async function(payload, uploadedContent) {
+    if (window.KESEMPATAN.WorkflowEngine) {
+        const originalStart = window.KESEMPATAN.WorkflowEngine.start;
+        window.KESEMPATAN.WorkflowEngine.start = async function(payload, uploadedContent) {
             const result = await originalStart.call(this, payload, uploadedContent);
             const checkboxes = document.querySelectorAll('.agent-checkbox:checked');
             const agents = Array.from(checkboxes).map(function(cb) { return cb.dataset.agent; });

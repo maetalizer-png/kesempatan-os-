@@ -223,7 +223,7 @@
         if (analyzed.confidence < AUTO_TRIGGER_CONFIG.minConfidence) return false;
         if (analyzed.sentiment.label !== AUTO_TRIGGER_CONFIG.sentimentRequired) return false;
 
-        if (!window.WorkflowEngine || window.WorkflowEngine.isRunning()) return false;
+        if (!window.KESEMPATAN?.WorkflowEngine || window.KESEMPATAN?.WorkflowEngine.isRunning()) return false;
 
         autoTriggerState.isProcessing = true;
         autoTriggerState.lastTrigger = now;
@@ -236,7 +236,7 @@
                 topic: signal.title,
                 instruction: `Auto-triggered from Observation Engine\n\nSinyal: ${signal.title}\nDeskripsi: ${signal.desc}\nKategori: ${signal.category}\nConfidence: ${analyzed.confidence}%\nSentimen: ${analyzed.sentiment.label}\n\nLakukan analisis mendalam untuk peluang ini.`
             };
-            await window.WorkflowEngine.start(payload, '');
+            await window.KESEMPATAN?.WorkflowEngine.start(payload, '');
             saveTriggerHistory(signal, analyzed);
             OBS.showToast('Auto-analysis completed for: ' + signal.title.substring(0, 30), 'success');
         } catch (err) {

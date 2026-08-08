@@ -1,5 +1,8 @@
 (function() {
 'use strict';
+const KESEMPATAN = window.KESEMPATAN || {};
+window.KESEMPATAN = KESEMPATAN;
+
 if (window.__WorkflowParallelLoaded) return;
 window.__WorkflowParallelLoaded = true;
 
@@ -9,6 +12,7 @@ let workflowStartTime = null;
 let timerInterval = null;
 let estimasiInterval = null;
 let estimasiWaktuMulai = null;
+let updateWorkflowUIModeRef = null;
 
 function detectOptimalBatchSize() {
     try {
@@ -26,7 +30,7 @@ function detectOptimalBatchSize() {
 
 function getOptimalBatchSize() {
     const detected = detectOptimalBatchSize();
-    return Math.min(window.__WorkflowConfig.maxBatchSize, Math.max(window.__WorkflowConfig.minBatchSize, detected));
+    return Math.min(KESEMPATAN.Runtime.WorkflowConfig.maxBatchSize, Math.max(KESEMPATAN.Runtime.WorkflowConfig.minBatchSize, detected));
 }
 
 function getRateLimit(agent) {
@@ -38,7 +42,7 @@ function getRateLimit(agent) {
 }
 
 function prioritySortAgents(agents) {
-    if (!window.__WorkflowConfig.enablePriorityQueue) return agents;
+    if (!KESEMPATAN.Runtime.WorkflowConfig.enablePriorityQueue) return agents;
     const priorityAgents = ['RahmadRaharjo', 'Manager', 'StartupFounder', 'Hunter', 'Strategist'];
     const sorted = [];
     const remaining = [];
@@ -55,7 +59,7 @@ function startTimer() {
     if (timerInterval) clearInterval(timerInterval);
     timerInterval = setInterval(function() {
         const timerDisplay = document.getElementById('timerDisplay');
-        if (timerDisplay && !window.__WorkflowRuntimeFlags.abort && !window.__WorkflowRuntimeFlags.paused) {
+        if (timerDisplay && !KESEMPATAN.Runtime.WorkflowRuntimeFlags.abort && !KESEMPATAN.Runtime.WorkflowRuntimeFlags.paused) {
             timerDisplay.textContent = ((Date.now() - workflowStartTime) / 1000).toFixed(1);
         }
     }, 100);
@@ -77,8 +81,8 @@ function selectMode(agentCount) {
     const userMode = localStorage.getItem('kes_workflow_mode') || 'auto';
     if (userMode === 'parallel') return 'parallel';
     if (userMode === 'sequential') return 'sequential';
-    if (userMode === 'auto' || !window.__WorkflowConfig.autoMode) {
-        return agentCount < window.__WorkflowConfig.sequentialThreshold ? 'sequential' : 'parallel';
+    if (userMode === 'auto' || !KESEMPATAN.Runtime.WorkflowConfig.autoMode) {
+        return agentCount < KESEMPATAN.Runtime.WorkflowConfig.sequentialThreshold ? 'sequential' : 'parallel';
     }
     return 'sequential';
 }
@@ -89,7 +93,7 @@ function mulaiEstimasiWaktu(totalAgen, mode) {
     const multiplier = mode === 'parallel' ? 0.25 : 1;
     const batchInfo = mode === 'parallel' ? ' ' + getOptimalBatchSize() + 'x' : '';
     estimasiInterval = setInterval(function() {
-        if (window.__WorkflowRuntimeFlags.abort || window.__WorkflowRuntimeFlags.paused) return;
+        if (KESEMPATAN.Runtime.WorkflowRuntimeFlags.abort || KESEMPATAN.Runtime.WorkflowRuntimeFlags.paused) return;
         const progressSpan = document.getElementById('agentProgress');
         if (!progressSpan) return;
         const parts = progressSpan.textContent.split('/');
@@ -149,13 +153,13 @@ function renderParallelPage() {
     if (toggle) {
         toggle.addEventListener('change', function(e) {
             const mode = e.target.checked ? 'parallel' : 'auto';
-            if (window.updateWorkflowUIMode) {
-                window.updateWorkflowUIMode(mode);
+            if (updateWorkflowUIModeRef) {
+                updateWorkflowUIModeRef(mode);
             } else {
                 localStorage.setItem('kes_workflow_mode', mode);
             }
-            if (window.Utils && window.Utils.showToast) {
-                window.Utils.showToast(e.target.checked ? '⚡ Mode paralel ON' : '🐢 Mode paralel OFF (Auto)', 'info');
+            if (showToast) {
+                showToast(e.target.checked ? '⚡ Mode paralel ON' : '🐢 Mode paralel OFF (Auto)', 'info');
             }
         });
     }
@@ -281,55 +285,49 @@ function initWorkflowModeUI() {
                 modeBadge.textContent = '🔄 ' + label;
                 modeBadge.className = 'workflow-mode-badge ' + badgeClass;
             }
-            if (window.WorkflowEngine && window.WorkflowEngine.setMode) {
-                window.WorkflowEngine.setMode(mode);
+            if (KESEMPATAN.WorkflowEngine && KESEMPATAN.WorkflowEngine.setMode) {
+                KESEMPATAN.WorkflowEngine.setMode(mode);
             }
-            if (window.WorkflowEngine) {
-                window.WorkflowEngine.currentMode = mode;
+            if (KESEMPATAN.WorkflowEngine) {
+                KESEMPATAN.WorkflowEngine.currentMode = mode;
             }
             const changeEvent = new CustomEvent('workflowModeChanged', { detail: { mode: mode } });
             document.dispatchEvent(changeEvent);
         }
 
-        window.updateWorkflowUIMode = updateWorkflowUI;
+        updateWorkflowUIModeRef = updateWorkflowUI;
 
         if (modeAuto) {
             modeAuto.addEventListener('click', function(e) {
                 e.preventDefault();
                 updateWorkflowUI('auto');
-                if (window.Utils && window.Utils.showToast) {
-                    window.Utils.showToast('🔄 Mode Auto', 'info');
-                }
+                if (showToast) showToast('🔄 Mode Auto', 'info');
             });
         }
         if (modeSeq) {
             modeSeq.addEventListener('click', function(e) {
                 e.preventDefault();
                 updateWorkflowUI('sequential');
-                if (window.Utils && window.Utils.showToast) {
-                    window.Utils.showToast('🐢 Mode Sequential', 'info');
-                }
+                if (showToast) showToast('🐢 Mode Sequential', 'info');
             });
         }
         if (modePar) {
             modePar.addEventListener('click', function(e) {
                 e.preventDefault();
                 updateWorkflowUI('parallel');
-                if (window.Utils && window.Utils.showToast) {
-                    window.Utils.showToast('⚡ Mode Parallel AKTIF!', 'success');
-                }
+                if (showToast) showToast('⚡ Mode Parallel AKTIF!', 'success');
             });
         }
 
         const savedMode = localStorage.getItem('kes_workflow_mode') || 'auto';
         updateWorkflowUI(savedMode);
-    } catch (e) {
+    } catch (error) {
         const container = document.getElementById('workflowModeContainer');
         if (container) {
-            container.innerHTML = '<div style="padding:8px 12px; color:#FF6B6B; font-size:11px; border:1px solid #FF6B6B; border-radius:8px;">⚠️ Mode Eksekusi gagal dimuat: ' + e.message + '</div>';
+            container.innerHTML = '<div style="padding:8px 12px; color:#FF6B6B; font-size:11px; border:1px solid #FF6B6B; border-radius:8px;">⚠️ Mode Eksekusi gagal dimuat: ' + error.message + '</div>';
         }
-        if (window.Utils && window.Utils.Logger) {
-            window.Utils.Logger.error('Workflow', 'initWorkflowModeUI gagal: ' + e.message);
+        if (Logger) {
+            Logger.error('Workflow', 'initWorkflowModeUI gagal: ' + error.message);
         }
     }
 }
@@ -340,8 +338,7 @@ if (document.readyState === 'loading') {
     initWorkflowModeUI();
 }
 
-window.KESEMPATAN = window.KESEMPATAN || {};
-window.KESEMPATAN.WorkflowParallel = Object.freeze({
+KESEMPATAN.WorkflowParallel = Object.freeze({
     detectOptimalBatchSize: detectOptimalBatchSize,
     getOptimalBatchSize: getOptimalBatchSize,
     getRateLimit: getRateLimit,
@@ -355,15 +352,4 @@ window.KESEMPATAN.WorkflowParallel = Object.freeze({
     renderWorkflowModeSelector: renderWorkflowModeSelector,
     initWorkflowModeUI: initWorkflowModeUI
 });
-
-window.detectOptimalBatchSize = detectOptimalBatchSize;
-window.getOptimalBatchSize = getOptimalBatchSize;
-window.getRateLimit = getRateLimit;
-window.prioritySortAgents = prioritySortAgents;
-window.startTimer = startTimer;
-window.stopTimer = stopTimer;
-window.selectMode = selectMode;
-window.mulaiEstimasiWaktu = mulaiEstimasiWaktu;
-window.hentikanEstimasiWaktu = hentikanEstimasiWaktu;
-window.renderParallelPage = renderParallelPage;
 })();

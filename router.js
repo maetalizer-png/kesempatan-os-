@@ -211,7 +211,7 @@ function showPage(pageId) {
         const element = document.getElementById('premiumPage');
         if (element) {
             element.style.display = 'block';
-            if (typeof renderParallelPage === 'function') renderParallelPage();
+            if (window.KESEMPATAN?.WorkflowParallel?.renderParallelPage) window.KESEMPATAN.WorkflowParallel.renderParallelPage();
         }
         return;
     }

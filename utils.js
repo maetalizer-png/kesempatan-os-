@@ -1,5 +1,8 @@
 (function() {
 'use strict';
+const KESEMPATAN = window.KESEMPATAN || {};
+window.KESEMPATAN = KESEMPATAN;
+
 if (window.__UtilsLoaded) return;
 window.__UtilsLoaded = true;
 
@@ -289,11 +292,12 @@ const Utils = Object.freeze({
     METRIC_KEYS: METRIC_KEYS
 });
 
-window.KESEMPATAN = window.KESEMPATAN || {};
-window.KESEMPATAN.Utils = Utils;
-window.KESEMPATAN.Logger = Logger;
-window.KESEMPATAN.InternalLogger = InternalLogger;
+KESEMPATAN.Utils = Utils;
+KESEMPATAN.Logger = Logger;
+KESEMPATAN.InternalLogger = InternalLogger;
 
+// Compat aliases: most of the app still reads these as bare window globals.
+// Remove once every consumer has migrated to window.KESEMPATAN.Utils.*.
 window.Utils = Utils;
 window.escapeHtml = escapeHtml;
 window.showToast = showToast;

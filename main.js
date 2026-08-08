@@ -365,8 +365,8 @@ function setupEventListeners() {
             return;
         }
         try {
-            if (typeof window.ensureKesempatanLLMReady === 'function') {
-                await window.ensureKesempatanLLMReady();
+            if (window.KESEMPATAN?.WorkflowLLMBridge?.ensureKesempatanLLMReady) {
+                await window.KESEMPATAN.WorkflowLLMBridge.ensureKesempatanLLMReady();
             }
             const kesempatanLLMReady = window.KesempatanLLM && window.KesempatanLLM.isReady && window.KesempatanLLM.isReady();
             if (!kesempatanLLMReady) {
@@ -388,7 +388,7 @@ function setupEventListeners() {
                 localStorage.setItem('kes_api_key_' + provider, obfuscate.encrypt(key));
             }
             const uploaded = window.__uploadedData || '';
-            await WorkflowEngine.start({ topic: topic, instruction: instruction }, uploaded);
+            await window.KESEMPATAN.WorkflowEngine.start({ topic: topic, instruction: instruction }, uploaded);
         } catch (error) {
             const shortMessage = (error && error.message) ? error.message : String(error);
             showToast('Gagal memulai eksekusi: ' + shortMessage, 'error');
@@ -458,7 +458,7 @@ async function initApp() {
             else if (window.setCacheDatabase) window.setCacheDatabase(db);
             if (window.setMemoryDatabase) window.setMemoryDatabase(db);
             if (window.setLearningDatabase) window.setLearningDatabase(db);
-            if (window.setWorkflowDatabase) window.setWorkflowDatabase(db);
+            if (window.KESEMPATAN?.WorkflowEngine?.setDatabase) window.KESEMPATAN.WorkflowEngine.setDatabase(db);
         } catch (error) {
             Logger.warn('INIT', 'getDatabase gagal (lanjut tanpa DB): ' + error.message);
         }
@@ -468,7 +468,7 @@ async function initApp() {
         try {
             window.knowledgeGraph = new KnowledgeGraph();
             await window.knowledgeGraph.load();
-            if (window.setKnowledgeGraph) window.setKnowledgeGraph(window.knowledgeGraph);
+            if (window.KESEMPATAN?.WorkflowEngine?.setKnowledgeGraph) window.KESEMPATAN.WorkflowEngine.setKnowledgeGraph(window.knowledgeGraph);
         } catch (error) {
             Logger.warn('INIT', 'KnowledgeGraph gagal (lanjut tanpa KG): ' + error.message);
         }
