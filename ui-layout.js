@@ -1,279 +1,273 @@
-/* ============================================================
-   📁 rap/ui-renderer/ui-layout.js
-   🔥 LAYOUT LAYER — seluruh markup HTML + fungsi render roster/select.
-   Dipindahkan apa adanya dari ui-renderer.js (byte-identik):
-   renderCypherLounge(), markRole(), clearRole(), syncHiddenSelects(),
-   renderSongSelect() TIDAK diubah satu karakter pun.
-   ============================================================ */
-
 (function() {
-    'use strict';
+'use strict';
+if (window.__WorkersAILayout) return;
+window.__WorkersAILayout = true;
 
-    if (window.__RapUILayout) return;
-    window.__RapUILayout = true;
+const state = window.WorkersAIState;
+const config = window.WorkersAIConfig;
+if (!state || !config) return;
 
-    function renderCypherLounge(container) {
-        const grid = container.querySelector('#cypherLoungeGrid');
-        if (!grid) return;
-        if (!window.RapCharacterEngine || !window.RapCharacterEngine.getAllPersonaCards) {
-            grid.innerHTML = '<div style="padding:12px; color:#555; font-size:11px;">⏳ Memuat roster rapper...</div>';
-            return;
-        }
-        const cards = window.RapCharacterEngine.getAllPersonaCards();
-        grid.innerHTML = cards.map(function(p) {
-            return '<div class="rapper-card lounge-card" data-agent="' + p.id + '" title="' + p.catchphrase + '">' +
-                '<span class="role-badge" style="display:none;"></span>' +
-                '<div class="rapper-avatar" style="background:linear-gradient(135deg,' + p.color1 + ',' + p.color2 + ');">' + p.emoji + '</div>' +
-                '<div>' +
-                    '<div class="rapper-name">' + p.name + '</div>' +
-                    '<div class="rapper-role">' + p.archetype + '</div>' +
-                '</div>' +
-            '</div>';
-        }).join('');
+const WORKERS_CSS = `<style>
+#aiWorkersPage, #aiWorkersDataPage, #aiWorkersDataContainer, .result-container { overflow-x: hidden !important; width: 100% !important; max-width: 100% !important; word-break: break-word !important; }
+.filter-btn-ai { transition: all 0.2s ease; }
+.filter-btn-ai:hover { transform: scale(1.03); }
+.filter-btn-ai.active { border-color: #00FFA3 !important; background: rgba(0, 255, 163, 0.15) !important; color: #00FFA3 !important; }
+.worker-toggle-ai { accent-color: #00FFA3; width: 16px; height: 16px; cursor: pointer; transition: all 0.2s ease; }
+.worker-toggle-ai:hover { transform: scale(1.1); }
+.run-worker-ai { transition: all 0.2s ease; }
+.run-worker-ai:hover { transform: scale(1.05); box-shadow: 0 0 20px rgba(0, 255, 163, 0.2); }
+.run-worker-ai:disabled { opacity: 0.5; cursor: not-allowed; }
+.worker-grid-item { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+.worker-grid-item:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(0, 255, 163, 0.05); }
+#aiWorkersLogs { scroll-behavior: smooth; }
+#aiWorkersLogs::-webkit-scrollbar { width: 4px; }
+#aiWorkersLogs::-webkit-scrollbar-track { background: rgba(255, 255, 255, 0.02); border-radius: 4px; }
+#aiWorkersLogs::-webkit-scrollbar-thumb { background: rgba(255, 215, 0, 0.15); border-radius: 4px; }
+.log-entry-ai { transition: all 0.2s ease; }
+.log-entry-ai:hover { background: rgba(255, 215, 0, 0.05) !important; }
+.worker-status-online { color: #00FFA3; text-shadow: 0 0 10px rgba(0, 255, 163, 0.3); }
+.worker-status-offline { color: #666; }
+.worker-status-warning { color: #FFD700; text-shadow: 0 0 10px rgba(255, 215, 0, 0.3); }
+.worker-status-error { color: #FF6B6B; text-shadow: 0 0 10px rgba(255, 107, 107, 0.3); }
+@media (max-width: 768px) { .worker-grid-item { min-width: 100%; } #aiWorkersLogs { height: 150px !important; } }
+</style>`;
 
-        // Default: 2 rapper pertama otomatis jadi Agent A & Agent B,
-        // sama seperti perilaku default sebelumnya (RahmadRaharjo vs Manager).
-        const allCards = grid.querySelectorAll('.rapper-card');
-        if (allCards[0]) markRole(allCards[0], 'A');
-        if (allCards[1]) markRole(allCards[1], 'B');
-        syncHiddenSelects(container);
-    }
+function getCategoryStats(workers) {
+    const stats = {};
+    if (!workers) return stats;
+    workers.forEach(function(w) {
+        if (!stats[w.category]) stats[w.category] = { total: 0, enabled: 0 };
+        stats[w.category].total++;
+        if (w.enabled) stats[w.category].enabled++;
+    });
+    return stats;
+}
 
-    // Tandai sebuah kartu sebagai Agent A / Agent B secara visual.
-    function markRole(card, role) {
-        card.classList.remove('selected', 'role-a', 'role-b');
-        card.dataset.role = role;
-        card.classList.add('selected', role === 'A' ? 'role-a' : 'role-b');
-        const badge = card.querySelector('.role-badge');
-        if (badge) {
-            badge.style.display = 'flex';
-            badge.textContent = role;
-        }
-    }
-
-    function clearRole(card) {
-        card.classList.remove('selected', 'role-a', 'role-b');
-        delete card.dataset.role;
-        const badge = card.querySelector('.role-badge');
-        if (badge) badge.style.display = 'none';
-    }
-
-    // Sinkronkan hidden <select> (dipakai kode lama untuk kompatibilitas)
-    // dengan kartu yang sedang berperan A/B di Cypher Lounge.
-    function syncHiddenSelects(container) {
-        const grid = container.querySelector('#cypherLoungeGrid');
-        const selA = container.querySelector('#rapAgentA');
-        const selB = container.querySelector('#rapAgentB');
-        if (!grid || !selA || !selB) return;
-        const cardA = grid.querySelector('.rapper-card[data-role="A"]');
-        const cardB = grid.querySelector('.rapper-card[data-role="B"]');
-        const opts = window.RapCharacterEngine ? window.RapCharacterEngine.getAllPersonas() : [];
-        function fillSelect(sel, current) {
-            sel.innerHTML = opts.map(function(id) {
-                return '<option value="' + id + '"' + (id === current ? ' selected' : '') + '>' + id + '</option>';
-            }).join('');
-        }
-        fillSelect(selA, cardA ? cardA.dataset.agent : null);
-        fillSelect(selB, cardB ? cardB.dataset.agent : null);
-
-        const vsSub = container.querySelector('#lounge-vs-sub');
-        if (vsSub) {
-            vsSub.textContent = (cardA && cardB)
-                ? 'siap battle!'
-                : 'pilih Agent A & B di atas';
+function getTotalStats(workers, workerStats) {
+    const total = workers.length;
+    const enabled = workers.filter(function(w) { return w.enabled; }).length;
+    let totalSuccess = 0;
+    let totalFailed = 0;
+    for (const key in workerStats) {
+        if (workerStats.hasOwnProperty(key)) {
+            totalSuccess += workerStats[key].success || 0;
+            totalFailed += workerStats[key].failed || 0;
         }
     }
-
-    // ============================================================
-    // 🔥 SONG SELECT — DAFTAR 24 LAGU DARI SOUNDBANK, DIKELOMPOKKAN GENRE
-    // ✅ Sebelumnya cuma 3 opsi genre polos (Trap/Boom Bap/Drill) tanpa
-    //    identitas lagu. Sekarang setiap opsi adalah LAGU sungguhan
-    //    dengan judul & BPM sendiri — pilih lagu, genre+BPM ikut berubah.
-    // ============================================================
-    function renderSongSelect(container) {
-        const select = container.querySelector('#beatPatternSelect');
-        if (!select) return;
-        if (!window.RapSoundbank) {
-            select.innerHTML = '<option value="trap">🎵 Trap (default)</option>';
-            return;
-        }
-        const genreLabels = { 'trap': '🔥 Trap', 'boom-bap': '🥁 Boom Bap', 'drill': '⚡ Drill' };
-        const genres = ['trap', 'boom-bap', 'drill'];
-        select.innerHTML = genres.map(function(genre) {
-            const songs = window.RapSoundbank.getSongsByGenre(genre);
-            const options = songs.map(function(s) {
-                return '<option value="' + s.id + '">' + s.title + ' — ' + s.bpm + ' BPM</option>';
-            }).join('');
-            return '<optgroup label="' + genreLabels[genre] + '">' + options + '</optgroup>';
-        }).join('');
-    }
-
-
-    function buildHTML() {
-        return `
-            <div class="rap-modern-wrapper">
-
-                <!-- ===== ARENA HEADER — entrance, bukan sekadar judul ===== -->
-                <div class="rap-header-arena">
-                    <div class="arena-brand">
-                        <span class="arena-title">KESEMPATAN OS</span>
-                        <span class="arena-tag">RAP BATTLE ARENA</span>
-                    </div>
-                    <div class="arena-sub">Flow · Rhyme · Punchline · AI Judge</div>
-                </div>
-
-                <!-- ===== BATTLE SCOREBOARD — satu bar, bukan 5 widget ===== -->
-                <div class="scoreboard-bar broadcast-frame"><span class="bf-tr"></span><span class="bf-bl"></span>
-                    <div class="score-cell timer">
-                        <div id="rapTimerDisplay" class="stat-number green">00:00</div>
-                        <div class="stat-label">Timer</div>
-                    </div>
-                    <div class="score-cell round">
-                        <div id="rapRoundDisplay" class="stat-number cyan">0/3</div>
-                        <div class="stat-label">Round</div>
-                        <div class="progress-bar"><div id="roundProgressBar" class="progress-fill" style="width:0%;"></div></div>
-                    </div>
-                    <div class="score-cell agent-a">
-                        <div id="rapScoreA" class="stat-number cyan">0%</div>
-                        <div class="stat-label">Agent A</div>
-                        <div class="progress-bar"><div id="scoreAFill" class="progress-fill" style="width:0%; background:linear-gradient(90deg,#00D4FF,#00FFA3);"></div></div>
-                    </div>
-                    <div class="score-cell agent-b">
-                        <div id="rapScoreB" class="stat-number pink">0%</div>
-                        <div class="stat-label">Agent B</div>
-                        <div class="progress-bar"><div id="scoreBFill" class="progress-fill" style="width:0%; background:linear-gradient(90deg,#FF6B6B,#FF2D75);"></div></div>
-                    </div>
-                    <div class="score-cell audience">
-                        <div class="stat-number green" style="display:flex; align-items:center; justify-content:center; gap:4px;"><span id="reactionCount">0</span></div>
-                        <div class="stat-label">Audience</div>
-                        <div id="audienceReactions" class="reactions"></div>
-                    </div>
-                </div>
-
-                <!-- ===== BATTLE STAGE — HERO, focal point utama halaman ===== -->
-                <div class="battle-stage broadcast-frame"><span class="bf-tr"></span><span class="bf-bl"></span>
-                    <div class="stage-vignette"></div>
-                    <div class="arena-floor"></div>
-                    <div class="spotlight-beam beam-left"></div>
-                    <div class="spotlight-beam beam-right"></div>
-                    <div class="stage-side side-a">
-                        <span class="stage-ready-dot"></span>
-                        <span class="stage-nameplate"><span class="stage-label">AGENT A</span></span>
-                        <span class="stage-podium-status">PODIUM</span>
-                    </div>
-                    <div class="vs-badge">
-                        <div class="vs-emblem"><span class="vs-text">VS</span></div>
-                        <span id="lounge-vs-sub" class="vs-sub">pilih Agent A &amp; B di bawah</span>
-                    </div>
-                    <div class="stage-side side-b">
-                        <span class="stage-ready-dot"></span>
-                        <span class="stage-nameplate"><span class="stage-label">AGENT B</span></span>
-                        <span class="stage-podium-status">PODIUM</span>
-                    </div>
-                    <!-- hidden select untuk kompatibilitas dengan logic lama -->
-                    <select id="rapAgentA" style="display:none;"></select>
-                    <select id="rapAgentB" style="display:none;"></select>
-                </div>
-
-                <!-- ===== CONTROL ROOM — AI Judge + Beat Engine, satu rack horizontal ===== -->
-                <div class="rap-panel control-room">
-                    <div class="control-room-col judge-col broadcast-frame frame-purple"><span class="bf-tr"></span><span class="bf-bl"></span>
-                        <div class="rap-panel-label">CH.02 — AI JUDGE</div>
-                        <div class="rap-panel-row">
-                            <span class="rap-status on">READY</span>
-                            <div class="console-shell" style="flex:1; min-width:140px;">
-                            <select id="rapJudge" class="console-native console-select judge-select">
-                                <option value="ai">AI Judge — Decision Engine</option>
-                                <option value="user">User Vote</option>
-                            </select>
-                            </div>
-                        </div>
-                        <div id="flowAnalysisContainer" style="display:none;" class="rap-panel-readout">
-                            <span id="flowStats">Flow: - | Rhymes: - | Words: -</span>
-                        </div>
-                    </div>
-                    <div class="control-room-divider"></div>
-                    <div class="control-room-col beat-col broadcast-frame frame-amber"><span class="bf-tr"></span><span class="bf-bl"></span>
-                        <div class="rap-panel-label" style="display:flex; align-items:center; gap:6px;">BEAT ENGINE <span class="eq-bars"><span></span><span></span><span></span><span></span></span></div>
-                        <div class="rap-panel-row">
-                            <div class="console-shell" style="flex:1;">
-                            <select id="beatPatternSelect" class="console-native console-select">
-                                <!-- diisi otomatis oleh renderSongSelect() dari RapSoundbank (24 lagu) -->
-                            </select>
-                            </div>
-                            <button onclick="window.RapBattle.toggleBeat()" class="beat-btn">Beat</button>
-                            <span id="beatIndicator" class="bpm-badge" onclick="window.RapBattle.toggleBeat()">140 BPM</span>
-                        </div>
-                        <div class="visualizer-section">
-                            <canvas id="rapVisualizer" width="800" height="80" style="width:100%; height:54px;"></canvas>
-                            <div class="rap-panel-readout" style="display:flex; justify-content:space-between;">
-                                <span>Waveform</span>
-                                <span id="beatSyncStatus">Sinkronisasi</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- ===== PLAYER BENCH — Cypher Lounge, gaya Voice Library (rows scroll, header tetap) ===== -->
-                <div class="cypher-lounge-header">
-                    <span class="lounge-title">PLAYER BENCH</span>
-                    <span class="lounge-sub">pilih 2 rapper untuk battle — sisanya di battle queue</span>
-                </div>
-                <div class="broadcast-frame"><span class="bf-tr"></span><span class="bf-bl"></span>
-                <div id="cypherLoungeGrid" class="cypher-lounge-grid">
-                    <!-- diisi otomatis oleh renderCypherLounge() dari SEMUA persona di character.js -->
-                </div>
-                </div>
-
-                <!-- ===== TOOLBAR INDUSTRIAL — kontrol utama mulai battle ===== -->
-                <div class="controls broadcast-frame"><span class="bf-tr"></span><span class="bf-bl"></span>
-                    <div class="controls-row">
-                        <div class="console-shell" style="flex:2; min-width:120px;">
-                            <input type="text" id="rapTopic" placeholder="Topik rap battle..." class="console-native">
-                        </div>
-                        <div class="console-shell">
-                        <select id="rapRounds" class="console-native console-select">
-                            <option value="1">1 Ronde</option>
-                            <option value="3" selected>3 Ronde</option>
-                            <option value="5">5 Ronde</option>
-                            <option value="7">7 Ronde</option>
-                        </select>
-                        </div>
-                    </div>
-                    <div class="actions-row">
-                        <button id="startRapBtn" class="btn-start">MULAI RAP</button>
-                        <button id="stopRapBtn" class="btn-stop" style="display:none;">STOP</button>
-                        <button id="rapTournamentBtn" class="btn-tournament">TURNAMEN DUNIA</button>
-                    </div>
-                </div>
-
-                <!-- ===== BATTLE ARCHIVE — History + Hall of Fame + Export + log, satu chassis ===== -->
-                <div class="rap-panel archive-panel broadcast-frame"><span class="bf-tr"></span><span class="bf-bl"></span>
-                    <div class="rap-panel-label">BATTLE ARCHIVE</div>
-                    <div class="rap-panel-row" style="margin-bottom:8px;">
-                        <button id="rapHistoryBtn" class="history-btn">Archive</button>
-                        <button id="rapHallOfFameBtn" class="history-btn">Hall of Fame</button>
-                        <button onclick="window.RapBattle.exportResult('pdf')" class="btn-export">PDF</button>
-                        <button onclick="window.RapBattle.exportResult('json')" class="btn-export">JSON</button>
-                        <button onclick="window.RapBattle.exportResult('txt')" class="btn-export">TXT</button>
-                    </div>
-                    <div id="rapBattleContainer" class="battle-log"></div>
-                    <div id="rapBattleResult" style="margin-top:8px;"></div>
-                </div>
-
-                <!-- ===== BACK BUTTON ===== -->
-                <button onclick="window.showPage('dashboard')" class="back-btn">← Kembali ke Dasbor</button>
-
-            </div>
-`;
-    }
-
-    window.RapUILayout = {
-        buildHTML: buildHTML,
-        renderCypherLounge: renderCypherLounge,
-        markRole: markRole,
-        clearRole: clearRole,
-        syncHiddenSelects: syncHiddenSelects,
-        renderSongSelect: renderSongSelect
+    return {
+        total: total,
+        enabled: enabled,
+        disabled: total - enabled,
+        totalSuccess: totalSuccess,
+        totalFailed: totalFailed,
+        successRate: totalSuccess + totalFailed > 0 ? Math.round((totalSuccess / (totalSuccess + totalFailed)) * 100) : 0,
+        ai: { workers: 0, attempts: 0, successRate: 0, insights: 0 },
+        prediction: { accuracy: 0, totalPredictions: 0, activePredictions: 0 }
     };
+}
+
+function buildWorkersLayout(options) {
+    options = options || {};
+    const workers = options.workers || state.getWorkers() || [];
+    const workerStats = options.stats || state.getStats() || {};
+    const currentFilter = options.filter || 'all';
+    const searchQuery = options.search || '';
+    const voiceEnabled = options.voiceEnabled !== undefined ? options.voiceEnabled : true;
+    const enablePrediction = options.enablePrediction !== undefined ? options.enablePrediction : true;
+    const stats = getCategoryStats(workers);
+    const totalStats = getTotalStats(workers, workerStats);
+    const poolStats = { running: 0, queued: 0, completed: 0 };
+    const optStats = { total: 0, byType: {} };
+    let filtered = workers;
+    if (currentFilter !== 'all') {
+        filtered = filtered.filter(function(w) { return w.category === currentFilter; });
+    }
+    if (searchQuery) {
+        filtered = filtered.filter(function(w) {
+            return w.name.toLowerCase().indexOf(searchQuery.toLowerCase()) !== -1;
+        });
+    }
+    const categories = [
+        { id: 'crypto', name: 'KRIPTO', icon: '₿' },
+        { id: 'design', name: 'DESAIN', icon: '' },
+        { id: 'coding', name: 'CODING', icon: '' },
+        { id: 'media', name: 'MEDIA', icon: '' },
+        { id: 'tech', name: 'TECH', icon: '' },
+        { id: 'viz', name: 'VIZ', icon: '' },
+        { id: 'security', name: 'SECURITY', icon: '' },
+        { id: 'cyber', name: 'CYBER', icon: '' },
+        { id: 'automation', name: 'AUTO', icon: '' },
+        { id: 'global', name: 'GLOBAL', icon: '' },
+        { id: 'bonus', name: 'BONUS', icon: '' }
+    ];
+    let filterButtonsHtml = '<button class="filter-btn-ai' + (currentFilter === 'all' ? ' active' : '') + '" data-filter="all" style="padding:3px 12px;border-radius:15px;border:1px solid ' + (currentFilter === 'all' ? '#00FFA3' : 'rgba(0,255,163,0.15)') + ';background:' + (currentFilter === 'all' ? 'rgba(0,255,163,0.2)' : 'transparent') + ';color:' + (currentFilter === 'all' ? '#00FFA3' : '#A0B3C9') + ';cursor:pointer;font-size:10px;">All (' + workers.length + ')</button>';
+    for (let ci = 0; ci < categories.length; ci++) {
+        const c = categories[ci];
+        const isActive = currentFilter === c.id;
+        const catStats = stats[c.id];
+        const count = catStats ? catStats.total : 0;
+        const label = (c.icon ? c.icon + ' ' : '') + c.name + ' (' + count + ')';
+        filterButtonsHtml += '<button class="filter-btn-ai' + (isActive ? ' active' : '') + '" data-filter="' + c.id + '" style="padding:3px 12px;border-radius:15px;border:1px solid ' + (isActive ? '#00FFA3' : 'rgba(0,255,163,0.15)') + ';background:' + (isActive ? 'rgba(0,255,163,0.2)' : 'transparent') + ';color:' + (isActive ? '#00FFA3' : '#A0B3C9') + ';cursor:pointer;font-size:10px;">' + label + '</button>';
+    }
+    let workersHtml = '';
+    if (filtered.length === 0) {
+        workersHtml = '<div style="grid-column:1/-1;text-align:center;padding:40px;color:#666;">Tidak ada worker yang cocok dengan filter</div>';
+    } else {
+        for (let wi = 0; wi < filtered.length; wi++) {
+            const worker = filtered[wi];
+            const stat = workerStats[worker.id] || { success: 0, failed: 0 };
+            const total = stat.success + stat.failed;
+            const rate = total > 0 ? Math.round((stat.success / total) * 100) : 0;
+            const lastRunText = worker.lastRun ? new Date(worker.lastRun).toLocaleTimeString() : 'Belum pernah';
+            const borderColor = worker.enabled ? 'rgba(0,255,163,0.3)' : 'rgba(255,255,255,0.08)';
+            workersHtml += '<div class="worker-grid-item" style="background:rgba(0,0,0,0.4);border-radius:12px;padding:10px;border:1px solid ' + borderColor + ';">' +
+                '<div style="display:flex;justify-content:space-between;align-items:center;">' +
+                '<div style="display:flex;align-items:center;gap:6px;">' +
+                '<span style="font-size:16px;">' + (worker.icon || '') + '</span>' +
+                '<span style="color:' + (worker.enabled ? '#00FFA3' : '#666') + ';font-weight:bold;font-size:11px;">' + worker.name + '</span>' +
+                (worker.priority >= 5 ? '<span style="color:#FFD700;font-size:8px;">P5</span>' : '') +
+                '</div>' +
+                '<label><input type="checkbox" class="worker-toggle-ai" data-id="' + worker.id + '" ' + (worker.enabled ? 'checked' : '') + ' style="accent-color:#00FFA3;width:16px;height:16px;"></label>' +
+                '</div>' +
+                '<div style="display:flex;justify-content:space-between;font-size:9px;color:#666;margin-top:4px;">' +
+                '<span>' + stat.success + '</span><span>' + stat.failed + '</span><span>' + rate + '%</span><span>' + worker.schedule + '</span>' +
+                '</div>' +
+                '<div id="prediction-' + worker.id + '" style="font-size:8px;margin-top:2px;"></div>' +
+                '<div style="display:flex;justify-content:space-between;margin-top:4px;">' +
+                '<div style="font-size:8px;color:#444;">' + lastRunText + '</div>' +
+                '<button class="run-worker-ai" data-id="' + worker.id + '" style="background:rgba(0,255,163,0.15);border:1px solid #00FFA3;border-radius:12px;padding:1px 10px;color:#00FFA3;cursor:pointer;font-size:9px;">Run</button>' +
+                '</div>' +
+                '</div>';
+        }
+    }
+    let html = WORKERS_CSS +
+        `<div style="padding: 16px;">
+<div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 16px; background: rgba(0,255,163,0.05); border-radius: 16px; padding: 16px; border: 1px solid rgba(0,255,163,0.2);">
+<div>
+<h2 style="color:#00FFA3; margin:0; font-size: 20px;">MANAJEMEN WORKER</h2>
+<p style="color:#A0B3C9; font-size: 12px; margin-top: 4px;">${totalStats.total} Worker • ${totalStats.enabled} Active • ${totalStats.totalSuccess} Success • ${totalStats.totalFailed} Failed • ${poolStats.running} Running • ${poolStats.queued} Queued</p>
+<p style="color:#00FFA3; font-size: 11px;">Success Rate: ${totalStats.successRate}%</p>
+<p style="color:#00FFA3; font-size: 10px;">Analisis: ${totalStats.ai.workers} workers trained • ${totalStats.ai.attempts} attempts • ${totalStats.ai.successRate}% success • ${totalStats.ai.insights} insights</p>
+<p style="color:#FF6B6B; font-size: 10px;">Prediction: ${totalStats.prediction.accuracy}% accuracy • ${totalStats.prediction.totalPredictions} predictions • ${totalStats.prediction.activePredictions} active</p>
+<p style="color:#00FFA3; font-size: 10px;">Optimizations: ${optStats.total} total</p>
+</div>
+<div style="display: flex; gap: 8px; flex-wrap: wrap;">
+<button id="testVoiceBtn" class="execute-btn secondary" style="padding: 6px 14px; font-size: 10px; background: linear-gradient(135deg, #FF6B6B, #FF3366); color: #fff; border: none; border-radius: 20px; font-weight: bold;">Test Voice</button>
+<button id="optimizeNowBtn" class="execute-btn secondary" style="padding: 6px 14px; font-size: 10px; background: linear-gradient(135deg, #FF6B6B, #FF3366); color: #fff; border: none; border-radius: 20px; font-weight: bold;">Optimize Now</button>
+<button id="startAllWorkersBtn" class="execute-btn secondary" style="padding: 6px 14px; font-size: 10px; background: rgba(0,255,163,0.2); border: 1px solid #00FFA3; border-radius: 20px; color: #00FFA3; cursor: pointer;">Start All</button>
+<button id="stopAllWorkersBtn" class="execute-btn secondary" style="padding: 6px 14px; font-size: 10px; background: rgba(255,0,0,0.2); border: 1px solid #ff4444; border-radius: 20px; color: #ff4444; cursor: pointer;">Stop All</button>
+<button id="clearWorkersLogsBtn" class="execute-btn secondary" style="padding: 6px 14px; font-size: 10px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); border-radius: 20px; color: #A0B3C9; cursor: pointer;">Clear Logs</button>
+</div>
+</div>
+<div style="display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; align-items: center;">
+<input type="text" id="searchWorkerInput" placeholder="Cari worker..." style="flex: 1; min-width: 150px; padding: 6px 14px; background: rgba(10,15,28,0.8); border: 1px solid rgba(0,255,163,0.3); border-radius: 20px; color: white; font-size: 12px;">
+<div style="display: flex; flex-wrap: wrap; gap: 4px;">${filterButtonsHtml}</div>
+</div>
+<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 10px; margin-bottom: 16px;">${workersHtml}</div>
+<div style="background: rgba(0,0,0,0.3); border-radius: 16px; padding: 12px; border: 1px solid rgba(0,255,163,0.1);">
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+<h3 style="color:#00FFA3; margin:0; font-size: 14px;">Log Aktivitas</h3>
+<span style="color: #A0B3C9; font-size: 10px;" id="logCount">0 entries</span>
+</div>
+<div id="aiWorkersLogs" style="height: 200px; overflow-y: auto; font-size: 11px;">
+<div class="text-dim" style="text-align:center; padding:20px;">Belum ada log aktivitas</div>
+</div>
+</div>
+<div style="display: flex; justify-content: space-between; margin-top: 12px; padding: 8px; color: #444; font-size: 9px; border-top: 1px solid rgba(255,255,255,0.05);">
+<span>KESEMPATAN OS</span>
+<span>${poolStats.running} running • ${poolStats.queued} queued • ${poolStats.completed} completed</span>
+<span>Analisis</span>
+<span>Voice: ${voiceEnabled ? 'ON' : 'OFF'}</span>
+<span>Production Ready</span>
+</div>
+</div>`;
+    return html;
+}
+
+function buildLogsLayout(logs, filterWorker, filterStatus, searchQuery) {
+    if (!logs || logs.length === 0) {
+        return WORKERS_CSS +
+            `<div style="text-align:center; padding:40px;">
+<div style="color: #A0B3C9;">Belum ada log aktivitas</div>
+<div style="font-size: 12px; color: #666; margin-top: 8px;">Jalankan worker terlebih dahulu</div>
+<button id="testAIWorkerLogBtn" class="execute-btn secondary" style="margin-top: 16px;">Test Log</button>
+</div>`;
+    }
+    let filtered = logs;
+    if (filterWorker && filterWorker !== 'all') {
+        filtered = filtered.filter(function(log) { return log.workerId === filterWorker; });
+    }
+    if (filterStatus && filterStatus !== 'all') {
+        filtered = filtered.filter(function(log) {
+            if (filterStatus === 'success') return log.message.indexOf('[OK]') !== -1;
+            if (filterStatus === 'warning') return log.message.indexOf('[WARN]') !== -1;
+            if (filterStatus === 'error') return log.message.indexOf('[ERR]') !== -1;
+            if (filterStatus === 'info') return log.message.indexOf('[INFO]') !== -1 || log.message.indexOf('[PRED]') !== -1;
+            return true;
+        });
+    }
+    if (searchQuery) {
+        const q = searchQuery.toLowerCase();
+        filtered = filtered.filter(function(log) {
+            return log.message.toLowerCase().indexOf(q) !== -1 || log.workerName.toLowerCase().indexOf(q) !== -1;
+        });
+    }
+    let html = WORKERS_CSS +
+        `<div style="padding: 16px;">
+<div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 16px;">
+<h2 style="color:#00FFA3; margin:0; font-size: 16px;">LOG AKTIVITAS WORKER</h2>
+<div style="display: flex; gap: 10px; flex-wrap: wrap;">
+<div style="display: flex; align-items: center; gap: 6px; background: rgba(0,0,0,0.3); padding: 2px 10px; border-radius: 16px;">
+<span style="color: #666; font-size: 10px;">Worker:</span>
+<select id="logFilterWorker" style="background: transparent; border: none; color: #A0B3C9; font-size: 10px; padding: 2px 0;">
+<option value="all">Semua</option>
+</select>
+</div>
+<div style="display: flex; align-items: center; gap: 6px; background: rgba(0,0,0,0.3); padding: 2px 10px; border-radius: 16px;">
+<span style="color: #666; font-size: 10px;">Status:</span>
+<select id="logFilterStatus" style="background: transparent; border: none; color: #A0B3C9; font-size: 10px; padding: 2px 0;">
+<option value="all">Semua</option>
+<option value="success">Berhasil</option>
+<option value="warning">Peringatan</option>
+<option value="error">Gagal</option>
+<option value="info">Info</option>
+</select>
+</div>
+<input type="text" id="logSearchInput" placeholder="Cari log..." style="flex: 1; min-width: 120px; padding: 4px 12px; background: rgba(10,15,28,0.8); border: 1px solid rgba(0,255,163,0.3); border-radius: 16px; color: white; font-size: 10px;">
+<button id="refreshAIWorkersDataBtn" class="execute-btn secondary" style="width:auto; padding:4px 12px; font-size: 10px;">Refresh</button>
+<button id="exportAIWorkersDataBtn" class="execute-btn secondary" style="width:auto; padding:4px 12px; font-size: 10px;">Export</button>
+<button class="execute-btn secondary" style="width:auto; padding:4px 12px; font-size: 10px;" onclick="window.showPage('dashboard')">Kembali</button>
+</div>
+</div>
+<div style="max-height: 70vh; overflow-y: auto; padding: 4px;">`;
+    if (filtered.length === 0) {
+        html += '<div style="text-align:center; padding:40px; color:#666;">Tidak ada log yang cocok</div>';
+    } else {
+        for (let i = 0; i < filtered.length; i++) {
+            const log = filtered[i];
+            let color = '#A0B3C9';
+            if (log.message.indexOf('[OK]') !== -1) color = '#00FFA3';
+            else if (log.message.indexOf('[WARN]') !== -1 || log.message.indexOf('warning') !== -1) color = '#FFD700';
+            else if (log.message.indexOf('[ERR]') !== -1 || log.message.indexOf('error') !== -1) color = '#FF6B6B';
+            else if (log.message.indexOf('[INFO]') !== -1 || log.message.indexOf('[PRED]') !== -1) color = '#4ECDC4';
+            html += '<div class="log-entry-ai" style="padding: 8px 12px; border-bottom: 1px solid rgba(255,215,0,0.05); font-size: 11px; background: linear-gradient(90deg, rgba(255,215,0,0.02), rgba(0,255,163,0.02)); border-left: 3px solid ' + color + '; margin-bottom: 4px; border-radius: 4px;">' +
+                '<div style="display: flex; justify-content: space-between; flex-wrap: wrap; gap: 4px;">' +
+                '<span style="color: #FFD700; font-weight: bold; font-size: 11px;">' + (log.workerName || 'Unknown') + '</span>' +
+                '<span style="color: #666; font-size: 9px;">' + new Date(log.timestamp).toLocaleString() + '</span>' +
+                '</div>' +
+                '<div style="color: #A0B3C9; margin-top: 4px; font-size: 11px; line-height: 1.4;">' + log.message + '</div>' +
+                '</div>';
+        }
+    }
+    html += `</div>
+<div style="text-align: center; margin-top: 16px;">
+<button id="clearAllAIWorkersLogsBtn" class="execute-btn secondary" style="padding: 5px 15px;">Hapus Semua Log</button>
+</div>
+</div>`;
+    return html;
+}
+
+window.KESEMPATAN = window.KESEMPATAN || {};
+window.KESEMPATAN.WorkersLayout = { buildWorkersLayout: buildWorkersLayout, buildLogsLayout: buildLogsLayout };
+window.WorkersAILayout = { buildWorkersLayout: buildWorkersLayout, buildLogsLayout: buildLogsLayout };
 })();

@@ -13,17 +13,17 @@
 
     // Daftar modul yang harus dimuat secara sequential
     const MODULES = [
-        'config.js',
-        'state.js',
-        'ai-engine.js',
-        'core.js',
-        'ui-layout.js',      // 🆕 Layout HTML murni
-        'ui-renderer.js',    // DOM render + update
-        'ui-generator.js',   // Generate script
-        'ui-player.js',      // Play/stop/audio controls
-        'ui-handlers.js',    // Event handlers
-        'ui-main.js',        // UI aggregator
-        'main.js'            // Entry point publik
+        'podcast/config.js',
+        'podcast/state.js',
+        'podcast/ai-engine.js',
+        'podcast/core.js',
+        'podcast/ui-layout.js',      // 🆕 Layout HTML murni
+        'podcast/ui-renderer.js',    // DOM render + update
+        'podcast/ui-generator.js',   // Generate script
+        'podcast/ui-player.js',      // Play/stop/audio controls
+        'podcast/ui-handlers.js',    // Event handlers
+        'podcast/ui-main.js',        // UI aggregator
+        'podcast/main.js'            // Entry point publik
     ];
 
     let loaded = 0;

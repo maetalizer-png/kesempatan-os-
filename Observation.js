@@ -6,15 +6,15 @@
     window.__ObservationLoaderLoaded = true;
 
     const MODULES = [
-        'config.js',
-        'state.js',
-        'fetcher.js',
-        'analyzer.js',
-        'ui-renderer.js',
-        'chart.js',
-        'export.js',
-        'events.js',
-        'renderer.js'
+        'observ/config.js',
+        'observ/state.js',
+        'observ/fetcher.js',
+        'observ/analyzer.js',
+        'observ/ui-renderer.js',
+        'observ/chart.js',
+        'observ/export.js',
+        'observ/events.js',
+        'observ/renderer.js'
     ];
 
     let loaded = 0;

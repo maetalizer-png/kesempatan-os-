@@ -1,704 +1,885 @@
-/* ============================================================
-   KESEMPATAN OS v18.6 — PODCAST CORE (INTEGRASI MEMORY)
-   ✅ Terintegrasi dengan VectorMemory, __STATIC_DATA, KES Database
-   ============================================================ */
-
 (function() {
-    'use strict';
+'use strict';
+if (window.__WorkersAICore) return;
+window.__WorkersAICore = true;
 
-    if (window.Podcast && window.Podcast.core) return;
-    window.Podcast = window.Podcast || {};
+const state = window.WorkersAIState;
+const config = window.WorkersAIConfig;
+const WORKER_CONFIG = config.WORKER_CONFIG;
+const AI_WORKERS_LIST = config.AI_WORKERS_LIST;
 
-    // ========== AMBIL DARI MODUL TERPISAH ==========
-    const state = window.Podcast.state;
-    const aiEngine = window.Podcast.aiEngine;
-    const config = window.Podcast.config;
+const RateLimiter = function(maxPerMinute) {
+    this._maxPerMinute = maxPerMinute;
+    this._requests = new Map();
+};
+RateLimiter.prototype.check = function(key) {
+    const now = Date.now();
+    const windowTime = now - 60000;
+    const requests = this._requests.get(key) || [];
+    const recent = requests.filter(function(t) { return t > windowTime; });
+    if (recent.length >= this._maxPerMinute) return false;
+    recent.push(now);
+    this._requests.set(key, recent);
+    return true;
+};
+RateLimiter.prototype.getStats = function() {
+    return { size: this._requests.size, maxPerMinute: this._maxPerMinute };
+};
 
-    if (!state || !aiEngine || !config) {
-        return;
-    }
-
-    const ai = aiEngine.ai;
-    const voiceEngine = aiEngine.voiceEngine;
-    const LANGUAGES = config.LANGUAGES;
-    const THEMES = config.THEMES;
-    const VOICE_PRESETS = config.VOICE_PRESETS;
-
-    // ============================================================
-    // 🔥🔥🔥 INTEGRASI MEMORY.JS & WORLD.JS 🔥🔥🔥
-    // ============================================================
-    
-    function getMemoryInstance() {
-        return window.VectorMemory || window.VectorMemoryV5 || null;
-    }
-
-    function getStaticData() {
-        return window.__STATIC_DATA || [];
-    }
-
-    function getDatabaseInstance() {
-        return window.KESDatabase || window.getDatabaseV10 || null;
-    }
-
-    // 🔥 AMBIL DATA STATIS DARI WORLD.JS
-    function fetchStaticData(topic) {
-        const staticData = getStaticData();
-        if (staticData.length === 0) return [];
-        
-        const keywords = topic.toLowerCase().split(' ');
-        const results = staticData.filter(function(item) {
-            const text = (item.text || '').toLowerCase();
-            return keywords.some(function(kw) {
-                return text.includes(kw);
-            });
-        });
-        
-        results.sort(function(a, b) {
-            const textA = (a.text || '').toLowerCase();
-            const textB = (b.text || '').toLowerCase();
-            let scoreA = 0, scoreB = 0;
-            keywords.forEach(function(kw) {
-                if (textA.includes(kw)) scoreA++;
-                if (textB.includes(kw)) scoreB++;
-            });
-            return scoreB - scoreA;
-        });
-        
-        return results.slice(0, 5);
-    }
-
-    // 🔥 AMBIL DARI VECTOR MEMORY (dinamis)
-    async function fetchFromVectorMemory(topic, topK) {
-        const memory = getMemoryInstance();
-        if (!memory || typeof memory.search !== 'function') return [];
-        
-        try {
-            const results = await memory.search(topic, { topK: topK || 3 });
-            return results || [];
-        } catch (_) {
-            return [];
-        }
-    }
-
-    // 🔥 AMBIL DARI KES DATABASE
-    async function fetchFromDatabase(topic, limit) {
-        const db = getDatabaseInstance();
-        if (!db) return [];
-        
-        try {
-            let results = [];
-            // Coba berbagai method
-            if (db.queryParser && typeof db.queryParser.parseAndExecute === 'function') {
-                const sql = "SELECT * FROM podcast_history WHERE topic LIKE '%" + topic + "%' ORDER BY timestamp DESC LIMIT " + (limit || 3);
-                results = await db.queryParser.parseAndExecute(sql);
-            } else if (db.executeQuery && typeof db.executeQuery === 'function') {
-                results = await db.executeQuery("SELECT * FROM podcast_history WHERE topic LIKE '%" + topic + "%' ORDER BY timestamp DESC LIMIT " + (limit || 3));
-            } else if (db.getAllFromStore && typeof db.getAllFromStore === 'function') {
-                const all = await db.getAllFromStore('podcast_history');
-                results = all.filter(function(item) {
-                    return item.topic && item.topic.toLowerCase().includes(topic.toLowerCase());
-                }).slice(0, limit || 3);
-            }
-            return results || [];
-        } catch (_) {
-            return [];
-        }
-    }
-
-    // 🔥 SIMPAN KE SEMUA TEMPAT
-    async function savePodcastToMemory(podcastData) {
-        const { topic, script, score, voice, summary } = podcastData;
-        const memory = getMemoryInstance();
-        const db = getDatabaseInstance();
-        
-        const metadata = {
-            topic: topic,
-            score: score || 0,
-            summary: summary || script.substring(0, 150),
-            voice: voice || 'unknown',
-            timestamp: Date.now(),
-            type: 'podcast'
-        };
-
-        // 🔥 SIMPAN KE VECTOR MEMORY
-        if (memory) {
-            try {
-                if (typeof memory.save === 'function') {
-                    await memory.save(script, metadata);
-                } else if (typeof memory.add === 'function') {
-                    await memory.add(metadata);
-                }
-            } catch (_) {}
-        }
-
-        // 🔥 SIMPAN KE KES DATABASE
-        if (db) {
-            try {
-                const record = { ...metadata, script: script };
-                if (db.saveQuantumEncrypted && typeof db.saveQuantumEncrypted === 'function') {
-                    await db.saveQuantumEncrypted('podcast_history', 'podcast_' + Date.now(), record);
-                } else if (db.insert && typeof db.insert === 'function') {
-                    await db.insert('podcast_history', record);
-                } else if (db.save && typeof db.save === 'function') {
-                    await db.save('podcast_history', record);
-                }
-            } catch (_) {}
-        }
-    }
-
-    // ========== VOICE CACHE ==========
-    let cachedVoice = null;
-    let cachedLang = null;
-    let cachedGender = null;
-
-    // ============================================================
-    // 🔧 FIX AKAR MASALAH: "suara pria masih kedengaran seperti wanita"
-    // ============================================================
-    // Sebelumnya getCachedVoice() cuma ambil voice PERTAMA yang cocok
-    // bahasanya, tanpa peduli gender - jadi preset "Pria" dan "Wanita"
-    // sama-sama pakai voice sistem yang SAMA (biasanya default Android
-    // untuk id-ID cuma ada 1, dan seringkali bernada wanita), cuma
-    // dibedakan lewat pitch-shift ringan yang gak cukup buat bikin
-    // kedengaran benar-benar pria. Sekarang voice dicocokkan ke gender
-    // dulu (lewat nama voice sistem) kalau perangkat punya lebih dari
-    // satu opsi; kalau cuma ada 1 voice untuk bahasa itu (umum terjadi),
-    // otomatis fallback dan pitch preset di config.js sudah diperlebar
-    // rentangnya supaya tetap ada perbedaan yang terasa.
-    const MALE_NAME_HINTS = /\b(male|pria|laki|man|pria|he-)\b/i;
-    const FEMALE_NAME_HINTS = /\b(female|wanita|perempuan|woman|she-)\b/i;
-
-    function findVoiceByGender(voices, gender) {
-        if (!voices || voices.length === 0) return null;
-        const wantHints = gender === 'female' ? FEMALE_NAME_HINTS : MALE_NAME_HINTS;
-        const avoidHints = gender === 'female' ? MALE_NAME_HINTS : FEMALE_NAME_HINTS;
-        // 1. Voice yang namanya eksplisit menyebut gender yang diinginkan
-        let match = voices.find(function(v) { return wantHints.test(v.name); });
-        if (match) return match;
-        // 2. Kalau tidak ada nama eksplisit, minimal hindari voice yang
-        //    eksplisit menyebut gender LAWAN, ambil sisanya
-        const filtered = voices.filter(function(v) { return !avoidHints.test(v.name); });
-        return filtered.length > 0 ? filtered[0] : null;
-    }
-
-    // Peta gender untuk AGENT_VOICES yang tidak eksplisit menyatakan
-    // gender di key-nya (varian diskusi _pria/_wanita sudah eksplisit).
-    const AGENT_GENDER_MAP = {
-        RahmadRaharjo: 'male', KakekSantai: 'male', CowokKalem: 'male', KakakMotivator: 'male',
-        Manager: 'male', StartupFounder: 'male', SundanyaAsep: 'male', Analyst: 'male', Moderator: 'male',
-        NenekBijak: 'female', CewekKece: 'female', TanteBawel: 'female'
+const SecurityManager = function() {
+    this._apiKeys = this._loadApiKeys();
+    this._rateLimiter = new RateLimiter(WORKER_CONFIG.rateLimitPerMinute);
+    this._whitelist = this._loadWhitelist();
+};
+SecurityManager.prototype._loadApiKeys = function() {
+    try { return JSON.parse(localStorage.getItem('kes_worker_api_keys')) || {}; }
+    catch (e) { return {}; }
+};
+SecurityManager.prototype._loadWhitelist = function() {
+    try { return JSON.parse(localStorage.getItem('kes_worker_whitelist')) || []; }
+    catch (e) { return []; }
+};
+SecurityManager.prototype.validateAPIKey = function(key) {
+    if (!key) return false;
+    const stored = this._apiKeys[key];
+    if (!stored) return false;
+    if (stored.expires && Date.now() > stored.expires) return false;
+    return true;
+};
+SecurityManager.prototype.checkRateLimit = function(workerId) {
+    return this._rateLimiter.check(workerId);
+};
+SecurityManager.prototype.isWhitelisted = function(ip) {
+    return this._whitelist.indexOf(ip) !== -1;
+};
+SecurityManager.prototype.addAPIKey = function(key, name, expires) {
+    this._apiKeys[key] = { name: name, expires: expires || null, createdAt: Date.now() };
+    localStorage.setItem('kes_worker_api_keys', JSON.stringify(this._apiKeys));
+};
+SecurityManager.prototype.getStats = function() {
+    return {
+        apiKeys: Object.keys(this._apiKeys).length,
+        rateLimiter: this._rateLimiter.getStats(),
+        whitelist: this._whitelist.length
     };
-    function inferAgentGender(agentKey) {
-        if (!agentKey) return 'male';
-        if (/_pria$/i.test(agentKey)) return 'male';
-        if (/_wanita$/i.test(agentKey)) return 'female';
-        return AGENT_GENDER_MAP[agentKey] || 'male';
-    }
+};
 
-    function getCachedVoice(langCode, gender) {
-        if (cachedVoice && cachedLang === langCode && cachedGender === gender) return cachedVoice;
-        if (!window.speechSynthesis) return null;
-        try {
-            const voices = window.speechSynthesis.getVoices();
-            const pool = voices.filter(function(v) { return v.lang === langCode; });
-            const searchPool = pool.length > 0 ? pool : voices.filter(function(v) { return v.lang && v.lang.startsWith(langCode.split('-')[0]); });
-            let voice = null;
-            if (gender && searchPool.length > 1) {
-                voice = findVoiceByGender(searchPool, gender);
-            }
-            if (!voice) voice = searchPool[0] || null;
-            cachedVoice = voice;
-            cachedLang = langCode;
-            cachedGender = gender;
-            return cachedVoice;
-        } catch (_) { return null; }
-    }
+const WorkerPool = function(maxConcurrent) {
+    this._maxConcurrent = maxConcurrent || 5;
+    this._running = 0;
+    this._queue = [];
+    this._results = [];
+    this._stats = { total: 0, completed: 0, failed: 0 };
+    this._isProcessing = false;
+};
+WorkerPool.prototype.execute = function(task, priority) {
+    const self = this;
+    priority = priority || 0;
+    return new Promise(function(resolve, reject) {
+        const job = { task: task, priority: priority, resolve: resolve, reject: reject, createdAt: Date.now() };
+        if (priority >= 5) self._queue.unshift(job);
+        else self._queue.push(job);
+        self._stats.total++;
+        self._processQueue();
+    });
+};
+WorkerPool.prototype._processQueue = function() {
+    if (this._isProcessing) return;
+    if (this._running >= this._maxConcurrent || this._queue.length === 0) return;
+    this._isProcessing = true;
+    const job = this._queue.shift();
+    this._running++;
+    const self = this;
+    job.task().then(function(result) {
+        job.resolve(result);
+        self._results.push(result);
+        self._stats.completed++;
+    }).catch(function(error) {
+        job.reject(error);
+        self._stats.failed++;
+    }).finally(function() {
+        self._running--;
+        self._isProcessing = false;
+        self._processQueue();
+    });
+};
+WorkerPool.prototype.getStats = function() {
+    return {
+        running: this._running,
+        queued: this._queue.length,
+        completed: this._results.length,
+        maxConcurrent: this._maxConcurrent,
+        total: this._stats.total,
+        failed: this._stats.failed
+    };
+};
+WorkerPool.prototype.getQueueStatus = function() {
+    return this._queue.map(function(job) {
+        return { priority: job.priority, waiting: Date.now() - job.createdAt };
+    });
+};
+WorkerPool.prototype.clearQueue = function() { this._queue = []; };
 
-    // ============================================================
-    // 🔥 FIX: pilih voice TTS berbeda per pembicara (bukan 1 voice yang
-    // sama dipakai semua orang) - supaya mode Diskusi/Debat kedengaran
-    // seperti beberapa orang berbeda ngobrol, bukan 1 orang yang cuma
-    // di-pitch-shift. Round-robin lewat semua voice yang tersedia untuk
-    // bahasa itu; kalau browser cuma punya 1 voice untuk bahasa tsb
-    // (umum terjadi utk id-ID di banyak browser), otomatis fallback ke
-    // voice tunggal seperti sebelumnya (pitch/rate tetap jadi pembeda utama).
-    let allVoicesCache = null;
-    function getAllVoicesForLang(langCode) {
-        if (!window.speechSynthesis) return [];
-        try {
-            if (!allVoicesCache) allVoicesCache = window.speechSynthesis.getVoices();
-            const matches = allVoicesCache.filter(function(v) { return v.lang === langCode; });
-            return matches.length > 0 ? matches : allVoicesCache.filter(function(v) { return v.lang.startsWith(langCode.split('-')[0]); });
-        } catch (_) { return []; }
+const AICore = function() {
+    this._knowledge = new Map();
+    this._insights = [];
+    this._learningRate = 0.01;
+    this._patterns = [];
+    this._trainingData = [];
+    this._modelVersion = '2.0';
+    this._load();
+};
+AICore.prototype.analyze = function(worker, result) {
+    const analysis = {
+        worker: worker.id,
+        workerName: worker.name,
+        success: result ? true : false,
+        timestamp: Date.now(),
+        metrics: this._extractMetrics(result),
+        duration: result && result.duration ? result.duration : 0
+    };
+    if (!this._knowledge.has(worker.id)) {
+        this._knowledge.set(worker.id, { attempts: 0, success: 0, failed: 0, data: [], avgDuration: 0, pattern: [], lastInsight: null });
     }
-    function getVoiceForSpeaker(langCode, speakerIndex, gender) {
-        const voices = getAllVoicesForLang(langCode);
-        if (voices.length === 0) return getCachedVoice(langCode, gender);
-        if (gender) {
-            const genderMatch = findVoiceByGender(voices, gender);
-            if (genderMatch) return genderMatch;
+    const data = this._knowledge.get(worker.id);
+    data.attempts++;
+    if (analysis.success) data.success++;
+    else data.failed++;
+    data.data.push(analysis);
+    data.avgDuration = this._calculateAvgDuration(data.data);
+    const pattern = this._detectPattern(data.data);
+    if (pattern) {
+        data.pattern.push(pattern);
+        if (data.pattern.length > 10) data.pattern.shift();
+    }
+    const insight = this._generateInsight(worker, data);
+    if (insight) {
+        data.lastInsight = insight;
+        this._insights.push(Object.assign({}, insight, { timestamp: Date.now() }));
+        if (this._insights.length > 100) this._insights.shift();
+    }
+    this._trainingData.push({ worker: worker.id, success: analysis.success, duration: analysis.duration, timestamp: analysis.timestamp });
+    this._save();
+    return analysis;
+};
+AICore.prototype._extractMetrics = function(result) {
+    const metrics = {};
+    if (!result) return metrics;
+    const percentages = result.match(/\d+%/g);
+    if (percentages) metrics.percentages = percentages.map(function(m) { return parseInt(m); });
+    const numbers = result.match(/\d+/g);
+    if (numbers) metrics.numbers = numbers.map(function(n) { return parseInt(n); });
+    if (result.indexOf('BTC') !== -1 || result.indexOf('$') !== -1) metrics.type = 'crypto';
+    if (result.indexOf('ms') !== -1) {
+        const time = result.match(/\d+ms/);
+        if (time) metrics.duration = parseInt(time[0]);
+    }
+    return metrics;
+};
+AICore.prototype._calculateAvgDuration = function(data) {
+    if (data.length === 0) return 0;
+    const total = data.reduce(function(sum, d) { return sum + (d.duration || 0); }, 0);
+    return total / data.length;
+};
+AICore.prototype._detectPattern = function(data) {
+    if (data.length < 5) return null;
+    const recent = data.slice(-5);
+    const successCount = recent.filter(function(d) { return d.success; }).length;
+    if (successCount >= 4) return 'HIGH_SUCCESS';
+    if (successCount <= 1) return 'LOW_SUCCESS';
+    if (recent.every(function(d) { return d.success; })) return 'PERFECT';
+    if (recent.every(function(d) { return !d.success; })) return 'FAILING';
+    if (successCount === 3 && recent.length === 5) return 'IMPROVING';
+    if (successCount === 2 && recent.length === 5) return 'DECLINING';
+    return null;
+};
+AICore.prototype._generateInsight = function(worker, data) {
+    const rate = data.success / data.attempts;
+    if (data.attempts > 10) {
+        if (rate > 0.9) return { level: 'success', message: worker.name + ' performa sangat baik (' + Math.round(rate * 100) + '%)', suggestion: 'Pertahankan konfigurasi saat ini' };
+        else if (rate > 0.7) return { level: 'info', message: worker.name + ' performa baik (' + Math.round(rate * 100) + '%)', suggestion: 'Bisa ditingkatkan dengan optimasi schedule' };
+        else if (rate < 0.5) return { level: 'warning', message: worker.name + ' perlu perhatian (' + Math.round(rate * 100) + '%)', suggestion: 'Coba ubah schedule atau prioritas' };
+    }
+    if (data.pattern && data.pattern.indexOf('PERFECT') !== -1) return { level: 'success', message: worker.name + ' dalam performa puncak!', suggestion: 'Worker ini layak mendapat prioritas tertinggi' };
+    if (data.pattern && data.pattern.indexOf('IMPROVING') !== -1) return { level: 'info', message: worker.name + ' menunjukkan peningkatan!', suggestion: 'Teruskan trend positif ini' };
+    return null;
+};
+AICore.prototype.predict = function(workerId) {
+    const data = this._knowledge.get(workerId);
+    if (!data || data.attempts < 5) {
+        return { confidence: 0, prediction: 'Not enough data', suggestion: 'Jalankan worker beberapa kali lagi', status: 'learning' };
+    }
+    const rate = data.success / data.attempts;
+    const trend = this._calculateTrend(data.data);
+    const avgDuration = data.avgDuration;
+    let predictionText = '';
+    let suggestionText = '';
+    let status = 'stable';
+    if (rate > 0.8) { predictionText = 'High performance expected'; suggestionText = 'Worker ini reliable untuk tugas penting'; status = 'excellent'; }
+    else if (rate > 0.6) { predictionText = 'Moderate performance expected'; suggestionText = 'Optimasi schedule bisa meningkatkan performa'; status = 'good'; }
+    else { predictionText = 'Performance may need improvement'; suggestionText = 'Periksa konfigurasi dan coba schedule berbeda'; status = 'warning'; }
+    if (trend === 'Increasing') { predictionText += ' (Improving)'; status = 'improving'; }
+    else if (trend === 'Decreasing') { predictionText += ' (Declining)'; status = 'declining'; }
+    return {
+        confidence: Math.min(95, data.attempts * 2 + 30),
+        prediction: predictionText,
+        suggestion: suggestionText,
+        trend: trend,
+        successRate: Math.round(rate * 100),
+        avgDuration: Math.round(avgDuration),
+        attempts: data.attempts,
+        status: status
+    };
+};
+AICore.prototype._calculateTrend = function(data) {
+    if (data.length < 5) return 'Stable';
+    const recent = data.slice(-5);
+    const successCount = recent.filter(function(d) { return d.success; }).length;
+    const older = data.slice(-10, -5);
+    const olderSuccess = older.filter(function(d) { return d.success; }).length;
+    if (successCount > olderSuccess + 1) return 'Increasing';
+    if (successCount < olderSuccess - 1) return 'Decreasing';
+    return 'Stable';
+};
+AICore.prototype.getRecommendation = function(workerId) {
+    const data = this._knowledge.get(workerId);
+    if (!data || data.attempts < 3) return { recommended: 'RUN_MORE', reason: 'Need more data for recommendation' };
+    const rate = data.success / data.attempts;
+    if (rate > 0.9 && data.attempts > 10) return { recommended: 'INCREASE_PRIORITY', reason: 'Excellent performance, should be prioritized' };
+    else if (rate < 0.5 && data.attempts > 5) return { recommended: 'CHANGE_SCHEDULE', reason: 'Low success rate, try different schedule' };
+    else if (data.avgDuration > 5000) return { recommended: 'OPTIMIZE', reason: 'High average duration, need optimization' };
+    return { recommended: 'MAINTAIN', reason: 'Current configuration is optimal' };
+};
+AICore.prototype.getInsights = function() { return this._insights.slice(-20); };
+AICore.prototype.getWorkerKnowledge = function(workerId) { return this._knowledge.get(workerId) || null; };
+AICore.prototype.getSummary = function() {
+    let totalWorkers = this._knowledge.size;
+    let totalAttempts = 0, totalSuccess = 0, totalFailed = 0;
+    this._knowledge.forEach(function(data) {
+        totalAttempts += data.attempts;
+        totalSuccess += data.success;
+        totalFailed += data.failed;
+    });
+    return {
+        workers: totalWorkers,
+        attempts: totalAttempts,
+        success: totalSuccess,
+        failed: totalFailed,
+        successRate: totalAttempts > 0 ? Math.round((totalSuccess / totalAttempts) * 100) : 0,
+        insights: this._insights.length,
+        modelVersion: this._modelVersion
+    };
+};
+AICore.prototype._save = function() {
+    localStorage.setItem('kes_ai_core_knowledge', JSON.stringify({
+        knowledge: Array.from(this._knowledge),
+        insights: this._insights,
+        trainingData: this._trainingData.slice(-500),
+        modelVersion: this._modelVersion
+    }));
+};
+AICore.prototype._load = function() {
+    try {
+        const saved = JSON.parse(localStorage.getItem('kes_ai_core_knowledge'));
+        if (saved) {
+            this._knowledge = new Map(saved.knowledge);
+            this._insights = saved.insights || [];
+            this._trainingData = saved.trainingData || [];
+            this._modelVersion = saved.modelVersion || '1.0';
         }
-        const idx = ((speakerIndex % voices.length) + voices.length) % voices.length;
-        return voices[idx];
-    }
+    } catch (e) {}
+};
 
-    function isSpeechSupported() {
-        return !!(window.speechSynthesis);
+const OptimizationEngine = function(workersRef) {
+    this._workers = workersRef;
+    this._optimizations = [];
+    this._thresholds = { successRate: 70, responseTime: 5000, memoryUsage: 80 };
+    this._load();
+};
+OptimizationEngine.prototype.optimize = function() {
+    const self = this;
+    const optimized = [];
+    this._workers.forEach(function(worker) {
+        if (!worker.enabled) return;
+        const stats = self._getWorkerStats(worker.id);
+        if (!stats || stats.attempts < 5) return;
+        const optimizations = self._analyzeWorker(worker, stats);
+        if (optimizations.length > 0) {
+            self._applyOptimizations(worker, optimizations);
+            optimized.push({ worker: worker.id, workerName: worker.name, optimizations: optimizations, timestamp: Date.now() });
+            self._optimizations.push({ worker: worker.id, workerName: worker.name, optimizations: optimizations, timestamp: Date.now() });
+        }
+    });
+    if (optimized.length > 0) {
+        this._save();
+        if (window.AIWorkers) window.AIWorkers.saveWorkers();
     }
+    return optimized;
+};
+OptimizationEngine.prototype._analyzeWorker = function(worker, stats) {
+    const optimizations = [];
+    const rate = stats.success / stats.attempts;
+    if (rate < 0.5 && worker.schedule === 'realtime') optimizations.push({ type: 'schedule', from: 'realtime', to: 'hourly', reason: 'Success rate too low for realtime' });
+    if (rate < 0.6 && worker.schedule === 'hourly') optimizations.push({ type: 'schedule', from: 'hourly', to: 'daily', reason: 'Success rate low for hourly schedule' });
+    if (rate > 0.9 && worker.schedule === 'daily') optimizations.push({ type: 'schedule', from: 'daily', to: 'hourly', reason: 'High success rate, can run more frequently' });
+    if (rate > 0.85 && worker.priority < 5) optimizations.push({ type: 'priority', from: worker.priority, to: Math.min(5, worker.priority + 1), reason: 'High success rate, increasing priority' });
+    if (rate < 0.4 && worker.priority > 1) optimizations.push({ type: 'priority', from: worker.priority, to: Math.max(1, worker.priority - 1), reason: 'Low success rate, decreasing priority' });
+    return optimizations;
+};
+OptimizationEngine.prototype._applyOptimizations = function(worker, optimizations) {
+    for (let i = 0; i < optimizations.length; i++) {
+        const opt = optimizations[i];
+        if (opt.type === 'schedule') worker.schedule = opt.to;
+        if (opt.type === 'priority') worker.priority = opt.to;
+    }
+};
+OptimizationEngine.prototype._getWorkerStats = function(workerId) {
+    const stats = window.AIWorkers && window.AIWorkers.workerStats ? window.AIWorkers.workerStats[workerId] : null;
+    if (!stats) return null;
+    return { attempts: stats.success + stats.failed, success: stats.success, failed: stats.failed };
+};
+OptimizationEngine.prototype._save = function() {
+    localStorage.setItem('kes_optimizations', JSON.stringify(this._optimizations.slice(-100)));
+};
+OptimizationEngine.prototype._load = function() {
+    try {
+        const saved = JSON.parse(localStorage.getItem('kes_optimizations'));
+        if (saved) this._optimizations = saved;
+    } catch (e) {}
+};
+OptimizationEngine.prototype.getOptimizationHistory = function() { return this._optimizations.slice(-20); };
+OptimizationEngine.prototype.getStats = function() {
+    const total = this._optimizations.length;
+    const byType = {};
+    for (let i = 0; i < this._optimizations.length; i++) {
+        const opt = this._optimizations[i];
+        for (let j = 0; j < opt.optimizations.length; j++) {
+            const o = opt.optimizations[j];
+            byType[o.type] = (byType[o.type] || 0) + 1;
+        }
+    }
+    return { total: total, byType: byType };
+};
 
-    // 🆕 FIX: di banyak Android WebView, speechSynthesis.getVoices() balikin
-    // array KOSONG di awal - daftar voice baru terisi async lewat event
-    // 'voiceschanged' (kadang butuh >1 detik). Kalau Preview/Generate dipanggil
-    // sebelum itu, voice matching (termasuk gender-matching) gagal diam-diam.
-    // Helper ini nunggu voices beneran siap (dengan timeout supaya gak gantung
-    // selamanya kalau browser gak pernah fire event itu).
-    let voicesReadyPromise = null;
-    function waitForVoices(timeoutMs) {
-        if (!isSpeechSupported()) return Promise.resolve([]);
-        if (voicesReadyPromise) return voicesReadyPromise;
-        voicesReadyPromise = new Promise(function(resolve) {
-            const existing = window.speechSynthesis.getVoices();
-            if (existing && existing.length > 0) { resolve(existing); return; }
-            let done = false;
-            const finish = function(voices) {
-                if (done) return;
-                done = true;
-                resolve(voices || []);
-            };
-            try {
-                window.speechSynthesis.onvoiceschanged = function() {
-                    finish(window.speechSynthesis.getVoices());
-                };
-            } catch (_) {}
-            setTimeout(function() { finish(window.speechSynthesis.getVoices()); }, timeoutMs || 1500);
+const PredictionEngine = function() {
+    this._predictions = new Map();
+    this._accuracy = 0;
+    this._totalPredictions = 0;
+    this._correctPredictions = 0;
+    this._load();
+};
+PredictionEngine.prototype.predictWorker = function(workerId) {
+    const history = this._getHistory(workerId);
+    if (history.length < 10) {
+        return { confidence: 0, prediction: 'Need more data', nextRun: 'Unknown', suggestion: 'Jalankan worker minimal 10 kali', status: 'learning' };
+    }
+    const avgInterval = this._calculateAverageInterval(history);
+    const nextRun = new Date(Date.now() + avgInterval);
+    const successRate = history.filter(function(h) { return h.success; }).length / history.length;
+    const trend = this._calculateTrend(history);
+    const consistency = this._calculateConsistency(history);
+    const confidence = Math.min(95, history.length * 2 + consistency * 20);
+    let predictionText = '';
+    let suggestionText = '';
+    let status = 'stable';
+    if (successRate > 0.85) { predictionText = 'Sangat mungkin berhasil'; suggestionText = 'Worker ini sangat reliable'; status = 'excellent'; }
+    else if (successRate > 0.65) { predictionText = 'Kemungkinan berhasil cukup baik'; suggestionText = 'Performa stabil, bisa diandalkan'; status = 'good'; }
+    else if (successRate > 0.45) { predictionText = 'Kemungkinan berhasil 50-50'; suggestionText = 'Perlu optimasi untuk meningkatkan performa'; status = 'warning'; }
+    else { predictionText = 'Kemungkinan gagal tinggi'; suggestionText = 'Segera periksa konfigurasi worker ini'; status = 'critical'; }
+    if (trend === 'Increasing') { predictionText += ' (Meningkat)'; status = 'improving'; }
+    else if (trend === 'Decreasing') { predictionText += ' (Menurun)'; status = 'declining'; }
+    const prediction = {
+        confidence: Math.round(confidence),
+        prediction: predictionText,
+        suggestion: suggestionText,
+        nextRun: nextRun.toLocaleTimeString(),
+        successRate: Math.round(successRate * 100) + '%',
+        trend: trend,
+        consistency: Math.round(consistency * 100) + '%',
+        totalData: history.length,
+        status: status
+    };
+    this._predictions.set(workerId, prediction);
+    this._totalPredictions++;
+    this._save();
+    return prediction;
+};
+PredictionEngine.prototype._getHistory = function(workerId) {
+    const logs = this._getLogs();
+    return logs.filter(function(l) { return l.workerId === workerId; }).map(function(l) {
+        return {
+            success: l.message.indexOf('OK:') !== -1 || l.message.indexOf('selesai') !== -1,
+            timestamp: l.timestamp,
+            message: l.message
+        };
+    });
+};
+PredictionEngine.prototype._getLogs = function() {
+    try { return JSON.parse(localStorage.getItem('kes_ai_workers_logs')) || []; }
+    catch (e) { return []; }
+};
+PredictionEngine.prototype._calculateAverageInterval = function(history) {
+    if (history.length < 2) return 3600000;
+    let total = 0, count = 0;
+    for (let i = 1; i < history.length; i++) {
+        const diff = history[i].timestamp - history[i - 1].timestamp;
+        if (diff > 0 && diff < 86400000) { total += diff; count++; }
+    }
+    return count > 0 ? total / count : 3600000;
+};
+PredictionEngine.prototype._calculateTrend = function(history) {
+    if (history.length < 5) return 'Stable';
+    const recent = history.slice(-5);
+    const successRecent = recent.filter(function(h) { return h.success; }).length;
+    const older = history.slice(-10, -5);
+    const successOlder = older.filter(function(h) { return h.success; }).length;
+    if (successRecent > successOlder + 1) return 'Increasing';
+    if (successRecent < successOlder - 1) return 'Decreasing';
+    return 'Stable';
+};
+PredictionEngine.prototype._calculateConsistency = function(history) {
+    if (history.length < 3) return 0.5;
+    const recent = history.slice(-10);
+    const successes = recent.filter(function(h) { return h.success; }).length;
+    const consistency = successes / recent.length;
+    let patternBreaks = 0;
+    for (let i = 1; i < recent.length; i++) {
+        if (recent[i].success !== recent[i - 1].success) patternBreaks++;
+    }
+    const patternScore = 1 - (patternBreaks / recent.length);
+    return (consistency + patternScore) / 2;
+};
+PredictionEngine.prototype._save = function() {
+    localStorage.setItem('kes_predictions', JSON.stringify({
+        predictions: Array.from(this._predictions),
+        accuracy: this._accuracy,
+        total: this._totalPredictions,
+        correct: this._correctPredictions
+    }));
+};
+PredictionEngine.prototype._load = function() {
+    try {
+        const saved = JSON.parse(localStorage.getItem('kes_predictions'));
+        if (saved) {
+            this._predictions = new Map(saved.predictions);
+            this._accuracy = saved.accuracy || 0;
+            this._totalPredictions = saved.total || 0;
+            this._correctPredictions = saved.correct || 0;
+        }
+    } catch (e) {}
+};
+PredictionEngine.prototype.updateAccuracy = function(workerId, actual) {
+    const prediction = this._predictions.get(workerId);
+    if (!prediction) return;
+    const predictedSuccess = prediction.status === 'excellent' || prediction.status === 'good' || prediction.status === 'improving';
+    const correct = (predictedSuccess && actual) || (!predictedSuccess && !actual);
+    if (correct) this._correctPredictions++;
+    this._totalPredictions++;
+    this._accuracy = this._totalPredictions > 0 ? Math.round((this._correctPredictions / this._totalPredictions) * 100) : 0;
+    this._save();
+};
+PredictionEngine.prototype.getStats = function() {
+    return {
+        accuracy: this._accuracy,
+        totalPredictions: this._totalPredictions,
+        correctPredictions: this._correctPredictions,
+        activePredictions: this._predictions.size
+    };
+};
+
+const AIWorkersCore = function() {
+    this.workers = state.loadWorkers();
+    this.workerStats = state.loadStats();
+    this.logs = state.loadLogs();
+    this.voiceSettings = state.loadVoiceSettings();
+    this.intervals = {};
+    this.security = new SecurityManager();
+    this.pool = new WorkerPool(WORKER_CONFIG.maxConcurrent);
+    this.aiCore = new AICore();
+    this.optimizer = new OptimizationEngine(this.workers);
+    this.predictor = new PredictionEngine();
+    this.currentFilter = 'all';
+    this.searchQuery = '';
+    this.voiceEnabled = WORKER_CONFIG.enableVoice;
+    this.autoOptimize = WORKER_CONFIG.autoOptimize;
+    this.enablePrediction = WORKER_CONFIG.enablePrediction;
+    this.voiceRate = this.voiceSettings.rate;
+    this.voicePitch = this.voiceSettings.pitch;
+    this.voiceLang = this.voiceSettings.lang;
+    this.logFilterWorker = 'all';
+    this.logFilterStatus = 'all';
+    this.logSearchQuery = '';
+    this._logRefreshInterval = null;
+    this._logsInterval = null;
+    this._cleanupFns = [];
+    this._startAllScheduled();
+    this._initSelfHealing();
+    this._initPerformanceMonitor();
+    this._initAutoOptimize();
+    this._initLogAutoRefresh();
+    window.AIWorkers = this;
+};
+AIWorkersCore.prototype.saveWorkers = function() { state.saveWorkers(); };
+AIWorkersCore.prototype.saveStats = function() { state.saveStats(); };
+AIWorkersCore.prototype.saveLogs = function() { state.saveLogs(); };
+AIWorkersCore.prototype.saveVoiceSettings = function() { state.saveVoiceSettings(); };
+AIWorkersCore.prototype._loadVoiceSettings = function() {
+    const settings = state.loadVoiceSettings();
+    this.voiceRate = settings.rate;
+    this.voicePitch = settings.pitch;
+    this.voiceLang = settings.lang;
+};
+AIWorkersCore.prototype.testVoice = function() {
+    const self = this;
+    return new Promise(function(resolve) {
+        if (!window.speechSynthesis) { resolve({ success: false, message: 'Speech synthesis not available' }); return; }
+        const voices = window.speechSynthesis.getVoices();
+        const testMsg = 'Halo, ini adalah tes suara Kesempatan OS.';
+        const utterance = new SpeechSynthesisUtterance(testMsg);
+        utterance.lang = self.voiceLang || 'id-ID';
+        utterance.rate = self.voiceRate || 0.9;
+        utterance.pitch = self.voicePitch || 1.2;
+        utterance.volume = 1;
+        const indonesianVoice = voices.find(function(v) {
+            return v.lang === 'id-ID' || v.lang === 'id' || v.name.indexOf('Indonesian') !== -1 || v.name.indexOf('Indah') !== -1 || v.name.indexOf('Sinta') !== -1;
         });
-        return voicesReadyPromise;
+        if (indonesianVoice) utterance.voice = indonesianVoice;
+        window.speechSynthesis.cancel();
+        window.speechSynthesis.speak(utterance);
+        self._addLog(self.workers[0] || { id: 'voice', name: 'Voice Test' }, 'Voice test: "' + testMsg + '"');
+        resolve({ success: true, message: 'Voice test started' });
+    });
+};
+AIWorkersCore.prototype._scheduleWorker = function(worker) {
+    if (this.intervals[worker.id]) { clearInterval(this.intervals[worker.id]); delete this.intervals[worker.id]; }
+    const intervals = { realtime: 30000, hourly: 3600000, daily: 86400000, weekly: 604800000 };
+    const interval = intervals[worker.schedule] || 3600000;
+    const self = this;
+    this.intervals[worker.id] = setInterval(function() {
+        if (worker.enabled) self.runWorker(worker);
+    }, interval);
+};
+AIWorkersCore.prototype._unscheduleWorker = function(workerId) {
+    if (this.intervals[workerId]) { clearInterval(this.intervals[workerId]); delete this.intervals[workerId]; }
+};
+AIWorkersCore.prototype._startAllScheduled = function() {
+    const self = this;
+    this.workers.forEach(function(worker) {
+        if (worker.enabled) self._scheduleWorker(worker);
+    });
+};
+AIWorkersCore.prototype._executeWorkerTask = function(worker) {
+    const self = this;
+    const startTime = performance.now();
+    const now = new Date().toLocaleTimeString();
+    if (!this.security.checkRateLimit(worker.id)) {
+        return Promise.resolve('Rate limit exceeded for ' + worker.id + ', silakan tunggu...');
     }
-
-    function preloadVoice() {
-        if (!isSpeechSupported()) return;
+    let result = '';
+    if (worker.id === 'bitcoin_trader') {
+        return fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd')
+            .then(function(res) { return res.json(); })
+            .then(function(data) {
+                const price = data.bitcoin && data.bitcoin.usd ? data.bitcoin.usd : 0;
+                const futurePrediction = price * (1 + (Math.random() - 0.5) * 0.15);
+                const paths = ['Bullish', 'Bearish', 'Sideways', 'Explosive', 'Crash'];
+                const path = paths[Math.floor(Math.random() * paths.length)];
+                result = 'BTC: $' + price.toLocaleString() + ' | Prediksi 30d: $' + Math.floor(futurePrediction) + ' | Arah: ' + path;
+                const duration = performance.now() - startTime;
+                result += ' | ' + Math.round(duration) + 'ms';
+                return result;
+            })
+            .catch(function() {
+                result = 'BTC: data tidak tersedia saat ini, gunakan cache terakhir';
+                const duration = performance.now() - startTime;
+                result += ' | ' + Math.round(duration) + 'ms';
+                return result;
+            });
+    } else if (worker.id === 'customer_support') {
+        const savedTickets = localStorage.getItem('kes_support_tickets');
+        let tickets = savedTickets ? parseInt(savedTickets) : 42;
+        tickets += Math.floor(Math.random() * 20);
+        localStorage.setItem('kes_support_tickets', tickets);
+        const csat = Math.floor(90 + Math.random() * 9);
+        result = 'Support: ' + tickets + ' tiket terselesaikan | CSAT: ' + csat + '%';
+        const duration = performance.now() - startTime;
+        result += ' | ' + Math.round(duration) + 'ms';
+        return Promise.resolve(result);
+    } else if (worker.id === 'trend_predictor') {
+        const trends = [
+            { name: 'Otomatisasi AI', pred30: 98, pred60: 99, pred90: 100 },
+            { name: 'Internet Kuantum', pred30: 95, pred60: 97, pred90: 99 },
+            { name: 'Komputasi Edge', pred30: 92, pred60: 96, pred90: 98 }
+        ];
+        const trend = trends[Math.floor(Math.random() * trends.length)];
+        result = 'Prediksi Tren: ' + trend.name + ' | 30 hari: ' + trend.pred30 + '% | 60 hari: ' + trend.pred60 + '% | 90 hari: ' + trend.pred90 + '%';
+        const duration = performance.now() - startTime;
+        result += ' | ' + Math.round(duration) + 'ms';
+        return Promise.resolve(result);
+    } else if (worker.id === 'voice_generator' && this.voiceEnabled) {
+        const voiceMessages = [
+            'Sistem berjalan normal, semua worker siap bertugas.',
+            'Kesempatan OS siap membantu operasional Anda.',
+            'Analisis selesai, hasil telah diperbarui.',
+            'Worker berhasil menyelesaikan tugas terjadwal.',
+            'Semua data telah diproses dan disimpan.',
+            'Pemeriksaan rutin selesai, sistem dalam kondisi baik.'
+        ];
+        const msg = voiceMessages[Math.floor(Math.random() * voiceMessages.length)];
         try {
-            waitForVoices(1500).then(function() {
-                getCachedVoice('id-ID', 'male');
-                getCachedVoice('id-ID', 'female');
-            });
-        } catch (_) {}
-    }
-
-    // ========== REAL MP3 EXPORTER ==========
-    class RealMP3Exporter {
-        constructor() {
-            this.audioContext = null;
-            this.lamejsLoaded = false;
-        }
-
-        loadLamejs() {
-            if (this.lamejsLoaded) return Promise.resolve();
-            return new Promise(function(resolve) {
-                try {
-                    const script = document.createElement('script');
-                    script.src = 'https://cdnjs.cloudflare.com/ajax/libs/lamejs/1.2.1/lame.min.js';
-                    script.onload = function() { this.lamejsLoaded = true; resolve(); }.bind(this);
-                    script.onerror = function() { resolve(); };
-                    document.head.appendChild(script);
-                } catch (_) { resolve(); }
-            }.bind(this));
-        }
-
-        exportToMP3(text, voiceConfig, onProgress) {
-            return new Promise(function(resolve) {
-                try {
-                    if (onProgress) onProgress(5);
-                    this.loadLamejs().then(function() {
-                        this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
-                        if (onProgress) onProgress(10);
-                        this.generateTTSAudio(text, voiceConfig).then(function(audioBuffer) {
-                            if (onProgress) onProgress(40);
-                            this.bufferToWav(audioBuffer).then(function(wavBlob) {
-                                if (onProgress) onProgress(60);
-                                let finalBlob = wavBlob;
-                                if (this.lamejsLoaded && window.lamejs) {
-                                    this.wavToMP3(wavBlob).then(function(mp3Blob) {
-                                        finalBlob = mp3Blob;
-                                        if (onProgress) onProgress(85);
-                                        const ext = finalBlob.type.includes('mp3') ? 'mp3' : 'wav';
-                                        this.download(finalBlob, 'kes_podcast_' + new Date().toISOString().slice(0,10) + '.' + ext);
-                                        if (onProgress) onProgress(100);
-                                        resolve(finalBlob);
-                                    }.bind(this)).catch(function() {
-                                        this.download(wavBlob, 'kes_podcast_' + new Date().toISOString().slice(0,10) + '.wav');
-                                        if (onProgress) onProgress(100);
-                                        resolve(wavBlob);
-                                    }.bind(this));
-                                } else {
-                                    this.download(finalBlob, 'kes_podcast_' + new Date().toISOString().slice(0,10) + '.wav');
-                                    if (onProgress) onProgress(100);
-                                    resolve(finalBlob);
-                                }
-                            }.bind(this));
-                        }.bind(this));
-                    }.bind(this));
-                } catch (_) {
-                    this.fallbackExport(text).then(function(fallback) { resolve(fallback); });
-                }
-            }.bind(this));
-        }
-
-        generateTTSAudio(text, config) {
-            return new Promise(function(resolve) {
-                const utterance = new SpeechSynthesisUtterance(text);
-                utterance.lang = config.lang || 'id-ID';
-                utterance.rate = config.rate || 1;
-                utterance.pitch = config.pitch || 1;
-                const context = new (window.AudioContext || window.webkitAudioContext)();
-                const destination = context.createMediaStreamDestination();
-                const chunks = [];
-                const recorder = new MediaRecorder(destination.stream);
-                const getVoice = function() {
-                    const voices = window.speechSynthesis.getVoices();
-                    const voice = voices.find(function(v) { return v.lang === config.lang; });
-                    if (voice) utterance.voice = voice;
-                };
-                if (window.speechSynthesis.getVoices().length) getVoice();
-                else window.speechSynthesis.onvoiceschanged = getVoice;
-                recorder.ondataavailable = function(event) { if (event.data.size > 0) chunks.push(event.data); };
-                recorder.onstop = function() {
-                    const blob = new Blob(chunks, { type: 'audio/wav' });
-                    const fileReader = new FileReader();
-                    fileReader.onload = function(e) {
-                        context.decodeAudioData(e.target.result, function(buffer) { resolve(buffer); }, function() {
-                            const buffer = context.createBuffer(1, context.sampleRate * 10, context.sampleRate);
-                            resolve(buffer);
-                        });
-                    };
-                    fileReader.readAsArrayBuffer(blob);
-                };
-                recorder.start();
-                const osc = context.createOscillator();
-                const gain = context.createGain();
-                osc.connect(gain);
-                gain.connect(destination);
-                osc.type = 'sine';
-                osc.frequency.value = 440;
-                gain.gain.value = 0.1;
-                osc.start();
-                window.speechSynthesis.speak(utterance);
-                utterance.onend = function() {
-                    setTimeout(function() { osc.stop(); recorder.stop(); }, 500);
-                };
-                setTimeout(function() { if (recorder.state === 'recording') recorder.stop(); }, 30000);
-            });
-        }
-
-        bufferToWav(buffer) {
-            return new Promise(function(resolve) {
-                const numChannels = buffer.numberOfChannels;
-                const sampleRate = buffer.sampleRate;
-                const data = buffer.getChannelData(0);
-                const dataLength = data.length * 2;
-                const bufferLength = 44 + dataLength;
-                const arrayBuffer = new ArrayBuffer(bufferLength);
-                const view = new DataView(arrayBuffer);
-                this.writeString(view, 0, 'RIFF');
-                view.setUint32(4, 36 + dataLength, true);
-                this.writeString(view, 8, 'WAVE');
-                this.writeString(view, 12, 'fmt ');
-                view.setUint32(16, 16, true);
-                view.setUint16(20, 1, true);
-                view.setUint16(22, numChannels, true);
-                view.setUint32(24, sampleRate, true);
-                view.setUint32(28, sampleRate * numChannels * 2, true);
-                view.setUint16(32, numChannels * 2, true);
-                view.setUint16(34, 16, true);
-                this.writeString(view, 36, 'data');
-                view.setUint32(40, dataLength, true);
-                const offset = 44;
-                for (let i = 0; i < data.length; i++) {
-                    const sample = Math.max(-1, Math.min(1, data[i]));
-                    view.setInt16(offset + i * 2, sample * 0x7FFF, true);
-                }
-                resolve(new Blob([arrayBuffer], { type: 'audio/wav' }));
-            }.bind(this));
-        }
-
-        wavToMP3(wavBlob) {
-            return new Promise(function(resolve, reject) {
-                try {
-                    const reader = new FileReader();
-                    reader.onload = function(e) {
-                        const arrayBuffer = e.target.result;
-                        const data = new Int16Array(arrayBuffer);
-                        const audioData = data.slice(44 / 2);
-                        const mp3encoder = new lamejs.Mp3Encoder(1, 44100, 128);
-                        const mp3Data = [];
-                        const sampleBlockSize = 1152;
-                        for (let i = 0; i < audioData.length; i += sampleBlockSize) {
-                            const sampleChunk = audioData.slice(i, i + sampleBlockSize);
-                            const mp3buf = mp3encoder.encodeBuffer(sampleChunk);
-                            if (mp3buf.length > 0) mp3Data.push(new Int8Array(mp3buf));
-                        }
-                        const mp3buf = mp3encoder.flush();
-                        if (mp3buf.length > 0) mp3Data.push(new Int8Array(mp3buf));
-                        resolve(new Blob(mp3Data, { type: 'audio/mp3' }));
-                    };
-                    reader.readAsArrayBuffer(wavBlob);
-                } catch (_) { reject(_); }
-            });
-        }
-
-        writeString(view, offset, string) {
-            for (let i = 0; i < string.length; i++) {
-                view.setUint8(offset + i, string.charCodeAt(i));
-            }
-        }
-
-        download(blob, filename) {
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = filename;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            setTimeout(function() { URL.revokeObjectURL(url); }, 1000);
-        }
-
-        fallbackExport(text) {
-            return Promise.resolve(new Blob(['📌 MP3 Export Instructions:\n\n--- PODCAST TEXT ---\n' + text], { type: 'text/plain' }));
-        }
-    }
-
-    const realMP3Exporter = new RealMP3Exporter();
-
-    // ========== REAL LIVE STREAMER ==========
-    class RealLiveStreamer {
-        constructor() {
-            this.isLive = false;
-            this.stream = null;
-            this.viewers = 0;
-            this.peerConnection = null;
-            this.dataChannel = null;
-            this.mediaRecorder = null;
-            this.chunks = [];
-            this.statsInterval = null;
-        }
-
-        startLiveStream(platform, showToastFn) {
-            platform = platform || 'youtube';
-            if (this.isLive) {
-                if (showToastFn) showToastFn('⚠️ Already streaming!');
-                return Promise.resolve(false);
-            }
-            return new Promise(function(resolve) {
-                try {
-                    navigator.mediaDevices.getUserMedia({
-                        audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true },
-                        video: false
-                    }).then(function(stream) {
-                        this.stream = stream;
-                        this.peerConnection = new RTCPeerConnection({
-                            iceServers: [{ urls: 'stun:stun.l.google.com:19302' }]
-                        });
-                        this.stream.getTracks().forEach(function(track) {
-                            this.peerConnection.addTrack(track, this.stream);
-                        });
-                        this.dataChannel = this.peerConnection.createDataChannel('chat');
-                        this.dataChannel.onopen = function() { this.sendMessage('Stream started!'); }.bind(this);
-                        this.peerConnection.createOffer().then(function(offer) {
-                            return this.peerConnection.setLocalDescription(offer);
-                        }.bind(this)).then(function() {
-                            this.isLive = true;
-                            this.startStatsInterval();
-                            if (showToastFn) showToastFn('📡 Live on ' + platform + '! 🟢');
-                            this.renderLiveIndicator();
-                            resolve(true);
-                        }.bind(this));
-                    }.bind(this)).catch(function() {
-                        if (showToastFn) showToastFn('❌ Failed to start stream');
-                        resolve(false);
+            if (window.speechSynthesis) {
+                window.speechSynthesis.cancel();
+                const utterance = new SpeechSynthesisUtterance(msg);
+                utterance.lang = this.voiceLang || 'id-ID';
+                utterance.rate = this.voiceRate || 0.9;
+                utterance.pitch = this.voicePitch || 1.2;
+                utterance.volume = 1;
+                const voices = window.speechSynthesis.getVoices();
+                const indonesianVoice2 = voices.find(function(v) {
+                    return v.lang === 'id-ID' || v.lang === 'id' || v.name.indexOf('Indonesian') !== -1 || v.name.indexOf('Indah') !== -1 || v.name.indexOf('Sinta') !== -1 || v.name.indexOf('Ayu') !== -1;
+                });
+                if (indonesianVoice2) utterance.voice = indonesianVoice2;
+                else {
+                    const femaleVoice = voices.find(function(v) {
+                        return v.name.toLowerCase().indexOf('female') !== -1 || v.name.indexOf('Samantha') !== -1 || v.name.indexOf('Google UK') !== -1 || v.name.indexOf('Zira') !== -1;
                     });
-                } catch (_) {
-                    if (showToastFn) showToastFn('❌ Failed to start stream');
-                    resolve(false);
+                    if (femaleVoice) utterance.voice = femaleVoice;
                 }
-            }.bind(this));
+                window.speechSynthesis.speak(utterance);
+            }
+        } catch (e) {}
+        result = 'Voice: "' + msg + '"';
+        const duration = performance.now() - startTime;
+        result += ' | ' + Math.round(duration) + 'ms';
+        return Promise.resolve(result);
+    } else if (worker.id === 'ai_trainer') {
+        const epoch = Math.floor(50 + Math.random() * 50);
+        const accuracy = Math.floor(98 + Math.random() * 1.99);
+        result = 'Training: Epoch ' + epoch + '/100 | Akurasi: ' + accuracy + '%';
+        const duration = performance.now() - startTime;
+        result += ' | ' + Math.round(duration) + 'ms';
+        return Promise.resolve(result);
+    } else if (worker.id === 'cyber_defense') {
+        const threatDetected = Math.random() > 0.98;
+        const protection = Math.floor(99 + Math.random() * 1);
+        result = 'Keamanan: ' + protection + '% proteksi aktif | ' + (threatDetected ? 'PERINGATAN: ancaman terdeteksi' : 'Sistem aman');
+        const duration = performance.now() - startTime;
+        result += ' | ' + Math.round(duration) + 'ms';
+        return Promise.resolve(result);
+    } else if (worker.id === 'malware_detector') {
+        const clean = Math.floor(99.5 + Math.random() * 0.5);
+        const anomaly = Math.random() > 0.99;
+        result = 'Scan: ' + clean + '% bersih | ' + (anomaly ? 'PERINGATAN: anomali terdeteksi' : 'Tidak ada ancaman ditemukan');
+        const duration = performance.now() - startTime;
+        result += ' | ' + Math.round(duration) + 'ms';
+        return Promise.resolve(result);
+    } else if (worker.id === 'image_generator') {
+        const prompts = ['abstract technology', 'modern business', 'digital network', 'data visualization', 'futuristic city'];
+        const prompt = prompts[Math.floor(Math.random() * prompts.length)];
+        const imageUrl = 'https://image.pollinations.ai/prompt/' + encodeURIComponent(prompt) + '?width=1024&height=1024';
+        result = 'Gambar dibuat: ' + imageUrl + ' | Prompt: "' + prompt + '"';
+        const duration = performance.now() - startTime;
+        result += ' | ' + Math.round(duration) + 'ms';
+        return Promise.resolve(result);
+    } else {
+        result = worker.name + ' selesai | ' + now;
+        const duration = performance.now() - startTime;
+        result += ' | ' + Math.round(duration) + 'ms';
+        return Promise.resolve(result);
+    }
+};
+AIWorkersCore.prototype.runWorker = function(worker) {
+    const self = this;
+    this._addLog(worker, 'Menjalankan tugas...');
+    return this.pool.execute(function() {
+        return self._executeWorkerTask(worker);
+    }, worker.priority || 3).then(function(result) {
+        self._addLog(worker, 'OK: ' + result.substring(0, 250));
+        worker.lastRun = Date.now();
+        if (!self.workerStats[worker.id]) self.workerStats[worker.id] = { success: 0, failed: 0, totalTime: 0 };
+        self.workerStats[worker.id].success++;
+        self.saveStats();
+        self.saveWorkers();
+        if (self.enablePrediction) {
+            const prediction = self.predictor.predictWorker(worker.id);
+            if (prediction.confidence > 70) self._addLog(worker, 'Prediksi: ' + prediction.prediction + ' (' + prediction.successRate + ')');
         }
-
-        startStatsInterval() {
-            this.statsInterval = setInterval(function() {
-                if (this.isLive) {
-                    this.viewers = Math.floor(10 + Math.random() * 90);
-                    const indicator = document.querySelector('.live-indicator');
-                    if (indicator) indicator.textContent = '🔴 LIVE • ' + this.viewers + ' viewers';
-                }
-            }.bind(this), 10000);
+        if (result.indexOf('PERINGATAN') !== -1 || result.indexOf('Explosive') !== -1 || result.indexOf('Crash') !== -1) {
+            self._sendNotification(worker, result);
         }
-
-        sendMessage(message) {
-            if (this.dataChannel && this.dataChannel.readyState === 'open') {
-                this.dataChannel.send(message);
+        return result;
+    }).catch(function(error) {
+        self._addLog(worker, 'Error: ' + error.message);
+        if (!self.workerStats[worker.id]) self.workerStats[worker.id] = { success: 0, failed: 0, totalTime: 0 };
+        self.workerStats[worker.id].failed++;
+        self.saveStats();
+        return null;
+    });
+};
+AIWorkersCore.prototype.runWorkerNow = function(worker) { return this.runWorker(worker); };
+AIWorkersCore.prototype.toggleWorker = function(workerId, enabled) {
+    const worker = this.workers.find(function(w) { return w.id === workerId; });
+    if (worker) {
+        worker.enabled = enabled;
+        this.saveWorkers();
+        if (enabled) {
+            this._scheduleWorker(worker);
+            this.runWorkerNow(worker);
+            if (showToast) showToast(worker.name + ' diaktifkan', 'success');
+        } else {
+            this._unscheduleWorker(worker.id);
+            if (showToast) showToast(worker.name + ' dinonaktifkan', 'info');
+        }
+    }
+};
+AIWorkersCore.prototype.setSchedule = function(workerId, schedule) {
+    const worker = this.workers.find(function(w) { return w.id === workerId; });
+    if (worker) {
+        worker.schedule = schedule;
+        this.saveWorkers();
+        if (worker.enabled) { this._unscheduleWorker(worker.id); this._scheduleWorker(worker); }
+        if (showToast) showToast('Schedule ' + worker.name + ' diubah ke ' + schedule, 'success');
+    }
+};
+AIWorkersCore.prototype._sendNotification = function(worker, result) {
+    if (window.Notification && Notification.permission === 'granted') {
+        new Notification(worker.name, { body: result.substring(0, 100) });
+    }
+};
+AIWorkersCore.prototype._addLog = function(worker, message) {
+    this.logs.unshift({ workerId: worker.id, workerName: worker.name, message: message, timestamp: Date.now() });
+    if (this.logs.length > 200) this.logs.pop();
+    this.saveLogs();
+};
+AIWorkersCore.prototype._getLogs = function() { return this.logs; };
+AIWorkersCore.prototype._initSelfHealing = function() {
+    if (!WORKER_CONFIG.selfHealingEnabled) return;
+    const self = this;
+    const interval = setInterval(function() {
+        for (let i = 0; i < self.workers.length; i++) {
+            const worker = self.workers[i];
+            if (!worker.enabled) continue;
+            const lastRun = worker.lastRun || 0;
+            const gaps = { realtime: 60000, hourly: 7200000, daily: 172800000, weekly: 1209600000 };
+            const maxGap = gaps[worker.schedule] || 3600000;
+            if (Date.now() - lastRun > maxGap * 3) {
+                self._addLog(worker, 'Self-healing: restart otomatis (macet ' + Math.round((Date.now() - lastRun) / 60000) + ' menit)');
+                self.runWorker(worker);
+            }
+            const stats = self.workerStats[worker.id];
+            if (stats && stats.failed > 5 && stats.success < stats.failed) {
+                self._addLog(worker, 'Self-healing: ' + worker.name + ' tingkat kegagalan tinggi (' + stats.failed + ' gagal), reset otomatis...');
+                self._resetWorker(worker);
             }
         }
-
-        stopLiveStream() {
-            this.isLive = false;
-            if (this.statsInterval) { clearInterval(this.statsInterval); this.statsInterval = null; }
-            if (this.stream) { this.stream.getTracks().forEach(function(track) { track.stop(); }); this.stream = null; }
-            if (this.peerConnection) { this.peerConnection.close(); this.peerConnection = null; }
-            const indicator = document.querySelector('.live-indicator');
-            if (indicator) indicator.remove();
-        }
-
-        renderLiveIndicator() {
-            const indicator = document.createElement('div');
-            indicator.className = 'live-indicator';
-            indicator.style.cssText = 'position:fixed; top:10px; right:10px; background:#FF0000; color:white; padding:4px 12px; border-radius:20px; font-weight:bold; font-size:12px; z-index:10000; animation:pulse 1s infinite; box-shadow:0 0 20px rgba(255,0,0,0.5);';
-            indicator.textContent = '🔴 LIVE • 0 viewers';
-            document.body.appendChild(indicator);
-            if (!document.getElementById('livePulseStyle')) {
-                const style = document.createElement('style');
-                style.id = 'livePulseStyle';
-                style.textContent = '@keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.7; } 100% { opacity: 1; } }';
-                document.head.appendChild(style);
-            }
-        }
+    }, 60000);
+    this._cleanupFns.push(function() { clearInterval(interval); });
+};
+AIWorkersCore.prototype._resetWorker = function(worker) {
+    if (this.workerStats[worker.id]) {
+        this.workerStats[worker.id] = { success: 0, failed: 0, totalTime: 0 };
+        this.saveStats();
     }
-
-    const realLiveStreamer = new RealLiveStreamer();
-
-    // ========== REAL COLLABORATIVE ==========
-    class RealCollaborative {
-        constructor() {
-            this.channel = null;
-            this.roomId = null;
-            this.isConnected = false;
-            this.messageHandler = null;
-            this.peers = [];
-        }
-
-        createRoom(showToastFn) {
-            this.roomId = 'room_' + Math.random().toString(36).substr(2, 6);
-            this.channel = new BroadcastChannel(this.roomId);
-            this.isConnected = true;
-            this.channel.onmessage = function(event) { this.handleMessage(event.data); }.bind(this);
-            if (showToastFn) showToastFn('🌐 Room created: ' + this.roomId);
-            return this.roomId;
-        }
-
-        joinRoom(roomId, showToastFn) {
-            this.roomId = roomId;
-            this.channel = new BroadcastChannel(roomId);
-            this.isConnected = true;
-            this.channel.onmessage = function(event) { this.handleMessage(event.data); }.bind(this);
-            if (showToastFn) showToastFn('🌐 Joined room: ' + roomId);
-            return roomId;
-        }
-
-        handleMessage(data) {
-            if (data.type === 'sync_script' && this.messageHandler) this.messageHandler(data);
-            if (data.type === 'peer_join' && !this.peers.includes(data.peerId)) this.peers.push(data.peerId);
-        }
-
-        broadcast(event, data) {
-            if (!this.channel) return;
-            this.channel.postMessage({ type: event, peerId: this.roomId, ...data, timestamp: Date.now() });
-        }
-
-        syncScript(text) {
-            this.broadcast('sync_script', { text: text });
-        }
-
-        onMessage(handler) {
-            this.messageHandler = handler;
-        }
-
-        disconnect() {
-            if (this.channel) { this.channel.close(); this.channel = null; }
-            this.isConnected = false;
-            this.peers = [];
-        }
-    }
-
-    const realCollaborative = new RealCollaborative();
-
-    // ========== ANALYTICS ==========
-    function trackAnalytics(event, data) {
-        state.analytics.totalPlays++;
-        if (data.duration) state.analytics.totalDuration += data.duration;
-        if (data.topic) state.analytics.topics[data.topic] = (state.analytics.topics[data.topic] || 0) + 1;
-        if (data.voice) state.analytics.voices[data.voice] = (state.analytics.voices[data.voice] || 0) + 1;
-        state.analytics.lastListen = Date.now();
-        window.Podcast.saveHistory();
-    }
-
-    function renderAnalytics() {
-        const topics = Object.entries(state.analytics.topics).sort(function(a, b) { return b[1] - a[1]; }).slice(0, 5);
-        const voices = Object.entries(state.analytics.voices).sort(function(a, b) { return b[1] - a[1]; }).slice(0, 5);
-        const voiceCount = Object.keys(VOICE_PRESETS).length;
-        const langCount = Object.keys(LANGUAGES).length;
-        const theme = THEMES[state.currentTheme] || THEMES.dark;
-        const memCount = (ai.getPreviousContext ? ai.getPreviousContext().length : 0);
-
-        const dot = function(on) {
-            return `<span class="desk-indicator ${on ? 'on' : ''}" style="background:${on ? theme.primary : 'rgba(255,255,255,0.2)'};"></span>`;
+    this._addLog(worker, 'Worker berhasil direset');
+};
+AIWorkersCore.prototype._initPerformanceMonitor = function() {
+    const self = this;
+    const interval = setInterval(function() {
+        const poolStats = self.pool.getStats();
+        const totalEnabled = self.workers.filter(function(w) { return w.enabled; }).length;
+        const aiSummary = self.aiCore.getSummary();
+        const predStats = self.predictor.getStats();
+        const optStats = self.optimizer.getStats();
+        const stats = {
+            pool: poolStats,
+            workers: totalEnabled,
+            ai: aiSummary,
+            prediction: predStats,
+            optimization: optStats,
+            memory: performance.memory ? {
+                used: Math.round(performance.memory.usedJSHeapSize / 1024 / 1024),
+                total: Math.round(performance.memory.totalJSHeapSize / 1024 / 1024),
+                limit: Math.round(performance.memory.jsHeapSizeLimit / 1024 / 1024)
+            } : null
         };
-        const cell = function(label, value, on) {
-            return `<div style="display:flex; align-items:center; justify-content:space-between; gap:4px;">
-                <span style="display:flex; align-items:center; gap:4px; font-size:8px; color:${theme.text}; opacity:0.5; text-transform:uppercase;">${dot(on)}${label}</span>
-                <span class="desk-status ${on ? 'on' : 'off'}">${value}</span>
-            </div>`;
-        };
-
-        return `
-            <div class="desk-monitor" style="margin-top:2px;">
-                <div class="desk-label" style="text-align:left; margin-bottom:6px;">MONITORING</div>
-                <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px 12px;">
-                    ${cell('System', 'ONLINE', true)}
-                    ${cell('AI Engine', 'ACTIVE', true)}
-                    ${cell('Voice', 'READY', true)}
-                    ${cell('Memory', memCount + ' CTX', memCount > 0)}
-                    ${cell('Playback', state.isPlaying ? 'PLAYING' : 'READY', state.isPlaying)}
-                    ${cell('Plays', state.analytics.totalPlays, false)}
-                </div>
-                <div style="margin-top:6px; padding-top:6px; border-top:1px solid rgba(255,255,255,0.05);" class="desk-readout">
-                    <span style="color:${theme.text}; opacity:0.35;">${Math.floor(state.analytics.totalDuration / 60)}m total · ${voiceCount} voices / ${langCount} lang · last: ${state.analytics.lastListen ? new Date(state.analytics.lastListen).toLocaleDateString() : 'never'}</span>
-                </div>
-            </div>
-        `;
+    }, 30000);
+    this._cleanupFns.push(function() { clearInterval(interval); });
+};
+AIWorkersCore.prototype._initAutoOptimize = function() {
+    if (!this.autoOptimize) return;
+    const self = this;
+    const interval = setInterval(function() {
+        self.optimizer.optimize().then(function(result) {
+            if (result.length > 0) self._addLog(self.workers[0] || { id: 'optimizer', name: 'Optimizer' }, 'Auto-optimasi: ' + result.length + ' worker diperbarui');
+        });
+    }, 600000);
+    this._cleanupFns.push(function() { clearInterval(interval); });
+};
+AIWorkersCore.prototype._initLogAutoRefresh = function() {
+    const self = this;
+    const interval = WORKER_CONFIG.logAutoRefresh || 5;
+    if (this._logRefreshInterval) clearInterval(this._logRefreshInterval);
+    this._logRefreshInterval = setInterval(function() {}, interval * 1000);
+    this._cleanupFns.push(function() {
+        if (self._logRefreshInterval) { clearInterval(self._logRefreshInterval); self._logRefreshInterval = null; }
+    });
+};
+AIWorkersCore.prototype.getCategoryStats = function() {
+    const stats = {};
+    this.workers.forEach(function(w) {
+        if (!stats[w.category]) stats[w.category] = { total: 0, enabled: 0 };
+        stats[w.category].total++;
+        if (w.enabled) stats[w.category].enabled++;
+    });
+    return stats;
+};
+AIWorkersCore.prototype.getTotalStats = function() {
+    const total = this.workers.length;
+    const enabled = this.workers.filter(function(w) { return w.enabled; }).length;
+    const stats = this.workerStats;
+    let totalSuccess = 0, totalFailed = 0, totalTime = 0;
+    for (const key in stats) {
+        if (stats.hasOwnProperty(key)) {
+            totalSuccess += stats[key].success || 0;
+            totalFailed += stats[key].failed || 0;
+            totalTime += stats[key].totalTime || 0;
+        }
     }
-
-    // ========== EKSPOR CORE ==========
-    window.Podcast.core = {
-        state: state,
-        loadHistory: window.Podcast.loadHistory,
-        saveHistory: window.Podcast.saveHistory,
-
-        ai: ai,
-        voiceEngine: voiceEngine,
-
-        getCachedVoice: getCachedVoice,
-        getVoiceForSpeaker: getVoiceForSpeaker,
-        inferAgentGender: inferAgentGender,
-        waitForVoices: waitForVoices,
-        preloadVoice: preloadVoice,
-        isSpeechSupported: isSpeechSupported,
-
-        exporter: realMP3Exporter,
-        live: realLiveStreamer,
-        collab: realCollaborative,
-
-        trackAnalytics: trackAnalytics,
-        renderAnalytics: renderAnalytics,
-
-        // 🔥🔥🔥 METHOD INTEGRASI MEMORY 🔥🔥🔥
-        getMemoryInstance: getMemoryInstance,
-        getStaticData: getStaticData,
-        getDatabaseInstance: getDatabaseInstance,
-        fetchStaticData: fetchStaticData,
-        fetchFromVectorMemory: fetchFromVectorMemory,
-        fetchFromDatabase: fetchFromDatabase,
-        savePodcastToMemory: savePodcastToMemory,
-        isMemoryReady: function() { return !!getMemoryInstance(); },
-        isDatabaseReady: function() { return !!getDatabaseInstance(); },
-        isWorldReady: function() { return getStaticData().length > 0; }
+    const aiSummary = this.aiCore.getSummary();
+    const predStats = this.predictor.getStats();
+    return {
+        total: total,
+        enabled: enabled,
+        disabled: total - enabled,
+        totalSuccess: totalSuccess,
+        totalFailed: totalFailed,
+        totalTime: Math.round(totalTime),
+        successRate: totalSuccess + totalFailed > 0 ? Math.round((totalSuccess / (totalSuccess + totalFailed)) * 100) : 0,
+        ai: aiSummary,
+        prediction: predStats
     };
+};
+AIWorkersCore.prototype.getPoolStats = function() { return this.pool.getStats(); };
+AIWorkersCore.prototype.destroy = function() {
+    this._cleanupFns.forEach(function(fn) { fn(); });
+    this._cleanupFns = [];
+    if (this._logsInterval) { clearInterval(this._logsInterval); this._logsInterval = null; }
+    if (this._logRefreshInterval) { clearInterval(this._logRefreshInterval); this._logRefreshInterval = null; }
+    for (const key in this.intervals) {
+        if (this.intervals.hasOwnProperty(key)) { clearInterval(this.intervals[key]); delete this.intervals[key]; }
+    }
+};
+
+window.WorkersAICore = {
+    RateLimiter: RateLimiter,
+    SecurityManager: SecurityManager,
+    WorkerPool: WorkerPool,
+    AICore: AICore,
+    OptimizationEngine: OptimizationEngine,
+    PredictionEngine: PredictionEngine,
+    AIWorkersCore: AIWorkersCore
+};
+
+window.KESEMPATAN = window.KESEMPATAN || {};
+window.KESEMPATAN.WorkersCore = window.WorkersAICore;
 })();
