@@ -8,10 +8,13 @@
 (function() {
     'use strict';
 
-    if (window.Podcast && window.Podcast.uiLayout) return;
-    window.Podcast = window.Podcast || {};
+    const KESEMPATAN = window.KESEMPATAN || {};
+    window.KESEMPATAN = KESEMPATAN;
 
-    const config = window.Podcast.config;
+    if (KESEMPATAN.Podcast && KESEMPATAN.Podcast.uiLayout) return;
+    KESEMPATAN.Podcast = KESEMPATAN.Podcast || {};
+
+    const config = KESEMPATAN.Podcast.config;
     if (!config) {
         return;
     }
@@ -33,7 +36,7 @@
         try { return JSON.parse(localStorage.getItem(key) || '[]'); } catch (_) { return []; }
     }
     function safeLSSet(key, arr) {
-        try { localStorage.setItem(key, JSON.stringify(arr)); } catch (_) {}
+        try { localStorage.setItem(key, JSON.stringify(arr)); } catch (_) { console.warn('[Podcast] Non-fatal error:', _.message); }
     }
 
     // Dicatat sebagai efek samping ringan saat render (BUKAN di ui-handlers.js,
@@ -263,7 +266,7 @@
         const theme = THEMES[state.currentTheme] || THEMES.dark;
         const totalVoices = Object.keys(VOICE_PRESETS).length;
         const totalLangs = Object.keys(LANGUAGES).length;
-        const collab = window.Podcast.core ? window.Podcast.core.collab : { isConnected: false, roomId: null };
+        const collab = KESEMPATAN.Podcast.core ? KESEMPATAN.Podcast.core.collab : { isConnected: false, roomId: null };
 
         return `
             <style>
@@ -701,18 +704,18 @@
                             ${state.currentPlayerMode === 'pro' ? `
                                 <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap; margin-top:10px;">
                                     <div style="display:flex; gap:6px;">
-                                        <button onclick="window.PodcastGenerator.skipTime(-10)" style="background:transparent; border:1px solid rgba(255,255,255,0.12); border-radius:8px; color:${theme.text}; padding:4px 8px; cursor:pointer; font-size:11px;">⏮ 10s</button>
-                                        <button onclick="window.PodcastGenerator.togglePlay()" style="background:${theme.primary}; border:none; border-radius:8px; color:${theme.bg}; padding:4px 12px; cursor:pointer; font-size:13px; font-weight:bold;">
+                                        <button onclick="window.KESEMPATAN.PodcastGenerator.skipTime(-10)" style="background:transparent; border:1px solid rgba(255,255,255,0.12); border-radius:8px; color:${theme.text}; padding:4px 8px; cursor:pointer; font-size:11px;">⏮ 10s</button>
+                                        <button onclick="window.KESEMPATAN.PodcastGenerator.togglePlay()" style="background:${theme.primary}; border:none; border-radius:8px; color:${theme.bg}; padding:4px 12px; cursor:pointer; font-size:13px; font-weight:bold;">
                                             ${state.isPlaying ? '⏸' : '▶'}
                                         </button>
-                                        <button onclick="window.PodcastGenerator.skipTime(10)" style="background:transparent; border:1px solid rgba(255,255,255,0.12); border-radius:8px; color:${theme.text}; padding:4px 8px; cursor:pointer; font-size:11px;">⏭ 10s</button>
+                                        <button onclick="window.KESEMPATAN.PodcastGenerator.skipTime(10)" style="background:transparent; border:1px solid rgba(255,255,255,0.12); border-radius:8px; color:${theme.text}; padding:4px 8px; cursor:pointer; font-size:11px;">⏭ 10s</button>
                                     </div>
                                     <div style="display:flex; align-items:center; gap:6px;">
                                         <span style="font-size:10px; color:${theme.text}; opacity:0.6;">🔊</span>
                                         <input type="range" min="0" max="1" step="0.01" value="0.8" style="width:60px; accent-color:${theme.primary};">
                                     </div>
                                     <div style="display:flex; align-items:center; gap:4px;">
-                                        <select onchange="window.PodcastGenerator.setSpeed(this.value)" style="background:rgba(0,0,0,0.3); border:none; border-bottom:1px solid rgba(255,255,255,0.1); color:${theme.text}; padding:2px 4px; font-size:10px;">
+                                        <select onchange="window.KESEMPATAN.PodcastGenerator.setSpeed(this.value)" style="background:rgba(0,0,0,0.3); border:none; border-bottom:1px solid rgba(255,255,255,0.1); color:${theme.text}; padding:2px 4px; font-size:10px;">
                                             <option value="0.5">0.5x</option>
                                             <option value="0.75">0.75x</option>
                                             <option value="1" selected>1x</option>
@@ -721,8 +724,8 @@
                                             <option value="2">2x</option>
                                         </select>
                                     </div>
-                                    <button onclick="window.PodcastGenerator.addBookmark()" style="background:transparent; border:1px solid rgba(255,215,0,0.25); border-radius:8px; color:#FFD700; padding:4px 8px; cursor:pointer; font-size:11px;">⭐</button>
-                                    <button onclick="window.PodcastGenerator.togglePlayerMode()" style="background:transparent; border:none; color:${theme.text}; opacity:0.5; cursor:pointer; font-size:9px; margin-left:auto;">📱 Simple</button>
+                                    <button onclick="window.KESEMPATAN.PodcastGenerator.addBookmark()" style="background:transparent; border:1px solid rgba(255,215,0,0.25); border-radius:8px; color:#FFD700; padding:4px 8px; cursor:pointer; font-size:11px;">⭐</button>
+                                    <button onclick="window.KESEMPATAN.PodcastGenerator.togglePlayerMode()" style="background:transparent; border:none; color:${theme.text}; opacity:0.5; cursor:pointer; font-size:9px; margin-left:auto;">📱 Simple</button>
                                 </div>
                                 <div id="bookmarksContainer" style="margin-top:8px; display:flex; gap:4px; flex-wrap:wrap;"></div>
                                 <div style="margin-top:8px; font-size:9px; color:${theme.text}; opacity:0.45; display:flex; justify-content:space-between;">
@@ -731,7 +734,7 @@
                                 </div>
                             ` : `
                                 <div style="text-align:right; margin-top:6px;">
-                                    <button onclick="window.PodcastGenerator.togglePlayerMode()" style="background:transparent; border:none; color:${theme.text}; opacity:0.4; cursor:pointer; font-size:9px;">🎛 Pro Mode</button>
+                                    <button onclick="window.KESEMPATAN.PodcastGenerator.togglePlayerMode()" style="background:transparent; border:none; color:${theme.text}; opacity:0.4; cursor:pointer; font-size:9px;">🎛 Pro Mode</button>
                                 </div>
                             `}
                         </div>
@@ -824,13 +827,13 @@
                         <div style="display:flex; gap:4px; flex-wrap:wrap; margin-bottom:8px;">
                             ${['all', 'male', 'female', 'young', 'adult', 'senior', 'podcast', 'regional'].map(function(cat, i) {
                                 const labels = { all: 'All', male: 'Male', female: 'Female', young: 'Young', adult: 'Adult', senior: 'Senior', podcast: 'Podcast', regional: 'Regional' };
-                                return `<button class="voice-category-chip" data-category="${cat}" onclick="window.PodcastGenerator.filterVoiceBooth('${cat}', this)" style="padding:3px 9px; font-size:8px; border-radius:8px; background:${i === 0 ? theme.primary + '18' : 'rgba(255,255,255,0.03)'}; border:1px solid ${i === 0 ? theme.primary : 'transparent'}; color:${i === 0 ? theme.primary : theme.text}; opacity:${i === 0 ? '1' : '0.6'}; cursor:pointer;">${labels[cat]}</button>`;
+                                return `<button class="voice-category-chip" data-category="${cat}" onclick="window.KESEMPATAN.PodcastGenerator.filterVoiceBooth('${cat}', this)" style="padding:3px 9px; font-size:8px; border-radius:8px; background:${i === 0 ? theme.primary + '18' : 'rgba(255,255,255,0.03)'}; border:1px solid ${i === 0 ? theme.primary : 'transparent'}; color:${i === 0 ? theme.primary : theme.text}; opacity:${i === 0 ? '1' : '0.6'}; cursor:pointer;">${labels[cat]}</button>`;
                             }).join('')}
                         </div>
 
                         <!-- Search - realtime, client-side saja -->
                         <input type="text" id="voiceSearchInput" placeholder="🔍 Cari nama, kategori, atau karakter..."
-                               oninput="window.PodcastGenerator.searchVoiceBooth(this.value)"
+                               oninput="window.KESEMPATAN.PodcastGenerator.searchVoiceBooth(this.value)"
                                class="desk-screen" style="width:100%; padding:7px 10px; border:none; color:${theme.text}; font-size:11px; outline:none; box-sizing:border-box; margin-bottom:8px;">
                     </div>
 
@@ -851,7 +854,7 @@
                                         <span style="display:block; font-size:11px; font-weight:400; color:${theme.text}; opacity:0.65;">${val.name.replace(/[^\w\s]/g, '').trim()}</span>
                                         <span style="display:block; font-size:8px; color:${theme.text}; opacity:0.35;">${val.style || 'general'} · ${val.gender} · ${val.age}</span>
                                     </span>
-                                    <button onclick="window.PodcastGenerator.toggleFavoriteVoice('${key}', event)" style="background:none; border:none; cursor:pointer; font-size:13px; padding:2px 4px; flex-shrink:0; color:${theme.primary}; opacity:${isFav ? '1' : '0.3'};">${isFav ? '★' : '☆'}</button>
+                                    <button onclick="window.KESEMPATAN.PodcastGenerator.toggleFavoriteVoice('${key}', event)" style="background:none; border:none; cursor:pointer; font-size:13px; padding:2px 4px; flex-shrink:0; color:${theme.primary}; opacity:${isFav ? '1' : '0.3'};">${isFav ? '★' : '☆'}</button>
                                     <span class="desk-status off" style="flex-shrink:0;">STANDBY</span>
                                 </div>
                             `;
@@ -933,7 +936,7 @@
                         <div style="color:${theme.text}; opacity:0.4; font-size:8px; margin-bottom:4px;">🎨 Tema</div>
                         <div style="display:flex; gap:4px; flex-wrap:wrap;">
                             ${Object.keys(THEMES).map(function(t) {
-                                return '<button onclick="window.PodcastGenerator.applyTheme(\'' + t + '\')" style="background:' + (state.currentTheme === t ? theme.primary : 'rgba(255,255,255,0.05)') + '; border:1px solid ' + (state.currentTheme === t ? theme.primary : 'rgba(255,255,255,0.08)') + '; border-radius:8px; padding:2px 7px; color:' + (state.currentTheme === t ? theme.bg : theme.text) + '; cursor:pointer; font-size:7px;">' + t.charAt(0).toUpperCase() + t.slice(1) + '</button>';
+                                return '<button onclick="window.KESEMPATAN.PodcastGenerator.applyTheme(\'' + t + '\')" style="background:' + (state.currentTheme === t ? theme.primary : 'rgba(255,255,255,0.05)') + '; border:1px solid ' + (state.currentTheme === t ? theme.primary : 'rgba(255,255,255,0.08)') + '; border-radius:8px; padding:2px 7px; color:' + (state.currentTheme === t ? theme.bg : theme.text) + '; cursor:pointer; font-size:7px;">' + t.charAt(0).toUpperCase() + t.slice(1) + '</button>';
                             }).join('')}
                         </div>
                     </div>
@@ -1051,7 +1054,7 @@
         `;
     }
 
-    window.Podcast.uiLayout = {
+    KESEMPATAN.Podcast.uiLayout = {
         buildPodcastLayout: buildPodcastLayout
     };
 })();

@@ -8,13 +8,16 @@
 (function() {
     'use strict';
 
-    if (window.PodcastMain) return;
-    window.PodcastMain = {};
+    const KESEMPATAN = window.KESEMPATAN || {};
+    window.KESEMPATAN = KESEMPATAN;
+
+    if (KESEMPATAN.PodcastMain) return;
+    KESEMPATAN.PodcastMain = {};
 
     // ========== REFERENSI ==========
-    const config = window.Podcast.config;
-    const core = window.Podcast.core;
-    const ui = window.Podcast.ui;
+    const config = KESEMPATAN.Podcast.config;
+    const core = KESEMPATAN.Podcast.core;
+    const ui = KESEMPATAN.Podcast.ui;
 
     if (!config || !core || !ui) {
         // Silent fail jika modul belum lengkap
@@ -60,11 +63,11 @@
     // Memory.js ready
     document.addEventListener('memory-ready', function() {
         externalReady.memory = true;
-        if (window.VectorMemoryV5 && window.Podcast && window.Podcast.state) {
-            window.Podcast.state._memoryInstance = window.VectorMemoryV5;
+        if (window.VectorMemoryV5 && KESEMPATAN.Podcast && KESEMPATAN.Podcast.state) {
+            KESEMPATAN.Podcast.state._memoryInstance = window.VectorMemoryV5;
         }
-        if (window.Podcast.uiRenderer && window.Podcast.uiRenderer.showToast) {
-            window.Podcast.uiRenderer.showToast('🧠 Memory terhubung!');
+        if (KESEMPATAN.Podcast.uiRenderer && KESEMPATAN.Podcast.uiRenderer.showToast) {
+            KESEMPATAN.Podcast.uiRenderer.showToast('🧠 Memory terhubung!');
         }
     });
 
@@ -72,19 +75,19 @@
     document.addEventListener('database-ready', function(event) {
         externalReady.database = true;
         const db = event.detail || window.KESDatabase || window.db || window.Database;
-        if (db && window.Podcast && window.Podcast.state) {
-            window.Podcast.state._databaseInstance = db;
+        if (db && KESEMPATAN.Podcast && KESEMPATAN.Podcast.state) {
+            KESEMPATAN.Podcast.state._databaseInstance = db;
         }
-        if (window.Podcast.uiRenderer && window.Podcast.uiRenderer.showToast) {
-            window.Podcast.uiRenderer.showToast('📊 Database terhubung!');
+        if (KESEMPATAN.Podcast.uiRenderer && KESEMPATAN.Podcast.uiRenderer.showToast) {
+            KESEMPATAN.Podcast.uiRenderer.showToast('📊 Database terhubung!');
         }
     });
 
     // World.js ready
     document.addEventListener('world-ready', function() {
         externalReady.world = true;
-        if (window.Podcast.uiRenderer && window.Podcast.uiRenderer.showToast) {
-            window.Podcast.uiRenderer.showToast('🌍 World data terhubung!');
+        if (KESEMPATAN.Podcast.uiRenderer && KESEMPATAN.Podcast.uiRenderer.showToast) {
+            KESEMPATAN.Podcast.uiRenderer.showToast('🌍 World data terhubung!');
         }
     });
 
@@ -97,8 +100,8 @@
         // Cek Memory
         if (window.VectorMemoryV5 && !externalReady.memory) {
             externalReady.memory = true;
-            if (window.Podcast && window.Podcast.state) {
-                window.Podcast.state._memoryInstance = window.VectorMemoryV5;
+            if (KESEMPATAN.Podcast && KESEMPATAN.Podcast.state) {
+                KESEMPATAN.Podcast.state._memoryInstance = window.VectorMemoryV5;
             }
         }
         
@@ -106,8 +109,8 @@
         const db = window.KESDatabase || window.db || window.Database;
         if (db && !externalReady.database) {
             externalReady.database = true;
-            if (window.Podcast && window.Podcast.state) {
-                window.Podcast.state._databaseInstance = db;
+            if (KESEMPATAN.Podcast && KESEMPATAN.Podcast.state) {
+                KESEMPATAN.Podcast.state._databaseInstance = db;
             }
         }
         
@@ -135,14 +138,14 @@
             }
             
             // 🔥 Update status integrasi di UI
-            if (window.Podcast.uiRenderer && window.Podcast.uiRenderer.showToast) {
+            if (KESEMPATAN.Podcast.uiRenderer && KESEMPATAN.Podcast.uiRenderer.showToast) {
                 const status = getIntegrationStatus();
                 const ready = [];
                 if (status.memory) ready.push('Memory');
                 if (status.database) ready.push('Database');
                 if (status.world) ready.push('World');
                 if (ready.length > 0) {
-                    window.Podcast.uiRenderer.showToast('🔗 Terhubung: ' + ready.join(', '));
+                    KESEMPATAN.Podcast.uiRenderer.showToast('🔗 Terhubung: ' + ready.join(', '));
                 }
             }
             
@@ -226,14 +229,14 @@
                 event.currentTarget.textContent = isFav ? '★' : '☆';
                 event.currentTarget.style.opacity = isFav ? '1' : '0.3';
             }
-        } catch (_) {}
+        } catch (_) { console.warn('[Podcast] Non-fatal error:', _.message); }
     }
 
     // ============================================================
     // 🔥 PUBLIC API
     // ============================================================
     
-    window.PodcastGenerator = {
+    KESEMPATAN.PodcastGenerator = {
         // ===== CORE =====
         init: init,
         render: ui.render || function() {},

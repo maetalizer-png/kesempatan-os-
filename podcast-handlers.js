@@ -12,14 +12,17 @@
 (function() {
     'use strict';
 
-    if (window.Podcast && window.Podcast.uiHandlers) return;
-    window.Podcast = window.Podcast || {};
+    const KESEMPATAN = window.KESEMPATAN || {};
+    window.KESEMPATAN = KESEMPATAN;
 
-    const core = window.Podcast.core;
-    const config = window.Podcast.config;
-    const renderer = window.Podcast.uiRenderer;
-    const generator = window.Podcast.uiGenerator;
-    const player = window.Podcast.uiPlayer;
+    if (KESEMPATAN.Podcast && KESEMPATAN.Podcast.uiHandlers) return;
+    KESEMPATAN.Podcast = KESEMPATAN.Podcast || {};
+
+    const core = KESEMPATAN.Podcast.core;
+    const config = KESEMPATAN.Podcast.config;
+    const renderer = KESEMPATAN.Podcast.uiRenderer;
+    const generator = KESEMPATAN.Podcast.uiGenerator;
+    const player = KESEMPATAN.Podcast.uiPlayer;
     if (!core || !config || !renderer || !generator || !player) {
         return;
     }
@@ -753,7 +756,7 @@
                 if (!target) return;
                 const action = target.getAttribute('data-action');
                 const ai = core.ai;
-                const generator = window.Podcast.uiGenerator;
+                const generator = KESEMPATAN.Podcast.uiGenerator;
                 const state = core.state;
                 const showToast = renderer.showToast;
                 const LANGUAGES = config.LANGUAGES;
@@ -862,7 +865,7 @@
         }
     }
 
-    window.Podcast.uiHandlers = {
+    KESEMPATAN.Podcast.uiHandlers = {
         render: render,
         attachEvents: attachEvents,
         setupKeyboardShortcuts: setupKeyboardShortcuts,

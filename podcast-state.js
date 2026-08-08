@@ -11,8 +11,11 @@
 (function() {
     'use strict';
 
-    if (window.Podcast && window.Podcast.state) return;
-    window.Podcast = window.Podcast || {};
+    const KESEMPATAN = window.KESEMPATAN || {};
+    window.KESEMPATAN = KESEMPATAN;
+
+    if (KESEMPATAN.Podcast && KESEMPATAN.Podcast.state) return;
+    KESEMPATAN.Podcast = KESEMPATAN.Podcast || {};
 
     // ========== EVENT EMITTER ==========
     class EventEmitter {
@@ -151,7 +154,7 @@
                     if (Array.isArray(old)) {
                         state.podcastHistory = old;
                     }
-                } catch (_) {}
+                } catch (_) { console.warn('[Podcast] Non-fatal error:', _.message); }
             }
 
             const analyticsSaved = localStorage.getItem('kes_podcast_analytics_v18');
@@ -159,11 +162,11 @@
                 try {
                     const parsed = JSON.parse(analyticsSaved);
                     Object.assign(state.analytics, parsed);
-                } catch (_) {}
+                } catch (_) { console.warn('[Podcast] Non-fatal error:', _.message); }
             }
 
             const themeSaved = localStorage.getItem('kes_podcast_theme_v18');
-            if (themeSaved && window.Podcast.config && window.Podcast.config.THEMES[themeSaved]) {
+            if (themeSaved && KESEMPATAN.Podcast.config && KESEMPATAN.Podcast.config.THEMES[themeSaved]) {
                 state.currentTheme = themeSaved;
             }
 
@@ -172,7 +175,7 @@
                 state.currentEmotion = emotionSaved;
             }
 
-        } catch (_) {}
+        } catch (_) { console.warn('[Podcast] Non-fatal error:', _.message); }
     }
 
     // ========== MIGRASI DATA ==========
@@ -221,7 +224,7 @@
             localStorage.setItem('kes_podcast_state_v19', JSON.stringify(toSave));
             localStorage.setItem('kes_podcast_theme_v18', state.currentTheme);
             localStorage.setItem('kes_podcast_emotion_v18', state.currentEmotion);
-        } catch (_) {}
+        } catch (_) { console.warn('[Podcast] Non-fatal error:', _.message); }
     }
 
     // ========== GETTER/SETTER DENGAN AUTO-SAVE ==========
@@ -245,7 +248,7 @@
         const totalDuration = state.analytics.totalDuration || 0;
         const totalPlays = state.analytics.totalPlays || 0;
         const history = state.podcastHistory || [];
-        const config = window.Podcast.config || {};
+        const config = KESEMPATAN.Podcast.config || {};
 
         let currentVoiceName = 'Unknown';
         if (state.useAgentVoice && state.currentAgentVoice && config.AGENT_VOICES) {
@@ -320,8 +323,8 @@
         document.body.removeChild(a);
         URL.revokeObjectURL(url);
 
-        if (window.Podcast.uiRenderer && window.Podcast.uiRenderer.showToast) {
-            window.Podcast.uiRenderer.showToast('📦 Data berhasil diekspor!');
+        if (KESEMPATAN.Podcast.uiRenderer && KESEMPATAN.Podcast.uiRenderer.showToast) {
+            KESEMPATAN.Podcast.uiRenderer.showToast('📦 Data berhasil diekspor!');
         }
     }
 
@@ -357,16 +360,16 @@
 
                 saveHistory();
 
-                if (window.Podcast.uiRenderer && window.Podcast.uiRenderer.showToast) {
-                    window.Podcast.uiRenderer.showToast('✅ Data berhasil diimpor! Halaman akan refresh...');
+                if (KESEMPATAN.Podcast.uiRenderer && KESEMPATAN.Podcast.uiRenderer.showToast) {
+                    KESEMPATAN.Podcast.uiRenderer.showToast('✅ Data berhasil diimpor! Halaman akan refresh...');
                 }
 
                 setTimeout(function() { location.reload(); }, 1500);
 
             } catch (err) {
                 alert('❌ Gagal import: ' + err.message);
-                if (window.Podcast.uiRenderer && window.Podcast.uiRenderer.showToast) {
-                    window.Podcast.uiRenderer.showToast('❌ Import gagal: ' + err.message, 'error');
+                if (KESEMPATAN.Podcast.uiRenderer && KESEMPATAN.Podcast.uiRenderer.showToast) {
+                    KESEMPATAN.Podcast.uiRenderer.showToast('❌ Import gagal: ' + err.message, 'error');
                 }
             }
         };
@@ -374,16 +377,16 @@
     }
 
     // ========== EKSPOR PUBLIK ==========
-    window.Podcast.state = state;
-    window.Podcast.emitter = emitter;
-    window.Podcast.getState = getState;
-    window.Podcast.setState = setState;
-    window.Podcast.loadHistory = loadHistory;
-    window.Podcast.saveHistory = saveHistory;
-    window.Podcast.getComputedState = getComputedState;
-    window.Podcast.resetState = resetState;
-    window.Podcast.exportState = exportState;
-    window.Podcast.importState = importState;
+    KESEMPATAN.Podcast.state = state;
+    KESEMPATAN.Podcast.emitter = emitter;
+    KESEMPATAN.Podcast.getState = getState;
+    KESEMPATAN.Podcast.setState = setState;
+    KESEMPATAN.Podcast.loadHistory = loadHistory;
+    KESEMPATAN.Podcast.saveHistory = saveHistory;
+    KESEMPATAN.Podcast.getComputedState = getComputedState;
+    KESEMPATAN.Podcast.resetState = resetState;
+    KESEMPATAN.Podcast.exportState = exportState;
+    KESEMPATAN.Podcast.importState = importState;
 
     // ========== AUTO-LOAD ==========
     loadHistory();

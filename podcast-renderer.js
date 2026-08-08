@@ -8,12 +8,15 @@
 (function() {
     'use strict';
 
-    if (window.Podcast && window.Podcast.uiRenderer) return;
-    window.Podcast = window.Podcast || {};
+    const KESEMPATAN = window.KESEMPATAN || {};
+    window.KESEMPATAN = KESEMPATAN;
 
-    const core = window.Podcast.core;
-    const config = window.Podcast.config;
-    const layout = window.Podcast.uiLayout;
+    if (KESEMPATAN.Podcast && KESEMPATAN.Podcast.uiRenderer) return;
+    KESEMPATAN.Podcast = KESEMPATAN.Podcast || {};
+
+    const core = KESEMPATAN.Podcast.core;
+    const config = KESEMPATAN.Podcast.config;
+    const layout = KESEMPATAN.Podcast.uiLayout;
     if (!core || !config || !layout) {
         return;
     }
@@ -151,7 +154,7 @@
             });
         }
 
-        const generator = window.Podcast.uiGenerator;
+        const generator = KESEMPATAN.Podcast.uiGenerator;
         if (generator && typeof generator.updateAIContext === 'function') {
             generator.updateAIContext();
         }
@@ -329,8 +332,8 @@
                 analyticsContainer.innerHTML = core.renderAnalytics();
             }
 
-            if (window.Podcast && window.Podcast.uiHandlers && window.Podcast.uiHandlers.attachEvents) {
-                window.Podcast.uiHandlers.attachEvents();
+            if (KESEMPATAN.Podcast && KESEMPATAN.Podcast.uiHandlers && KESEMPATAN.Podcast.uiHandlers.attachEvents) {
+                KESEMPATAN.Podcast.uiHandlers.attachEvents();
             }
 
             // Pulihkan posisi scroll setelah DOM baru selesai dipasang —
@@ -351,10 +354,10 @@
             // 🔥 HANYA SEKALI: generate otomatis jika ada lastAggregated
             if (!initialRenderDone) {
                 initialRenderDone = true;
-                if (window.lastAggregated && window.Podcast.uiHandlers) {
+                if (window.lastAggregated && KESEMPATAN.Podcast.uiHandlers) {
                     // Panggil updateScript setelah render selesai, tapi hanya sekali
                     setTimeout(function() {
-                        window.Podcast.uiHandlers.updateScript();
+                        KESEMPATAN.Podcast.uiHandlers.updateScript();
                     }, 500);
                 }
             }
@@ -420,7 +423,7 @@
             const p = items[i];
             const isActive = i === 0; // project paling baru = "aktif", sisanya redup
             const idx = state.podcastHistory.indexOf(p);
-            itemsHtml += `<div class="desk-channel" style="cursor:pointer; ${isActive ? 'background:' + theme.primary + '0d;' : ''}" onclick="window.PodcastGenerator.loadHistoryItem(${idx})">
+            itemsHtml += `<div class="desk-channel" style="cursor:pointer; ${isActive ? 'background:' + theme.primary + '0d;' : ''}" onclick="window.KESEMPATAN.PodcastGenerator.loadHistoryItem(${idx})">
                 <span class="desk-indicator ${isActive ? 'on' : ''}" style="background:${isActive ? theme.primary : 'rgba(255,255,255,0.15)'};"></span>
                 <span style="flex:1; min-width:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; font-size:10px; color:${isActive ? theme.primary : theme.text}; opacity:${isActive ? '1' : '0.5'}; font-weight:${isActive ? '700' : '400'};">Ep. ${p.episodeNumber || (idx + 1)} — ${sanitizeHtml(p.topic.substring(0, 22))}</span>
                 <span class="desk-status ${isActive ? 'on' : 'off'}" style="flex-shrink:0;">${isActive ? 'READY' : ''}</span>
@@ -438,13 +441,13 @@
         let bmHtml = '';
         for (let i = 0; i < state.bookmarks.length; i++) {
             const bm = state.bookmarks[i];
-            bmHtml += '<span style="background:rgba(255,215,0,0.1); border:1px solid #FFD700; border-radius:12px; padding:2px 8px; font-size:8px; color:#FFD700; cursor:pointer;" onclick="window.PodcastGenerator.jumpToBookmark(' + i + ')">⭐ ' + new Date(bm.time * 1000).toISOString().substr(14, 5) + '</span>';
+            bmHtml += '<span style="background:rgba(255,215,0,0.1); border:1px solid #FFD700; border-radius:12px; padding:2px 8px; font-size:8px; color:#FFD700; cursor:pointer;" onclick="window.KESEMPATAN.PodcastGenerator.jumpToBookmark(' + i + ')">⭐ ' + new Date(bm.time * 1000).toISOString().substr(14, 5) + '</span>';
         }
         container.innerHTML = bmHtml;
     }
 
     // ========== EKSPOR ==========
-    window.Podcast.uiRenderer = {
+    KESEMPATAN.Podcast.uiRenderer = {
         render: render,
         renderPreview: renderPreview,
         updateGallery: updateGallery,

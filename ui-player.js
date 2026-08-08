@@ -8,14 +8,17 @@
 (function() {
     'use strict';
 
-    if (window.Podcast && window.Podcast.uiPlayer) return;
-    window.Podcast = window.Podcast || {};
+    const KESEMPATAN = window.KESEMPATAN || {};
+    window.KESEMPATAN = KESEMPATAN;
+
+    if (KESEMPATAN.Podcast && KESEMPATAN.Podcast.uiPlayer) return;
+    KESEMPATAN.Podcast = KESEMPATAN.Podcast || {};
 
     // ========== REFERENSI ==========
-    const core = window.Podcast.core;
-    const config = window.Podcast.config;
-    const renderer = window.Podcast.uiRenderer;
-    const generator = window.Podcast.uiGenerator;
+    const core = KESEMPATAN.Podcast.core;
+    const config = KESEMPATAN.Podcast.config;
+    const renderer = KESEMPATAN.Podcast.uiRenderer;
+    const generator = KESEMPATAN.Podcast.uiGenerator;
     if (!core || !config || !renderer || !generator) {
         console.warn('[UI Player] Core/Config/Renderer/Generator belum dimuat!');
         return;
@@ -152,8 +155,8 @@
                 osc.start(start);
                 osc.stop(start + dur + 0.05);
             });
-            setTimeout(function() { try { ctx.close(); } catch (_) {} }, (notes.length * 120 + 500));
-        } catch (_) {}
+            setTimeout(function() { try { ctx.close(); } catch (_) { console.warn('[Podcast] Non-fatal error:', _.message); } }, (notes.length * 120 + 500));
+        } catch (_) { console.warn('[Podcast] Non-fatal error:', _.message); }
     }
 
     function playPodcast() {
@@ -575,7 +578,7 @@
         state.currentLang = item.lang || 'id';
         state.speakerMode = item.mode || 'single';
         if (item.theme && THEMES[item.theme]) {
-            window.Podcast.uiHandlers.applyTheme(item.theme);
+            KESEMPATAN.Podcast.uiHandlers.applyTheme(item.theme);
         }
         if (item.emotion) {
             state.currentEmotion = item.emotion;
@@ -701,7 +704,7 @@
     }
 
     // ========== EKSPOR ==========
-    window.Podcast.uiPlayer = {
+    KESEMPATAN.Podcast.uiPlayer = {
         render: render,
         playPodcast: playPodcast,
         stopPodcast: stopPodcast,

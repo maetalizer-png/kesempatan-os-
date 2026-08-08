@@ -12,12 +12,15 @@
 (function() {
     'use strict';
 
-    if (window.Podcast && window.Podcast.uiGenerator) return;
-    window.Podcast = window.Podcast || {};
+    const KESEMPATAN = window.KESEMPATAN || {};
+    window.KESEMPATAN = KESEMPATAN;
 
-    const core = window.Podcast.core;
-    const config = window.Podcast.config;
-    const renderer = window.Podcast.uiRenderer;
+    if (KESEMPATAN.Podcast && KESEMPATAN.Podcast.uiGenerator) return;
+    KESEMPATAN.Podcast = KESEMPATAN.Podcast || {};
+
+    const core = KESEMPATAN.Podcast.core;
+    const config = KESEMPATAN.Podcast.config;
+    const renderer = KESEMPATAN.Podcast.uiRenderer;
     if (!core || !config || !renderer) {
         return;
     }
@@ -120,7 +123,7 @@
                     marketInsight = (insight && insight.summary) ? insight.summary.replace(/<[^>]+>/g, '') : '';
                 }
             }
-        } catch (e) {}
+        } catch (e) { console.warn('[Podcast] Non-fatal error:', e.message); }
         try {
             if (window.NoisePage && typeof window.NoisePage.checkText === 'function' && topic) {
                 const check = window.NoisePage.checkText(topic);
@@ -128,7 +131,7 @@
                     credibilityNote = '⚠️ Topik mengandung kata yang perlu diverifikasi: ' + check.reason;
                 }
             }
-        } catch (e) {}
+        } catch (e) { console.warn('[Podcast] Non-fatal error:', e.message); }
         return { marketInsight: marketInsight, credibilityNote: credibilityNote };
     }
 
@@ -211,7 +214,7 @@
             if (staticData.length > 0) {
                 showToast('📚 Data World: ' + staticData.length + ' item', 'info');
             }
-        } catch (_) {}
+        } catch (_) { console.warn('[Podcast] Non-fatal error:', _.message); }
 
         try {
             // 2. DATA DINAMIS DARI VECTOR MEMORY
@@ -219,7 +222,7 @@
             if (memoryData.length > 0) {
                 showToast('🧠 Data Memory: ' + memoryData.length + ' item', 'info');
             }
-        } catch (_) {}
+        } catch (_) { console.warn('[Podcast] Non-fatal error:', _.message); }
 
         try {
             // 3. DATA HISTORIS DARI KES DATABASE
@@ -227,7 +230,7 @@
             if (dbData.length > 0) {
                 showToast('📊 Data Database: ' + dbData.length + ' item', 'info');
             }
-        } catch (_) {}
+        } catch (_) { console.warn('[Podcast] Non-fatal error:', _.message); }
 
         // ============================================================
         // 🔥 BUILD PROMPT DENGAN SEMUA DATA
@@ -394,7 +397,7 @@
                 memoryDataUsed: memoryData.length,
                 dbDataUsed: dbData.length
             });
-        } catch (_) {}
+        } catch (_) { console.warn('[Podcast] Non-fatal error:', _.message); }
 
         // 🆕 SIMPAN STATUS SUMBER AI INTERNAL KE STATE (dipakai badge di
         // Podcast Room supaya integrasi AI Internal/World/Memory/Database
@@ -847,7 +850,7 @@
     // ============================================================
     // 🔥 EKSPOR
     // ============================================================
-    window.Podcast.uiGenerator = {
+    KESEMPATAN.Podcast.uiGenerator = {
         getTopic: getTopic,
         generatePodcastText: generatePodcastText,
         generateChapters: generateChapters,

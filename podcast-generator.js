@@ -7,6 +7,8 @@
 
 (function() {
     'use strict';
+    const KESEMPATAN = window.KESEMPATAN || {};
+    window.KESEMPATAN = KESEMPATAN;
 
     if (window.__PodcastLoaderLoaded) return;
     window.__PodcastLoaderLoaded = true;
@@ -32,10 +34,10 @@
 
     function loadNext() {
         if (loaded >= total) {
-            if (!hasError && window.PodcastMain && typeof window.PodcastMain.init === 'function') {
+            if (!hasError && KESEMPATAN.PodcastMain && typeof KESEMPATAN.PodcastMain.init === 'function') {
                 if (!window.__PodcastInitDone) {
                     window.__PodcastInitDone = true;
-                    window.PodcastMain.init();
+                    KESEMPATAN.PodcastMain.init();
                 }
             }
             return;
@@ -59,7 +61,7 @@
     }
 
     // ========== EKSPOS GLOBAL AWAL (sebelum modul selesai) ==========
-    window.PodcastGenerator = {
+    KESEMPATAN.PodcastGenerator = {
         // Ini akan di-override oleh main.js setelah semua modul dimuat
         _initialized: false,
         _pendingCalls: [],

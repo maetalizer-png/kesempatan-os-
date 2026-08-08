@@ -1,17 +1,20 @@
 /* ============================================================
    KESEMPATAN OS v18.5 — UI MAIN
-   ✅ Inisialisasi UI, hubungkan renderer & handlers, expose ke window.Podcast.ui
+   ✅ Inisialisasi UI, hubungkan renderer & handlers, expose ke KESEMPATAN.Podcast.ui
    ============================================================ */
 
 (function() {
     'use strict';
 
-    if (window.Podcast && window.Podcast.ui) return;
-    window.Podcast = window.Podcast || {};
+    const KESEMPATAN = window.KESEMPATAN || {};
+    window.KESEMPATAN = KESEMPATAN;
 
-    const core = window.Podcast.core;
-    const renderer = window.Podcast.uiRenderer;
-    const handlers = window.Podcast.uiHandlers;
+    if (KESEMPATAN.Podcast && KESEMPATAN.Podcast.ui) return;
+    KESEMPATAN.Podcast = KESEMPATAN.Podcast || {};
+
+    const core = KESEMPATAN.Podcast.core;
+    const renderer = KESEMPATAN.Podcast.uiRenderer;
+    const handlers = KESEMPATAN.Podcast.uiHandlers;
 
     if (!core || !renderer || !handlers) {
         console.warn('[Podcast UI Main] Modul UI belum lengkap!');
@@ -37,8 +40,8 @@
         }
     }
 
-    // ========== EKSPOR window.Podcast.ui (untuk main.js) ==========
-    window.Podcast.ui = {
+    // ========== EKSPOR KESEMPATAN.Podcast.ui (untuk main.js) ==========
+    KESEMPATAN.Podcast.ui = {
         render: handlers.render,
         updateScript: handlers.updateScript,
         updateScriptWithAI: handlers.updateScriptWithAI,

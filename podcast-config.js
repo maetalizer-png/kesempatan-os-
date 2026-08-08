@@ -8,8 +8,11 @@
 (function() {
     'use strict';
 
-    if (window.Podcast && window.Podcast.config) return;
-    window.Podcast = window.Podcast || {};
+    const KESEMPATAN = window.KESEMPATAN || {};
+    window.KESEMPATAN = KESEMPATAN;
+
+    if (KESEMPATAN.Podcast && KESEMPATAN.Podcast.config) return;
+    KESEMPATAN.Podcast = KESEMPATAN.Podcast || {};
 
     // ========== 42 HUMAN VOICES ==========
     const HUMAN_VOICES = {
@@ -497,7 +500,7 @@
         podcasts: 'podcasts'
     };
 
-    window.Podcast.config = {
+    KESEMPATAN.Podcast.config = {
         HUMAN_VOICES: HUMAN_VOICES,
         VOICE_EMOTIONS: VOICE_EMOTIONS,
         LANGUAGES: LANGUAGES,

@@ -6,13 +6,16 @@
 (function() {
     'use strict';
 
-    if (window.Podcast && window.Podcast.core) return;
-    window.Podcast = window.Podcast || {};
+    const KESEMPATAN = window.KESEMPATAN || {};
+    window.KESEMPATAN = KESEMPATAN;
+
+    if (KESEMPATAN.Podcast && KESEMPATAN.Podcast.core) return;
+    KESEMPATAN.Podcast = KESEMPATAN.Podcast || {};
 
     // ========== AMBIL DARI MODUL TERPISAH ==========
-    const state = window.Podcast.state;
-    const aiEngine = window.Podcast.aiEngine;
-    const config = window.Podcast.config;
+    const state = KESEMPATAN.Podcast.state;
+    const aiEngine = KESEMPATAN.Podcast.aiEngine;
+    const config = KESEMPATAN.Podcast.config;
 
     if (!state || !aiEngine || !config) {
         return;
@@ -128,7 +131,7 @@
                 } else if (typeof memory.add === 'function') {
                     await memory.add(metadata);
                 }
-            } catch (_) {}
+            } catch (_) { console.warn('[Podcast] Non-fatal error:', _.message); }
         }
 
         // 🔥 SIMPAN KE KES DATABASE
@@ -142,7 +145,7 @@
                 } else if (db.save && typeof db.save === 'function') {
                     await db.save('podcast_history', record);
                 }
-            } catch (_) {}
+            } catch (_) { console.warn('[Podcast] Non-fatal error:', _.message); }
         }
     }
 
@@ -268,7 +271,7 @@
                 window.speechSynthesis.onvoiceschanged = function() {
                     finish(window.speechSynthesis.getVoices());
                 };
-            } catch (_) {}
+            } catch (_) { console.warn('[Podcast] Non-fatal error:', _.message); }
             setTimeout(function() { finish(window.speechSynthesis.getVoices()); }, timeoutMs || 1500);
         });
         return voicesReadyPromise;
@@ -281,7 +284,7 @@
                 getCachedVoice('id-ID', 'male');
                 getCachedVoice('id-ID', 'female');
             });
-        } catch (_) {}
+        } catch (_) { console.warn('[Podcast] Non-fatal error:', _.message); }
     }
 
     // ========== REAL MP3 EXPORTER ==========
@@ -627,7 +630,7 @@
         if (data.topic) state.analytics.topics[data.topic] = (state.analytics.topics[data.topic] || 0) + 1;
         if (data.voice) state.analytics.voices[data.voice] = (state.analytics.voices[data.voice] || 0) + 1;
         state.analytics.lastListen = Date.now();
-        window.Podcast.saveHistory();
+        KESEMPATAN.Podcast.saveHistory();
     }
 
     function renderAnalytics() {
@@ -667,10 +670,10 @@
     }
 
     // ========== EKSPOR CORE ==========
-    window.Podcast.core = {
+    KESEMPATAN.Podcast.core = {
         state: state,
-        loadHistory: window.Podcast.loadHistory,
-        saveHistory: window.Podcast.saveHistory,
+        loadHistory: KESEMPATAN.Podcast.loadHistory,
+        saveHistory: KESEMPATAN.Podcast.saveHistory,
 
         ai: ai,
         voiceEngine: voiceEngine,

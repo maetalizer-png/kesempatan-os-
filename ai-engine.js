@@ -12,10 +12,13 @@
 (function() {
     'use strict';
 
-    if (window.Podcast && window.Podcast.aiEngine) return;
-    window.Podcast = window.Podcast || {};
+    const KESEMPATAN = window.KESEMPATAN || {};
+    window.KESEMPATAN = KESEMPATAN;
 
-    const config = window.Podcast.config;
+    if (KESEMPATAN.Podcast && KESEMPATAN.Podcast.aiEngine) return;
+    KESEMPATAN.Podcast = KESEMPATAN.Podcast || {};
+
+    const config = KESEMPATAN.Podcast.config;
     if (!config) {
         console.warn('[AI Engine] Config belum dimuat!');
         return;
@@ -828,7 +831,7 @@
     const ai = new AIInternal();
 
     // ========== EKSPOR ==========
-    window.Podcast.aiEngine = {
+    KESEMPATAN.Podcast.aiEngine = {
         ai: ai,
         voiceEngine: voiceEngine
     };
