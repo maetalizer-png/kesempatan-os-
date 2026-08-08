@@ -1,5 +1,9 @@
 (function() {
 'use strict';
+
+const KESEMPATAN = window.KESEMPATAN || {};
+window.KESEMPATAN = KESEMPATAN;
+
 if (window.__ThreeVizLoaded) return;
 window.__ThreeVizLoaded = true;
 
@@ -435,33 +439,33 @@ class KES3DViz {
 
 let threeVizInstance = null;
 
-window.init3DViz = function(containerId) {
+function init3DViz(containerId) {
     if (threeVizInstance) {
         threeVizInstance.destroy();
         threeVizInstance = null;
     }
     threeVizInstance = new KES3DViz(containerId);
     return threeVizInstance;
-};
+}
 
-window.update3DVizMetrics = function(metrics) {
+function update3DVizMetrics(metrics) {
     if (threeVizInstance && threeVizInstance.updateMetrics) {
         threeVizInstance.updateMetrics(metrics);
     }
-};
+}
 
-window.update3DVizTelemetry = function(latency, failures) {
+function update3DVizTelemetry(latency, failures) {
     if (threeVizInstance && threeVizInstance.updateTelemetry) {
         threeVizInstance.updateTelemetry(latency, failures);
     }
-};
+}
 
-window.destroy3DViz = function() {
+function destroy3DViz() {
     if (threeVizInstance) {
         threeVizInstance.destroy();
         threeVizInstance = null;
     }
-};
+}
 
 function autoInitThreeJS() {
     function isThreeReady() {
@@ -474,9 +478,9 @@ function autoInitThreeJS() {
             setTimeout(initViz, 200);
             return;
         }
-        if (typeof window.init3DViz === 'function') {
+        if (typeof init3DViz === 'function') {
             try {
-                const viz = window.init3DViz('threeCanvas');
+                const viz = init3DViz('threeCanvas');
                 window._3dVizInstance = viz;
                 const toggleBtn = document.getElementById('vizToggleBtn');
                 const vizContainer = document.getElementById('viz3dContainer');
@@ -516,12 +520,11 @@ function autoInitThreeJS() {
     else window.addEventListener('load', waitForThree);
 }
 
-window.KESEMPATAN = window.KESEMPATAN || {};
-window.KESEMPATAN.ThreeViz = Object.freeze({
-    init3DViz: window.init3DViz,
-    update3DVizMetrics: window.update3DVizMetrics,
-    update3DVizTelemetry: window.update3DVizTelemetry,
-    destroy3DViz: window.destroy3DViz
+KESEMPATAN.ThreeViz = Object.freeze({
+    init3DViz: init3DViz,
+    update3DVizMetrics: update3DVizMetrics,
+    update3DVizTelemetry: update3DVizTelemetry,
+    destroy3DViz: destroy3DViz
 });
 
 autoInitThreeJS();

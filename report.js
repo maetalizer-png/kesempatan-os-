@@ -1,9 +1,13 @@
 (function() {
 'use strict';
+
+const KESEMPATAN = window.KESEMPATAN || {};
+window.KESEMPATAN = KESEMPATAN;
+
 if (window.__ReportPageLoaded) return;
 window.__ReportPageLoaded = true;
 
-const Utils = window.Utils || {};
+const Utils = KESEMPATAN.Utils || window.Utils || {};
 const showToast = Utils.showToast || function(msg, type) {
     const container = document.getElementById('toastContainer');
     if (!container) return;
@@ -367,7 +371,7 @@ function addPrintStyles() {
     document.head.appendChild(style);
 }
 
-window.ReportPage = {
+KESEMPATAN.ReportPage = {
     render: render,
     destroy: destroy,
     exportJSON: exportReportJSON,
@@ -376,9 +380,6 @@ window.ReportPage = {
     share: shareReport,
     print: function() { window.print(); }
 };
-
-window.KESEMPATAN = window.KESEMPATAN || {};
-window.KESEMPATAN.ReportPage = window.ReportPage;
 
 loadChartJS().then(function() {
     addPrintStyles();

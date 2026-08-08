@@ -1,5 +1,9 @@
 (function() {
 'use strict';
+
+const KESEMPATAN = window.KESEMPATAN || {};
+window.KESEMPATAN = KESEMPATAN;
+
 if (window.__MemoryPageLoaded) return;
 window.__MemoryPageLoaded = true;
 
@@ -21,7 +25,7 @@ const InternalLogger = (function() {
     });
 })();
 
-const Utils = window.KESEMPATAN?.Utils || window.Utils || {};
+const Utils = KESEMPATAN.Utils || window.Utils || {};
 const showToast = Utils.showToast || function(msg, type) {
     const container = document.getElementById('toastContainer');
     if (!container) return;
@@ -414,9 +418,7 @@ const MemoryPage = {
     }
 };
 
-window.KESEMPATAN = window.KESEMPATAN || {};
-window.KESEMPATAN.MemoryPage = MemoryPage;
-window.MemoryPage = MemoryPage;
+KESEMPATAN.MemoryPage = MemoryPage;
 
 const inner0 = document.getElementById('pageInner');
 if (inner0 && inner0.parentElement && inner0.parentElement.style.display !== 'none') render();

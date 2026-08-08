@@ -1,5 +1,9 @@
 (function() {
 'use strict';
+
+const KESEMPATAN = window.KESEMPATAN || {};
+window.KESEMPATAN = KESEMPATAN;
+
 if (window.__MetricsPanelLoaded) return;
 window.__MetricsPanelLoaded = true;
 
@@ -50,9 +54,7 @@ function renderUI(container) {
         '</div>';
 }
 
-window.KESEMPATAN = window.KESEMPATAN || {};
-window.KESEMPATAN.MetricsPanel = Object.freeze({ renderUI: renderUI, METRICS: METRICS });
-window.MetricsPanel = { renderUI: renderUI, METRICS: METRICS };
+KESEMPATAN.MetricsPanel = Object.freeze({ renderUI: renderUI, METRICS: METRICS });
 
 document.addEventListener('DOMContentLoaded', function() {
     renderUI(document.getElementById('metricsPanelContainer'));

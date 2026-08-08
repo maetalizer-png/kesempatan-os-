@@ -1,5 +1,9 @@
 (function() {
 'use strict';
+
+const KESEMPATAN = window.KESEMPATAN || {};
+window.KESEMPATAN = KESEMPATAN;
+
 if (window.__TimeAnalyticsPanelLoaded) return;
 window.__TimeAnalyticsPanelLoaded = true;
 
@@ -15,14 +19,12 @@ function renderUI(container) {
         '</div>';
 }
 
-window.KESEMPATAN = window.KESEMPATAN || {};
-window.KESEMPATAN.TimeAnalyticsPanel = Object.freeze({ renderUI: renderUI });
-window.TimeAnalyticsPanel = { renderUI: renderUI };
+KESEMPATAN.TimeAnalyticsPanel = Object.freeze({ renderUI: renderUI });
 
 document.addEventListener('DOMContentLoaded', function() {
     renderUI(document.getElementById('timeAnalyticsContainer'));
-    if (typeof window.KESEMPATAN?.ChartManager?.initTimeAnalytics === 'function') {
-        window.KESEMPATAN.ChartManager.initTimeAnalytics();
+    if (typeof KESEMPATAN.ChartManager?.initTimeAnalytics === 'function') {
+        KESEMPATAN.ChartManager.initTimeAnalytics();
     } else if (typeof window.initTimeAnalytics === 'function') {
         window.initTimeAnalytics();
     }

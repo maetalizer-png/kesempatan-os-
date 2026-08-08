@@ -6,9 +6,13 @@ inner ::before gelap opaque). Zero var, zero alert, zero console.log.
 */
 (function() {
 'use strict';
+
+const KESEMPATAN = window.KESEMPATAN || {};
+window.KESEMPATAN = KESEMPATAN;
+
 if (window.__TelemetryPageLoaded) return;
 window.__TelemetryPageLoaded = true;
-const Utils = window.Utils || {};
+const Utils = KESEMPATAN.Utils || window.Utils || {};
 const showToast = Utils.showToast || function(msg, type) {
     const container = document.getElementById('toastContainer');
     if (!container) return;
@@ -242,7 +246,7 @@ if (window.Telemetry && window.Telemetry.emitter) {
         if (pageContent && pageContent.style.display !== 'none') render();
     });
 }
-window.TelemetryPage = { render: render, startAutoRefresh: startAutoRefresh, stopAutoRefresh: stopAutoRefresh, destroy: destroy };
+KESEMPATAN.TelemetryPage = { render: render, startAutoRefresh: startAutoRefresh, stopAutoRefresh: stopAutoRefresh, destroy: destroy };
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', startAutoRefresh);
 } else {

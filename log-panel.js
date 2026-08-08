@@ -1,5 +1,9 @@
 (function() {
 'use strict';
+
+const KESEMPATAN = window.KESEMPATAN || {};
+window.KESEMPATAN = KESEMPATAN;
+
 if (window.__LogPanelLoaded) return;
 window.__LogPanelLoaded = true;
 
@@ -25,9 +29,7 @@ function renderUI(container) {
         '</div>';
 }
 
-window.KESEMPATAN = window.KESEMPATAN || {};
-window.KESEMPATAN.LogPanel = Object.freeze({ renderUI: renderUI });
-window.LogPanel = { renderUI: renderUI };
+KESEMPATAN.LogPanel = Object.freeze({ renderUI: renderUI });
 
 document.addEventListener('DOMContentLoaded', function() {
     renderUI(document.getElementById('logPanelContainer'));

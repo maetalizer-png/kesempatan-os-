@@ -262,8 +262,8 @@ function setup3DHooks() {
         const original = scoreEngine.updateFromAggregated;
         scoreEngine.updateFromAggregated = function(aggregated) {
             const result = original.call(this, aggregated);
-            if (window.update3DVizMetrics && aggregated?.metrics) {
-                window.update3DVizMetrics(aggregated.metrics);
+            if (window.KESEMPATAN?.ThreeViz?.update3DVizMetrics && aggregated?.metrics) {
+                window.KESEMPATAN.ThreeViz.update3DVizMetrics(aggregated.metrics);
             }
             return result;
         };
@@ -272,10 +272,10 @@ function setup3DHooks() {
         const original = window.Telemetry.recordLatency;
         window.Telemetry.recordLatency = function(agent, latency) {
             const result = original.call(this, agent, latency);
-            if (window.update3DVizTelemetry) {
+            if (window.KESEMPATAN?.ThreeViz?.update3DVizTelemetry) {
                 const averageLatency = window.Telemetry.getAverageLatency();
                 const failures = window.FlowAnalytics?.stats?.agentFailures ? Object.values(window.FlowAnalytics.stats.agentFailures).reduce(function(a, b) { return a + b; }, 0) : 0;
-                window.update3DVizTelemetry(averageLatency, failures);
+                window.KESEMPATAN.ThreeViz.update3DVizTelemetry(averageLatency, failures);
             }
             return result;
         };

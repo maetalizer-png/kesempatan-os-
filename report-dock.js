@@ -1,9 +1,13 @@
 (function() {
 'use strict';
+
+const KESEMPATAN = window.KESEMPATAN || {};
+window.KESEMPATAN = KESEMPATAN;
+
 if (window.__ReportDockLoaded) return;
 window.__ReportDockLoaded = true;
 
-const Utils = window.KESEMPATAN?.Utils || window.Utils || {};
+const Utils = KESEMPATAN.Utils || window.Utils || {};
 const showToast = Utils.showToast || function(msg, type) {
     const container = document.getElementById('toastContainer');
     if (!container) return;
@@ -144,14 +148,10 @@ function initReportDockAndHistoryPanel() {
     renderHistoryPanelShell();
 }
 
-window.KESEMPATAN = window.KESEMPATAN || {};
-window.KESEMPATAN.ReportDock = Object.freeze({
+KESEMPATAN.ReportDock = Object.freeze({
     renderReportDock: renderReportDock,
     renderHistoryPanelShell: renderHistoryPanelShell
 });
-
-window.renderReportDock = renderReportDock;
-window.renderHistoryPanelShell = renderHistoryPanelShell;
 
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', initReportDockAndHistoryPanel);
