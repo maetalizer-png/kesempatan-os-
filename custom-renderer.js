@@ -1,11 +1,15 @@
 (function() {
     'use strict';
+
+    const KESEMPATAN = window.KESEMPATAN || {};
+    window.KESEMPATAN = KESEMPATAN;
+
     if (window.__CustomAIUIRenderer) return;
     window.__CustomAIUIRenderer = true;
 
-    const state = window.CustomAIState;
-    const core = window.CustomAICore;
-    const config = window.CustomAIConfig;
+    const state = KESEMPATAN.CustomAIState;
+    const core = KESEMPATAN.CustomAICore;
+    const config = KESEMPATAN.CustomAIConfig;
     const CATEGORIES = config.CATEGORIES;
     const ALL_TAGS = config.ALL_TAGS;
 
@@ -151,7 +155,7 @@
                     document.getElementById('customAgentTemp').value = agent.temperature;
                     document.getElementById('tempValue').textContent = agent.temperature;
                     document.getElementById('addCustomAgentBtn').textContent = 'UPDATE AGEN';
-                    if (window.Utils && window.Utils.showToast) window.Utils.showToast('Edit mode: ' + agent.name, 'info');
+                    if (KESEMPATAN.Utils && KESEMPATAN.Utils.showToast) KESEMPATAN.Utils.showToast('Edit mode: ' + agent.name, 'info');
                     window.scrollTo({ top: 0, behavior: 'smooth' });
                 }
             });
@@ -276,8 +280,8 @@
             '<div id="customAgentList" class="ca-list"></div>' +
             '<button onclick="window.showPage(\'dashboard\')" class="ca-btn ca-back">← Kembali ke Dasbor</button>' +
             '</div>';
-        if (window.CustomAIUIEvents) {
-            window.CustomAIUIEvents.attach(container);
+        if (KESEMPATAN.CustomAIUIEvents) {
+            KESEMPATAN.CustomAIUIEvents.attach(container);
         }
         updateAgentList();
     };
@@ -296,13 +300,10 @@
         }
     };
 
-    window.CustomAIUIRenderer = {
+    KESEMPATAN.CustomAIUIRenderer = {
         render: renderUI,
         updateList: updateAgentList,
         init: init,
         ensureContainer: ensureContainer
     };
-
-    window.KESEMPATAN = window.KESEMPATAN || {};
-    window.KESEMPATAN.CustomAIUIRenderer = window.CustomAIUIRenderer;
 })();

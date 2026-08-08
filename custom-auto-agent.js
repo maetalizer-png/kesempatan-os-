@@ -1,5 +1,9 @@
 (function() {
     'use strict';
+
+    const KESEMPATAN = window.KESEMPATAN || {};
+    window.KESEMPATAN = KESEMPATAN;
+
     if (window.__CustomAutoAgentLoaded) return;
     window.__CustomAutoAgentLoaded = true;
 
@@ -18,8 +22,8 @@
     function loadNext() {
         if (loaded >= total) {
             if (!hasError) {
-                if (window.CustomAIUIRenderer && typeof window.CustomAIUIRenderer.init === 'function') {
-                    window.CustomAIUIRenderer.init();
+                if (KESEMPATAN.CustomAIUIRenderer && typeof KESEMPATAN.CustomAIUIRenderer.init === 'function') {
+                    KESEMPATAN.CustomAIUIRenderer.init();
                 }
             }
             return;
@@ -33,16 +37,16 @@
         document.head.appendChild(script);
     }
 
-    window.CustomAutoAgent = {
+    KESEMPATAN.CustomAutoAgent = {
         render: function() {
-            if (window.CustomAIUIRenderer && typeof window.CustomAIUIRenderer.render === 'function') {
-                window.CustomAIUIRenderer.render();
+            if (KESEMPATAN.CustomAIUIRenderer && typeof KESEMPATAN.CustomAIUIRenderer.render === 'function') {
+                KESEMPATAN.CustomAIUIRenderer.render();
                 return;
             }
             const page = document.getElementById('customautoagentPage');
             if (page) {
                 page.innerHTML = '<div style="padding:20px; color:#FF6B6B;">' +
-                    'Modul Custom & Auto Agen gagal dimuat (window.CustomAIUIRenderer tidak tersedia).<br>' +
+                    'Modul Custom & Auto Agen gagal dimuat (KESEMPATAN.CustomAIUIRenderer tidak tersedia).<br>' +
                     'Cek Console browser (F12) untuk pesan kegagalan pemuatan modul.' +
                     '</div>';
             }
@@ -50,10 +54,10 @@
         renderCheckboxList: function(container) {
             if (!container) return;
             try {
-                const customAgents = (window.CustomAICore && typeof window.CustomAICore.getFilteredAgents === 'function')
-                    ? window.CustomAICore.getFilteredAgents()
-                    : (window.CustomAIState && typeof window.CustomAIState.getAgents === 'function')
-                        ? window.CustomAIState.getAgents()
+                const customAgents = (KESEMPATAN.CustomAICore && typeof KESEMPATAN.CustomAICore.getFilteredAgents === 'function')
+                    ? KESEMPATAN.CustomAICore.getFilteredAgents()
+                    : (KESEMPATAN.CustomAIState && typeof KESEMPATAN.CustomAIState.getAgents === 'function')
+                        ? KESEMPATAN.CustomAIState.getAgents()
                         : [];
                 if (!customAgents || customAgents.length === 0) {
                     container.innerHTML = '<div class="text-dim" style="grid-column:1/-1; text-align:center; padding:20px;">Agen custom akan muncul di sini</div>';
@@ -74,40 +78,37 @@
         renderIntoGrid: function() {
             const grid = document.getElementById('customAgentsGrid');
             if (!grid) return;
-            if (window.CustomAICore || window.CustomAIState) {
+            if (KESEMPATAN.CustomAICore || KESEMPATAN.CustomAIState) {
                 this.renderCheckboxList(grid);
             } else {
                 const self = this;
                 setTimeout(function() { self.renderIntoGrid(); }, 200);
             }
         },
-        add: function() { if (window.CustomAICore) return window.CustomAICore.addCustomAgent.apply(null, arguments); },
-        edit: function() { if (window.CustomAICore) return window.CustomAICore.editCustomAgent.apply(null, arguments); },
-        delete: function() { if (window.CustomAICore) return window.CustomAICore.deleteCustomAgent.apply(null, arguments); },
-        generateAI: function() { if (window.CustomAICore) return window.CustomAICore.generateAgentFromAI.apply(null, arguments); },
-        share: function() { if (window.CustomAICore) return window.CustomAICore.shareAgent.apply(null, arguments); },
-        getAgents: function() { return window.CustomAIState ? window.CustomAIState.getAgents() : []; },
-        getRatings: function() { return window.CustomAIState ? window.CustomAIState.getRatings() : {}; },
-        getAnalytics: function() { return window.CustomAIState ? window.CustomAIState.getAnalytics() : {}; },
-        selectAll: function() { if (window.CustomAICore) return window.CustomAICore.selectAllAgents(); },
-        deselectAll: function() { if (window.CustomAICore) return window.CustomAICore.deselectAllAgents(); },
-        deleteSelected: function() { if (window.CustomAICore) return window.CustomAICore.deleteSelectedAgents(); },
-        exportSelected: function() { if (window.CustomAICore) return window.CustomAICore.exportSelectedAgents(); },
-        autoTag: function() { if (window.CustomAICore) return window.CustomAICore.autoTagAgent.apply(null, arguments); },
-        autoCategory: function() { if (window.CustomAICore) return window.CustomAICore.autoCategory.apply(null, arguments); },
-        predictPerformance: function() { if (window.CustomAICore) return window.CustomAICore.predictPerformance.apply(null, arguments); },
-        compareAgents: function() { if (window.CustomAICore) return window.CustomAICore.compareAgents.apply(null, arguments); },
-        previewVoice: function() { if (window.CustomAICore) return window.CustomAICore.previewAgentVoice.apply(null, arguments); },
-        suggestSmartTags: function() { if (window.CustomAICore) return window.CustomAICore.suggestSmartTags.apply(null, arguments); },
-        previewAgent: function() { if (window.CustomAICore) return window.CustomAICore.previewAgent.apply(null, arguments); }
+        add: function() { if (KESEMPATAN.CustomAICore) return KESEMPATAN.CustomAICore.addCustomAgent.apply(null, arguments); },
+        edit: function() { if (KESEMPATAN.CustomAICore) return KESEMPATAN.CustomAICore.editCustomAgent.apply(null, arguments); },
+        delete: function() { if (KESEMPATAN.CustomAICore) return KESEMPATAN.CustomAICore.deleteCustomAgent.apply(null, arguments); },
+        generateAI: function() { if (KESEMPATAN.CustomAICore) return KESEMPATAN.CustomAICore.generateAgentFromAI.apply(null, arguments); },
+        share: function() { if (KESEMPATAN.CustomAICore) return KESEMPATAN.CustomAICore.shareAgent.apply(null, arguments); },
+        getAgents: function() { return KESEMPATAN.CustomAIState ? KESEMPATAN.CustomAIState.getAgents() : []; },
+        getRatings: function() { return KESEMPATAN.CustomAIState ? KESEMPATAN.CustomAIState.getRatings() : {}; },
+        getAnalytics: function() { return KESEMPATAN.CustomAIState ? KESEMPATAN.CustomAIState.getAnalytics() : {}; },
+        selectAll: function() { if (KESEMPATAN.CustomAICore) return KESEMPATAN.CustomAICore.selectAllAgents(); },
+        deselectAll: function() { if (KESEMPATAN.CustomAICore) return KESEMPATAN.CustomAICore.deselectAllAgents(); },
+        deleteSelected: function() { if (KESEMPATAN.CustomAICore) return KESEMPATAN.CustomAICore.deleteSelectedAgents(); },
+        exportSelected: function() { if (KESEMPATAN.CustomAICore) return KESEMPATAN.CustomAICore.exportSelectedAgents(); },
+        autoTag: function() { if (KESEMPATAN.CustomAICore) return KESEMPATAN.CustomAICore.autoTagAgent.apply(null, arguments); },
+        autoCategory: function() { if (KESEMPATAN.CustomAICore) return KESEMPATAN.CustomAICore.autoCategory.apply(null, arguments); },
+        predictPerformance: function() { if (KESEMPATAN.CustomAICore) return KESEMPATAN.CustomAICore.predictPerformance.apply(null, arguments); },
+        compareAgents: function() { if (KESEMPATAN.CustomAICore) return KESEMPATAN.CustomAICore.compareAgents.apply(null, arguments); },
+        previewVoice: function() { if (KESEMPATAN.CustomAICore) return KESEMPATAN.CustomAICore.previewAgentVoice.apply(null, arguments); },
+        suggestSmartTags: function() { if (KESEMPATAN.CustomAICore) return KESEMPATAN.CustomAICore.suggestSmartTags.apply(null, arguments); },
+        previewAgent: function() { if (KESEMPATAN.CustomAICore) return KESEMPATAN.CustomAICore.previewAgent.apply(null, arguments); }
     };
 
     document.addEventListener('kes-agents-rendered', function() {
-        window.CustomAutoAgent.renderIntoGrid();
+        KESEMPATAN.CustomAutoAgent.renderIntoGrid();
     });
-
-    window.KESEMPATAN = window.KESEMPATAN || {};
-    window.KESEMPATAN.CustomAutoAgent = window.CustomAutoAgent;
 
     loadNext();
 })();

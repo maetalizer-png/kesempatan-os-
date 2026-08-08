@@ -1,12 +1,16 @@
 (function() {
     'use strict';
+
+    const KESEMPATAN = window.KESEMPATAN || {};
+    window.KESEMPATAN = KESEMPATAN;
+
     if (window.__CustomAIUIEvents) return;
     window.__CustomAIUIEvents = true;
 
-    const state = window.CustomAIState;
-    const core = window.CustomAICore;
-    const renderer = window.CustomAIUIRenderer;
-    const showToast = window.Utils ? window.Utils.showToast : null;
+    const state = KESEMPATAN.CustomAIState;
+    const core = KESEMPATAN.CustomAICore;
+    const renderer = KESEMPATAN.CustomAIUIRenderer;
+    const showToast = KESEMPATAN.Utils ? KESEMPATAN.Utils.showToast : (window.Utils ? window.Utils.showToast : null);
 
     const attachEvents = function(container) {
         const tempSlider = container.querySelector('#customAgentTemp');
@@ -425,10 +429,7 @@
         }
     };
 
-    window.CustomAIUIEvents = {
+    KESEMPATAN.CustomAIUIEvents = {
         attach: attachEvents
     };
-
-    window.KESEMPATAN = window.KESEMPATAN || {};
-    window.KESEMPATAN.CustomAIUIEvents = window.CustomAIUIEvents;
 })();

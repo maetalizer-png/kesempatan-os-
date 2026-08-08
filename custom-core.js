@@ -1,11 +1,15 @@
 (function() {
     'use strict';
+
+    const KESEMPATAN = window.KESEMPATAN || {};
+    window.KESEMPATAN = KESEMPATAN;
+
     if (window.__CustomAICore) return;
     window.__CustomAICore = true;
 
-    const state = window.CustomAIState;
-    const config = window.CustomAIConfig;
-    const showToast = window.Utils ? window.Utils.showToast : null;
+    const state = KESEMPATAN.CustomAIState;
+    const config = KESEMPATAN.CustomAIConfig;
+    const showToast = KESEMPATAN.Utils ? KESEMPATAN.Utils.showToast : (window.Utils ? window.Utils.showToast : null);
 
     const AVATARS = config.AVATARS;
     const CATEGORIES = config.CATEGORIES;
@@ -216,7 +220,7 @@
         agents.push(agent);
         state.saveAgents();
         if (showToast) showToast('Agen "' + name + '" berhasil ditambahkan! (AI Score: ' + agent.aiScore + ')', 'success');
-        if (window.CustomAIUIRenderer) window.CustomAIUIRenderer.render();
+        if (KESEMPATAN.CustomAIUIRenderer) KESEMPATAN.CustomAIUIRenderer.render();
         return true;
     };
 
@@ -242,7 +246,7 @@
         state.saveAgents();
         if (showToast) showToast('Agen "' + name + '" berhasil diupdate!', 'success');
         state.setEditingId(null);
-        if (window.CustomAIUIRenderer) window.CustomAIUIRenderer.render();
+        if (KESEMPATAN.CustomAIUIRenderer) KESEMPATAN.CustomAIUIRenderer.render();
         return true;
     };
 
@@ -260,7 +264,7 @@
         state.saveAgents();
         state.deleteSelected(id);
         if (showToast) showToast('Agen "' + agent.name + '" dihapus', 'info');
-        if (window.CustomAIUIRenderer) window.CustomAIUIRenderer.render();
+        if (KESEMPATAN.CustomAIUIRenderer) KESEMPATAN.CustomAIUIRenderer.render();
         return true;
     };
 
@@ -388,12 +392,12 @@
     const selectAllAgents = function() {
         const filtered = getFilteredAgents();
         filtered.forEach(function(a) { state.addSelected(a.id); });
-        if (window.CustomAIUIRenderer) window.CustomAIUIRenderer.render();
+        if (KESEMPATAN.CustomAIUIRenderer) KESEMPATAN.CustomAIUIRenderer.render();
     };
 
     const deselectAllAgents = function() {
         state.clearSelected();
-        if (window.CustomAIUIRenderer) window.CustomAIUIRenderer.render();
+        if (KESEMPATAN.CustomAIUIRenderer) KESEMPATAN.CustomAIUIRenderer.render();
     };
 
     const deleteSelectedAgents = function() {
@@ -406,7 +410,7 @@
             const ids = Array.from(selected);
             ids.forEach(function(id) { deleteCustomAgent(id); });
             state.clearSelected();
-            if (window.CustomAIUIRenderer) window.CustomAIUIRenderer.render();
+            if (KESEMPATAN.CustomAIUIRenderer) KESEMPATAN.CustomAIUIRenderer.render();
             if (showToast) showToast(ids.length + ' agen dihapus', 'success');
         }
     };
@@ -469,7 +473,7 @@
             }
             if (statusDiv) statusDiv.innerHTML = successCount + ' agen berhasil diciptakan!';
             if (showToast) showToast(successCount + ' agen diciptakan AI!', 'success');
-            if (window.CustomAIUIRenderer) window.CustomAIUIRenderer.render();
+            if (KESEMPATAN.CustomAIUIRenderer) KESEMPATAN.CustomAIUIRenderer.render();
         } catch (e) {
             if (statusDiv) statusDiv.innerHTML = 'Gagal: ' + e.message;
             if (showToast) showToast('Gagal generate: ' + e.message, 'error');
@@ -525,7 +529,7 @@
         };
     }
 
-    window.CustomAICore = {
+    KESEMPATAN.CustomAICore = {
         escapeHtml: escapeHtml,
         getApiKey: getApiKey,
         callAI: callAI,
@@ -553,7 +557,4 @@
         generateAgentFromAI: generateAgentFromAI,
         getFilteredAgents: getFilteredAgents
     };
-
-    window.KESEMPATAN = window.KESEMPATAN || {};
-    window.KESEMPATAN.CustomAICore = window.CustomAICore;
 })();

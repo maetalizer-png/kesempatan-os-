@@ -1,9 +1,13 @@
 (function() {
     'use strict';
+
+    const KESEMPATAN = window.KESEMPATAN || {};
+    window.KESEMPATAN = KESEMPATAN;
+
     if (window.__CustomAIState) return;
     window.__CustomAIState = true;
 
-    const CONFIG = window.CustomAIConfig || {};
+    const CONFIG = KESEMPATAN.CustomAIConfig || {};
 
     let customAgents = [];
     let agentRatings = {};
@@ -23,7 +27,7 @@
     const loadCustomAgents = function() {
         const saved = localStorage.getItem(CONFIG.STORAGE_KEY);
         if (saved) {
-            try { customAgents = JSON.parse(saved); } catch (e) {}
+            try { customAgents = JSON.parse(saved); } catch (e) { console.warn('[CustomAI] Load agents failed:', e.message); }
         }
         return customAgents;
     };
@@ -34,7 +38,7 @@
     const loadRatings = function() {
         const saved = localStorage.getItem(CONFIG.RATING_KEY);
         if (saved) {
-            try { agentRatings = JSON.parse(saved); } catch (e) {}
+            try { agentRatings = JSON.parse(saved); } catch (e) { console.warn('[CustomAI] Load ratings failed:', e.message); }
         }
         return agentRatings;
     };
@@ -45,7 +49,7 @@
     const loadTemplates = function() {
         const saved = localStorage.getItem(CONFIG.TEMPLATES_KEY);
         if (saved) {
-            try { return JSON.parse(saved); } catch (e) {}
+            try { return JSON.parse(saved); } catch (e) { console.warn('[CustomAI] Load templates failed:', e.message); }
         }
         return {};
     };
@@ -56,7 +60,7 @@
     const loadAnalytics = function() {
         const saved = localStorage.getItem(CONFIG.ANALYTICS_KEY);
         if (saved) {
-            try { agentAnalytics = JSON.parse(saved); } catch (e) {}
+            try { agentAnalytics = JSON.parse(saved); } catch (e) { console.warn('[CustomAI] Load analytics failed:', e.message); }
         }
         return agentAnalytics;
     };
@@ -67,7 +71,7 @@
     const loadFeedback = function() {
         const saved = localStorage.getItem(CONFIG.FEEDBACK_KEY);
         if (saved) {
-            try { agentFeedback = JSON.parse(saved); } catch (e) {}
+            try { agentFeedback = JSON.parse(saved); } catch (e) { console.warn('[CustomAI] Load feedback failed:', e.message); }
         }
         return agentFeedback;
     };
@@ -78,7 +82,7 @@
     const loadTraining = function() {
         const saved = localStorage.getItem(CONFIG.TRAINING_KEY);
         if (saved) {
-            try { agentTraining = JSON.parse(saved); } catch (e) {}
+            try { agentTraining = JSON.parse(saved); } catch (e) { console.warn('[CustomAI] Load training failed:', e.message); }
         }
         return agentTraining;
     };
@@ -86,7 +90,7 @@
         localStorage.setItem(CONFIG.TRAINING_KEY, JSON.stringify(agentTraining));
     };
 
-    window.CustomAIState = {
+    KESEMPATAN.CustomAIState = {
         getAgents: function() { return customAgents; },
         getRatings: function() { return agentRatings; },
         getVersions: function() { return agentVersions; },
@@ -128,7 +132,4 @@
         loadTraining: loadTraining,
         saveTraining: saveTraining
     };
-
-    window.KESEMPATAN = window.KESEMPATAN || {};
-    window.KESEMPATAN.CustomAIState = window.CustomAIState;
 })();

@@ -1,5 +1,9 @@
 (function() {
     'use strict';
+
+    const KESEMPATAN = window.KESEMPATAN || {};
+    window.KESEMPATAN = KESEMPATAN;
+
     if (window.__CustomAIConfig) return;
     window.__CustomAIConfig = true;
 
@@ -17,7 +21,7 @@
 
     const ALL_TAGS = ['marketing', 'finance', 'tech', 'creative', 'startup', 'business', 'ai', 'design', 'investment', 'digital', 'education', 'health', 'legal', 'sales', 'product', 'data', 'writing', 'ux', 'mentor', 'analyst'];
 
-    window.CustomAIConfig = {
+    KESEMPATAN.CustomAIConfig = {
         STORAGE_KEY: STORAGE_KEY,
         TEMPLATES_KEY: TEMPLATES_KEY,
         RATING_KEY: RATING_KEY,
@@ -29,7 +33,4 @@
         CATEGORIES: CATEGORIES,
         ALL_TAGS: ALL_TAGS
     };
-
-    window.KESEMPATAN = window.KESEMPATAN || {};
-    window.KESEMPATAN.CustomAIConfig = window.CustomAIConfig;
 })();

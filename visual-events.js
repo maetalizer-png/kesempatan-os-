@@ -302,8 +302,8 @@ function attachEvents() {
                         state.setProgressSphere(null);
                     }, 1500);
                 }
-                if (window.CustomAutoAgent && window.CustomAutoAgent.add) {
-                    const success = await window.CustomAutoAgent.add(agent.name, agent.role, agent.systemPrompt, 0.7);
+                if (window.KESEMPATAN?.CustomAutoAgent && window.KESEMPATAN.CustomAutoAgent.add) {
+                    const success = await window.KESEMPATAN.CustomAutoAgent.add(agent.name, agent.role, agent.systemPrompt, 0.7);
                     if (success) {
                         const result = {
                             success: true,
@@ -424,8 +424,8 @@ function attachEvents() {
                     const agent = await ai.generateAgent(features);
                     const tags = await ai.generateTags(features);
                     const description = await ai.generateDescription(features);
-                    if (window.CustomAutoAgent && window.CustomAutoAgent.add) {
-                        const success = await window.CustomAutoAgent.add(agent.name, agent.role, agent.systemPrompt, 0.7);
+                    if (window.KESEMPATAN?.CustomAutoAgent && window.KESEMPATAN.CustomAutoAgent.add) {
+                        const success = await window.KESEMPATAN.CustomAutoAgent.add(agent.name, agent.role, agent.systemPrompt, 0.7);
                         if (success) {
                             const result = {
                                 id: Date.now() + i,
