@@ -6,7 +6,7 @@ window.AGENTS_CONFIG = window.AGENTS_CONFIG || {};
 async function loadPrompt(agentName) {
     const currentYear = new Date().getFullYear();
     try {
-        const response = await fetch(`prompts/${agentName}.txt`);
+        const response = await fetch(`${agentName}.txt`);
         if (response.ok) {
             const text = await response.text();
             return text.replace(/\{\{TAHUN\}\}/g, currentYear);

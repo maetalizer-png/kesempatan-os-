@@ -5,7 +5,7 @@ if (typeof window.extendPoliticsAgents === 'undefined') {
     window.extendPoliticsAgents = async function() {
         async function loadPrompt(agentName) {
             try {
-                const response = await fetch(`prompts/${agentName}.txt`);
+                const response = await fetch(`${agentName}.txt`);
                 if (response.ok) return await response.text();
             } catch (error) {}
             return `Anda adalah ahli ${agentName}. Analisis berdasarkan bidang keahlian Anda. Output dalam format JSON.`;
