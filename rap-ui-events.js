@@ -13,13 +13,16 @@
 (function() {
     'use strict';
 
+    const KESEMPATAN = window.KESEMPATAN || {};
+    window.KESEMPATAN = KESEMPATAN;
+
     if (window.__RapUIEvents) {
         return;
     }
     window.__RapUIEvents = true;
 
-    const renderer = window.RapUIRenderer;
-    const logic = window.RapBattle.logic;
+    const renderer = KESEMPATAN.RapUIRenderer;
+    const logic = KESEMPATAN.RapBattle.logic;
 
     if (!renderer || !logic) {
         return;
@@ -140,9 +143,9 @@
                 </div>
                 ${breakdownHtml}
                 <div style="margin-top:12px; display:flex; gap:8px; justify-content:center; flex-wrap:wrap;">
-                    <button onclick="window.RapBattle.exportResult('pdf')" class="btn-export-rap" style="padding:6px 16px; background:rgba(255,215,0,0.1); border:1px solid rgba(255,215,0,0.2); border-radius:8px; color:#FFD700; cursor:pointer; font-size:11px;">📄 PDF</button>
-                    <button onclick="window.RapBattle.exportResult('json')" class="btn-export-rap" style="padding:6px 16px; background:rgba(255,215,0,0.1); border:1px solid rgba(255,215,0,0.2); border-radius:8px; color:#FFD700; cursor:pointer; font-size:11px;">📊 JSON</button>
-                    <button onclick="window.RapBattle.exportResult('txt')" class="btn-export-rap" style="padding:6px 16px; background:rgba(255,215,0,0.1); border:1px solid rgba(255,215,0,0.2); border-radius:8px; color:#FFD700; cursor:pointer; font-size:11px;">📝 TXT</button>
+                    <button onclick="window.KESEMPATAN.RapBattle.exportResult('pdf')" class="btn-export-rap" style="padding:6px 16px; background:rgba(255,215,0,0.1); border:1px solid rgba(255,215,0,0.2); border-radius:8px; color:#FFD700; cursor:pointer; font-size:11px;">📄 PDF</button>
+                    <button onclick="window.KESEMPATAN.RapBattle.exportResult('json')" class="btn-export-rap" style="padding:6px 16px; background:rgba(255,215,0,0.1); border:1px solid rgba(255,215,0,0.2); border-radius:8px; color:#FFD700; cursor:pointer; font-size:11px;">📊 JSON</button>
+                    <button onclick="window.KESEMPATAN.RapBattle.exportResult('txt')" class="btn-export-rap" style="padding:6px 16px; background:rgba(255,215,0,0.1); border:1px solid rgba(255,215,0,0.2); border-radius:8px; color:#FFD700; cursor:pointer; font-size:11px;">📝 TXT</button>
                 </div>
                 <div style="margin-top:8px; font-size:11px; color:#666;">📝 ${rapState.history.length} pesan dalam battle</div>
             </div>
@@ -289,7 +292,7 @@
         // Waveform bars
         const bars = 64;
         const barWidth = width / bars;
-        const beatActive = window.RapBattle.logic.getRapBattleActive();
+        const beatActive = KESEMPATAN.RapBattle.logic.getRapBattleActive();
 
         for (let i = 0; i < bars; i++) {
             const time = now * 2 + (i / bars) * 4;
@@ -395,8 +398,8 @@
                         <div style="font-size:13px; color:#A0B3C9;">Topic: ${sanitizeHTML(cleanTopic)}</div>
                         ${item.winner ? `<div style="font-size:13px; color:#FFD700;">🏆 Winner: ${sanitizeHTML(cleanWinner)}</div>` : ''}
                         <div style="margin-top:6px; display:flex; gap:6px; flex-wrap:wrap;">
-                            <button onclick="window.RapBattle.exportResult('json')" style="padding:3px 10px; background:rgba(255,215,0,0.05); border:1px solid rgba(255,215,0,0.1); border-radius:6px; color:#FFD700; cursor:pointer; font-size:10px;">📊 JSON</button>
-                            <button onclick="window.RapBattle.exportResult('pdf')" style="padding:3px 10px; background:rgba(255,215,0,0.05); border:1px solid rgba(255,215,0,0.1); border-radius:6px; color:#FFD700; cursor:pointer; font-size:10px;">📄 PDF</button>
+                            <button onclick="window.KESEMPATAN.RapBattle.exportResult('json')" style="padding:3px 10px; background:rgba(255,215,0,0.05); border:1px solid rgba(255,215,0,0.1); border-radius:6px; color:#FFD700; cursor:pointer; font-size:10px;">📊 JSON</button>
+                            <button onclick="window.KESEMPATAN.RapBattle.exportResult('pdf')" style="padding:3px 10px; background:rgba(255,215,0,0.05); border:1px solid rgba(255,215,0,0.1); border-radius:6px; color:#FFD700; cursor:pointer; font-size:10px;">📄 PDF</button>
                             <button onclick="if(confirm('Hapus?')){localStorage.removeItem('rap_battle_history_v11');location.reload();}" style="padding:3px 10px; background:rgba(255,107,107,0.05); border:1px solid rgba(255,107,107,0.1); border-radius:6px; color:#FF6B6B; cursor:pointer; font-size:10px;">🗑️</button>
                         </div>
                     </div>
@@ -529,7 +532,7 @@
         // jadi 14 rapper (Cypher Lounge) — makanya diganti dengan logic
         // role-cycling: klik kartu kosong → isi slot A dulu, lalu slot B;
         // klik kartu yang sudah A/B → lepas peran itu (biar bisa ganti).
-        const renderer = window.RapUIRenderer;
+        const renderer = KESEMPATAN.RapUIRenderer;
         const cards = container.querySelectorAll('.rapper-card[data-agent]');
         for (let i = 0; i < cards.length; i++) {
             const card = cards[i];
@@ -572,21 +575,21 @@
         if (patternSelect) {
             patternSelect.addEventListener('change', function() {
                 const songId = this.value;
-                if (window.RapBattle.logic.setActiveSong) {
-                    window.RapBattle.logic.setActiveSong(songId);
-                } else if (window.RapBattle.logic.setBeatPattern) {
+                if (KESEMPATAN.RapBattle.logic.setActiveSong) {
+                    KESEMPATAN.RapBattle.logic.setActiveSong(songId);
+                } else if (KESEMPATAN.RapBattle.logic.setBeatPattern) {
                     // Fallback kalau soundbank belum sempat load.
-                    window.RapBattle.logic.setBeatPattern(songId);
+                    KESEMPATAN.RapBattle.logic.setBeatPattern(songId);
                 }
             });
             // Sinkronkan pilihan awal dengan lagu/pattern aktif saat ini
-            const activeSong = window.RapBattle.logic.getActiveSong && window.RapBattle.logic.getActiveSong();
+            const activeSong = KESEMPATAN.RapBattle.logic.getActiveSong && KESEMPATAN.RapBattle.logic.getActiveSong();
             if (activeSong) {
                 patternSelect.value = activeSong.id;
-            } else if (window.RapBattle.logic.getBeatPattern) {
-                const currentPattern = window.RapBattle.logic.getBeatPattern();
-                if (currentPattern && window.RapSoundbank) {
-                    const def = window.RapSoundbank.getDefaultSongForGenre(currentPattern);
+            } else if (KESEMPATAN.RapBattle.logic.getBeatPattern) {
+                const currentPattern = KESEMPATAN.RapBattle.logic.getBeatPattern();
+                if (currentPattern && KESEMPATAN.RapSoundbank) {
+                    const def = KESEMPATAN.RapSoundbank.getDefaultSongForGenre(currentPattern);
                     if (def) patternSelect.value = def.id;
                 }
             }
@@ -696,7 +699,7 @@
     // ============================================================
     // 🔥 EXPOSE
     // ============================================================
-    window.RapUIEvents = {
+    KESEMPATAN.RapUIEvents = {
         attachEvents: attachEvents,
         addMessage: addMessage,
         showResult: showResult,

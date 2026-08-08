@@ -8,6 +8,9 @@
 (function() {
     'use strict';
 
+    const KESEMPATAN = window.KESEMPATAN || {};
+    window.KESEMPATAN = KESEMPATAN;
+
     if (window.__RapCharacterEngine) return;
     window.__RapCharacterEngine = true;
 
@@ -492,8 +495,8 @@
             const p = PERSONA_DB[key];
             const avatar = getAvatar(key);
             let song = null;
-            if (window.RapSoundbank && window.RapSoundbank.recommendSongForPersona) {
-                song = window.RapSoundbank.recommendSongForPersona(key);
+            if (KESEMPATAN.RapSoundbank && KESEMPATAN.RapSoundbank.recommendSongForPersona) {
+                song = KESEMPATAN.RapSoundbank.recommendSongForPersona(key);
             }
             return {
                 id: key,
@@ -512,7 +515,7 @@
     // 3. EXPOSE
     // ============================================================
     
-    window.RapCharacterEngine = {
+    KESEMPATAN.RapCharacterEngine = {
         getPersona: getPersona,
         getEmotion: getEmotion,
         getEmotionModifier: getEmotionModifier,

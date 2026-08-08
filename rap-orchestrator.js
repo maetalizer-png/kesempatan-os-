@@ -1,7 +1,7 @@
 /* ============================================================
    📁 rap/orchestrator.js
    🔥 ORCHESTRASI RAP BATTLE - startRapBattle, abortRap
-   🔥 LANGSUNG PAKAI window.RapHelpers, window.RapConfig, window.RapEngine
+   🔥 LANGSUNG PAKAI KESEMPATAN.RapHelpers, KESEMPATAN.RapConfig, KESEMPATAN.RapEngine
    🔥 ✅ SUDAH TERHUBUNG KE MEMORY.JS & ENGINE BARU!
    🔥 ✅ EXPORT LENGKAP (PDF, JSON, TXT)!
    🔥 ✅ HAPUS VARIABLE TIDAK TERPAKAI
@@ -13,22 +13,25 @@
 (function() {
     'use strict';
 
+    const KESEMPATAN = window.KESEMPATAN || {};
+    window.KESEMPATAN = KESEMPATAN;
+
     if (window.__RapOrchestrator) {
         return;
     }
     window.__RapOrchestrator = true;
 
-    const CONFIG = window.RapConfig.CONFIG;
-    const rapState = window.RapConfig.rapState;
-    const getRapBattleActive = window.RapConfig.getRapBattleActive;
-    const setRapBattleActive = window.RapConfig.setRapBattleActive;
-    const getRapAbort = window.RapConfig.getRapAbort;
-    const setRapAbort = window.RapConfig.setRapAbort;
+    const CONFIG = KESEMPATAN.RapConfig.CONFIG;
+    const rapState = KESEMPATAN.RapConfig.rapState;
+    const getRapBattleActive = KESEMPATAN.RapConfig.getRapBattleActive;
+    const setRapBattleActive = KESEMPATAN.RapConfig.setRapBattleActive;
+    const getRapAbort = KESEMPATAN.RapConfig.getRapAbort;
+    const setRapAbort = KESEMPATAN.RapConfig.setRapAbort;
 
-    const getDisplayName = window.RapHelpers.getDisplayName;
-    const getApiKey = window.RapHelpers.getApiKey;
+    const getDisplayName = KESEMPATAN.RapHelpers.getDisplayName;
+    const getApiKey = KESEMPATAN.RapHelpers.getApiKey;
 
-    const RapEngine = window.RapEngine;
+    const RapEngine = KESEMPATAN.RapEngine;
     const memory = window.VectorMemory || window.VectorMemoryV5;
 
     // ============================================================
@@ -199,16 +202,16 @@
     function toggleBeat() {
         if (beatActive) {
             stopBeat();
-            if (window.RapBattle.ui) {
-                window.RapBattle.ui.showToast('🔇 Beat dihentikan', 'info');
+            if (KESEMPATAN.RapBattle.ui) {
+                KESEMPATAN.RapBattle.ui.showToast('🔇 Beat dihentikan', 'info');
             }
         } else {
             if (!beatContext) {
                 initBeat();
             }
             playBeat();
-            if (window.RapBattle.ui) {
-                window.RapBattle.ui.showToast('🥁 Beat dimulai! 🔥', 'success');
+            if (KESEMPATAN.RapBattle.ui) {
+                KESEMPATAN.RapBattle.ui.showToast('🥁 Beat dimulai! 🔥', 'success');
             }
         }
     }
@@ -221,8 +224,8 @@
             // dan balik BPM ke default CONFIG supaya tidak nyangkut di BPM lagu lama.
             activeSong = null;
             currentBPM = CONFIG.BEAT_BPM;
-            if (window.RapBattle.ui) {
-                window.RapBattle.ui.showToast('🎵 Pattern: ' + pattern, 'info');
+            if (KESEMPATAN.RapBattle.ui) {
+                KESEMPATAN.RapBattle.ui.showToast('🎵 Pattern: ' + pattern, 'info');
             }
             // Sync UI dropdown
             const select = document.getElementById('beatPatternSelect');
@@ -244,14 +247,14 @@
     // ikut lagu itu sekaligus, jadi drum sequencer & delivery vokal
     // (lihat speakRap) benar-benar mengikuti tempo lagu yang dipilih.
     function setActiveSong(songId) {
-        if (!window.RapSoundbank) return null;
-        const song = window.RapSoundbank.getSongById(songId);
+        if (!KESEMPATAN.RapSoundbank) return null;
+        const song = KESEMPATAN.RapSoundbank.getSongById(songId);
         if (!song) return null;
         activeSong = song;
         beatPattern = song.genre;
         currentBPM = song.bpm;
-        if (window.RapBattle.ui) {
-            window.RapBattle.ui.showToast('🎵 Lagu: ' + song.title + ' (' + song.bpm + ' BPM)', 'info');
+        if (KESEMPATAN.RapBattle.ui) {
+            KESEMPATAN.RapBattle.ui.showToast('🎵 Lagu: ' + song.title + ' (' + song.bpm + ' BPM)', 'info');
         }
         const patternSelect = document.getElementById('beatPatternSelect');
         if (patternSelect) {
@@ -284,8 +287,8 @@
     // momen "Hook Callback" (lihat startRapBattle).
     function buildSongContext() {
         let song = activeSong;
-        if (!song && window.RapSoundbank) {
-            song = window.RapSoundbank.getDefaultSongForGenre(beatPattern);
+        if (!song && KESEMPATAN.RapSoundbank) {
+            song = KESEMPATAN.RapSoundbank.getDefaultSongForGenre(beatPattern);
         }
         if (!song) return null;
         return {
@@ -412,8 +415,8 @@
                 window.speechSynthesis.cancel();
             }
 
-            const profile = (window.RapCharacterEngine && agentKey)
-                ? window.RapCharacterEngine.getVoiceProfile(agentKey)
+            const profile = (KESEMPATAN.RapCharacterEngine && agentKey)
+                ? KESEMPATAN.RapCharacterEngine.getVoiceProfile(agentKey)
                 : { rate: CONFIG.VOICE_RATE, pitch: CONFIG.VOICE_PITCH, pauseMs: 350, punchlineBoost: 0.15, adlibs: [] };
 
             // 🔥 EMOTION ESCALATION — battle yang makin panas di ronde
@@ -422,8 +425,8 @@
             // character.js:getEmotionModifier). Ronde 1 tenang, ronde
             // menjelang closer lebih menggigit — tanpa menghilangkan
             // karakter dasar tiap rapper.
-            const emoMod = (window.RapCharacterEngine && window.RapCharacterEngine.getEmotionModifier && round)
-                ? window.RapCharacterEngine.getEmotionModifier(round, totalRounds || round)
+            const emoMod = (KESEMPATAN.RapCharacterEngine && KESEMPATAN.RapCharacterEngine.getEmotionModifier && round)
+                ? KESEMPATAN.RapCharacterEngine.getEmotionModifier(round, totalRounds || round)
                 : { rateMult: 1, pitchMult: 1 };
 
             const cleanText = text.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ').replace(/\*/g, '').substring(0, 500);
@@ -431,8 +434,8 @@
             if (lines.length === 0) return;
 
             const voices = window.speechSynthesis.getVoices();
-            const indonesianVoice = (window.RapCharacterEngine && window.RapCharacterEngine.pickVoiceForAgent)
-                ? window.RapCharacterEngine.pickVoiceForAgent(agentKey || sender, voices)
+            const indonesianVoice = (KESEMPATAN.RapCharacterEngine && KESEMPATAN.RapCharacterEngine.pickVoiceForAgent)
+                ? KESEMPATAN.RapCharacterEngine.pickVoiceForAgent(agentKey || sender, voices)
                 : (voices.find(function(v) { return v.lang === 'id-ID'; }) ||
                    voices.find(function(v) { return v.lang && v.lang.indexOf('id') === 0; }));
 
@@ -605,8 +608,8 @@
         format = format || 'pdf';
 
         if (rapState.history.length === 0) {
-            if (window.RapBattle.ui) {
-                window.RapBattle.ui.showToast('Tidak ada hasil rap battle untuk di-export', 'warn');
+            if (KESEMPATAN.RapBattle.ui) {
+                KESEMPATAN.RapBattle.ui.showToast('Tidak ada hasil rap battle untuk di-export', 'warn');
             }
             return;
         }
@@ -691,8 +694,8 @@
                     }
 
                     doc.save('rap-battle-' + Date.now() + '.pdf');
-                    if (window.RapBattle.ui) {
-                        window.RapBattle.ui.showToast('✅ PDF berhasil di-export!', 'success');
+                    if (KESEMPATAN.RapBattle.ui) {
+                        KESEMPATAN.RapBattle.ui.showToast('✅ PDF berhasil di-export!', 'success');
                     }
                     return;
                 } catch (e) {
@@ -709,8 +712,8 @@
             a.download = 'rap-battle-' + Date.now() + '.json';
             a.click();
             URL.revokeObjectURL(url);
-            if (window.RapBattle.ui) {
-                window.RapBattle.ui.showToast('✅ JSON berhasil di-export!', 'success');
+            if (KESEMPATAN.RapBattle.ui) {
+                KESEMPATAN.RapBattle.ui.showToast('✅ JSON berhasil di-export!', 'success');
             }
         } else {
             let content = '========================================\n';
@@ -738,8 +741,8 @@
             a.download = 'rap-battle-' + Date.now() + '.txt';
             a.click();
             URL.revokeObjectURL(url);
-            if (window.RapBattle.ui) {
-                window.RapBattle.ui.showToast('✅ TXT berhasil di-export!', 'success');
+            if (KESEMPATAN.RapBattle.ui) {
+                KESEMPATAN.RapBattle.ui.showToast('✅ TXT berhasil di-export!', 'success');
             }
         }
     }
@@ -751,15 +754,15 @@
         rounds = rounds || 3;
 
         if (agentA === agentB) {
-            if (window.RapBattle.ui) {
-                window.RapBattle.ui.showToast('Agent A dan Agent B harus berbeda!', 'error');
+            if (KESEMPATAN.RapBattle.ui) {
+                KESEMPATAN.RapBattle.ui.showToast('Agent A dan Agent B harus berbeda!', 'error');
             }
             return;
         }
 
         if (getRapBattleActive()) {
-            if (window.RapBattle.ui) {
-                window.RapBattle.ui.showToast('Rap battle sedang berjalan', 'warn');
+            if (KESEMPATAN.RapBattle.ui) {
+                KESEMPATAN.RapBattle.ui.showToast('Rap battle sedang berjalan', 'warn');
             }
             return;
         }
@@ -778,8 +781,8 @@
 
         const apiKey = getApiKey();
         if (!apiKey) {
-            if (window.RapBattle.ui) {
-                window.RapBattle.ui.showToast('Masukkan API Key terlebih dahulu', 'error');
+            if (KESEMPATAN.RapBattle.ui) {
+                KESEMPATAN.RapBattle.ui.showToast('Masukkan API Key terlebih dahulu', 'error');
             }
             setRapBattleActive(false);
             return;
@@ -804,19 +807,19 @@
 
         const songContext = buildSongContext();
 
-        if (window.RapBattle.ui && window.RapBattle.ui.addMessage) {
-            window.RapBattle.ui.addMessage('🎤 MC', '🌍 SELAMAT DATANG DI PANGGUNG RAP BATTLE INTERNASIONAL! 🔥');
-            window.RapBattle.ui.addMessage('🎤 MC', '📌 Topik: "' + topic + '"');
-            window.RapBattle.ui.addMessage('🎤 MC', displayA + ' 🆚 ' + displayB + ' — ' + rounds + ' ronde');
+        if (KESEMPATAN.RapBattle.ui && KESEMPATAN.RapBattle.ui.addMessage) {
+            KESEMPATAN.RapBattle.ui.addMessage('🎤 MC', '🌍 SELAMAT DATANG DI PANGGUNG RAP BATTLE INTERNASIONAL! 🔥');
+            KESEMPATAN.RapBattle.ui.addMessage('🎤 MC', '📌 Topik: "' + topic + '"');
+            KESEMPATAN.RapBattle.ui.addMessage('🎤 MC', displayA + ' 🆚 ' + displayB + ' — ' + rounds + ' ronde');
             if (songContext) {
-                window.RapBattle.ui.addMessage('🎶 MC', 'Instrumental malam ini: "' + songContext.title + '" (' +
+                KESEMPATAN.RapBattle.ui.addMessage('🎶 MC', 'Instrumental malam ini: "' + songContext.title + '" (' +
                     songContext.mood + ', ' + songContext.bpm + ' BPM)');
             }
         }
 
         // 🔥 START VISUALIZER
-        if (window.RapBattle.ui && window.RapBattle.ui.startVisualizer) {
-            window.RapBattle.ui.startVisualizer();
+        if (KESEMPATAN.RapBattle.ui && KESEMPATAN.RapBattle.ui.startVisualizer) {
+            KESEMPATAN.RapBattle.ui.startVisualizer();
         }
 
         let lastRapA = '';
@@ -840,29 +843,29 @@
             const roundSongContext = buildSongContext();
             const plan = RapEngine.getBattlePlan ? RapEngine.getBattlePlan(round, rounds) : null;
 
-            if (window.RapBattle.ui) {
-                window.RapBattle.ui.updateRapStats();
+            if (KESEMPATAN.RapBattle.ui) {
+                KESEMPATAN.RapBattle.ui.updateRapStats();
                 // 🔥 Sebelumnya cuma "--- RONDE X ---" generik, padahal
                 // intelligence.js sudah punya strategi & goal per-ronde
                 // (BATTLE_PLANS) yang TIDAK PERNAH disuarakan ke penonton.
                 // Sekarang MC benar-benar mengumumkan tema rondenya —
                 // kayak announcer di liga battle rap internasional.
                 if (plan) {
-                    window.RapBattle.ui.addMessage('🎤 MC', '--- RONDE ' + round + ': ' + plan.strategy.toUpperCase() + ' 🎤 ---');
-                    window.RapBattle.ui.addMessage('🎤 MC', '🎯 ' + plan.goal);
+                    KESEMPATAN.RapBattle.ui.addMessage('🎤 MC', '--- RONDE ' + round + ': ' + plan.strategy.toUpperCase() + ' 🎤 ---');
+                    KESEMPATAN.RapBattle.ui.addMessage('🎤 MC', '🎯 ' + plan.goal);
                 } else {
-                    window.RapBattle.ui.addMessage('🎤 MC', '--- RONDE ' + round + ' 🎤 ---');
+                    KESEMPATAN.RapBattle.ui.addMessage('🎤 MC', '--- RONDE ' + round + ' 🎤 ---');
                 }
             }
 
-            if (window.RapBattle.ui) {
-                window.RapBattle.ui.addMessage('🎤 MC', '⏳ ' + displayA + ' sedang menyusun bait...');
+            if (KESEMPATAN.RapBattle.ui) {
+                KESEMPATAN.RapBattle.ui.addMessage('🎤 MC', '⏳ ' + displayA + ' sedang menyusun bait...');
             }
             const rapA = await RapEngine.getRap(agentA, topic, lastRapB, round, rounds, apiKey, memoryA, memoryContext, roundSongContext);
-            if (window.RapBattle.ui) {
-                window.RapBattle.ui.addMessage(displayA, '🎙️ ' + rapA);
-                if (window.RapBattle.ui.updateVisualizerLyric) {
-                    window.RapBattle.ui.updateVisualizerLyric(rapA);
+            if (KESEMPATAN.RapBattle.ui) {
+                KESEMPATAN.RapBattle.ui.addMessage(displayA, '🎙️ ' + rapA);
+                if (KESEMPATAN.RapBattle.ui.updateVisualizerLyric) {
+                    KESEMPATAN.RapBattle.ui.updateVisualizerLyric(rapA);
                 }
             }
             speakRap(rapA, displayA, agentA, round, rounds);
@@ -875,14 +878,14 @@
                 break;
             }
 
-            if (window.RapBattle.ui) {
-                window.RapBattle.ui.addMessage('🎤 MC', '⏳ ' + displayB + ' sedang menyusun balasan...');
+            if (KESEMPATAN.RapBattle.ui) {
+                KESEMPATAN.RapBattle.ui.addMessage('🎤 MC', '⏳ ' + displayB + ' sedang menyusun balasan...');
             }
             const rapB = await RapEngine.getRap(agentB, topic, rapA, round, rounds, apiKey, memoryB, memoryContext, roundSongContext);
-            if (window.RapBattle.ui) {
-                window.RapBattle.ui.addMessage(displayB, '🎤 ' + rapB);
-                if (window.RapBattle.ui.updateVisualizerLyric) {
-                    window.RapBattle.ui.updateVisualizerLyric(rapB);
+            if (KESEMPATAN.RapBattle.ui) {
+                KESEMPATAN.RapBattle.ui.addMessage(displayB, '🎤 ' + rapB);
+                if (KESEMPATAN.RapBattle.ui.updateVisualizerLyric) {
+                    KESEMPATAN.RapBattle.ui.updateVisualizerLyric(rapB);
                 }
             }
             speakRap(rapB, displayB, agentB, round, rounds);
@@ -898,8 +901,8 @@
             // "dinyanyikan" MC & penonton ikut riuh — ciri khas panggung
             // battle rap internasional.
             if (plan && plan.strategy === 'Callback' && roundSongContext && roundSongContext.hook) {
-                if (window.RapBattle.ui) {
-                    window.RapBattle.ui.addMessage('🎶 HOOK', '"' + roundSongContext.hook + '"');
+                if (KESEMPATAN.RapBattle.ui) {
+                    KESEMPATAN.RapBattle.ui.addMessage('🎶 HOOK', '"' + roundSongContext.hook + '"');
                 }
                 speakHook(roundSongContext.hook);
                 addAudienceReaction('🎉');
@@ -910,22 +913,22 @@
                 break;
             }
 
-            if (window.RapBattle.ui) {
+            if (KESEMPATAN.RapBattle.ui) {
                 const flowA = analyzeFlow(rapA);
                 const flowB = analyzeFlow(rapB);
-                window.RapBattle.ui.updateFlowStats(flowA, flowB);
-                window.RapBattle.ui.updateRapStats();
+                KESEMPATAN.RapBattle.ui.updateFlowStats(flowA, flowB);
+                KESEMPATAN.RapBattle.ui.updateRapStats();
             }
         }
 
         if (getRapAbort()) {
-            if (window.RapBattle.ui) {
-                window.RapBattle.ui.addMessage('⏹️ MC', 'Rap battle dihentikan user.');
-                if (window.RapBattle.ui.stopVisualizer) {
-                    window.RapBattle.ui.stopVisualizer();
+            if (KESEMPATAN.RapBattle.ui) {
+                KESEMPATAN.RapBattle.ui.addMessage('⏹️ MC', 'Rap battle dihentikan user.');
+                if (KESEMPATAN.RapBattle.ui.stopVisualizer) {
+                    KESEMPATAN.RapBattle.ui.stopVisualizer();
                 }
-                if (window.RapBattle.ui.clearVisualizerLyric) {
-                    window.RapBattle.ui.clearVisualizerLyric();
+                if (KESEMPATAN.RapBattle.ui.clearVisualizerLyric) {
+                    KESEMPATAN.RapBattle.ui.clearVisualizerLyric();
                 }
             }
             setRapBattleActive(false);
@@ -934,8 +937,8 @@
             return;
         }
 
-        if (window.RapBattle.ui) {
-            window.RapBattle.ui.addMessage('⚖️ MC', '⏳ Juri menilai rap battle...');
+        if (KESEMPATAN.RapBattle.ui) {
+            KESEMPATAN.RapBattle.ui.addMessage('⚖️ MC', '⏳ Juri menilai rap battle...');
         }
 
         let winner;
@@ -960,11 +963,11 @@
         stopBeat();
         stopAutoReactions();
 
-        if (window.RapBattle.ui && window.RapBattle.ui.stopVisualizer) {
-            window.RapBattle.ui.stopVisualizer();
+        if (KESEMPATAN.RapBattle.ui && KESEMPATAN.RapBattle.ui.stopVisualizer) {
+            KESEMPATAN.RapBattle.ui.stopVisualizer();
         }
-        if (window.RapBattle.ui && window.RapBattle.ui.clearVisualizerLyric) {
-            window.RapBattle.ui.clearVisualizerLyric();
+        if (KESEMPATAN.RapBattle.ui && KESEMPATAN.RapBattle.ui.clearVisualizerLyric) {
+            KESEMPATAN.RapBattle.ui.clearVisualizerLyric();
         }
 
         saveHistory({
@@ -1023,10 +1026,10 @@
             // Silent fail
         }
 
-        if (window.RapBattle.ui) {
-            window.RapBattle.ui.showResult(winner, displayA, displayB);
-            window.RapBattle.ui.showToast('🏆 Pemenang: ' + winner.winner, 'success');
-            window.RapBattle.ui.updateRapStats();
+        if (KESEMPATAN.RapBattle.ui) {
+            KESEMPATAN.RapBattle.ui.showResult(winner, displayA, displayB);
+            KESEMPATAN.RapBattle.ui.showToast('🏆 Pemenang: ' + winner.winner, 'success');
+            KESEMPATAN.RapBattle.ui.updateRapStats();
         }
 
         setRapBattleActive(false);
@@ -1085,13 +1088,13 @@
 
     function announceHallOfFame(limit) {
         const board = getLeaderboard().slice(0, limit || 3);
-        if (window.RapBattle.ui && window.RapBattle.ui.addMessage) {
+        if (KESEMPATAN.RapBattle.ui && KESEMPATAN.RapBattle.ui.addMessage) {
             if (board.length === 0) {
-                window.RapBattle.ui.addMessage('🏆 HALL OF FAME', 'Belum ada battle tercatat — jadilah yang pertama legendaris!');
+                KESEMPATAN.RapBattle.ui.addMessage('🏆 HALL OF FAME', 'Belum ada battle tercatat — jadilah yang pertama legendaris!');
             } else {
-                window.RapBattle.ui.addMessage('🏆 HALL OF FAME', '--- PAPAN PERINGKAT ---');
+                KESEMPATAN.RapBattle.ui.addMessage('🏆 HALL OF FAME', '--- PAPAN PERINGKAT ---');
                 board.forEach(function(row, i) {
-                    window.RapBattle.ui.addMessage('🏆 HALL OF FAME',
+                    KESEMPATAN.RapBattle.ui.addMessage('🏆 HALL OF FAME',
                         (i + 1) + '. ' + row.fameIcon + ' ' + row.name + ' — ' + row.fameTier +
                         ' (' + row.wins + ' menang / ' + row.battles + ' battle, ' + row.winRate + '%)');
                 });
@@ -1111,10 +1114,10 @@
         return (async function() {
             let contestants = (agentKeys && agentKeys.length >= 2)
                 ? agentKeys.slice()
-                : (window.RapCharacterEngine ? window.RapCharacterEngine.getAllPersonas() : []);
+                : (KESEMPATAN.RapCharacterEngine ? KESEMPATAN.RapCharacterEngine.getAllPersonas() : []);
 
             if (contestants.length < 2) {
-                if (window.RapBattle.ui) window.RapBattle.ui.showToast('Minimal 2 rapper untuk turnamen', 'error');
+                if (KESEMPATAN.RapBattle.ui) KESEMPATAN.RapBattle.ui.showToast('Minimal 2 rapper untuk turnamen', 'error');
                 return null;
             }
 
@@ -1127,9 +1130,9 @@
             const bracketLog = [];
             let roundNum = 1;
 
-            if (window.RapBattle.ui && window.RapBattle.ui.addMessage) {
-                window.RapBattle.ui.addMessage('🌍 MC', '🏟️ TURNAMEN RAP BATTLE — PANGGUNG KONTES DIMULAI! 🏟️');
-                window.RapBattle.ui.addMessage('🌍 MC', 'Peserta (' + contestants.length + '): ' +
+            if (KESEMPATAN.RapBattle.ui && KESEMPATAN.RapBattle.ui.addMessage) {
+                KESEMPATAN.RapBattle.ui.addMessage('🌍 MC', '🏟️ TURNAMEN RAP BATTLE — PANGGUNG KONTES DIMULAI! 🏟️');
+                KESEMPATAN.RapBattle.ui.addMessage('🌍 MC', 'Peserta (' + contestants.length + '): ' +
                     contestants.map(getDisplayName).join(', '));
             }
 
@@ -1137,8 +1140,8 @@
                 if (getRapAbort()) return null;
                 const nextRound = [];
 
-                if (window.RapBattle.ui) {
-                    window.RapBattle.ui.addMessage('🌍 MC', '--- BABAK ' + roundNum + ' (' + contestants.length + ' peserta) ---');
+                if (KESEMPATAN.RapBattle.ui) {
+                    KESEMPATAN.RapBattle.ui.addMessage('🌍 MC', '--- BABAK ' + roundNum + ' (' + contestants.length + ' peserta) ---');
                 }
 
                 for (let i = 0; i < contestants.length; i += 2) {
@@ -1147,8 +1150,8 @@
                     if (i + 1 >= contestants.length) {
                         // Jumlah ganjil — peserta terakhir lolos otomatis (bye)
                         nextRound.push(contestants[i]);
-                        if (window.RapBattle.ui) {
-                            window.RapBattle.ui.addMessage('🌍 MC', getDisplayName(contestants[i]) + ' lolos otomatis ke babak berikutnya (bye)');
+                        if (KESEMPATAN.RapBattle.ui) {
+                            KESEMPATAN.RapBattle.ui.addMessage('🌍 MC', getDisplayName(contestants[i]) + ' lolos otomatis ke babak berikutnya (bye)');
                         }
                         continue;
                     }
@@ -1169,9 +1172,9 @@
             const championKey = contestants[0];
             const board = announceHallOfFame(1);
 
-            if (window.RapBattle.ui) {
-                window.RapBattle.ui.addMessage('👑 MC', '🎉 JUARA TURNAMEN: ' + getDisplayName(championKey) + '! Sang legenda panggung ini! 🎉');
-                window.RapBattle.ui.showToast('👑 Juara Turnamen: ' + getDisplayName(championKey), 'success');
+            if (KESEMPATAN.RapBattle.ui) {
+                KESEMPATAN.RapBattle.ui.addMessage('👑 MC', '🎉 JUARA TURNAMEN: ' + getDisplayName(championKey) + '! Sang legenda panggung ini! 🎉');
+                KESEMPATAN.RapBattle.ui.showToast('👑 Juara Turnamen: ' + getDisplayName(championKey), 'success');
             }
 
             return { champion: championKey, championDisplay: getDisplayName(championKey), bracketLog: bracketLog, leaderboard: board };
@@ -1181,7 +1184,7 @@
     // ============================================================
     // 🔥 EXPOSE
     // ============================================================
-    window.RapOrchestrator = {
+    KESEMPATAN.RapOrchestrator = {
         initBeat: initBeat,
         playBeat: playBeat,
         stopBeat: stopBeat,

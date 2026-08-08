@@ -6,6 +6,9 @@
 (function() {
     'use strict';
 
+    const KESEMPATAN = window.KESEMPATAN || {};
+    window.KESEMPATAN = KESEMPATAN;
+
     if (window.__RapHelpers) return;
     window.__RapHelpers = true;
 
@@ -51,7 +54,7 @@
         return null;
     }
 
-    window.RapHelpers = {
+    KESEMPATAN.RapHelpers = {
         sanitizeHTML: sanitizeHTML,
         getTimestamp: getTimestamp,
         getDisplayName: getDisplayName,

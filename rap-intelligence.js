@@ -7,6 +7,9 @@
 (function() {
     'use strict';
 
+    const KESEMPATAN = window.KESEMPATAN || {};
+    window.KESEMPATAN = KESEMPATAN;
+
     if (window.__RapIntelligenceEngine) return;
     window.__RapIntelligenceEngine = true;
 
@@ -205,7 +208,7 @@
     // 5. EXPOSE
     // ============================================================
     
-    window.RapIntelligenceEngine = {
+    KESEMPATAN.RapIntelligenceEngine = {
         AGENTS: AGENTS,
         BattleDirector: BattleDirector,
         predictCrowdReaction: predictCrowdReaction,

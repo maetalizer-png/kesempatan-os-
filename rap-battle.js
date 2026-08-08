@@ -7,6 +7,8 @@
 
 (function() {
     'use strict';
+    const KESEMPATAN = window.KESEMPATAN || {};
+    window.KESEMPATAN = KESEMPATAN;
 
     if (window.__RapLoaderLoaded) return;
     window.__RapLoaderLoaded = true;
@@ -126,12 +128,12 @@
     // ============================================================
     const loadNext = function() {
         if (loaded >= total) {
-            if (!hasError && window.RapBattleMain && typeof window.RapBattleMain.init === 'function') {
+            if (!hasError && KESEMPATAN.RapBattleMain && typeof KESEMPATAN.RapBattleMain.init === 'function') {
                 if (!window.__RapInitDone) {
                     window.__RapInitDone = true;
                     waitForMemory().then(function() {
                         // (init log dihapus)
-                        window.RapBattleMain.init();
+                        KESEMPATAN.RapBattleMain.init();
                     });
                 }
             }

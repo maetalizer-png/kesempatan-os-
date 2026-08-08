@@ -1,29 +1,32 @@
 /* ============================================================
    📁 rap/logic.js (AGGREGATOR)
-   🔥 GABUNGKAN SEMUA MODUL RAP, EKSPOR KE window.RapBattle.logic
+   🔥 GABUNGKAN SEMUA MODUL RAP, EKSPOR KE KESEMPATAN.RapBattle.logic
    🔥 ✅ SUDAH TERHUBUNG KE ENGINE BARU!
    ============================================================ */
 
 (function() {
     'use strict';
 
+    const KESEMPATAN = window.KESEMPATAN || {};
+    window.KESEMPATAN = KESEMPATAN;
+
     if (window.__RapLogicAggregator) return;
     window.__RapLogicAggregator = true;
 
     // Pastikan semua modul sudah dimuat
-    if (!window.RapConfig || !window.RapHelpers || !window.RapEngine || !window.RapOrchestrator) {
+    if (!KESEMPATAN.RapConfig || !KESEMPATAN.RapHelpers || !KESEMPATAN.RapEngine || !KESEMPATAN.RapOrchestrator) {
         return;
     }
 
-    const config = window.RapConfig;
-    const helpers = window.RapHelpers;
-    const engine = window.RapEngine;
-    const orchestrator = window.RapOrchestrator;
+    const config = KESEMPATAN.RapConfig;
+    const helpers = KESEMPATAN.RapHelpers;
+    const engine = KESEMPATAN.RapEngine;
+    const orchestrator = KESEMPATAN.RapOrchestrator;
 
     // ========== GABUNGKAN SEMUA ==========
-    window.RapBattle = window.RapBattle || {};
+    KESEMPATAN.RapBattle = KESEMPATAN.RapBattle || {};
 
-    window.RapBattle.logic = {
+    KESEMPATAN.RapBattle.logic = {
         // Config & State
         CONFIG: config.CONFIG,
         rapState: config.rapState,

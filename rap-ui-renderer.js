@@ -2,12 +2,15 @@
    📁 rap/ui-renderer/ui-renderer.js
    🔥 ORCHESTRATOR — memanggil ui-layout.js (markup) dan
    ui-style.js (CSS). Tidak lagi berisi HTML/CSS panjang.
-   Public API window.RapUIRenderer TIDAK berubah bentuknya,
+   Public API KESEMPATAN.RapUIRenderer TIDAK berubah bentuknya,
    supaya ui-events.js dan file lain tetap bekerja tanpa perubahan.
    ============================================================ */
 
 (function() {
     'use strict';
+
+    const KESEMPATAN = window.KESEMPATAN || {};
+    window.KESEMPATAN = KESEMPATAN;
 
     if (window.__RapUIRenderer) return;
     window.__RapUIRenderer = true;
@@ -53,29 +56,29 @@
         if (container.dataset.rendered === 'true') return;
         container.dataset.rendered = 'true';
 
-        container.innerHTML = window.RapUILayout.buildHTML();
+        container.innerHTML = KESEMPATAN.RapUILayout.buildHTML();
 
         // Isi Cypher Lounge (roster semua rapper) & daftar lagu — data ini
         // baru tersedia saat runtime (dari character.js/soundbank.js).
-        window.RapUILayout.renderCypherLounge(container);
-        window.RapUILayout.renderSongSelect(container);
+        KESEMPATAN.RapUILayout.renderCypherLounge(container);
+        KESEMPATAN.RapUILayout.renderSongSelect(container);
 
         // CSS
-        window.RapUIStyle.inject();
+        KESEMPATAN.RapUIStyle.inject();
     }
 
     // ========== EKSPOS ==========
     // Bentuk objek publik TIDAK berubah - semua key sama persis seperti
     // sebelum refactor, cuma implementasinya sekarang didelegasikan ke
     // ui-layout.js. ui-events.js dan pemanggil lain tidak perlu diubah.
-    window.RapUIRenderer = {
+    KESEMPATAN.RapUIRenderer = {
         render: render,
         ensureContainer: ensureContainer,
         showToast: showToast,
-        renderCypherLounge: window.RapUILayout.renderCypherLounge,
-        renderSongSelect: window.RapUILayout.renderSongSelect,
-        markRole: window.RapUILayout.markRole,
-        clearRole: window.RapUILayout.clearRole,
-        syncHiddenSelects: window.RapUILayout.syncHiddenSelects
+        renderCypherLounge: KESEMPATAN.RapUILayout.renderCypherLounge,
+        renderSongSelect: KESEMPATAN.RapUILayout.renderSongSelect,
+        markRole: KESEMPATAN.RapUILayout.markRole,
+        clearRole: KESEMPATAN.RapUILayout.clearRole,
+        syncHiddenSelects: KESEMPATAN.RapUILayout.syncHiddenSelects
     };
 })();

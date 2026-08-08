@@ -6,11 +6,14 @@
 (function() {
     'use strict';
 
-    if (window.RapBattleMain) return;
-    window.RapBattleMain = {};
+    const KESEMPATAN = window.KESEMPATAN || {};
+    window.KESEMPATAN = KESEMPATAN;
 
-    const logic = window.RapBattle.logic;
-    const ui = window.RapBattle.ui;
+    if (KESEMPATAN.RapBattleMain) return;
+    KESEMPATAN.RapBattleMain = {};
+
+    const logic = KESEMPATAN.RapBattle.logic;
+    const ui = KESEMPATAN.RapBattle.ui;
 
     if (!logic || !ui) {
         return;
@@ -29,7 +32,7 @@
     }
 
     // ========== EXPOSE PUBLIC API ==========
-    window.RapBattleMain = {
+    KESEMPATAN.RapBattleMain = {
         init: init,
         render: ui.render,
         startRapBattle: logic.startRapBattle,
@@ -41,8 +44,8 @@
         showToast: ui.showToast
     };
 
-    // ========== EXPOSE window.RapBattle ==========
-    window.RapBattle = {
+    // ========== EXPOSE KESEMPATAN.RapBattle ==========
+    KESEMPATAN.RapBattle = {
         render: ui.render,
         startRapBattle: logic.startRapBattle,
         abort: logic.abortRap,

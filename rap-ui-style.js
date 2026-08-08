@@ -8,6 +8,9 @@
 (function() {
     'use strict';
 
+    const KESEMPATAN = window.KESEMPATAN || {};
+    window.KESEMPATAN = KESEMPATAN;
+
     if (window.__RapUIStyle) return;
     window.__RapUIStyle = true;
 
@@ -770,7 +773,7 @@
         }
     }
 
-    window.RapUIStyle = {
+    KESEMPATAN.RapUIStyle = {
         inject: inject
     };
 })();

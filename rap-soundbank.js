@@ -12,6 +12,9 @@
 (function() {
     'use strict';
 
+    const KESEMPATAN = window.KESEMPATAN || {};
+    window.KESEMPATAN = KESEMPATAN;
+
     if (window.__RapSoundbankEngine) return;
     window.__RapSoundbankEngine = true;
 
@@ -102,7 +105,7 @@
     // ============================================================
     // 3. EXPOSE
     // ============================================================
-    window.RapSoundbank = {
+    KESEMPATAN.RapSoundbank = {
         SONGS: SONGS,
         getAllSongs: getAllSongs,
         getSongById: getSongById,

@@ -7,6 +7,9 @@
 (function() {
     'use strict';
 
+    const KESEMPATAN = window.KESEMPATAN || {};
+    window.KESEMPATAN = KESEMPATAN;
+
     if (window.__RapConfig) return;
     window.__RapConfig = true;
 
@@ -51,7 +54,7 @@
     let rapAbort = false;
 
     // ========== EXPORT ==========
-    window.RapConfig = {
+    KESEMPATAN.RapConfig = {
         CONFIG: CONFIG,
         rapState: rapState,
         getRapBattleActive: function() { return rapBattleActive; },

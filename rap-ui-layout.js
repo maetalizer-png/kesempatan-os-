@@ -9,17 +9,20 @@
 (function() {
     'use strict';
 
+    const KESEMPATAN = window.KESEMPATAN || {};
+    window.KESEMPATAN = KESEMPATAN;
+
     if (window.__RapUILayout) return;
     window.__RapUILayout = true;
 
     function renderCypherLounge(container) {
         const grid = container.querySelector('#cypherLoungeGrid');
         if (!grid) return;
-        if (!window.RapCharacterEngine || !window.RapCharacterEngine.getAllPersonaCards) {
+        if (!KESEMPATAN.RapCharacterEngine || !KESEMPATAN.RapCharacterEngine.getAllPersonaCards) {
             grid.innerHTML = '<div style="padding:12px; color:#555; font-size:11px;">⏳ Memuat roster rapper...</div>';
             return;
         }
-        const cards = window.RapCharacterEngine.getAllPersonaCards();
+        const cards = KESEMPATAN.RapCharacterEngine.getAllPersonaCards();
         grid.innerHTML = cards.map(function(p) {
             return '<div class="rapper-card lounge-card" data-agent="' + p.id + '" title="' + p.catchphrase + '">' +
                 '<span class="role-badge" style="display:none;"></span>' +
@@ -67,7 +70,7 @@
         if (!grid || !selA || !selB) return;
         const cardA = grid.querySelector('.rapper-card[data-role="A"]');
         const cardB = grid.querySelector('.rapper-card[data-role="B"]');
-        const opts = window.RapCharacterEngine ? window.RapCharacterEngine.getAllPersonas() : [];
+        const opts = KESEMPATAN.RapCharacterEngine ? KESEMPATAN.RapCharacterEngine.getAllPersonas() : [];
         function fillSelect(sel, current) {
             sel.innerHTML = opts.map(function(id) {
                 return '<option value="' + id + '"' + (id === current ? ' selected' : '') + '>' + id + '</option>';
@@ -93,14 +96,14 @@
     function renderSongSelect(container) {
         const select = container.querySelector('#beatPatternSelect');
         if (!select) return;
-        if (!window.RapSoundbank) {
+        if (!KESEMPATAN.RapSoundbank) {
             select.innerHTML = '<option value="trap">🎵 Trap (default)</option>';
             return;
         }
         const genreLabels = { 'trap': '🔥 Trap', 'boom-bap': '🥁 Boom Bap', 'drill': '⚡ Drill' };
         const genres = ['trap', 'boom-bap', 'drill'];
         select.innerHTML = genres.map(function(genre) {
-            const songs = window.RapSoundbank.getSongsByGenre(genre);
+            const songs = KESEMPATAN.RapSoundbank.getSongsByGenre(genre);
             const options = songs.map(function(s) {
                 return '<option value="' + s.id + '">' + s.title + ' — ' + s.bpm + ' BPM</option>';
             }).join('');
@@ -201,8 +204,8 @@
                                 <!-- diisi otomatis oleh renderSongSelect() dari RapSoundbank (24 lagu) -->
                             </select>
                             </div>
-                            <button onclick="window.RapBattle.toggleBeat()" class="beat-btn">Beat</button>
-                            <span id="beatIndicator" class="bpm-badge" onclick="window.RapBattle.toggleBeat()">140 BPM</span>
+                            <button onclick="window.KESEMPATAN.RapBattle.toggleBeat()" class="beat-btn">Beat</button>
+                            <span id="beatIndicator" class="bpm-badge" onclick="window.KESEMPATAN.RapBattle.toggleBeat()">140 BPM</span>
                         </div>
                         <div class="visualizer-section">
                             <canvas id="rapVisualizer" width="800" height="80" style="width:100%; height:54px;"></canvas>
@@ -253,9 +256,9 @@
                     <div class="rap-panel-row" style="margin-bottom:8px;">
                         <button id="rapHistoryBtn" class="history-btn">Archive</button>
                         <button id="rapHallOfFameBtn" class="history-btn">Hall of Fame</button>
-                        <button onclick="window.RapBattle.exportResult('pdf')" class="btn-export">PDF</button>
-                        <button onclick="window.RapBattle.exportResult('json')" class="btn-export">JSON</button>
-                        <button onclick="window.RapBattle.exportResult('txt')" class="btn-export">TXT</button>
+                        <button onclick="window.KESEMPATAN.RapBattle.exportResult('pdf')" class="btn-export">PDF</button>
+                        <button onclick="window.KESEMPATAN.RapBattle.exportResult('json')" class="btn-export">JSON</button>
+                        <button onclick="window.KESEMPATAN.RapBattle.exportResult('txt')" class="btn-export">TXT</button>
                     </div>
                     <div id="rapBattleContainer" class="battle-log"></div>
                     <div id="rapBattleResult" style="margin-top:8px;"></div>
@@ -268,7 +271,7 @@
 `;
     }
 
-    window.RapUILayout = {
+    KESEMPATAN.RapUILayout = {
         buildHTML: buildHTML,
         renderCypherLounge: renderCypherLounge,
         markRole: markRole,

@@ -8,6 +8,9 @@
 (function() {
     'use strict';
 
+    const KESEMPATAN = window.KESEMPATAN || {};
+    window.KESEMPATAN = KESEMPATAN;
+
     if (window.__RapOptimizerEngine) return;
     window.__RapOptimizerEngine = true;
 
@@ -115,8 +118,8 @@
     
     function updateTargetFromConfig() {
         try {
-            if (window.RapConfig && window.RapConfig.CONFIG) {
-                const cfg = window.RapConfig.CONFIG;
+            if (KESEMPATAN.RapConfig && KESEMPATAN.RapConfig.CONFIG) {
+                const cfg = KESEMPATAN.RapConfig.CONFIG;
                 if (cfg.TARGET_SYLLABLES) targetSyllables = cfg.TARGET_SYLLABLES;
                 if (cfg.SYLLABLE_TOLERANCE) syllableTolerance = cfg.SYLLABLE_TOLERANCE;
             }
@@ -601,7 +604,7 @@
     // 4. EXPOSE
     // ============================================================
     
-    window.RapOptimizerEngine = {
+    KESEMPATAN.RapOptimizerEngine = {
         LearningEngine: LearningEngine,
         optimizeVerse: optimizeVerse,
         checkQuality: checkQuality,

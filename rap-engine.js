@@ -10,6 +10,9 @@
 (function() {
     'use strict';
 
+    const KESEMPATAN = window.KESEMPATAN || {};
+    window.KESEMPATAN = KESEMPATAN;
+
     if (window.__RapEngineWrapper) return;
     window.__RapEngineWrapper = true;
 
@@ -17,9 +20,9 @@
     // 1. CEK 3 ENGINE SUDAH LOAD
     // ============================================================
     
-    const CharacterEngine = window.RapCharacterEngine;
-    const IntelligenceEngine = window.RapIntelligenceEngine;
-    const OptimizerEngine = window.RapOptimizerEngine;
+    const CharacterEngine = KESEMPATAN.RapCharacterEngine;
+    const IntelligenceEngine = KESEMPATAN.RapIntelligenceEngine;
+    const OptimizerEngine = KESEMPATAN.RapOptimizerEngine;
 
     if (!CharacterEngine || !IntelligenceEngine || !OptimizerEngine) {
         return;
@@ -119,8 +122,8 @@
             let temperature = 1.0;
             let maxTokens = 800;
             try {
-                if (window.RapConfig && window.RapConfig.CONFIG) {
-                    const cfg = window.RapConfig.CONFIG;
+                if (KESEMPATAN.RapConfig && KESEMPATAN.RapConfig.CONFIG) {
+                    const cfg = KESEMPATAN.RapConfig.CONFIG;
                     if (cfg.AI_TEMPERATURE) temperature = cfg.AI_TEMPERATURE;
                     if (cfg.AI_MAX_TOKENS) maxTokens = cfg.AI_MAX_TOKENS;
                 }
@@ -247,8 +250,8 @@
                 return parsed;
             } catch(e) {
                 const winner = qualityA.score >= qualityB.score ? 
-                    window.RapHelpers.getDisplayName(agentA) : 
-                    window.RapHelpers.getDisplayName(agentB);
+                    KESEMPATAN.RapHelpers.getDisplayName(agentA) : 
+                    KESEMPATAN.RapHelpers.getDisplayName(agentB);
                 return {
                     winner: winner,
                     reason: 'Penilaian berdasarkan quality score',
@@ -448,7 +451,7 @@
                         marketInsight = (insight && insight.summary) ? insight.summary.replace(/<[^>]+>/g, '') : '';
                     }
                 }
-            } catch (e) {}
+            } catch (e) { console.warn('[RapBattle] Non-fatal error:', e.message); }
             try {
                 if (window.NoisePage && typeof window.NoisePage.checkText === 'function' && topic) {
                     const check = window.NoisePage.checkText(topic);
@@ -456,7 +459,7 @@
                         credibilityNote = '⚠️ Topik mengandung kata yang perlu diverifikasi: ' + check.reason;
                     }
                 }
-            } catch (e) {}
+            } catch (e) { console.warn('[RapBattle] Non-fatal error:', e.message); }
             return { marketInsight: marketInsight, credibilityNote: credibilityNote };
         },
         
@@ -517,6 +520,6 @@
     // 3. EXPOSE
     // ============================================================
     
-    window.RapEngine = RapEngine;
+    KESEMPATAN.RapEngine = RapEngine;
 
 })();

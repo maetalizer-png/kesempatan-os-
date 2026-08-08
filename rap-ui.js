@@ -1,27 +1,30 @@
 /* ============================================================
    📁 rap/ui.js (AGGREGATOR)
-   🔥 GABUNGKAN RENDERER + EVENTS, EKSPOR KE window.RapBattle.ui
+   🔥 GABUNGKAN RENDERER + EVENTS, EKSPOR KE KESEMPATAN.RapBattle.ui
    ============================================================ */
 
 (function() {
     'use strict';
 
+    const KESEMPATAN = window.KESEMPATAN || {};
+    window.KESEMPATAN = KESEMPATAN;
+
     if (window.__RapUIAggregator) return;
     window.__RapUIAggregator = true;
 
     // Pastikan semua modul sudah dimuat
-    if (!window.RapUIRenderer || !window.RapUIEvents || !window.RapBattle.logic) {
+    if (!KESEMPATAN.RapUIRenderer || !KESEMPATAN.RapUIEvents || !KESEMPATAN.RapBattle.logic) {
         return;
     }
 
-    const renderer = window.RapUIRenderer;
-    const events = window.RapUIEvents;
-    const logic = window.RapBattle.logic;
+    const renderer = KESEMPATAN.RapUIRenderer;
+    const events = KESEMPATAN.RapUIEvents;
+    const logic = KESEMPATAN.RapBattle.logic;
 
     // ========== GABUNGKAN ==========
-    window.RapBattle = window.RapBattle || {};
+    KESEMPATAN.RapBattle = KESEMPATAN.RapBattle || {};
 
-    window.RapBattle.ui = {
+    KESEMPATAN.RapBattle.ui = {
         // Renderer
         render: renderer.render,
         ensureContainer: renderer.ensureContainer,
