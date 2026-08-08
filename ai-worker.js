@@ -4,12 +4,12 @@ if (window.__WorkersAILoaderLoaded) return;
 window.__WorkersAILoaderLoaded = true;
 
 const MODULES = [
-    'workers/config.js',
-    'workers/state.js',
-    'workers/core.js',
-    'workers/ui-layout.js',
-    'workers/ui-renderer.js',
-    'workers/ui-events.js'
+    'config.js',
+    'state.js',
+    'core.js',
+    'ui-layout.js',
+    'ui-renderer.js',
+    'ui-events.js'
 ];
 let loaded = 0;
 const total = MODULES.length;

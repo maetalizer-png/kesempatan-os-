@@ -21,13 +21,13 @@ const Logger = Utils.Logger || {
 // DAFTAR MODULE — URUTAN PENTING
 // ============================================================
 const modules = [
-    'kes-database/kes-dbconfig.js',
-    'kes-database/kes-helpers.js',
-    'kes-database/kes-security.js',
-    'kes-database/kes-search.js',
-    'kes-database/kes-monitor.js',
-    'kes-database/kes-sync.js',
-    'kes-database/kes-api.js'
+    'kes-dbconfig.js',
+    'kes-helpers.js',
+    'kes-security.js',
+    'kes-search.js',
+    'kes-monitor.js',
+    'kes-sync.js',
+    'kes-api.js'
 ];
 
 let loaded = 0;

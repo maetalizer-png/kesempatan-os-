@@ -26,13 +26,13 @@
     }
 
     const MODULES = [
-        'interactive/debate/deb-config.js',
-        'interactive/debate/deb-state.js',
-        'interactive/debate/deb-voice-engine.js',
-        'interactive/debate/deb-data-engine.js',
-        'interactive/debate/deb-classes.js',
-        'interactive/debate/deb-debate-arena.js',
-        'interactive/debate/deb-core.js'
+        'deb-config.js',
+        'deb-state.js',
+        'deb-voice-engine.js',
+        'deb-data-engine.js',
+        'deb-classes.js',
+        'deb-debate-arena.js',
+        'deb-core.js'
     ];
 
     // Prefetch semua file modul secara PARALEL (browser bisa unduh

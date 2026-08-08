@@ -262,7 +262,7 @@ function showPage(pageId) {
                 noiseModule.render();
             } else {
                 const script = document.createElement('script');
-                script.src = 'noise/noise-filtering.js';
+                script.src = 'noise-filtering.js';
                 script.async = false;
                 script.onload = function() {
                     const loadedNoiseModule = getModule('NoisePage');

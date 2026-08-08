@@ -80,41 +80,41 @@
     // ============================================================
     const MODULES = [
         // 1. Konfigurasi & Helpers
-        'rap/config.js',
-        'rap/helpers.js',
+        'config.js',
+        'helpers.js',
         
         // ============================================================
         // 🔥🔥🔥 ENGINE BARU (LOAD DULU SEBELUM ENGINE WRAPPER) 🔥🔥🔥
         // ============================================================
-        'rap/engine/character.js',      // Character Engine (35+ persona + emosi)
-        'rap/engine/intelligence.js',    // Intelligence Engine (multi-agen + strategi)
-        'rap/engine/optimizer.js',       // Optimizer Engine (learning + quality)
-        'rap/engine/soundbank.js',       // 🔥 BARU: Soundbank Engine (24 lagu + rekomendasi per rapper)
+        'character.js',      // Character Engine (35+ persona + emosi)
+        'intelligence.js',    // Intelligence Engine (multi-agen + strategi)
+        'optimizer.js',       // Optimizer Engine (learning + quality)
+        'soundbank.js',       // 🔥 BARU: Soundbank Engine (24 lagu + rekomendasi per rapper)
         
         // ============================================================
         // 🔥 ENGINE WRAPPER (INTEGRATOR KETIGANYA)
         // ============================================================
-        'rap/engine.js',                 // Wrapper / Integrator
+        'engine.js',                 // Wrapper / Integrator
         
         // ============================================================
         // 🔥 CORE RAP BATTLE
         // ============================================================
-        'rap/orchestrator.js',
-        'rap/logic.js',
+        'orchestrator.js',
+        'logic.js',
         
         // ============================================================
         // 🔥 UI
         // ============================================================
-        'rap/ui-renderer/ui-style.js',
-        'rap/ui-renderer/ui-layout.js',
-        'rap/ui-renderer/ui-renderer.js',
-        'rap/ui-events.js',
-        'rap/ui.js',
+        'ui-style.js',
+        'ui-layout.js',
+        'ui-renderer.js',
+        'ui-events.js',
+        'ui.js',
         
         // ============================================================
         // 🔥 MAIN
         // ============================================================
-        'rap/main.js'
+        'main.js'
     ];
 
     let loaded = 0;

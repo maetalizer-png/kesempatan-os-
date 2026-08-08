@@ -4,13 +4,13 @@ if (window.__VoiceCloneLoaderLoaded) return;
 window.__VoiceCloneLoaderLoaded = true;
 
 const MODULES = [
-'voice-ai/voice-config.js',
-'voice-ai/voice-state.js',
-'voice-ai/voice-core.js',
-'voice-ai/voice-visualizer.js',
-'voice-ai/voice-layout.js',
-'voice-ai/voice-renderer.js',
-'voice-ai/voice-events.js'
+'voice-config.js',
+'voice-state.js',
+'voice-core.js',
+'voice-visualizer.js',
+'voice-layout.js',
+'voice-renderer.js',
+'voice-events.js'
 ];
 
 let loaded = 0;

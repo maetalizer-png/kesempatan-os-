@@ -25,12 +25,12 @@
     }
 
     const MODULES = [
-        'interactive/tournament/tor-config.js',
-        'interactive/tournament/tor-state.js',
-        'interactive/tournament/tor-data-engine.js',
-        'interactive/tournament/tor-classes.js',
-        'interactive/tournament/tor-tournament-arena.js',
-        'interactive/tournament/tor-core.js'
+        'tor-config.js',
+        'tor-state.js',
+        'tor-data-engine.js',
+        'tor-classes.js',
+        'tor-tournament-arena.js',
+        'tor-core.js'
     ];
 
     // Prefetch semua file modul secara PARALEL (browser bisa unduh

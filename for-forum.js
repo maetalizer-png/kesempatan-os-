@@ -25,11 +25,11 @@
     }
 
     const MODULES = [
-        'interactive/forum/for-config.js',
-        'interactive/forum/for-state.js',
-        'interactive/forum/for-data-engine.js',
-        'interactive/forum/for-ui-render.js',
-        'interactive/forum/for-core.js'
+        'for-config.js',
+        'for-state.js',
+        'for-data-engine.js',
+        'for-ui-render.js',
+        'for-core.js'
     ];
 
     // Prefetch semua file modul secara PARALEL (browser bisa unduh

@@ -74,57 +74,57 @@ const FILES_TO_LOAD = Object.freeze([
     // dibutuhkan di detik-detik pertama sesi chat (user buka app lalu
     // langsung bilang "selamat pagi"). Datanya kecil jadi taruh di depan
     // tidak menunda data lain secara berarti.
-    'dataries/sapaan/greetings.js',
-    'dataries/sapaan/interaktif.js',
+    'greetings.js',
+    'interaktif.js',
     // ========== ASIA (5 file - 48 negara) ==========
-    'dataries/country/asian-tenggara.js',
-    'dataries/country/asian-timur.js',
-    'dataries/country/asian-selatan.js',
-    'dataries/country/asian-barat.js',
-    'dataries/country/asian-tengah.js',
+    'asian-tenggara.js',
+    'asian-timur.js',
+    'asian-selatan.js',
+    'asian-barat.js',
+    'asian-tengah.js',
     // ========== EROPA (5 file - 42 negara) ==========
-    'dataries/country/eropan-timur.js',
-    'dataries/country/eropan-barat.js',
-    'dataries/country/eropan-selatan.js',
-    'dataries/country/eropan-tengah.js',
-    'dataries/country/eropan-utara.js',
+    'eropan-timur.js',
+    'eropan-barat.js',
+    'eropan-selatan.js',
+    'eropan-tengah.js',
+    'eropan-utara.js',
     // ========== AMERIKA (4 file - 30 negara) ==========
-    'dataries/country/american-utara.js',
-    'dataries/country/american-tengah.js',
-    'dataries/country/american-karibia.js',
-    'dataries/country/american-selatan.js',
+    'american-utara.js',
+    'american-tengah.js',
+    'american-karibia.js',
+    'american-selatan.js',
     // ========== AFRIKA (5 file - 29 negara) ==========
-    'dataries/country/african-utara.js',
-    'dataries/country/african-timur.js',
-    'dataries/country/african-selatan.js',
-    'dataries/country/african-barat.js',
-    'dataries/country/african-tengah.js',
+    'african-utara.js',
+    'african-timur.js',
+    'african-selatan.js',
+    'african-barat.js',
+    'african-tengah.js',
     // ========== OSEANIA (1 file - 20 negara) ==========
-    'dataries/country/osenian.js',
+    'osenian.js',
     // ========== CITIES (1 file - 12 kota) ==========
-    'dataries/cities/asia-tenggara.js',
+    'asia-tenggara.js',
     // ========== LINGO (5 file - 100+ bahasa) ==========
-    'dataries/lingo/asean-tenggara.js',
-    'dataries/lingo/asean-timur.js',
-    'dataries/lingo/asean-selatan.js',
-    'dataries/lingo/asean-barat.js',
-    'dataries/lingo/asean-tengah.js',
+    'asean-tenggara.js',
+    'asean-timur.js',
+    'asean-selatan.js',
+    'asean-barat.js',
+    'asean-tengah.js',
     // ========== SRC (3 file - 120+ sumber) ==========
-    'dataries/src/regional.js',
-    'dataries/src/global.js',
-    'dataries/src/international.js',
+    'regional.js',
+    'global.js',
+    'international.js',
     // ========== MARPLACE (5 file - 22 data) ==========
-    'dataries/marplace/ecommerce.js',
-    'dataries/marplace/properti.js',
-    'dataries/marplace/otomotif.js',
-    'dataries/marplace/freelance.js',
-    'dataries/marplace/karir.js',
+    'ecommerce.js',
+    'properti.js',
+    'otomotif.js',
+    'freelance.js',
+    'karir.js',
     // ========== PALUANG (5 file - 27 data) ==========
-    'dataries/paluang/sektor.js',
-    'dataries/paluang/peluang-daerah.js',
-    'dataries/paluang/tren.js',
-    'dataries/paluang/kompetensi.js',
-    'dataries/paluang/investasi.js'
+    'sektor.js',
+    'peluang-daerah.js',
+    'tren.js',
+    'kompetensi.js',
+    'investasi.js'
 ]);
 
 // ============================================================

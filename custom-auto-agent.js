@@ -4,11 +4,11 @@
     window.__CustomAutoAgentLoaded = true;
 
     const MODULES = [
-        'custom-ai/custom-config.js',
-        'custom-ai/custom-state.js',
-        'custom-ai/custom-core.js',
-        'custom-ai/custom-renderer.js',
-        'custom-ai/custom-events.js'
+        'custom-config.js',
+        'custom-state.js',
+        'custom-core.js',
+        'custom-renderer.js',
+        'custom-events.js'
     ];
 
     let loaded = 0;

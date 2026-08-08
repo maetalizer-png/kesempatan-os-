@@ -4,13 +4,13 @@ if (window.__VisualAILoaderLoaded) return;
 window.__VisualAILoaderLoaded = true;
 
 const MODULES = [
-    'visual-ai/visual-config.js',
-    'visual-ai/visual-state.js',
-    'visual-ai/visual-core.js',
-    'visual-ai/visual-engine.js',
-    'visual-ai/visual-layout.js',
-    'visual-ai/visual-renderer.js',
-    'visual-ai/visual-events.js'
+    'visual-config.js',
+    'visual-state.js',
+    'visual-core.js',
+    'visual-engine.js',
+    'visual-layout.js',
+    'visual-renderer.js',
+    'visual-events.js'
 ];
 
 let loaded = 0;
