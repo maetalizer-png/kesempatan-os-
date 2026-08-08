@@ -4,6 +4,10 @@ KESEMPATAN OS - MEMORY AUTO TUNER
 (function () {
 'use strict';
 
+const KESEMPATAN = window.KESEMPATAN || {};
+window.KESEMPATAN = KESEMPATAN;
+KESEMPATAN.Memory = KESEMPATAN.Memory || {};
+
 if (window.__MemoryTunerLoaded) {
     return;
 }
@@ -16,7 +20,7 @@ const Logger = (window.Utils && window.Utils.Logger) || {
     error: function () {}
 };
 
-const Config = window.MemoryConfig || {};
+const Config = KESEMPATAN.Memory.MemoryConfig || {};
 
 // ============================================================
 // AUTO TUNER
@@ -154,7 +158,7 @@ class AutoTuner {
             return 0;
         }
 
-        const calcSim = window.calculateSimilarity;
+        const calcSim = KESEMPATAN.Memory.calculateSimilarity;
 
         if (typeof calcSim !== 'function') {
             return 0;
@@ -231,7 +235,7 @@ class AutoTuner {
 // ============================================================
 // EXPOSE
 // ============================================================
-window.AutoTuner = AutoTuner;
+KESEMPATAN.Memory.AutoTuner = AutoTuner;
 
 Logger.info('MemoryTuner', 'Auto-Tuner loaded');
 

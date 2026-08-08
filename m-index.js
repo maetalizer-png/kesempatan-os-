@@ -3,6 +3,8 @@ KESEMPATAN OS - MEMORY PUBLIC API
 ============================================================ */
 (function () {
 'use strict';
+const KESEMPATAN = window.KESEMPATAN || {};
+window.KESEMPATAN = KESEMPATAN;
 
 if (window.__MemoryApiLoaded) {
     return;
@@ -10,7 +12,7 @@ if (window.__MemoryApiLoaded) {
 
 window.__MemoryApiLoaded = true;
 
-const Logger = (window.Utils && window.Utils.Logger) || {
+const Logger = KESEMPATAN.Utils?.Logger || (window.Utils && window.Utils.Logger) || {
     info: function () {},
     warn: function () {},
     error: function () {}

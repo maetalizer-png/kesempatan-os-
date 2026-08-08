@@ -4,6 +4,10 @@ KESEMPATAN OS - MEMORY INDEXERS
 (function () {
 'use strict';
 
+const KESEMPATAN = window.KESEMPATAN || {};
+window.KESEMPATAN = KESEMPATAN;
+KESEMPATAN.Memory = KESEMPATAN.Memory || {};
+
 if (window.__MemoryIndexersLoaded) {
     return;
 }
@@ -16,9 +20,9 @@ const Logger = (window.Utils && window.Utils.Logger) || {
     error: function () {}
 };
 
-const Config = window.MemoryConfig || {};
+const Config = KESEMPATAN.Memory.MemoryConfig || {};
 
-const calculateSimilarity = window.calculateSimilarity;
+const calculateSimilarity = KESEMPATAN.Memory.calculateSimilarity;
 
 // ============================================================
 // DISTRIBUTED INDEX
@@ -178,7 +182,7 @@ class DistributedIndex {
 // ============================================================
 // EXPOSE
 // ============================================================
-window.DistributedIndex = DistributedIndex;
+KESEMPATAN.Memory.DistributedIndex = DistributedIndex;
 
 Logger.info('MemoryIndexers', 'Distributed Index loaded');
 

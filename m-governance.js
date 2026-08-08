@@ -4,6 +4,10 @@ KESEMPATAN OS - MEMORY GOVERNANCE
 (function () {
 'use strict';
 
+const KESEMPATAN = window.KESEMPATAN || {};
+window.KESEMPATAN = KESEMPATAN;
+KESEMPATAN.Memory = KESEMPATAN.Memory || {};
+
 if (window.__MemoryGovernanceLoaded) {
     return;
 }
@@ -599,7 +603,7 @@ function renderDashboard(containerId) {
 // ============================================================
 // EXPOSE
 // ============================================================
-window.MemoryGovernance = {
+KESEMPATAN.Memory.MemoryGovernance = {
     ingest: ingest,
     recordAccess: recordAccess,
     getTier: getTier,

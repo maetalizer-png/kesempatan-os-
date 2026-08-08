@@ -4,6 +4,10 @@ KESEMPATAN OS - MEMORY FEDERATED LEARNING
 (function () {
 'use strict';
 
+const KESEMPATAN = window.KESEMPATAN || {};
+window.KESEMPATAN = KESEMPATAN;
+KESEMPATAN.Memory = KESEMPATAN.Memory || {};
+
 if (window.__MemoryLearningLoaded) {
     return;
 }
@@ -16,7 +20,7 @@ const Logger = (window.Utils && window.Utils.Logger) || {
     error: function () {}
 };
 
-const Config = window.MemoryConfig || {};
+const Config = KESEMPATAN.Memory.MemoryConfig || {};
 
 // ============================================================
 // FEDERATED LEARNING
@@ -393,7 +397,7 @@ if (document.readyState === 'loading') {
 // ============================================================
 // EXPOSE
 // ============================================================
-window.FederatedLearning = FederatedLearning;
+KESEMPATAN.Memory.FederatedLearning = FederatedLearning;
 
 Logger.info('MemoryLearning', 'Federated Learning loaded');
 

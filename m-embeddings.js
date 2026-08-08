@@ -4,6 +4,10 @@ KESEMPATAN OS - MEMORY EMBEDDINGS
 (function () {
 'use strict';
 
+const KESEMPATAN = window.KESEMPATAN || {};
+window.KESEMPATAN = KESEMPATAN;
+KESEMPATAN.Memory = KESEMPATAN.Memory || {};
+
 if (window.__MemoryEmbeddingsLoaded) {
     return;
 }
@@ -16,8 +20,8 @@ const Logger = (window.Utils && window.Utils.Logger) || {
     error: function () {}
 };
 
-const Config = window.MemoryConfig || {};
-const Utils = window.MemoryUtils || {};
+const Config = KESEMPATAN.Memory.MemoryConfig || {};
+const Utils = KESEMPATAN.Memory.MemoryUtils || {};
 
 const TEXT_MODEL = 'Xenova/all-MiniLM-L6-v2';
 const TRANSFORMERS_CDN = 'https://cdn.jsdelivr.net/npm/@xenova/transformers@2.13.0/dist/transformers.min.js';
@@ -438,7 +442,7 @@ class MultimodalEmbedding {
 // ============================================================
 // EXPOSE
 // ============================================================
-window.MultimodalEmbedding = MultimodalEmbedding;
+KESEMPATAN.Memory.MultimodalEmbedding = MultimodalEmbedding;
 
 Logger.info('MemoryEmbeddings', 'Multimodal Embedding loaded');
 

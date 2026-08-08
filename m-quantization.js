@@ -4,6 +4,10 @@ KESEMPATAN OS - MEMORY QUANTIZATION
 (function () {
 'use strict';
 
+const KESEMPATAN = window.KESEMPATAN || {};
+window.KESEMPATAN = KESEMPATAN;
+KESEMPATAN.Memory = KESEMPATAN.Memory || {};
+
 if (window.__MemoryQuantizationLoaded) {
     return;
 }
@@ -16,7 +20,7 @@ const Logger = (window.Utils && window.Utils.Logger) || {
     error: function () {}
 };
 
-const Config = window.MemoryConfig || {};
+const Config = KESEMPATAN.Memory.MemoryConfig || {};
 
 // ============================================================
 // PRODUCT QUANTIZATION
@@ -238,7 +242,7 @@ class ProductQuantization {
 // ============================================================
 // EXPOSE
 // ============================================================
-window.ProductQuantization = ProductQuantization;
+KESEMPATAN.Memory.ProductQuantization = ProductQuantization;
 
 Logger.info('MemoryQuantization', 'Product Quantization loaded');
 

@@ -78,8 +78,8 @@ function CAG_smartSearch(query, data, threshold) {
             
             // FAKTOR 2: Semantic similarity (kalau ada embedding)
             if (item.embedding) {
-                const queryEmbedding = window.MemoryUtils?.simpleEmbed ? 
-                    window.MemoryUtils.simpleEmbed(query) : null;
+                const queryEmbedding = window.KESEMPATAN?.Memory?.MemoryUtils?.simpleEmbed ? 
+                    window.KESEMPATAN.Memory.MemoryUtils.simpleEmbed(query) : null;
                 if (queryEmbedding && item.embedding) {
                     const sim = CAG_calculateSimilarity(queryEmbedding, item.embedding);
                     score += sim * 10;

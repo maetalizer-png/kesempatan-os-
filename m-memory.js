@@ -4,6 +4,8 @@ File: memory/m-memory.js
 ============================================================ */
 (function () {
 'use strict';
+const KESEMPATAN = window.KESEMPATAN || {};
+window.KESEMPATAN = KESEMPATAN;
 
 if (window.__MemoryEntryLoaded) {
     return;
@@ -11,7 +13,7 @@ if (window.__MemoryEntryLoaded) {
 
 window.__MemoryEntryLoaded = true;
 
-const Logger = (window.Utils && window.Utils.Logger) || {
+const Logger = KESEMPATAN.Utils?.Logger || (window.Utils && window.Utils.Logger) || {
     info: function () {},
     warn: function () {},
     error: function () {}

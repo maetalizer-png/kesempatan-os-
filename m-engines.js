@@ -4,6 +4,10 @@ KESEMPATAN OS - MEMORY ENGINES
 (function () {
 'use strict';
 
+const KESEMPATAN = window.KESEMPATAN || {};
+window.KESEMPATAN = KESEMPATAN;
+KESEMPATAN.Memory = KESEMPATAN.Memory || {};
+
 if (window.__MemoryEnginesLoaded) {
     return;
 }
@@ -16,7 +20,7 @@ const Logger = (window.Utils && window.Utils.Logger) || {
     error: function () {}
 };
 
-const Config = window.MemoryConfig || {};
+const Config = KESEMPATAN.Memory.MemoryConfig || {};
 
 // ============================================================
 // WASM ENGINE
@@ -773,10 +777,10 @@ class LSHEngine {
 // ============================================================
 // EXPOSE
 // ============================================================
-window.WASMEngine = WASMEngine;
-window.GPUEngine = GPUEngine;
-window.HNSWEngine = HNSWEngine;
-window.LSHEngine = LSHEngine;
+KESEMPATAN.Memory.WASMEngine = WASMEngine;
+KESEMPATAN.Memory.GPUEngine = GPUEngine;
+KESEMPATAN.Memory.HNSWEngine = HNSWEngine;
+KESEMPATAN.Memory.LSHEngine = LSHEngine;
 
 Logger.info('MemoryEngines', 'Engines loaded');
 

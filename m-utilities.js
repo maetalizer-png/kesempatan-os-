@@ -4,6 +4,10 @@ KESEMPATAN OS - MEMORY UTILITIES
 (function () {
 'use strict';
 
+const KESEMPATAN = window.KESEMPATAN || {};
+window.KESEMPATAN = KESEMPATAN;
+KESEMPATAN.Memory = KESEMPATAN.Memory || {};
+
 if (window.__MemoryUtilsLoaded) {
     return;
 }
@@ -31,7 +35,7 @@ function generateId() {
 // CONFIG HELPER
 // ============================================================
 function getConfig() {
-    return window.MemoryConfig || {
+    return KESEMPATAN.Memory.MemoryConfig || {
         DIMENSION: 384,
         SIMILARITY_THRESHOLD: 0.1
     };
@@ -123,7 +127,7 @@ function saveToStorage(key, data) {
 // ============================================================
 // EXPOSE
 // ============================================================
-window.MemoryUtils = Object.freeze({
+KESEMPATAN.Memory.MemoryUtils = Object.freeze({
     generateId: generateId,
     getConfig: getConfig,
     simpleEmbed: simpleEmbed,

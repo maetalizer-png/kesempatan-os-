@@ -4,6 +4,10 @@ KESEMPATAN OS - MEMORY METRICS
 (function () {
 'use strict';
 
+const KESEMPATAN = window.KESEMPATAN || {};
+window.KESEMPATAN = KESEMPATAN;
+KESEMPATAN.Memory = KESEMPATAN.Memory || {};
+
 if (window.__MemoryMetricsLoaded) {
     return;
 }
@@ -366,10 +370,10 @@ function calculateSimilarity(vec1, vec2, metric) {
 // ============================================================
 // EXPOSE
 // ============================================================
-window.SimilarityMetrics = Metrics;
-window.calculateSimilarity = calculateSimilarity;
+KESEMPATAN.Memory.SimilarityMetrics = Metrics;
+KESEMPATAN.Memory.calculateSimilarity = calculateSimilarity;
 
-window._metricsFunctions = Object.freeze({
+KESEMPATAN.Memory._metricsFunctions = Object.freeze({
     cosineSimilarity: cosineSimilarity,
     euclideanDistance: euclideanDistance,
     manhattanDistance: manhattanDistance,

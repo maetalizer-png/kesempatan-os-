@@ -4,15 +4,19 @@ KESEMPATAN OS - MEMORY CORE
 (function () {
 'use strict';
 
+const KESEMPATAN = window.KESEMPATAN || {};
+window.KESEMPATAN = KESEMPATAN;
+KESEMPATAN.Memory = KESEMPATAN.Memory || {};
+
 if (window.__MemoryCoreLoaded) {
     return;
 }
 
 window.__MemoryCoreLoaded = true;
 
-const Config = window.MemoryConfig || {};
-const Utils = window.MemoryUtils || {};
-const calculateSimilarity = window.calculateSimilarity;
+const Config = KESEMPATAN.Memory.MemoryConfig || {};
+const Utils = KESEMPATAN.Memory.MemoryUtils || {};
+const calculateSimilarity = KESEMPATAN.Memory.calculateSimilarity;
 
 const Logger = (window.Utils && window.Utils.Logger) || {
     info: function () {},
@@ -20,15 +24,15 @@ const Logger = (window.Utils && window.Utils.Logger) || {
     error: function () {}
 };
 
-const WASMEngine = window.WASMEngine;
-const GPUEngine = window.GPUEngine;
-const HNSWEngine = window.HNSWEngine;
-const LSHEngine = window.LSHEngine;
-const ProductQuantization = window.ProductQuantization;
-const DistributedIndex = window.DistributedIndex;
-const MultimodalEmbedding = window.MultimodalEmbedding;
-const AutoTuner = window.AutoTuner;
-const FederatedLearning = window.FederatedLearning;
+const WASMEngine = KESEMPATAN.Memory.WASMEngine;
+const GPUEngine = KESEMPATAN.Memory.GPUEngine;
+const HNSWEngine = KESEMPATAN.Memory.HNSWEngine;
+const LSHEngine = KESEMPATAN.Memory.LSHEngine;
+const ProductQuantization = KESEMPATAN.Memory.ProductQuantization;
+const DistributedIndex = KESEMPATAN.Memory.DistributedIndex;
+const MultimodalEmbedding = KESEMPATAN.Memory.MultimodalEmbedding;
+const AutoTuner = KESEMPATAN.Memory.AutoTuner;
+const FederatedLearning = KESEMPATAN.Memory.FederatedLearning;
 
 // ============================================================
 // KONTRAK PENYIMPANAN — FROZEN
@@ -904,8 +908,8 @@ class VectorMemoryCore {
 // ============================================================
 // EXPOSE
 // ============================================================
-window.VectorMemoryCore = VectorMemoryCore;
-window.VectorMemoryEngine = VectorMemoryCore;
+KESEMPATAN.Memory.VectorMemoryCore = VectorMemoryCore;
+KESEMPATAN.Memory.VectorMemoryEngine = VectorMemoryCore;
 window._memoryClass = VectorMemoryCore;
 
 if (window._memoryModules) {

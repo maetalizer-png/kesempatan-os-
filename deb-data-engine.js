@@ -68,8 +68,8 @@
 
             // FAKTOR 2: Semantic similarity
             if (item.embedding) {
-                const queryEmbedding = window.MemoryUtils?.simpleEmbed ?
-                    window.MemoryUtils.simpleEmbed(query) : null;
+                const queryEmbedding = window.KESEMPATAN?.Memory?.MemoryUtils?.simpleEmbed ?
+                    window.KESEMPATAN.Memory.MemoryUtils.simpleEmbed(query) : null;
                 if (queryEmbedding && item.embedding) {
                     const sim = DEB_calculateSimilarity(queryEmbedding, item.embedding);
                     score += sim * 10;

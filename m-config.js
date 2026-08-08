@@ -4,13 +4,17 @@ KESEMPATAN OS - MEMORY CONFIG
 (function () {
 'use strict';
 
+const KESEMPATAN = window.KESEMPATAN || {};
+window.KESEMPATAN = KESEMPATAN;
+KESEMPATAN.Memory = KESEMPATAN.Memory || {};
+
 if (window.__MemoryConfigLoaded) {
     return;
 }
 
 window.__MemoryConfigLoaded = true;
 
-window.MemoryConfig = Object.freeze({
+KESEMPATAN.Memory.MemoryConfig = Object.freeze({
     DIMENSION: 384,
     MAX_MEMORY: 10000000,
     CACHE_TTL: 3600000,
