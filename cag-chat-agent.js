@@ -26,11 +26,11 @@
     }
 
     const MODULES = [
-        'interactive/chat-agent/cag-config.js',
-        'interactive/chat-agent/cag-state.js',
-        'interactive/chat-agent/cag-data-engine.js',
-        'interactive/chat-agent/cag-ui-render.js',
-        'interactive/chat-agent/cag-core.js'
+        'cag-config.js',
+        'cag-state.js',
+        'cag-data-engine.js',
+        'cag-ui-render.js',
+        'cag-core.js'
     ];
 
     // Prefetch semua file modul secara PARALEL (browser bisa unduh

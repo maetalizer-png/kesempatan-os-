@@ -55,7 +55,7 @@
         if (worker) {
             return worker;
         }
-        worker = new Worker('kesem-llm/llm-worker.js');
+        worker = new Worker('llm-worker.js');
         worker.onmessage = function(e) {
             if (e.data && e.data.type === 'progress') {
                 Logger.info('KesemLLMEntry', '✅ Loaded: kesem-llm/' + e.data.file + ' (' + e.data.loaded + '/' + e.data.total + ')');

@@ -10,11 +10,11 @@ const Logger = window.Utils?.Logger || {
 };
 
 const modules = [
-    'pages/memory-manager.js',
-    'pages/report.js',
-    'pages/telemetry.js',
-    'pages/auto-learning.js',
-    'pages/settings.js'
+    'memory-manager.js',
+    'report.js',
+    'telemetry.js',
+    'auto-learning.js',
+    'settings.js'
 ];
 
 let loaded = 0;

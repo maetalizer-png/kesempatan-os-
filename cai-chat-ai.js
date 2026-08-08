@@ -34,11 +34,11 @@
     }
 
     const MODULES = [
-        'interactive/chat-ai/cai-config.js',
-        'interactive/chat-ai/cai-state.js',
-        'interactive/chat-ai/cai-data-engine.js',
-        'interactive/chat-ai/cai-ui-render.js',
-        'interactive/chat-ai/cai-core.js'
+        'cai-config.js',
+        'cai-state.js',
+        'cai-data-engine.js',
+        'cai-ui-render.js',
+        'cai-core.js'
     ];
 
     // Prefetch semua file modul secara PARALEL (browser bisa unduh

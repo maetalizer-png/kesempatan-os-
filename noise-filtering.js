@@ -6,15 +6,15 @@
     window.__NoiseFilteringLoaded = true;
 
     const MODULES = [
-        'noise/noise-config.js',
-        'noise/noise-utils.js',
-        'noise/noise-state.js',
-        'noise/noise-core.js',
-        'noise/noise-chart.js',
-        'noise/noise-export.js',
-        'noise/noise-events.js',
-        'noise/noise-ui-render.js',
-        'noise/noise-ui.js'
+        'noise-config.js',
+        'noise-utils.js',
+        'noise-state.js',
+        'noise-core.js',
+        'noise-chart.js',
+        'noise-export.js',
+        'noise-events.js',
+        'noise-ui-render.js',
+        'noise-ui.js'
     ];
 
     const Logger = {

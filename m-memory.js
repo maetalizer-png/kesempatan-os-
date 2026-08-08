@@ -26,18 +26,18 @@ const Logger = (window.Utils && window.Utils.Logger) || {
 // "./m-*.js" atau "m-*.js" kecuali struktur folder/HTML berubah.
 // ============================================================
 const modules = [
-    'memory/m-config.js',
-    'memory/m-utilities.js',
-    'memory/m-metrics.js',
-    'memory/m-engines.js',
-    'memory/m-quantization.js',
-    'memory/m-indexers.js',
-    'memory/m-embeddings.js',
-    'memory/m-federated-learning.js',
-    'memory/m-tuner.js',
-    'memory/m-core.js',
-    'memory/m-index.js',
-    'memory/m-governance.js'
+    'm-config.js',
+    'm-utilities.js',
+    'm-metrics.js',
+    'm-engines.js',
+    'm-quantization.js',
+    'm-indexers.js',
+    'm-embeddings.js',
+    'm-federated-learning.js',
+    'm-tuner.js',
+    'm-core.js',
+    'm-index.js',
+    'm-governance.js'
 ];
 
 let loaded = 0;
