@@ -705,7 +705,7 @@
                                 <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap; margin-top:10px;">
                                     <div style="display:flex; gap:6px;">
                                         <button onclick="window.KESEMPATAN.PodcastGenerator.skipTime(-10)" style="background:transparent; border:1px solid rgba(255,255,255,0.12); border-radius:8px; color:${theme.text}; padding:4px 8px; cursor:pointer; font-size:11px;">⏮ 10s</button>
-                                        <button onclick="window.KESEMPATAN.PodcastGenerator.togglePlay()" style="background:${theme.primary}; border:none; border-radius:8px; color:${theme.bg}; padding:4px 12px; cursor:pointer; font-size:13px; font-weight:bold;">
+                                        <button onclick="window.KESEMPATAN.PodcastGenerator.play()" style="background:${theme.primary}; border:none; border-radius:8px; color:${theme.bg}; padding:4px 12px; cursor:pointer; font-size:13px; font-weight:bold;">
                                             ${state.isPlaying ? '⏸' : '▶'}
                                         </button>
                                         <button onclick="window.KESEMPATAN.PodcastGenerator.skipTime(10)" style="background:transparent; border:1px solid rgba(255,255,255,0.12); border-radius:8px; color:${theme.text}; padding:4px 8px; cursor:pointer; font-size:11px;">⏭ 10s</button>
