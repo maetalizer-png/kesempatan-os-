@@ -1,9 +1,5 @@
-(function() {
-"use strict";
-if (window.__AIEditorLoaded) return;
-window.__AIEditorLoaded = true;
+import { Utils } from './utils.js';
 
-const Utils = window.KESEMPATAN?.Utils || window.Utils || {};
 const showToastFn = Utils.showToast || null;
 
 function toast(msg, type) {
@@ -761,12 +757,15 @@ function renderEditVideo() {
     });
 }
 
-window.KESEMPATAN = window.KESEMPATAN || {};
-window.KESEMPATAN.AIEditor = Object.freeze({
+const KESEMPATAN = window.KESEMPATAN || {};
+window.KESEMPATAN = KESEMPATAN;
+
+export const AIEditor = Object.freeze({
     renderEditFoto: renderEditFoto,
     renderEditVideo: renderEditVideo
 });
 
+KESEMPATAN.AIEditor = AIEditor;
+
 window.renderEditFoto = renderEditFoto;
 window.renderEditVideo = renderEditVideo;
-})();
