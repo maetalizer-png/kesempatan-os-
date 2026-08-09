@@ -1,5 +1,4 @@
-(function() {
-'use strict';
+import { Utils } from './utils.js';
 
 const KESEMPATAN = window.KESEMPATAN || {};
 window.KESEMPATAN = KESEMPATAN;
@@ -33,8 +32,7 @@ const InternalLogger = (function() {
     });
 })();
 
-const Utils = window.KESEMPATAN?.Utils || window.Utils || {};
-const showToast = Utils.showToast || window.showToast || function(msg, type) {
+function showToast(msg, type) {
     const container = document.getElementById('toastContainer');
     if (!container) return;
     const toast = document.createElement('div');
@@ -44,16 +42,9 @@ const showToast = Utils.showToast || window.showToast || function(msg, type) {
     toast.style.borderLeftColor = colors[type] || '#00FFA3';
     container.appendChild(toast);
     setTimeout(function() { toast.remove(); }, 3500);
-};
-
-function escapeHtml(text) {
-    if (!text) return '';
-    const globalEscape = window.KESEMPATAN?.Utils?.escapeHtml || window.escapeHtml;
-    if (typeof globalEscape === 'function') return globalEscape(text);
-    const div = document.createElement('div');
-    div.textContent = text;
-    return div.innerHTML;
 }
+
+const escapeHtml = Utils.escapeHtml;
 
 function showConfirmDialog(title, message, onConfirm, confirmText) {
     confirmText = confirmText || 'Ya';
@@ -708,7 +699,7 @@ function destroy() {
     InternalLogger.info('ResponseCache', 'Destroy complete');
 }
 
-const ResponseCacheManager = Object.freeze({
+export const ResponseCacheManager = Object.freeze({
     get: getCachedResponse,
     set: setCachedResponse,
     clear: clearAllCache,
@@ -723,10 +714,12 @@ const ResponseCacheManager = Object.freeze({
 });
 
 KESEMPATAN.ResponseCache = ResponseCacheManager;
+
+// Bridge for consumers not yet migrated to import { ResponseCacheManager } from './response-cache.js'.
 window.ResponseCacheManager = ResponseCacheManager;
 window.setCacheDatabase = setDatabase;
 
-const CachePageManager = {
+export const CachePageManager = {
     render: renderCachePage,
     destroy: destroy,
     setDatabase: setDatabase,
@@ -775,4 +768,3 @@ window.addEventListener('beforeunload', function() {
 });
 
 InternalLogger.info('ResponseCache', 'Module loaded');
-})();

@@ -1,8 +1,3 @@
-(function() {
-'use strict';
-if (window.__CacheDbBridgeLoaded) return;
-window.__CacheDbBridgeLoaded = true;
-
 const DB_NAME = 'kes_response_cache_v1';
 const STORE_NAME = 'cache';
 const DB_VERSION = 1;
@@ -30,7 +25,7 @@ function openDb() {
     return dbPromise;
 }
 
-const cacheDb = Object.freeze({
+export const cacheDb = Object.freeze({
     getCachedResponse: function(key) {
         return openDb().then(function(db) {
             return new Promise(function(resolve, reject) {
@@ -97,5 +92,6 @@ const tryConnect = setInterval(function() {
 
 window.KESEMPATAN = window.KESEMPATAN || {};
 window.KESEMPATAN.CacheDB = cacheDb;
+
+// Bridge for consumers not yet migrated to import { cacheDb } from './cache-db-bridge.js'.
 window.KesCacheDB = cacheDb;
-})();

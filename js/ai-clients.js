@@ -1,12 +1,7 @@
-(function() {
-'use strict';
-if (window.__AIClientsLoaded) return;
-window.__AIClientsLoaded = true;
+import { CONFIG } from './config.js';
+import { Utils } from './utils.js';
 
-const CONFIG = window.KESEMPATAN?.Config || window.CONFIG;
-const Utils = window.KESEMPATAN?.Utils || window.Utils;
-const Logger = Utils?.Logger;
-const RetryEngine = Utils?.RetryEngine;
+const Logger = Utils.Logger;
 
 const PRICING = {
     groq: { input: 0, output: 0 },
@@ -434,7 +429,7 @@ async function generateWithFallback(prompt, agentName, initialProvider = null) {
     throw new Error(`Semua provider gagal. Error terakhir: ${lastError?.message}`);
 }
 
-const AIClients = Object.freeze({
+export const AIClients = Object.freeze({
     OpenRouterClient: OpenRouterClient,
     GroqClient: GroqClient,
     HuggingFaceClient: HuggingFaceClient,
@@ -458,5 +453,6 @@ const AIClients = Object.freeze({
 
 window.KESEMPATAN = window.KESEMPATAN || {};
 window.KESEMPATAN.AIClients = AIClients;
+
+// Bridge for consumers not yet migrated to `import { AIClients } from './ai-clients.js'`.
 window.AIClients = AIClients;
-})();
