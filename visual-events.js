@@ -784,30 +784,35 @@ function attachEvents() {
         });
     }
 
-    document.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape') {
-            const modal = document.getElementById('historyDetailModal');
-            if (modal && modal.style.display === 'flex') modal.style.display = 'none';
-            return;
-        }
-        const active = document.activeElement;
-        const isTyping = active && (
-            active.tagName === 'INPUT' ||
-            active.tagName === 'TEXTAREA' ||
-            active.isContentEditable
-        );
-        if (e.key === 'Enter' && active?.id === 'visualAgentImage') {
-            if (aiGenerateBtn) aiGenerateBtn.click();
-            return;
-        }
-        if (isTyping) return;
-        if (e.key === 'v' || e.key === 'V') {
-            if (voiceToggle) {
-                voiceToggle.checked = !voiceToggle.checked;
-                voiceToggle.dispatchEvent(new Event('change'));
+    if (!window.__visualAIKeydownWired) {
+        window.__visualAIKeydownWired = true;
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                const modal = document.getElementById('historyDetailModal');
+                if (modal && modal.style.display === 'flex') modal.style.display = 'none';
+                return;
             }
-        }
-    });
+            const active = document.activeElement;
+            const isTyping = active && (
+                active.tagName === 'INPUT' ||
+                active.tagName === 'TEXTAREA' ||
+                active.isContentEditable
+            );
+            const currentAiGenerateBtn = document.getElementById('aiGenerateBtn');
+            if (e.key === 'Enter' && active?.id === 'visualAgentImage') {
+                if (currentAiGenerateBtn) currentAiGenerateBtn.click();
+                return;
+            }
+            if (isTyping) return;
+            if (e.key === 'v' || e.key === 'V') {
+                const currentVoiceToggle = document.getElementById('voiceToggle');
+                if (currentVoiceToggle) {
+                    currentVoiceToggle.checked = !currentVoiceToggle.checked;
+                    currentVoiceToggle.dispatchEvent(new Event('change'));
+                }
+            }
+        });
+    }
 }
 
 KESEMPATAN.VisualEvents = {
