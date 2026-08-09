@@ -1,9 +1,10 @@
-(function() {
-"use strict";
-if (window.__SuperSocialShareLoaded) return;
-window.__SuperSocialShareLoaded = true;
+import { Utils } from './utils.js';
+import { ExportManager } from './export.js';
+import { WorkflowEngine } from './workflow.js';
 
-const Utils = window.KESEMPATAN?.Utils || window.Utils || {};
+const KESEMPATAN = window.KESEMPATAN || {};
+window.KESEMPATAN = KESEMPATAN;
+
 const showToastFn = Utils.showToast || null;
 
 function toast(msg, type) {
@@ -460,41 +461,38 @@ class SuperSocialShare {
 }
 
 function initSuperSocialShare() {
-    // 🔥 FIX: ExportManager di-freeze oleh export.js — tidak bisa override
-    // method langsung. Solusi: buat object BARU dengan spread, reassign ke
-    // window.ExportManager. Property di window bisa di-reassign walau
-    // object-nya beku.
-    if (window.ExportManager && window.ExportManager.setData) {
-        const original = window.ExportManager.setData;
-        window.ExportManager = Object.assign({}, window.ExportManager, {
-            setData: function(aggregated, note) {
-                original(aggregated, note);
-                if (window.SuperSocialShare) window.SuperSocialShare.setResult(aggregated);
-            }
-        });
-        if (window.KESEMPATAN) window.KESEMPATAN.ExportManager = window.ExportManager;
-    }
+    // ExportManager is frozen by export.js — its own setData method can't be
+    // overridden in place. Build a NEW object with spread and reassign
+    // window.ExportManager instead; the window PROPERTY can be reassigned
+    // even though the object it currently points to is frozen.
+    const original = ExportManager.setData;
+    window.ExportManager = Object.assign({}, ExportManager, {
+        setData: function(aggregated, note) {
+            original(aggregated, note);
+            if (window.SuperSocialShare) window.SuperSocialShare.setResult(aggregated);
+        }
+    });
+    KESEMPATAN.ExportManager = window.ExportManager;
+
     if (!window.SuperSocialShare) window.SuperSocialShare = new SuperSocialShare();
     window.SuperSocialShare.render();
 }
 
-if (window.KESEMPATAN.WorkflowEngine) {
-    const originalStart = window.KESEMPATAN.WorkflowEngine.start;
-    window.KESEMPATAN.WorkflowEngine.start = async function(payload, uploadedContent) {
-        const result = await originalStart.call(this, payload, uploadedContent);
-        if (window.lastAggregated && window.SuperSocialShare) window.SuperSocialShare.setResult(window.lastAggregated);
-        return result;
-    };
-}
+const originalStart = WorkflowEngine.start;
+WorkflowEngine.start = async function(payload, uploadedContent) {
+    const result = await originalStart.call(this, payload, uploadedContent);
+    if (window.lastAggregated && window.SuperSocialShare) window.SuperSocialShare.setResult(window.lastAggregated);
+    return result;
+};
 
-window.KESEMPATAN = window.KESEMPATAN || {};
-window.KESEMPATAN.SocialShare = Object.freeze({
+export const SocialShare = Object.freeze({
     init: initSuperSocialShare
 });
+
+KESEMPATAN.SocialShare = SocialShare;
 
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', initSuperSocialShare);
 } else {
     initSuperSocialShare();
 }
-})();
