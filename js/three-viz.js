@@ -1,11 +1,5 @@
-(function() {
-'use strict';
-
 const KESEMPATAN = window.KESEMPATAN || {};
 window.KESEMPATAN = KESEMPATAN;
-
-if (window.__ThreeVizLoaded) return;
-window.__ThreeVizLoaded = true;
 
 const CONFIG_3D = {
     colors: {
@@ -542,12 +536,13 @@ function autoInitThreeJS() {
     else window.addEventListener('load', waitForThree);
 }
 
-KESEMPATAN.ThreeViz = Object.freeze({
+export const ThreeViz = Object.freeze({
     init3DViz: init3DViz,
     update3DVizMetrics: update3DVizMetrics,
     update3DVizTelemetry: update3DVizTelemetry,
     destroy3DViz: destroy3DViz
 });
 
+KESEMPATAN.ThreeViz = ThreeViz;
+
 autoInitThreeJS();
-})();
