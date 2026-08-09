@@ -1,10 +1,5 @@
-(function() {
-'use strict';
 const KESEMPATAN = window.KESEMPATAN || {};
 window.KESEMPATAN = KESEMPATAN;
-
-if (window.__ContenDasboardLoaded) return;
-window.__ContenDasboardLoaded = true;
 
 const SVG = {
     chat: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.5 8.5 0 0 1-12.3 7.6L3 21l1.9-5.7A8.5 8.5 0 1 1 21 11.5z"/><path d="M8.5 11.5h.01M12 11.5h.01M15.5 11.5h.01"/></svg>',
@@ -87,9 +82,10 @@ function renderUI(container) {
     }
 }
 
-KESEMPATAN.ContenDasboard = Object.freeze({ renderUI: renderUI });
+export const ContenDasboard = Object.freeze({ renderUI: renderUI });
+
+KESEMPATAN.ContenDasboard = ContenDasboard;
 
 document.addEventListener('DOMContentLoaded', function() {
     renderUI(document.getElementById('contenDasboardContainer'));
 });
-})();

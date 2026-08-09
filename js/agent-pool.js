@@ -1,11 +1,5 @@
-(function() {
-'use strict';
-
 const KESEMPATAN = window.KESEMPATAN || {};
 window.KESEMPATAN = KESEMPATAN;
-
-if (window.__AgentPoolLoaded) return;
-window.__AgentPoolLoaded = true;
 
 const CATEGORIES = [
     { tab: 'bisnis', label: 'BISNIS (14)', active: true },
@@ -71,9 +65,10 @@ function renderUI(container) {
     wireTabs();
 }
 
-KESEMPATAN.AgentPool = Object.freeze({ renderUI: renderUI, switchTab: switchTab, CATEGORIES: CATEGORIES });
+export const AgentPool = Object.freeze({ renderUI: renderUI, switchTab: switchTab, CATEGORIES: CATEGORIES });
+
+KESEMPATAN.AgentPool = AgentPool;
 
 document.addEventListener('DOMContentLoaded', function() {
     renderUI(document.getElementById('agentPoolContainer'));
 });
-})();

@@ -1,10 +1,10 @@
-(function() {
-'use strict';
+import { Utils } from './utils.js';
 
-window.KESEMPATAN = window.KESEMPATAN || {};
+const KESEMPATAN = window.KESEMPATAN || {};
+window.KESEMPATAN = KESEMPATAN;
 
 function initUIHandlers() {
-    const showToast = window.KESEMPATAN?.Utils?.showToast || window.showToast || function() {};
+    const showToast = Utils.showToast;
 
     const hamburger = document.getElementById('hamburgerBtn');
     const sidebar = document.getElementById('sidebar');
@@ -128,11 +128,12 @@ function initUIHandlers() {
     })();
 }
 
-window.KESEMPATAN.UIHandlers = Object.freeze({ initUIHandlers: initUIHandlers });
+export const UIHandlers = Object.freeze({ initUIHandlers: initUIHandlers });
+
+KESEMPATAN.UIHandlers = UIHandlers;
 
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', initUIHandlers);
 } else {
     initUIHandlers();
 }
-})();

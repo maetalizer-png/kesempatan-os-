@@ -1,13 +1,9 @@
-(function() {
-'use strict';
+import { Utils } from './utils.js';
+import { Main } from './main.js';
 
 const KESEMPATAN = window.KESEMPATAN || {};
 window.KESEMPATAN = KESEMPATAN;
 
-if (window.__ReportDockLoaded) return;
-window.__ReportDockLoaded = true;
-
-const Utils = KESEMPATAN.Utils || window.Utils || {};
 const showToast = Utils.showToast || function(msg, type) {
     const container = document.getElementById('toastContainer');
     if (!container) return;
@@ -21,7 +17,7 @@ const showToast = Utils.showToast || function(msg, type) {
 };
 
 function showHistoryPanelAndScroll() {
-    window.KESEMPATAN.Main.showHistoryPanel();
+    Main.showHistoryPanel();
     const panel = document.getElementById('historyPanel');
     if (panel) panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
@@ -79,7 +75,7 @@ function renderReportDock() {
                 return;
             }
             const topicInput = document.getElementById('topicInput');
-            window.KESEMPATAN.Main.saveReportToHistory(window.lastAggregated, topicInput ? topicInput.value : 'Untitled');
+            Main.saveReportToHistory(window.lastAggregated, topicInput ? topicInput.value : 'Untitled');
         });
     }
 
@@ -138,7 +134,7 @@ function renderHistoryPanelShell() {
     const clearBtn = document.getElementById('clearHistoryBtn');
     if (clearBtn) {
         clearBtn.addEventListener('click', function() {
-            window.KESEMPATAN.Main.clearAllHistory();
+            Main.clearAllHistory();
         });
     }
 }
@@ -148,14 +144,15 @@ function initReportDockAndHistoryPanel() {
     renderHistoryPanelShell();
 }
 
-KESEMPATAN.ReportDock = Object.freeze({
+export const ReportDock = Object.freeze({
     renderReportDock: renderReportDock,
     renderHistoryPanelShell: renderHistoryPanelShell
 });
+
+KESEMPATAN.ReportDock = ReportDock;
 
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', initReportDockAndHistoryPanel);
 } else {
     initReportDockAndHistoryPanel();
 }
-})();

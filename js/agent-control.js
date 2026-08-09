@@ -1,11 +1,5 @@
-(function() {
-'use strict';
-
 const KESEMPATAN = window.KESEMPATAN || {};
 window.KESEMPATAN = KESEMPATAN;
-
-if (window.__AgentControlLoaded) return;
-window.__AgentControlLoaded = true;
 
 const HEAD_SEG =
     '<span class="ac-stat-head">' +
@@ -91,7 +85,9 @@ function renderUI(container) {
     guardCount(container);
 }
 
-KESEMPATAN.AgentControl = Object.freeze({ renderUI: renderUI, updateSelectedCount: updateSelectedCount });
+export const AgentControl = Object.freeze({ renderUI: renderUI, updateSelectedCount: updateSelectedCount });
+
+KESEMPATAN.AgentControl = AgentControl;
 
 document.addEventListener('DOMContentLoaded', function() {
     const controlContainer = document.getElementById('agentControlContainer');
@@ -102,4 +98,3 @@ document.addEventListener('DOMContentLoaded', function() {
 window.addEventListener('load', function() {
     setTimeout(function() { updateSelectedCount(); }, 300);
 });
-})();
