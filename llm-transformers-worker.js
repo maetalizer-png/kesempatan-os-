@@ -10,28 +10,36 @@
    (module Worker, karena butuh `import`/`import()`) supaya unduhan +
    inferensi model besar tidak pernah membekukan UI thread.
 
-   MODEL: default SmolLM2-135M-Instruct — dipilih dibanding Qwen2.5-0.5B
-   (4x lebih besar) karena permintaan yang sama eksplisit menyebut risiko
-   "memori overflow / HP overheat"; model lebih kecil = kompatibilitas
-   lintas-perangkat lebih luas. Ganti MODEL_CANDIDATES di bawah kalau
-   mau model lain (mis. Qwen2.5-0.5B-Instruct) — file lain tidak perlu
-   diubah.
+   MODEL: 2 pilihan pretrained, dipilih pengguna lewat halaman Pengaturan
+   (settings.js) dan disimpan di localStorage — lihat MODEL_REGISTRY di
+   bawah. Default SmolLM2-135M-Instruct (jauh lebih kecil dari Qwen2.5-0.5B)
+   dipakai kalau pengguna belum pernah memilih, karena permintaan yang
+   sama eksplisit menyebut risiko "memori overflow / HP overheat" —
+   model lebih kecil = kompatibilitas lintas-perangkat lebih luas.
 
    CACHING: file model (bisa puluhan-ratusan MB) disimpan di IndexedDB
    lewat custom cache transformers.js (env.useCustomCache), BUKAN cache
    HTTP browser bawaan — sesuai permintaan eksplisit "simpan di
    IndexedDB", dan konsisten dengan pola IndexedDB yang sudah dipakai
-   di seluruh KESEMPATAN OS (lihat kesem-llm.js, kes-database.js).
+   di seluruh KESEMPATAN OS (lihat kesem-llm.js, kes-database.js). Kunci
+   cache adalah URL berkas itu sendiri (termasuk nama repo model), jadi
+   otomatis terpisah per model tanpa perlu penanganan khusus.
    ============================================================ */
 
-// MODEL_CANDIDATES dicoba berurutan — kalau kandidat pertama tidak
-// ditemukan di Hugging Face Hub (mis. nama repo berubah), otomatis
-// coba kandidat berikutnya. Tidak pernah gagal total cuma karena 1
-// nama repo salah/berpindah.
-const MODEL_CANDIDATES = [
-    'HuggingFaceTB/SmolLM2-135M-Instruct',
-    'onnx-community/SmolLM2-135M-Instruct-ONNX'
-];
+// MODEL_REGISTRY: tiap entri = daftar kandidat repo Hugging Face dicoba
+// berurutan (kalau kandidat pertama tidak ditemukan/berpindah nama,
+// otomatis coba kandidat berikutnya — tidak pernah gagal total cuma
+// karena 1 nama repo salah). DEFAULT_MODEL_KEY dipakai kalau worker
+// diinisialisasi tanpa modelKey eksplisit.
+const MODEL_REGISTRY = {
+    'smollm2-135m': {
+        candidates: ['HuggingFaceTB/SmolLM2-135M-Instruct', 'onnx-community/SmolLM2-135M-Instruct-ONNX']
+    },
+    'qwen2.5-0.5b': {
+        candidates: ['Qwen/Qwen2.5-0.5B-Instruct', 'onnx-community/Qwen2.5-0.5B-Instruct']
+    }
+};
+const DEFAULT_MODEL_KEY = 'smollm2-135m';
 
 // jsdelivr `+esm` membundel paket npm (ESM-first, tanpa build UMD resmi
 // untuk v3) jadi modul ES siap-pakai lewat import() langsung di browser —
@@ -108,6 +116,7 @@ let transformersLib = null;
 let generatorPipeline = null;
 let activeDevice = null;
 let activeModelId = null;
+let activeModelKey = null;
 let activeDtype = null;
 
 async function loadTransformersLib() {
@@ -144,8 +153,8 @@ function postProgress(payload) {
 // device itu WebGPU dan pembuatan pipeline-nya gagal (adapter ada tapi
 // model/browser combo tidak kompatibel — kasus nyata yang cukup umum),
 // otomatis mundur ke WASM sebagai percobaan kedua sebelum benar2 menyerah.
-// Mencoba tiap kandidat model di MODEL_CANDIDATES sampai satu berhasil.
-async function buildPipeline(preferredDevice) {
+// Mencoba tiap kandidat repo untuk modelKey terpilih sampai satu berhasil.
+async function buildPipeline(preferredDevice, modelKey) {
     const { pipeline, env } = await loadTransformersLib();
 
     env.useCustomCache = true;
@@ -153,9 +162,10 @@ async function buildPipeline(preferredDevice) {
     env.allowRemoteModels = true;
 
     const devicesToTry = preferredDevice === 'webgpu' ? ['webgpu', 'wasm'] : ['wasm'];
+    const entry = MODEL_REGISTRY[modelKey] || MODEL_REGISTRY[DEFAULT_MODEL_KEY];
 
     let lastErr = null;
-    for (const modelId of MODEL_CANDIDATES) {
+    for (const modelId of entry.candidates) {
         for (const device of devicesToTry) {
             const dtype = device === 'webgpu' ? 'q4' : 'q8';
             try {
@@ -170,12 +180,14 @@ async function buildPipeline(preferredDevice) {
                             total: p.total || 0,
                             percent: p.total ? Math.round((p.loaded / p.total) * 100) : (p.progress || 0),
                             device: device,
-                            modelId: modelId
+                            modelId: modelId,
+                            modelKey: modelKey
                         });
                     }
                 });
                 activeDevice = device;
                 activeModelId = modelId;
+                activeModelKey = modelKey;
                 activeDtype = dtype;
                 return pipe;
             } catch (e) {
@@ -186,15 +198,21 @@ async function buildPipeline(preferredDevice) {
     throw new Error('[TransformersWorker] Gagal membuat pipeline untuk semua kombinasi model/device: ' + (lastErr && lastErr.message));
 }
 
-async function initializeEngine() {
-    if (generatorPipeline) {
-        return { device: activeDevice, modelId: activeModelId, dtype: activeDtype };
+async function initializeEngine(modelKey) {
+    modelKey = MODEL_REGISTRY[modelKey] ? modelKey : DEFAULT_MODEL_KEY;
+    if (generatorPipeline && activeModelKey === modelKey) {
+        return { device: activeDevice, modelId: activeModelId, modelKey: activeModelKey, dtype: activeDtype };
+    }
+    if (generatorPipeline && activeModelKey !== modelKey) {
+        // Pengguna ganti pilihan model -- lepas pipeline lama (bebaskan
+        // RAM/VRAM) sebelum memuat yang baru, bukan menumpuk keduanya.
+        disposeEngine();
     }
     const preferredDevice = await detectPreferredDevice();
-    postProgress({ status: 'detecting-device', device: preferredDevice, percent: 0 });
-    generatorPipeline = await buildPipeline(preferredDevice);
-    postProgress({ status: 'ready', device: activeDevice, percent: 100 });
-    return { device: activeDevice, modelId: activeModelId, dtype: activeDtype };
+    postProgress({ status: 'detecting-device', device: preferredDevice, percent: 0, modelKey: modelKey });
+    generatorPipeline = await buildPipeline(preferredDevice, modelKey);
+    postProgress({ status: 'ready', device: activeDevice, percent: 100, modelKey: modelKey });
+    return { device: activeDevice, modelId: activeModelId, modelKey: activeModelKey, dtype: activeDtype };
 }
 
 function isReady() {
@@ -255,6 +273,7 @@ function disposeEngine() {
     generatorPipeline = null;
     activeDevice = null;
     activeModelId = null;
+    activeModelKey = null;
     activeDtype = null;
 }
 
@@ -266,10 +285,10 @@ self.onmessage = async function (e) {
         let result;
         switch (type) {
             case 'initialize':
-                result = await initializeEngine();
+                result = await initializeEngine(payload.modelKey);
                 break;
             case 'isReady':
-                result = { ready: isReady(), device: activeDevice, modelId: activeModelId };
+                result = { ready: isReady(), device: activeDevice, modelId: activeModelId, modelKey: activeModelKey };
                 break;
             case 'generate':
                 result = await generateText(payload.prompt, payload.options);

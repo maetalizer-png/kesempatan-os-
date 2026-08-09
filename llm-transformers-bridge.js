@@ -97,6 +97,7 @@
             if (e.data && e.data.type === 'progress') {
                 lastKnownDevice = e.data.device || lastKnownDevice;
                 lastKnownModelId = e.data.modelId || lastKnownModelId;
+                lastKnownModelKey = e.data.modelKey || lastKnownModelKey;
                 emitProgress(e.data);
                 return;
             }
@@ -129,11 +130,18 @@
         });
     }
 
-    async function initialize() {
-        const result = await callWorker('initialize');
+    let lastKnownModelKey = null;
+
+    // modelKey: 'smollm2-135m' (default) | 'qwen2.5-0.5b' — lihat
+    // MODEL_REGISTRY di llm-transformers-worker.js. Kalau berbeda dari
+    // model yang sedang aktif, Worker otomatis lepas pipeline lama dan
+    // muat yang baru (lihat initializeEngine() di worker).
+    async function initialize(modelKey) {
+        const result = await callWorker('initialize', { modelKey: modelKey });
         engineReady = true;
         lastKnownDevice = result.device;
         lastKnownModelId = result.modelId;
+        lastKnownModelKey = result.modelKey;
         Logger.info('KesempatanLLM2', 'Core Engine v2 siap — model "' + result.modelId + '" @ ' + result.device + ' (dtype: ' + result.dtype + ')');
         return result;
     }
@@ -143,7 +151,7 @@
     }
 
     function getDeviceInfo() {
-        return { device: lastKnownDevice, modelId: lastKnownModelId, ready: engineReady };
+        return { device: lastKnownDevice, modelId: lastKnownModelId, modelKey: lastKnownModelKey, ready: engineReady };
     }
 
     // options: { systemPrompt, maxNewTokens, temperature, topP, repetitionPenalty }

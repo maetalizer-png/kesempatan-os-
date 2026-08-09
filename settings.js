@@ -33,6 +33,37 @@ function isLocalLLMReady() {
     return !!(window.KesempatanLLM && typeof window.KesempatanLLM.isReady === 'function' && window.KesempatanLLM.isReady());
 }
 
+// Pilihan model lokal — 3 opsi persis seperti permintaan: 2 model
+// pretrained (Core Engine v2, WebGPU/WASM, perlu unduh sekali) + Engine
+// 50M buatan sendiri (Core Engine v1, <15MB, 100% offline, tanpa unduhan
+// sama sekali). Value HARUS cocok dengan modelKey di
+// llm-transformers-worker.js (MODEL_REGISTRY) dan LLM_MODEL_CHOICE_OFFLINE
+// di workflow-llm-bridge.js.
+const LOCAL_MODEL_OPTIONS = [
+    { value: 'smollm2-135m', label: 'SmolLM2 135M — Ringan & Cepat (~90 MB)' },
+    { value: 'qwen2.5-0.5b', label: 'Qwen2.5 0.5B — Lebih Cerdas (~350 MB)' },
+    { value: 'engine-50m-offline', label: 'Engine 50M — Cadangan Offline (<15 MB, tanpa internet)' }
+];
+const LOCAL_MODEL_CHOICE_KEY = 'kes_llm_model_choice';
+
+function getLocalModelChoice() {
+    if (window.KESEMPATAN?.WorkflowLLMBridge?.getPersistedModelChoice) {
+        return window.KESEMPATAN.WorkflowLLMBridge.getPersistedModelChoice();
+    }
+    try {
+        return localStorage.getItem(LOCAL_MODEL_CHOICE_KEY) || 'smollm2-135m';
+    } catch (e) {
+        return 'smollm2-135m';
+    }
+}
+
+function buildLocalModelOptions() {
+    const current = getLocalModelChoice();
+    return LOCAL_MODEL_OPTIONS.map(function(opt) {
+        return '<option value="' + opt.value + '"' + (opt.value === current ? ' selected' : '') + '>' + opt.label + '</option>';
+    }).join('');
+}
+
 function buildProviderOptions() {
     const providers = (window.CONFIG && window.CONFIG.PROVIDERS) || {};
     const currentProvider = window.CONFIG ? window.CONFIG.AI_PROVIDER : '';
@@ -75,6 +106,9 @@ function render() {
         '<div class="pg-h4">Konfigurasi AI</div>' +
         '<p class="pg-p">KESEMPATAN OS memprioritaskan <strong>LLM Lokal</strong> (jalan langsung di perangkat, tidak butuh API key, tidak ada biaya). Provider eksternal di bawah ini bersifat <strong>opsional</strong> — cuma dipakai sebagai cadangan kalau LLM Lokal belum siap atau hasilnya ingin dibandingkan.</p>' +
         '<div id="localLlmStatusCard" class="pg-status"><span class="pg-status-in"><strong>LLM Lokal:</strong> <span style="color:' + (localReady ? '#00FFA3' : '#FFB400') + ';">' + (localReady ? 'Siap dipakai' : 'Belum siap / masih menyiapkan') + '</span></span></div>' +
+        '<label class="pg-lbl" for="localModelChoiceSelect">Model lokal (100% gratis, tanpa API key, tanpa login Hugging Face)</label>' +
+        '<span class="pg-rim"><span class="pg-rim-in"><select id="localModelChoiceSelect" class="pg-select">' + buildLocalModelOptions() + '</select></span></span>' +
+        '<p class="pg-p" style="margin-top:-4px;font-size:11px;">Model pretrained diunduh otomatis SATU KALI (progress muncul di bawah layar), lalu dicache di perangkat ini. "Engine 50M" tidak mengunduh apa pun — jalan instan tanpa internet.</p>' +
         '<label class="pg-lbl" for="aiProviderSelect">Pilih sumber AI</label>' +
         '<span class="pg-rim"><span class="pg-rim-in"><select id="aiProviderSelect" class="pg-select">' + providerOptions + '</select></span></span>' +
         '<div id="externalProviderFields">' +
@@ -161,6 +195,27 @@ function render() {
 
     toggleExternalFields();
     setTimeout(checkApiKeyStatus, 100);
+
+    const localModelSelect = document.getElementById('localModelChoiceSelect');
+    if (localModelSelect) {
+        localModelSelect.addEventListener('change', function() {
+            const choice = localModelSelect.value;
+            try {
+                localStorage.setItem(LOCAL_MODEL_CHOICE_KEY, choice);
+            } catch (e) {
+                if (showToast) showToast('Gagal menyimpan pilihan model: ' + e.message, 'error');
+                return;
+            }
+            // Reset flag "device diketahui lambat" sesi ini -- pilihan model
+            // baru pantas dapat kesempatan baru, bukan otomatis dilewati
+            // karena model LAIN pernah gagal dimuat sebelumnya.
+            window.__kesempatanLLM2SkipThisSession = false;
+            const label = LOCAL_MODEL_OPTIONS.find(function(o) { return o.value === choice; });
+            if (showToast) {
+                showToast('✅ Model lokal: ' + (label ? label.label : choice) + ' (dipakai mulai eksekusi berikutnya)', 'success');
+            }
+        });
+    }
 
     const saveBtn = document.getElementById('saveSettingsBtn');
     if (saveBtn) {

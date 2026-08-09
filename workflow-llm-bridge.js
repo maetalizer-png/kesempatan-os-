@@ -12,6 +12,23 @@ const LLM_GENERATE_TIMEOUT_MS = 45000;
 const LLM_SLOW_DEVICE_KEY = 'kes_llm_slow_device_until';
 const LLM_SLOW_DEVICE_TTL_MS = 24 * 60 * 60 * 1000;
 
+// Pilihan model lokal pengguna (Pengaturan -> settings.js) — disimpan di
+// localStorage supaya tidak reset saat refresh. 'engine-50m-offline' bukan
+// modelKey Core Engine v2 sungguhan — itu sinyal "jangan pakai v2 sama
+// sekali, langsung Core Engine v1" (transformer buatan sendiri, <15MB,
+// selalu tersedia tanpa jaringan).
+const LLM_MODEL_CHOICE_KEY = 'kes_llm_model_choice';
+const LLM_MODEL_CHOICE_OFFLINE = 'engine-50m-offline';
+const LLM_MODEL_CHOICE_DEFAULT = 'smollm2-135m';
+
+function getPersistedModelChoice() {
+    try {
+        return localStorage.getItem(LLM_MODEL_CHOICE_KEY) || LLM_MODEL_CHOICE_DEFAULT;
+    } catch (e) {
+        return LLM_MODEL_CHOICE_DEFAULT;
+    }
+}
+
 function isDeviceKnownSlow() {
     try {
         const until = parseInt(localStorage.getItem(LLM_SLOW_DEVICE_KEY), 10);
@@ -76,6 +93,7 @@ function isLocalEngineEligible() {
 // DULU (Primary Route), sebelum Core Engine v1 (transformer buatan sendiri
 // ~50 juta parameter) dan sebelum provider API eksternal.
 function isV2EngineEligible() {
+    if (getPersistedModelChoice() === LLM_MODEL_CHOICE_OFFLINE) return false;
     return !window.__kesempatanLLM2SkipThisSession && !!window.KesempatanLLM2 &&
         typeof window.KesempatanLLM2.isReady === 'function' && window.KesempatanLLM2.isReady();
 }
@@ -267,8 +285,22 @@ function markV2DeviceSlow() {
 let __v2InitPromise = null;
 
 async function ensureKesempatanLLMv2Ready() {
+    const modelKey = getPersistedModelChoice();
+    if (modelKey === LLM_MODEL_CHOICE_OFFLINE) {
+        // Pengguna secara eksplisit memilih "Engine 50M (Cadangan Offline)"
+        // di Pengaturan -- v2 (pretrained, butuh unduhan) tidak boleh dicoba
+        // sama sekali, langsung ke Core Engine v1.
+        return false;
+    }
     if (window.KesempatanLLM2 && window.KesempatanLLM2.isReady && window.KesempatanLLM2.isReady()) {
-        return true;
+        const active = window.KesempatanLLM2.getDeviceInfo ? window.KesempatanLLM2.getDeviceInfo().modelKey : null;
+        if (active === modelKey) {
+            return true;
+        }
+        // Pengguna ganti pilihan model SETELAH model lain sudah termuat --
+        // initialize() di bawah akan lepas model lama & muat yang baru
+        // (lihat initializeEngine() di llm-transformers-worker.js), jadi
+        // lanjut ke jalur inisialisasi normal, bukan early-return true.
     }
     if (!window.KesempatanLLM2 || !window.KesempatanLLM2.initialize) {
         return false;
@@ -294,9 +326,9 @@ async function ensureKesempatanLLMv2Ready() {
             if (showToast) {
                 showToast('⬇️ Menyiapkan Core Engine v2 (model bisa perlu diunduh sekali)...', 'info');
             }
-            await withTimeout(window.KesempatanLLM2.initialize(), LLM2_INIT_TIMEOUT_MS, 'inisialisasi Core Engine v2');
+            await withTimeout(window.KesempatanLLM2.initialize(modelKey), LLM2_INIT_TIMEOUT_MS, 'inisialisasi Core Engine v2');
             if (Logger) {
-                Logger.info('KesempatanLLM2', 'Core Engine v2 siap dipakai');
+                Logger.info('KesempatanLLM2', 'Core Engine v2 siap dipakai (' + modelKey + ')');
             }
             return true;
         } catch (e) {
@@ -477,6 +509,7 @@ KESEMPATAN.WorkflowLLMBridge = Object.freeze({
     tryGetCachedAgentResult: tryGetCachedAgentResult,
     cacheAgentResultIfValid: cacheAgentResultIfValid,
     isLocalEngineEligible: isLocalEngineEligible,
-    isV2EngineEligible: isV2EngineEligible
+    isV2EngineEligible: isV2EngineEligible,
+    getPersistedModelChoice: getPersistedModelChoice
 });
 })();
