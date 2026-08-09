@@ -1,8 +1,3 @@
-(function() {
-"use strict";
-if (window.__AIVoiceAgentsLoaded) return;
-window.__AIVoiceAgentsLoaded = true;
-
 const AGENT_VOICES = {
     'RahmadRaharjo': { pitch: 0.85, rate: 0.9, voiceName: 'male', style: 'wise', greeting: 'Halo Bos, Rahmad Raharjo siap membantu!' },
     'SundanyaAsep': { pitch: 1.2, rate: 1.0, voiceName: 'male', style: 'funny', greeting: 'Aduh aduh, aya nu nyarios? Asep siap!' },
@@ -144,12 +139,12 @@ if (document.readyState === 'loading') {
     setTimeout(addVoiceTestUI, 1000);
 }
 
-window.KESEMPATAN = window.KESEMPATAN || {};
-window.KESEMPATAN.AIVoiceAgents = Object.freeze({
+const KESEMPATAN = window.KESEMPATAN || {};
+window.KESEMPATAN = KESEMPATAN;
+
+export const AIVoiceAgents = Object.freeze({
     speakWithAgentVoice: speakWithAgentVoice,
     AGENT_VOICES: AGENT_VOICES
 });
 
-window.speakWithAgentVoice = speakWithAgentVoice;
-window.AGENT_VOICES = AGENT_VOICES;
-})();
+KESEMPATAN.AIVoiceAgents = AIVoiceAgents;

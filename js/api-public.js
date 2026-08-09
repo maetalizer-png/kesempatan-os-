@@ -1,20 +1,10 @@
-(function() {
-"use strict";
+import { escapeHtml } from './utils.js';
+
 const KESEMPATAN = window.KESEMPATAN || {};
 window.KESEMPATAN = KESEMPATAN;
 
-if (window.__PublicAPILoaded) return;
-window.__PublicAPILoaded = true;
-
 const API_SERVER_URL = localStorage.getItem('kes_api_server_url') || 'http://localhost:3456';
 let currentApiKey = localStorage.getItem('kes_api_key_real') || '';
-
-function escapeHtml(text) {
-    if (typeof window.escapeHtml === 'function') return window.escapeHtml(text);
-    const div = document.createElement('div');
-    div.textContent = text == null ? '' : String(text);
-    return div.innerHTML;
-}
 
 const showToast = function(message, type) {
     type = type || 'info';
@@ -228,14 +218,15 @@ function renderUI() {
     document.getElementById('testAnalyzeBtn')?.addEventListener('click', testAnalyze);
 }
 
-KESEMPATAN.PublicAPI = Object.freeze({
+export const PublicAPI = Object.freeze({
     renderUI: renderUI,
     getApiKey: function() { return currentApiKey; }
 });
+
+KESEMPATAN.PublicAPI = PublicAPI;
 
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', function() { setTimeout(renderUI, 100); });
 } else {
     setTimeout(renderUI, 100);
 }
-})();
