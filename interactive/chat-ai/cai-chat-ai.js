@@ -19,68 +19,17 @@
    cai-core.js begitu modul terakhir selesai dimuat & CAI_initChatAi()
    berjalan.
    ============================================================ */
-(function() {
-    'use strict';
-    if (window.__ChatAiModuleLoaded) {
-        return;
-    }
-    window.__ChatAiModuleLoaded = true;
-
-    // Placeholder loading — persis markup yang dulu inline di index.html
-    const panel = document.getElementById('interactiveChatAiPanel');
-    if (panel && !panel.dataset.placeholderRendered) {
-        panel.dataset.placeholderRendered = 'true';
-        panel.innerHTML = '<div class="kes-loading-placeholder" style="text-align:center; padding:40px 16px; color:#A0B3C9; font-size:13px;"><div style="font-size:28px; margin-bottom:10px; animation: kesSpin 1s linear infinite;"></div>Memuat modul...</div>';
-    }
-
-    const MODULES = [
-        'interactive/chat-ai/cai-config.js',
-        'interactive/chat-ai/cai-state.js',
-        'interactive/chat-ai/cai-data-engine.js',
-        'interactive/chat-ai/cai-ui-render.js',
-        'interactive/chat-ai/cai-core.js'
-    ];
-
-    // Prefetch semua file modul secara PARALEL (browser bisa unduh
-    // banyak file sekaligus) — eksekusi tetap berurutan lewat loadNext()
-    // di bawah, tapi karena bytenya sudah/segera ter-cache, rantai
-    // eksekusi jadi jauh lebih cepat. Mengurangi jeda "panel kosong
-    // sesaat" yang terlihat saat modul masih dimuat satu per satu.
-    MODULES.forEach(function(src) {
-        const link = document.createElement('link');
-        link.rel = 'preload';
-        link.as = 'script';
-        link.href = src;
-        document.head.appendChild(link);
-    });
-
-    let loaded = 0;
-    const total = MODULES.length;
-    let hasError = false;
-
-    function loadNext() {
-        if (loaded >= total) {
-            if (hasError) {
-                console.error('[ChatAI] ❌ Sebagian modul gagal dimuat — fitur Chat AI mungkin tidak lengkap.');
-            }
-            return;
-        }
-        const src = MODULES[loaded];
-        const script = document.createElement('script');
-        script.src = src;
-        script.async = false;
-        script.onload = function() {
-            loaded++;
-            loadNext();
-        };
-        script.onerror = function() {
-            hasError = true;
-            console.error('[ChatAI] Gagal memuat modul:', src);
-            loaded++;
-            loadNext();
-        };
-        document.head.appendChild(script);
-    }
-
-    loadNext();
-})();
+// Placeholder-loading markup dihapus di sini — dengan ES module static
+// import, seluruh graph (cai-config/state/data-engine/ui-render/core)
+// diresolusi & dievaluasi SEBELUM baris apa pun di file ini sendiri
+// berjalan (bukan bertahap lewat <script> yang di-append satu per satu
+// seperti loader classic-script dulu). Artinya CAI_initChatAi() di
+// cai-core.js — yang memanggil CAI_renderChatAiPanel() — SUDAH selesai
+// mengisi #interactiveChatAiPanel dengan konten asli begitu baris ini
+// tercapai; menimpa dengan placeholder di sini justru akan menutupi
+// panel yang sudah jadi, bukan tampil sebelum modul dimuat.
+import './cai-config.js';
+import './cai-state.js';
+import './cai-data-engine.js';
+import './cai-ui-render.js';
+import './cai-core.js';

@@ -20,17 +20,8 @@
    index.html sekarang cuma <div id="interactivePage"></div> kosong
    — markup ini (dulu inline di sana) dipindah ke sini.
    ============================================================ */
-(function() {
-    'use strict';
-    if (window.__InteractiveShellLoaded) {
-        return;
-    }
-    window.__InteractiveShellLoaded = true;
-
-    const container = document.getElementById('interactivePage');
-    if (!container || container.dataset.rendered === 'true') {
-        return;
-    }
+const container = document.getElementById('interactivePage');
+if (container && container.dataset.rendered !== 'true') {
     container.dataset.rendered = 'true';
     container.innerHTML =
         '<h2 style="color:#00FFA3;">Fitur Chat, Forum, Debat, Rap Battle & Turnamen</h2>' +
@@ -47,4 +38,4 @@
         '<div id="interactiveDebatePanel" style="display:none;"></div>' +
         '<div id="interactiveTournamentPanel" style="display:none;"></div>' +
         '<button class="execute-btn secondary" style="margin-top:20px; width:auto;" onclick="window.showPage(\'dashboard\')">Kembali ke Dasbor</button>';
-})();
+}

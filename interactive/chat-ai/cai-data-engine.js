@@ -4,57 +4,59 @@
    smart search, deteksi sapaan & kabar, penyusun prompt.
    Butuh config.js & state.js sudah dimuat lebih dulu.
    ============================================================ */
+import { CAI_CONFIG, CAI_PROMPT_SAPAN, CAI_GREETING_PATTERNS, CAI_KABAR_PATTERNS, CAI_detectSpeakingStyle } from './cai-config.js';
+import { CAI_State } from './cai-state.js';
 
 // ---------- CACHE SYSTEM ----------
-function CAI_getCached(key) {
-        const entry = CAI_queryCache.get(key);
+export function CAI_getCached(key) {
+        const entry = CAI_State.queryCache.get(key);
         if (!entry) {
             return null;
         }
         if (Date.now() - entry.timestamp > CAI_CONFIG.CACHE_TTL) {
-            CAI_queryCache.delete(key);
+            CAI_State.queryCache.delete(key);
             return null;
         }
         return entry.data;
     }
 
-function CAI_setCache(key, data) {
-        if (CAI_queryCache.size >= CAI_CONFIG.MAX_CACHE) {
-            const firstKey = CAI_queryCache.keys().next().value;
-            CAI_queryCache.delete(firstKey);
+export function CAI_setCache(key, data) {
+        if (CAI_State.queryCache.size >= CAI_CONFIG.MAX_CACHE) {
+            const firstKey = CAI_State.queryCache.keys().next().value;
+            CAI_State.queryCache.delete(firstKey);
         }
-        CAI_queryCache.set(key, {
+        CAI_State.queryCache.set(key, {
             data: data,
             timestamp: Date.now()
         });
     }
 
-function CAI_clearCache() {
-        CAI_queryCache.clear();
+export function CAI_clearCache() {
+        CAI_State.queryCache.clear();
     }
 
-function CAI_getCacheStats() {
+export function CAI_getCacheStats() {
         return {
-            size: CAI_queryCache.size,
+            size: CAI_State.queryCache.size,
             maxSize: CAI_CONFIG.MAX_CACHE,
-            keys: Array.from(CAI_queryCache.keys())
+            keys: Array.from(CAI_State.queryCache.keys())
         };
     }
 
 // ---------- INTEGRASI DATA (World / Memory / Database) ----------
-function CAI_getStaticData() {
+export function CAI_getStaticData() {
         return window.__STATIC_DATA || [];
     }
 
-function CAI_getMemoryInstance() {
+export function CAI_getMemoryInstance() {
         return window.KESEMPATAN?.VectorMemory || window.VectorMemory || window.VectorMemoryV5 || null;
     }
 
-function CAI_getDatabaseInstance() {
+export function CAI_getDatabaseInstance() {
         return window.KESDatabase || window.getDatabaseV10 || null;
     }
 
-function CAI_smartSearch(query, data, threshold) {
+export function CAI_smartSearch(query, data, threshold) {
         threshold = threshold || CAI_CONFIG.SEARCH_THRESHOLD;
         if (!data || data.length === 0) {
             return [];
@@ -151,7 +153,7 @@ function CAI_smartSearch(query, data, threshold) {
         return filtered.slice(0, CAI_CONFIG.MAX_RESULTS);
     }
 
-function CAI_calculateSimilarity(vec1, vec2) {
+export function CAI_calculateSimilarity(vec1, vec2) {
         if (!vec1 || !vec2) {
             return 0;
         }
@@ -170,7 +172,7 @@ function CAI_calculateSimilarity(vec1, vec2) {
         return dot / (Math.sqrt(norm1) * Math.sqrt(norm2));
     }
 
-function CAI_fetchStaticData(query) {
+export function CAI_fetchStaticData(query) {
         const staticData = CAI_getStaticData();
         if (staticData.length === 0) {
             return [];
@@ -186,7 +188,7 @@ function CAI_fetchStaticData(query) {
     }
 
 // ---------- SAPAAN & KABAR (dataries/sapaan) ----------
-function CAI_getGreetingData() {
+export function CAI_getGreetingData() {
         const fromStatic = CAI_getStaticData().filter(function(item) {
             return item.metadata && item.metadata.category === 'sapaan';
         });
@@ -199,14 +201,14 @@ function CAI_getGreetingData() {
         });
     }
 
-function CAI_detectGreetingIntent(message) {
+export function CAI_detectGreetingIntent(message) {
         if (!message) return false;
         const trimmed = message.trim();
         if (trimmed.split(/\s+/).length > 4) return false; // terlalu panjang untuk sapaan murni
         return CAI_GREETING_PATTERNS.test(trimmed);
     }
 
-function CAI_extractGreetingWord(message) {
+export function CAI_extractGreetingWord(message) {
         if (!message) return null;
         const match = CAI_GREETING_PATTERNS.exec(message.trim());
         if (!match) return null;
@@ -214,7 +216,7 @@ function CAI_extractGreetingWord(message) {
         return word || null; // '' kalau cuma "halo"/"hai" tanpa kata waktu
     }
 
-function CAI_getGreetingByWord(word) {
+export function CAI_getGreetingByWord(word) {
         if (!word) return null;
         const codeMap = { pagi: 'PAGI', siang: 'SIANG', sore: 'SORE', malam: 'MALAM', datang: 'DATANG' };
         const code = codeMap[word];
@@ -224,7 +226,7 @@ function CAI_getGreetingByWord(word) {
         }) || null;
     }
 
-function CAI_waitForGreetingData(maxWaitMs, requiredType) {
+export function CAI_waitForGreetingData(maxWaitMs, requiredType) {
         maxWaitMs = maxWaitMs || 1500;
         function hasRequiredData() {
             const data = CAI_getGreetingData();
@@ -248,7 +250,7 @@ function CAI_waitForGreetingData(maxWaitMs, requiredType) {
         });
     }
 
-function CAI_getTimeBasedGreeting(now) {
+export function CAI_getTimeBasedGreeting(now) {
         now = now || new Date();
         const hour = now.getHours();
         const pool = CAI_getGreetingData().filter(function(item) {
@@ -270,7 +272,7 @@ function CAI_getTimeBasedGreeting(now) {
         }) || null;
     }
 
-function CAI_getCountryGreeting(countryOrCode) {
+export function CAI_getCountryGreeting(countryOrCode) {
         if (!countryOrCode) return null;
         const q = countryOrCode.toLowerCase();
         return CAI_getGreetingData().find(function(item) {
@@ -281,7 +283,7 @@ function CAI_getCountryGreeting(countryOrCode) {
         }) || null;
     }
 
-function CAI_getRegionalOrHolidayGreeting(message) {
+export function CAI_getRegionalOrHolidayGreeting(message) {
         if (!message) {
             return null;
         }
@@ -299,14 +301,14 @@ function CAI_getRegionalOrHolidayGreeting(message) {
         }) || null;
     }
 
-function CAI_detectKabarIntent(message) {
+export function CAI_detectKabarIntent(message) {
         if (!message) return false;
         const trimmed = message.trim();
         if (trimmed.split(/\s+/).length > 8) return false; // terlalu panjang untuk basa-basi kabar murni
         return CAI_KABAR_PATTERNS.test(trimmed);
     }
 
-function CAI_getKabarReply(message) {
+export function CAI_getKabarReply(message) {
         const style = CAI_detectSpeakingStyle(message);
         if (style) {
             const matched = CAI_getKabarReplyByMood(style);
@@ -321,7 +323,7 @@ function CAI_getKabarReply(message) {
         return pool[Math.floor(Math.random() * pool.length)];
     }
 
-function CAI_getKabarReplyByMood(mood) {
+export function CAI_getKabarReplyByMood(mood) {
         const pool = CAI_getGreetingData().filter(function(item) {
             return item.metadata && item.metadata.type === 'kabar' && item.metadata.mood === mood;
         });
@@ -330,7 +332,7 @@ function CAI_getKabarReplyByMood(mood) {
     }
 
 // ---------- FETCH KONTEKS (3 SUMBER) ----------
-async function CAI_fetchFromVectorMemory(query, topK) {
+export async function CAI_fetchFromVectorMemory(query, topK) {
         const memory = CAI_getMemoryInstance();
         if (!memory || typeof memory.search !== 'function') {
             return [];
@@ -358,7 +360,7 @@ async function CAI_fetchFromVectorMemory(query, topK) {
     // menyimpan hasil percakapan kembali — jadi obrolan tidak pernah
     // "diingat" untuk sesi berikutnya. Meniru pola yang sudah terbukti
     // di Debate (DEB_saveDebateToMemory).
-    async function CAI_saveMessageToMemory(userMessage, aiResponse) {
+    export async function CAI_saveMessageToMemory(userMessage, aiResponse) {
         const memory = CAI_getMemoryInstance();
         if (!memory) return;
 
@@ -382,7 +384,7 @@ async function CAI_fetchFromVectorMemory(query, topK) {
         }
     }
 
-async function CAI_fetchFromDatabase(query, limit) {
+export async function CAI_fetchFromDatabase(query, limit) {
         const db = CAI_getDatabaseInstance();
         if (!db) {
             return [];
@@ -420,7 +422,7 @@ async function CAI_fetchFromDatabase(query, limit) {
         return [];
     }
 
-async function CAI_getAllContext(query, options) {
+export async function CAI_getAllContext(query, options) {
         options = options || {};
         const cacheKey = query + '|' + JSON.stringify(options);
         
@@ -527,7 +529,7 @@ async function CAI_getAllContext(query, options) {
     }
 
 // ---------- BUILD PROMPT ----------
-function CAI_buildChatPrompt(userMessage, context) {
+export function CAI_buildChatPrompt(userMessage, context) {
         let prompt = CAI_PROMPT_SAPAN;
         
         if (context && context.combined && context.combined.length > 0) {
@@ -585,11 +587,11 @@ function CAI_buildChatPrompt(userMessage, context) {
     }
 
 // ---------- PANGGILAN AI ----------
-async function CAI_callAI(prompt, apiKey) {
-        if (CAI_currentAbortController) {
-            CAI_currentAbortController.abort();
+export async function CAI_callAI(prompt, apiKey) {
+        if (CAI_State.currentAbortController) {
+            CAI_State.currentAbortController.abort();
         }
-        CAI_currentAbortController = new AbortController();
+        CAI_State.currentAbortController = new AbortController();
 
         if (apiKey) {
             try {
@@ -608,7 +610,7 @@ async function CAI_callAI(prompt, apiKey) {
                         max_tokens: 1200,
                         temperature: 0.7
                     }),
-                    signal: CAI_currentAbortController.signal
+                    signal: CAI_State.currentAbortController.signal
                 });
                 const data = await response.json();
                 if (data.choices?.[0]) {

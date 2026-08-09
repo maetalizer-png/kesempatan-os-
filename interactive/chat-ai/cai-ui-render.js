@@ -4,9 +4,11 @@
    tema, emoji, reaksi pesan, streaming, render bubble chat.
    Butuh config.js & state.js sudah dimuat lebih dulu.
    ============================================================ */
+import { CAI_CONFIG } from './cai-config.js';
+import { CAI_State } from './cai-state.js';
 
 // ---------- PREFERENSI & FEEDBACK ----------
-function CAI_loadPreferences() {
+export function CAI_loadPreferences() {
         try {
             const saved = localStorage.getItem(CAI_CONFIG.PREF_KEY);
             if (saved) {
@@ -35,22 +37,22 @@ function CAI_loadPreferences() {
         };
     }
 
-function CAI_savePreferences(prefs) {
+export function CAI_savePreferences(prefs) {
         try {
             localStorage.setItem(CAI_CONFIG.PREF_KEY, JSON.stringify(prefs));
-            CAI_userPreferences = prefs;
+            CAI_State.userPreferences = prefs;
             if (prefs.language) {
-                CAI_languagePreference = prefs.language;
+                CAI_State.languagePreference = prefs.language;
             }
             if (prefs.style) {
-                CAI_stylePreference = prefs.style;
+                CAI_State.stylePreference = prefs.style;
             }
         } catch (_) {
             // Silent fail
         }
     }
 
-function CAI_loadFeedback() {
+export function CAI_loadFeedback() {
         try {
             const saved = localStorage.getItem(CAI_CONFIG.FEEDBACK_KEY);
             if (saved) {
@@ -62,30 +64,30 @@ function CAI_loadFeedback() {
         return [];
     }
 
-function CAI_saveFeedback(feedback) {
+export function CAI_saveFeedback(feedback) {
         try {
-            CAI_feedbackHistory.push(feedback);
-            if (CAI_feedbackHistory.length > 200) {
-                CAI_feedbackHistory = CAI_feedbackHistory.slice(-200);
+            CAI_State.feedbackHistory.push(feedback);
+            if (CAI_State.feedbackHistory.length > 200) {
+                CAI_State.feedbackHistory = CAI_State.feedbackHistory.slice(-200);
             }
-            localStorage.setItem(CAI_CONFIG.FEEDBACK_KEY, JSON.stringify(CAI_feedbackHistory));
+            localStorage.setItem(CAI_CONFIG.FEEDBACK_KEY, JSON.stringify(CAI_State.feedbackHistory));
         } catch (_) {
             // Silent fail
         }
     }
 
-function CAI_handleFeedback(messageId, rating) {
+export function CAI_handleFeedback(messageId, rating) {
         const feedback = { messageId: messageId, rating: rating, timestamp: Date.now() };
         CAI_saveFeedback(feedback);
         
         if (rating < 3) {
-            CAI_stylePreference = 'formal';
+            CAI_State.stylePreference = 'formal';
         } else if (rating >= 4) {
-            CAI_stylePreference = 'casual';
+            CAI_State.stylePreference = 'casual';
         }
         
         const prefs = CAI_loadPreferences();
-        prefs.style = CAI_stylePreference;
+        prefs.style = CAI_State.stylePreference;
         CAI_savePreferences(prefs);
         
         const container = document.getElementById('chatAiMessages');
@@ -107,7 +109,7 @@ function CAI_handleFeedback(messageId, rating) {
 // tanpa ini, browser speech synthesis membaca tanda "**"/"*"/"`" secara
 // harfiah sbg kata "asterisk"/dst (pola bug yang sama seperti yang
 // sudah diperbaiki di Debate/Tournament via SecurityManager.stripMarkdown).
-function CAI_stripMarkdown(text) {
+export function CAI_stripMarkdown(text) {
         return text
             .replace(/\*\*\*(.*?)\*\*\*/g, '$1')
             .replace(/\*\*(.*?)\*\*/g, '$1')
@@ -120,8 +122,8 @@ function CAI_stripMarkdown(text) {
             .replace(/~~(.*?)~~/g, '$1');
     }
 
-function CAI_speakText(text) {
-        if (!CAI_speechEnabled) {
+export function CAI_speakText(text) {
+        if (!CAI_State.speechEnabled) {
             return;
         }
         if (!text || text.length === 0) {
@@ -130,7 +132,7 @@ function CAI_speakText(text) {
         window.speechSynthesis.cancel();
         const cleanText = CAI_stripMarkdown(text).replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ').substring(0, 600);
         const utterance = new SpeechSynthesisUtterance(cleanText);
-        utterance.lang = CAI_languagePreference === 'en' ? 'en-US' : 'id-ID';
+        utterance.lang = CAI_State.languagePreference === 'en' ? 'en-US' : 'id-ID';
         utterance.rate = 0.92;
         const voices = window.speechSynthesis.getVoices();
         const targetVoice = voices.find(function(v) {
@@ -157,50 +159,50 @@ function CAI_speakText(text) {
         utterance.onerror = function() {
             clearInterval(keepAlive);
         };
-        CAI_currentUtterance = utterance;
+        CAI_State.currentUtterance = utterance;
         window.speechSynthesis.speak(utterance);
     }
 
-function CAI_initSpeechToggle() {
+export function CAI_initSpeechToggle() {
         const toggleBtn = document.getElementById('toggleSpeechBtn');
         if (!toggleBtn) {
             return;
         }
         const saved = localStorage.getItem('kes_speech_enabled');
         if (saved !== null) {
-            CAI_speechEnabled = saved === 'true';
+            CAI_State.speechEnabled = saved === 'true';
         }
-        toggleBtn.textContent = CAI_speechEnabled ? 'ON' : 'OFF';
-        toggleBtn.title = CAI_speechEnabled ? 'Suara ON' : 'Suara OFF';
+        toggleBtn.textContent = CAI_State.speechEnabled ? 'ON' : 'OFF';
+        toggleBtn.title = CAI_State.speechEnabled ? 'Suara ON' : 'Suara OFF';
         toggleBtn.addEventListener('click', function() {
-            CAI_speechEnabled = !CAI_speechEnabled;
-            localStorage.setItem('kes_speech_enabled', CAI_speechEnabled);
-            toggleBtn.textContent = CAI_speechEnabled ? 'ON' : 'OFF';
-            toggleBtn.title = CAI_speechEnabled ? 'Suara ON' : 'Suara OFF';
-            if (!CAI_speechEnabled && CAI_currentUtterance) {
+            CAI_State.speechEnabled = !CAI_State.speechEnabled;
+            localStorage.setItem('kes_speech_enabled', CAI_State.speechEnabled);
+            toggleBtn.textContent = CAI_State.speechEnabled ? 'ON' : 'OFF';
+            toggleBtn.title = CAI_State.speechEnabled ? 'Suara ON' : 'Suara OFF';
+            if (!CAI_State.speechEnabled && CAI_State.currentUtterance) {
                 window.speechSynthesis.cancel();
             }
         });
     }
 
-function CAI_startVoiceInput(inputId) {
+export function CAI_startVoiceInput(inputId) {
         if (!('webkitSpeechRecognition' in window || 'SpeechRecognition' in window)) {
             return;
         }
-        if (CAI_isListening) {
-            if (CAI_recognition) {
-                CAI_recognition.stop();
+        if (CAI_State.isListening) {
+            if (CAI_State.recognition) {
+                CAI_State.recognition.stop();
             }
-            CAI_isListening = false;
+            CAI_State.isListening = false;
             return;
         }
         const SpeechRecognition = window.webkitSpeechRecognition || window.SpeechRecognition;
-        CAI_recognition = new SpeechRecognition();
-        CAI_recognition.lang = CAI_languagePreference === 'en' ? 'en-US' : 'id-ID';
-        CAI_recognition.continuous = false;
-        CAI_recognition.interimResults = true;
-        CAI_recognition.onstart = function() {
-            CAI_isListening = true;
+        CAI_State.recognition = new SpeechRecognition();
+        CAI_State.recognition.lang = CAI_State.languagePreference === 'en' ? 'en-US' : 'id-ID';
+        CAI_State.recognition.continuous = false;
+        CAI_State.recognition.interimResults = true;
+        CAI_State.recognition.onstart = function() {
+            CAI_State.isListening = true;
             const btn = document.querySelector('[data-voice-for="' + inputId + '"]');
             if (btn) {
                 btn.textContent = 'Merekam...';
@@ -208,7 +210,7 @@ function CAI_startVoiceInput(inputId) {
                 btn.style.borderColor = '#FF6B6B';
             }
         };
-        CAI_recognition.onresult = function(e) {
+        CAI_State.recognition.onresult = function(e) {
             const transcript = e.results[0][0].transcript;
             const input = document.getElementById(inputId);
             if (input) {
@@ -221,8 +223,8 @@ function CAI_startVoiceInput(inputId) {
                 }
             }
         };
-        CAI_recognition.onend = function() {
-            CAI_isListening = false;
+        CAI_State.recognition.onend = function() {
+            CAI_State.isListening = false;
             const btn = document.querySelector('[data-voice-for="' + inputId + '"]');
             if (btn) {
                 btn.textContent = 'Rekam';
@@ -230,8 +232,8 @@ function CAI_startVoiceInput(inputId) {
                 btn.style.borderColor = '';
             }
         };
-        CAI_recognition.onerror = function() {
-            CAI_isListening = false;
+        CAI_State.recognition.onerror = function() {
+            CAI_State.isListening = false;
             const btn = document.querySelector('[data-voice-for="' + inputId + '"]');
             if (btn) {
                 btn.textContent = 'Rekam';
@@ -239,11 +241,11 @@ function CAI_startVoiceInput(inputId) {
                 btn.style.borderColor = '';
             }
         };
-        CAI_recognition.start();
+        CAI_State.recognition.start();
     }
 
 // ---------- HISTORY (localStorage) ----------
-function CAI_saveChatHistory(panelId, messages) {
+export function CAI_saveChatHistory(panelId, messages) {
         try {
             const history = JSON.parse(localStorage.getItem(CAI_CONFIG.STORAGE_KEY) || '{}');
             history[panelId] = messages.slice(-CAI_CONFIG.MAX_HISTORY);
@@ -253,7 +255,7 @@ function CAI_saveChatHistory(panelId, messages) {
         }
     }
 
-function CAI_loadChatHistory(panelId) {
+export function CAI_loadChatHistory(panelId) {
         try {
             const history = JSON.parse(localStorage.getItem(CAI_CONFIG.STORAGE_KEY) || '{}');
             return history[panelId] || [];
@@ -262,7 +264,7 @@ function CAI_loadChatHistory(panelId) {
         }
     }
 
-function CAI_clearChatHistory(panelId) {
+export function CAI_clearChatHistory(panelId) {
         try {
             const history = JSON.parse(localStorage.getItem(CAI_CONFIG.STORAGE_KEY) || '{}');
             delete history[panelId];
@@ -272,13 +274,13 @@ function CAI_clearChatHistory(panelId) {
         }
     }
 
-function CAI_saveMessageToHistory(panelId, sender, message, isUser) {
+export function CAI_saveMessageToHistory(panelId, sender, message, isUser) {
         const history = CAI_loadChatHistory(panelId);
         history.push({ sender: sender, message: message, time: CAI_getTimestamp(), isUser: isUser });
         CAI_saveChatHistory(panelId, history);
     }
 
-function CAI_searchChat(panelId, query) {
+export function CAI_searchChat(panelId, query) {
         const container = document.getElementById(panelId);
         if (!container) {
             return [];
@@ -305,7 +307,7 @@ function CAI_searchChat(panelId, query) {
         return results;
     }
 
-function CAI_exportChatPDF(panelId, filename) {
+export function CAI_exportChatPDF(panelId, filename) {
         filename = filename || 'chat-history.pdf';
         const container = document.getElementById(panelId);
         if (!container) {
@@ -359,7 +361,7 @@ function CAI_exportChatPDF(panelId, filename) {
     }
 
 // ---------- EMOJI, TYPING SOUND, TEMA ----------
-function CAI_toggleEmojiPicker(inputId) {
+export function CAI_toggleEmojiPicker(inputId) {
         const existingPicker = document.getElementById('emojiPickerContainer');
         if (existingPicker) {
             existingPicker.remove();
@@ -404,43 +406,43 @@ function CAI_toggleEmojiPicker(inputId) {
         }, 100);
     }
 
-function CAI_initTypingSound() {
+export function CAI_initTypingSound() {
         try {
-            CAI_typingSoundContext = new (window.AudioContext || window.webkitAudioContext)();
+            CAI_State.typingSoundContext = new (window.AudioContext || window.webkitAudioContext)();
         } catch (_) {
             // Silent fail
         }
     }
 
-function CAI_playTypingSound() {
-        if (!CAI_typingSoundEnabled || !CAI_typingSoundContext) {
+export function CAI_playTypingSound() {
+        if (!CAI_State.typingSoundEnabled || !CAI_State.typingSoundContext) {
             return;
         }
         try {
-            const oscillator = CAI_typingSoundContext.createOscillator();
-            const gainNode = CAI_typingSoundContext.createGain();
+            const oscillator = CAI_State.typingSoundContext.createOscillator();
+            const gainNode = CAI_State.typingSoundContext.createGain();
             oscillator.connect(gainNode);
-            gainNode.connect(CAI_typingSoundContext.destination);
+            gainNode.connect(CAI_State.typingSoundContext.destination);
             oscillator.frequency.value = 800 + Math.random() * 400;
             oscillator.type = 'sine';
             gainNode.gain.value = 0.03;
             oscillator.start();
-            oscillator.stop(CAI_typingSoundContext.currentTime + 0.05);
+            oscillator.stop(CAI_State.typingSoundContext.currentTime + 0.05);
         } catch (_) {
             // Silent fail
         }
     }
 
-function CAI_toggleTypingSound() {
-        CAI_typingSoundEnabled = !CAI_typingSoundEnabled;
-        localStorage.setItem('kes_typing_sound', CAI_typingSoundEnabled);
+export function CAI_toggleTypingSound() {
+        CAI_State.typingSoundEnabled = !CAI_State.typingSoundEnabled;
+        localStorage.setItem('kes_typing_sound', CAI_State.typingSoundEnabled);
     }
 
-function CAI_toggleTheme() {
-        CAI_darkMode = !CAI_darkMode;
+export function CAI_toggleTheme() {
+        CAI_State.darkMode = !CAI_State.darkMode;
         const root = document.documentElement;
         const chatContainer = document.getElementById('interactivePage');
-        if (CAI_darkMode) {
+        if (CAI_State.darkMode) {
             root.style.setProperty('--chat-bg', '#0a0a1a');
             root.style.setProperty('--chat-text', '#ffffff');
             root.style.setProperty('--chat-border', 'rgba(0,255,163,0.1)');
@@ -461,29 +463,29 @@ function CAI_toggleTheme() {
                 chatContainer.style.color = '#1a1a2e';
             }
         }
-        localStorage.setItem(CAI_CONFIG.THEME_KEY, CAI_darkMode ? 'dark' : 'light');
+        localStorage.setItem(CAI_CONFIG.THEME_KEY, CAI_State.darkMode ? 'dark' : 'light');
         CAI_updateThemeUI();
     }
 
-function CAI_updateThemeUI() {
+export function CAI_updateThemeUI() {
         const btn = document.getElementById('themeToggleBtn');
         if (btn) {
-            btn.textContent = CAI_darkMode ? 'Gelap' : 'Terang';
-            btn.title = CAI_darkMode ? 'Switch to Light' : 'Switch to Dark';
+            btn.textContent = CAI_State.darkMode ? 'Gelap' : 'Terang';
+            btn.title = CAI_State.darkMode ? 'Switch to Light' : 'Switch to Dark';
         }
     }
 
-function CAI_loadTheme() {
+export function CAI_loadTheme() {
         const saved = localStorage.getItem(CAI_CONFIG.THEME_KEY);
         if (saved === 'light') {
-            CAI_darkMode = false;
+            CAI_State.darkMode = false;
             CAI_toggleTheme();
         }
         CAI_updateThemeUI();
     }
 
 // ---------- UTIL TAMPILAN ----------
-function CAI_renderMarkdown(text) {
+export function CAI_renderMarkdown(text) {
         let html = CAI_escapeHtml(text);
         html = html.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
         html = html.replace(/\*(.*?)\*/g, '<em>$1</em>');
@@ -492,7 +494,7 @@ function CAI_renderMarkdown(text) {
         return html;
     }
 
-function CAI_exportChat(panelId) {
+export function CAI_exportChat(panelId) {
         const container = document.getElementById(panelId);
         if (!container) {
             return;
@@ -517,7 +519,7 @@ function CAI_exportChat(panelId) {
         URL.revokeObjectURL(url);
     }
 
-function CAI_escapeHtml(text) {
+export function CAI_escapeHtml(text) {
         if (!text) {
             return '';
         }
@@ -526,12 +528,12 @@ function CAI_escapeHtml(text) {
         return div.innerHTML.replace(/\n/g, '<br>');
     }
 
-function CAI_getTimestamp() {
+export function CAI_getTimestamp() {
         const now = new Date();
         return now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     }
 
-function CAI_humanizeAgentName(agent) {
+export function CAI_humanizeAgentName(agent) {
         if (!agent || typeof agent !== 'string') {
             return '';
         }
@@ -542,7 +544,7 @@ function CAI_humanizeAgentName(agent) {
             .trim();
     }
 
-function CAI_getAgentProfile(agent) {
+export function CAI_getAgentProfile(agent) {
         if (window.getAgentConfig) {
             const cfg = window.getAgentConfig(agent);
             if (cfg) {
@@ -556,12 +558,12 @@ function CAI_getAgentProfile(agent) {
         return { name: CAI_humanizeAgentName(agent), role: '', emoji: '' };
     }
 
-function CAI_getAgentDisplayName(agent) {
+export function CAI_getAgentDisplayName(agent) {
         const profile = CAI_getAgentProfile(agent);
         return (profile.emoji ? profile.emoji + ' ' : '') + profile.name;
     }
 
-function CAI_getApiKey() {
+export function CAI_getApiKey() {
         const input = document.getElementById('apiKeyInput');
         if (input?.value?.length > 10) {
             return input.value.trim();
@@ -573,7 +575,7 @@ function CAI_getApiKey() {
     }
 
 // ---------- REAKSI & EDIT PESAN ----------
-function CAI_addReaction(messageWrapper, emoji) {
+export function CAI_addReaction(messageWrapper, emoji) {
         const existing = messageWrapper.querySelector('.reaction-bar');
         if (existing) {
             const btn = existing.querySelector('[data-reaction="' + emoji + '"]');
@@ -616,7 +618,7 @@ function CAI_addReaction(messageWrapper, emoji) {
         }
     }
 
-function CAI_showReactionPicker(messageWrapper) {
+export function CAI_showReactionPicker(messageWrapper) {
         const existing = document.getElementById('reactionPicker');
         if (existing) {
             existing.remove();
@@ -656,7 +658,7 @@ function CAI_showReactionPicker(messageWrapper) {
         }, 100);
     }
 
-function CAI_editMessage(messageWrapper) {
+export function CAI_editMessage(messageWrapper) {
         const body = messageWrapper.querySelector('.message-body');
         const currentText = body.textContent;
         const picker = document.getElementById('reactionPicker');
@@ -699,7 +701,7 @@ function CAI_editMessage(messageWrapper) {
         };
     }
 
-function CAI_deleteMessage(messageWrapper) {
+export function CAI_deleteMessage(messageWrapper) {
         const container = messageWrapper.closest('.chat-messages-premium');
         if (container) {
             const panelId = container.id;
@@ -714,20 +716,20 @@ function CAI_deleteMessage(messageWrapper) {
         messageWrapper.remove();
     }
 
-function CAI_getAgentAvatar(agent) {
+export function CAI_getAgentAvatar(agent) {
         const profile = CAI_getAgentProfile(agent);
         return profile.emoji || '';
     }
 
 // ---------- RENDER PESAN & STREAMING ----------
-function CAI_cancelAIRequest() {
-        if (CAI_currentAbortController) {
-            CAI_currentAbortController.abort();
-            CAI_currentAbortController = null;
+export function CAI_cancelAIRequest() {
+        if (CAI_State.currentAbortController) {
+            CAI_State.currentAbortController.abort();
+            CAI_State.currentAbortController = null;
         }
     }
 
-function CAI_addStreamingMessage(container, sender) {
+export function CAI_addStreamingMessage(container, sender) {
         const time = CAI_getTimestamp();
         const wrapper = document.createElement('div');
         wrapper.className = 'message-wrapper';
@@ -748,7 +750,7 @@ function CAI_addStreamingMessage(container, sender) {
         };
     }
 
-function CAI_finishStreamingMessage(wrapper, cursorSpan, textSpan, rawText) {
+export function CAI_finishStreamingMessage(wrapper, cursorSpan, textSpan, rawText) {
         if (cursorSpan) {
             cursorSpan.remove();
         }
@@ -757,7 +759,7 @@ function CAI_finishStreamingMessage(wrapper, cursorSpan, textSpan, rawText) {
         }
     }
 
-async function CAI_streamTextToElement(textSpan, text, speed) {
+export async function CAI_streamTextToElement(textSpan, text, speed) {
         speed = speed || 15;
         for (let i = 0; i < text.length; i++) {
             textSpan.textContent += text[i];
@@ -767,7 +769,7 @@ async function CAI_streamTextToElement(textSpan, text, speed) {
         }
     }
 
-function CAI_showTypingIndicator(container) {
+export function CAI_showTypingIndicator(container) {
         const typingDiv = document.createElement('div');
         typingDiv.className = 'typing-indicator-modern';
         typingDiv.id = 'typingIndicator';
@@ -777,7 +779,7 @@ function CAI_showTypingIndicator(container) {
         return typingDiv;
     }
 
-function CAI_addMessage(container, sender, message, isUser) {
+export function CAI_addMessage(container, sender, message, isUser) {
         if (!container) {
             return;
         }
@@ -854,7 +856,7 @@ function CAI_addMessage(container, sender, message, isUser) {
         CAI_saveChatHistory(panelId, history);
     }
 
-function CAI_addFeedbackButtons(messageWrapper) {
+export function CAI_addFeedbackButtons(messageWrapper) {
         const existing = messageWrapper.querySelector('.feedback-buttons');
         if (existing) {
             return;

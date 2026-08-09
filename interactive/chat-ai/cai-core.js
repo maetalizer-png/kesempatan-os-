@@ -6,6 +6,24 @@
    folder ini (config.js, state.js, data-engine.js, ui-render.js)
    sudah dimuat lebih dulu.
    ============================================================ */
+import { CAI_CONFIG, CAI_PROMPT_SAPAN } from './cai-config.js';
+import { CAI_State } from './cai-state.js';
+import {
+    CAI_buildChatPrompt, CAI_callAI, CAI_clearCache, CAI_detectGreetingIntent,
+    CAI_detectKabarIntent, CAI_extractGreetingWord, CAI_getAllContext, CAI_getCacheStats,
+    CAI_getCountryGreeting, CAI_getGreetingByWord, CAI_getGreetingData, CAI_getKabarReply,
+    CAI_getKabarReplyByMood, CAI_getRegionalOrHolidayGreeting, CAI_getTimeBasedGreeting,
+    CAI_saveMessageToMemory, CAI_smartSearch, CAI_waitForGreetingData
+} from './cai-data-engine.js';
+import {
+    CAI_addFeedbackButtons, CAI_addMessage, CAI_addReaction, CAI_addStreamingMessage,
+    CAI_cancelAIRequest, CAI_deleteMessage, CAI_editMessage, CAI_exportChat, CAI_exportChatPDF,
+    CAI_finishStreamingMessage, CAI_getApiKey, CAI_initSpeechToggle, CAI_initTypingSound,
+    CAI_loadFeedback, CAI_loadPreferences, CAI_loadTheme, CAI_playTypingSound,
+    CAI_saveMessageToHistory, CAI_searchChat, CAI_showTypingIndicator, CAI_speakText,
+    CAI_startVoiceInput, CAI_streamTextToElement, CAI_toggleEmojiPicker, CAI_toggleTheme,
+    CAI_toggleTypingSound
+} from './cai-ui-render.js';
 
 async function CAI_sendChatToAI() {
         // FIX: kunci anti-panggil-ganda. Sebelumnya tidak ada penjaga
@@ -14,10 +32,10 @@ async function CAI_sendChatToAI() {
         // nyangkut di device tertentu), dua eksekusi async berjalan
         // BERSAMAAN, masing-masing menambahkan bubble "Anda" + "AI"
         // sendiri-sendiri → pesan & balasan tampak dobel persis.
-        if (CAI_isSendingToAI) {
+        if (CAI_State.isSendingToAI) {
             return;
         }
-        if (CAI_speechEnabled && window.speechSynthesis) {
+        if (CAI_State.speechEnabled && window.speechSynthesis) {
             try {
                 window.speechSynthesis.cancel();
                 const unlockUtterance = new SpeechSynthesisUtterance('ok');
@@ -40,14 +58,14 @@ async function CAI_sendChatToAI() {
         if (!message) {
             return;
         }
-        CAI_isSendingToAI = true;
+        CAI_State.isSendingToAI = true;
         const sendBtn = document.getElementById('chatAiSendBtn');
         if (sendBtn) sendBtn.disabled = true;
 
         try {
             const container = document.getElementById('chatAiMessages');
 
-            CAI_conversationContext.push({ message: message, isUser: true });
+            CAI_State.conversationContext.push({ message: message, isUser: true });
 
             CAI_addMessage(container, 'AI', message, true);
             input.value = '';
@@ -74,7 +92,7 @@ async function CAI_sendChatToAI() {
                     const streamData = CAI_addStreamingMessage(container, 'AI');
                     await CAI_streamTextToElement(streamData.textSpan, greetingItem.text, CAI_CONFIG.STREAM_SPEED);
                     CAI_finishStreamingMessage(streamData.wrapper, streamData.cursorSpan, streamData.textSpan, greetingItem.text);
-                    CAI_conversationContext.push({ message: greetingItem.text, isUser: false });
+                    CAI_State.conversationContext.push({ message: greetingItem.text, isUser: false });
                     CAI_speakText(greetingItem.text);
                     CAI_addFeedbackButtons(streamData.wrapper);
                     CAI_saveMessageToHistory(container.id, 'AI', greetingItem.text, false);
@@ -100,7 +118,7 @@ async function CAI_sendChatToAI() {
                     const streamData = CAI_addStreamingMessage(container, 'AI');
                     await CAI_streamTextToElement(streamData.textSpan, kabarItem.text, CAI_CONFIG.STREAM_SPEED);
                     CAI_finishStreamingMessage(streamData.wrapper, streamData.cursorSpan, streamData.textSpan, kabarItem.text);
-                    CAI_conversationContext.push({ message: kabarItem.text, isUser: false });
+                    CAI_State.conversationContext.push({ message: kabarItem.text, isUser: false });
                     CAI_speakText(kabarItem.text);
                     CAI_addFeedbackButtons(streamData.wrapper);
                     CAI_saveMessageToHistory(container.id, 'AI', kabarItem.text, false);
@@ -136,9 +154,9 @@ async function CAI_sendChatToAI() {
                     await CAI_streamTextToElement(streamData.textSpan, response, CAI_CONFIG.STREAM_SPEED);
                     CAI_finishStreamingMessage(streamData.wrapper, streamData.cursorSpan, streamData.textSpan, response);
 
-                    CAI_conversationContext.push({ message: response, isUser: false });
-                    if (CAI_conversationContext.length > CAI_CONFIG.MAX_HISTORY) {
-                        CAI_conversationContext = CAI_conversationContext.slice(-CAI_CONFIG.MAX_HISTORY);
+                    CAI_State.conversationContext.push({ message: response, isUser: false });
+                    if (CAI_State.conversationContext.length > CAI_CONFIG.MAX_HISTORY) {
+                        CAI_State.conversationContext = CAI_State.conversationContext.slice(-CAI_CONFIG.MAX_HISTORY);
                     }
 
                     CAI_speakText(response);
@@ -164,7 +182,7 @@ async function CAI_sendChatToAI() {
                 }
             }
         } finally {
-            CAI_isSendingToAI = false;
+            CAI_State.isSendingToAI = false;
             if (sendBtn) sendBtn.disabled = false;
         }
     }
@@ -183,14 +201,14 @@ function CAI_renderChatAiPanel() {
 function CAI_initChatAi() {
         CAI_renderChatAiPanel();
 
-        CAI_userPreferences = CAI_loadPreferences();
-        CAI_feedbackHistory = CAI_loadFeedback();
-        const prefs = CAI_userPreferences;
+        CAI_State.userPreferences = CAI_loadPreferences();
+        CAI_State.feedbackHistory = CAI_loadFeedback();
+        const prefs = CAI_State.userPreferences;
         if (prefs.language) {
-            CAI_languagePreference = prefs.language;
+            CAI_State.languagePreference = prefs.language;
         }
         if (prefs.style) {
-            CAI_stylePreference = prefs.style;
+            CAI_State.stylePreference = prefs.style;
         }
 
         CAI_initSpeechToggle();
@@ -203,7 +221,7 @@ function CAI_initChatAi() {
 
         const savedSound = localStorage.getItem('kes_typing_sound');
         if (savedSound !== null) {
-            CAI_typingSoundEnabled = savedSound === 'true';
+            CAI_State.typingSoundEnabled = savedSound === 'true';
         }
 
         const aiSend = document.getElementById('chatAiSendBtn');
