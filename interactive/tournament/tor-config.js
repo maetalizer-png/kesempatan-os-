@@ -9,7 +9,7 @@
 // jadi semua notifikasi toast di Turnamen (20+ titik panggil di core.js/
 // tournament-arena.js) diam-diam tidak pernah muncul. Diperbaiki jadi
 // rename saat destructure.
-const { showToast: TRN_showToast } = window.Utils || {};
+export const { showToast: TRN_showToast } = window.Utils || {};
 
     // ============================================================
     // RESOLVER DATA AGEN — TIDAK ADA ROSTER/NAMA HARDCODE.
@@ -23,7 +23,7 @@ const { showToast: TRN_showToast } = window.Utils || {};
     // kosong (lihat TRN_runTournamentBracket) alih-alih memakai daftar agen
     // tetap yang dikarang.
     // ============================================================
-    function TRN_getFullAgentPool() {
+export function TRN_getFullAgentPool() {
         let boxes = document.querySelectorAll('.agent-checkbox[data-agent]');
         if (boxes.length === 0 && window.KESEMPATAN?.AgentRenderer?.renderAllAgents) {
             window.KESEMPATAN?.AgentRenderer?.renderAllAgents();
@@ -41,13 +41,13 @@ const { showToast: TRN_showToast } = window.Utils || {};
         return pool;
     }
 
-    function TRN_isKnownRosterAgent(agent) {
+export function TRN_isKnownRosterAgent(agent) {
         // Validasi BENTUK identifier (keamanan), bukan whitelist nama
         // tetap — agen apa pun dari roster pusat otomatis diterima.
         return typeof agent === 'string' && agent.length > 0 && agent.length <= 64 && /^[A-Za-z0-9_\- ]+$/.test(agent);
     }
 
-    function TRN_humanizeAgentName(agent) {
+export function TRN_humanizeAgentName(agent) {
         if (!agent || typeof agent !== 'string') {
             return '';
         }
@@ -58,7 +58,7 @@ const { showToast: TRN_showToast } = window.Utils || {};
             .trim();
     }
 
-    function TRN_getAgentProfile(agent) {
+export function TRN_getAgentProfile(agent) {
         if (window.getAgentConfig) {
             const cfg = window.getAgentConfig(agent);
             if (cfg) {
@@ -72,12 +72,8 @@ const { showToast: TRN_showToast } = window.Utils || {};
         return { name: TRN_humanizeAgentName(agent), role: '', emoji: '' };
     }
 
-    function TRN_getAgentLabel(agent) {
+export function TRN_getAgentLabel(agent) {
         const profile = TRN_getAgentProfile(agent);
         return (profile.emoji ? profile.emoji + ' ' : '') + profile.name;
     }
 
-    // ============================================================
-    // 1. FUNGSI INTEGRASI EKSTERNAL
-    // ============================================================
-    

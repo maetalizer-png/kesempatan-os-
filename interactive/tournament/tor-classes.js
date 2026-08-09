@@ -5,7 +5,10 @@
    suara per-agen), TRN_DebateExporter, TRN_DebateHistory. Dimuat SEBELUM
    tournament-arena.js.
    ============================================================ */
-    class TRN_SecureConfig {
+import { TRN_isKnownRosterAgent } from './tor-config.js';
+import { TRN_saveDebateToMemory } from './tor-data-engine.js';
+
+    export class TRN_SecureConfig {
         constructor() {
             this.API_PROXY = '/api/ai/debate';
             this.STORAGE_KEY = 'tournament_history_v10';
@@ -30,7 +33,7 @@
     // ============================================================
     // 3. DEBATE STATE
     // ============================================================
-    class TRN_DebateState {
+    export class TRN_DebateState {
         constructor() {
             this.status = 'idle';
             this.currentRound = 0;
@@ -84,7 +87,7 @@
     // ============================================================
     // 4. SECURITY & SANITIZATION
     // ============================================================
-    class TRN_SecurityManager {
+    export class TRN_SecurityManager {
         static sanitizeHTML(str) {
             if (!str) {
                 return '';
@@ -154,7 +157,7 @@
     // ============================================================
     // 5. DEBATE ANALYTICS
     // ============================================================
-    class TRN_DebateAnalytics {
+    export class TRN_DebateAnalytics {
         constructor() {
             this.scores = {
                 agentA: { logic: 0, evidence: 0, rhetoric: 0, total: 0 },
@@ -257,7 +260,7 @@
     // Profil suara per-agen — supaya Agen A & B terdengar beda (bukan
     // satu suara datar yang sama untuk semua), konsisten dengan
     // pendekatan yang sama di debate.js.
-    function TRN_hashAgentKeyForVoice(key) {
+    export function TRN_hashAgentKeyForVoice(key) {
         let hash = 0;
         const str = String(key || '');
         for (let i = 0; i < str.length; i++) {
@@ -266,7 +269,7 @@
         return hash;
     }
 
-    function TRN_getAgentVoiceOptions(agentKey) {
+    export function TRN_getAgentVoiceOptions(agentKey) {
         const PROFILES = [
             { pitch: 0.82, rate: 0.93 },
             { pitch: 1.22, rate: 1.05 }
@@ -277,7 +280,7 @@
         return PROFILES[TRN_hashAgentKeyForVoice(agentKey) % 2];
     }
 
-    class TRN_VoiceManager {
+    export class TRN_VoiceManager {
         constructor() {
             this.isActive = false;
             this.recognition = null;
@@ -466,7 +469,7 @@
     // ============================================================
     // 7. DEBATE EXPORTER
     // ============================================================
-    class TRN_DebateExporter {
+    export class TRN_DebateExporter {
         static async exportToPDF(debateData, filename) {
             filename = filename || 'debate-result.pdf';
             try {
@@ -565,7 +568,7 @@
     // ============================================================
     // 8. DEBATE HISTORY MANAGER
     // ============================================================
-    class TRN_DebateHistory {
+    export class TRN_DebateHistory {
         constructor() {
             this.storageKey = 'tournament_history_v10';
             this.maxItems = 50;
@@ -627,7 +630,3 @@
             return this.loadAll().length;
         }
     }
-
-    // ============================================================
-    // 9. MAIN DEBATE ARENA
-    // ============================================================

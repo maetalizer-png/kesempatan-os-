@@ -3,6 +3,11 @@
    INTI TURNAMEN — Arena visual, bracket, orkestrasi
    pertandingan, panel & init. Dimuat PALING TERAKHIR.
    ============================================================ */
+import { TRN_showToast, TRN_getFullAgentPool } from './tor-config.js';
+import { TRN_State } from './tor-state.js';
+import { TRN_SecurityManager } from './tor-classes.js';
+import { TRN_DebateArena } from './tor-tournament-arena.js';
+
     function TRN_upgradeTournamentUI() {
         const container = document.getElementById('interactiveTournamentPanel');
         if (!container) {
@@ -224,7 +229,7 @@
         let roundNum = 1;
         let stoppedEarly = false;
         while (participants.length > 1) {
-            if (TRN_tournamentAbort) {
+            if (TRN_State.tournamentAbort) {
                 stoppedEarly = true;
                 break;
             }
@@ -245,7 +250,7 @@
             }
 
             for (let i = 0; i < pairPool.length; i += 2) {
-                if (TRN_tournamentAbort) {
+                if (TRN_State.tournamentAbort) {
                     stoppedEarly = true;
                     break;
                 }
@@ -270,7 +275,7 @@
                     });
                     winnerKey = TRN_resolveMatchWinner(result, agentA, agentB);
                 } catch (e) {
-                    if (TRN_tournamentAbort) {
+                    if (TRN_State.tournamentAbort) {
                         stoppedEarly = true;
                         break;
                     }
@@ -370,7 +375,7 @@
                 }
 
                 window.__tournamentRunning = true;
-                TRN_tournamentAbort = false;
+                TRN_State.tournamentAbort = false;
                 startBtn.disabled = true;
                 startBtn.textContent = 'Turnamen berjalan...';
                 if (stopBtn) {
@@ -386,7 +391,7 @@
                     }
                 } finally {
                     window.__tournamentRunning = false;
-                    TRN_tournamentAbort = false;
+                    TRN_State.tournamentAbort = false;
                     startBtn.disabled = false;
                     startBtn.textContent = 'MULAI TURNAMEN';
                     if (stopBtn) {
@@ -402,7 +407,7 @@
                 if (!window.__tournamentRunning) {
                     return;
                 }
-                TRN_tournamentAbort = true;
+                TRN_State.tournamentAbort = true;
                 tournamentArena.abort();
                 if (TRN_showToast) {
                     TRN_showToast('Menghentikan turnamen setelah match berjalan selesai...', 'info');

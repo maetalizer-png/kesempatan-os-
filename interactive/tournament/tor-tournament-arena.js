@@ -4,7 +4,14 @@
    pertandingan" di dalam bracket turnamen (dipanggil berkali-kali
    oleh TRN_runTournamentBracket di core.js).
    ============================================================ */
-    class TRN_DebateArena {
+import { TRN_showToast, TRN_getAgentProfile, TRN_getAgentLabel } from './tor-config.js';
+import { TRN_fetchStaticData, TRN_fetchFromVectorMemory, TRN_fetchFromDatabase } from './tor-data-engine.js';
+import {
+    TRN_DebateState, TRN_SecureConfig, TRN_VoiceManager, TRN_DebateAnalytics,
+    TRN_DebateHistory, TRN_DebateExporter, TRN_SecurityManager, TRN_getAgentVoiceOptions
+} from './tor-classes.js';
+
+    export class TRN_DebateArena {
         constructor() {
             this.state = new TRN_DebateState();
             this.config = new TRN_SecureConfig();

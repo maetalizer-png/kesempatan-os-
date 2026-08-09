@@ -3,19 +3,19 @@
    OTAK TURNAMEN — integrasi World/Memory/Database, simpan
    hasil ke memory.
    ============================================================ */
-    function TRN_getMemoryInstance() {
+    export function TRN_getMemoryInstance() {
         return window.KESEMPATAN?.VectorMemory || window.VectorMemory || window.VectorMemoryV5 || null;
     }
 
-    function TRN_getStaticData() {
+    export function TRN_getStaticData() {
         return window.__STATIC_DATA || [];
     }
 
-    function TRN_getDatabaseInstance() {
+    export function TRN_getDatabaseInstance() {
         return window.KESDatabase || window.getDatabaseV10 || null;
     }
 
-    function TRN_fetchStaticData(topic) {
+    export function TRN_fetchStaticData(topic) {
         const staticData = TRN_getStaticData();
         if (staticData.length === 0) {
             return [];
@@ -48,7 +48,7 @@
         return results.slice(0, 5);
     }
 
-    async function TRN_fetchFromVectorMemory(topic, topK) {
+    export async function TRN_fetchFromVectorMemory(topic, topK) {
         const memory = TRN_getMemoryInstance();
         if (!memory || typeof memory.search !== 'function') {
             return [];
@@ -62,7 +62,7 @@
         }
     }
 
-    async function TRN_fetchFromDatabase(topic, limit) {
+    export async function TRN_fetchFromDatabase(topic, limit) {
         const db = TRN_getDatabaseInstance();
         if (!db) {
             return [];
@@ -100,7 +100,7 @@
         return [];
     }
 
-    async function TRN_saveDebateToMemory(debateData) {
+    export async function TRN_saveDebateToMemory(debateData) {
         const memory = TRN_getMemoryInstance();
         const db = TRN_getDatabaseInstance();
         
@@ -145,7 +145,3 @@
             } catch (_) { console.warn('[TorDataEngine] db save failed'); }
         }
     }
-
-    // ============================================================
-    // 2. SECURE CONFIGURATION
-    // ============================================================
