@@ -1,37 +1,15 @@
-/* ============================================================
-KESEMPATAN OS - SEARCH
-Vector, Graph, FTS, Geo, TimeSeries, QueryParser, Optimizer, Stream
-============================================================ */
-(function () {
-'use strict';
+import { DB_CONFIG } from './kes-dbconfig.js';
+import { InternalLogger, NotificationSystem } from './kes-helpers.js';
 
 const KESEMPATAN = window.KESEMPATAN || {};
 window.KESEMPATAN = KESEMPATAN;
 KESEMPATAN.KesDatabase = KESEMPATAN.KesDatabase || {};
 
-if (window.__SearchLoaded) {
-    return;
-}
+const Config = DB_CONFIG;
 
-window.__SearchLoaded = true;
+const Logger = InternalLogger;
 
-const Config = KESEMPATAN.KesDatabase.DB_CONFIG || {};
-
-const Logger = window.InternalLogger || {
-    debug: function () {},
-    info: function () {},
-    warn: function () {},
-    error: function () {},
-    critical: function () {}
-};
-
-const Notify = KESEMPATAN.KesDatabase.NotificationSystem || {
-    success: function () {},
-    info: function () {},
-    warning: function () {},
-    error: function () {},
-    critical: function () {}
-};
+const Notify = NotificationSystem;
 
 // ============================================================
 // VECTOR SEARCH
@@ -1633,9 +1611,11 @@ class QueryStream {
     }
 }
 
-// ============================================================
-// EXPOSE
-// ============================================================
+export {
+    VectorSearch, GraphQuery, FullTextSearch, GeospatialQuery,
+    TimeSeriesAnalytics, QueryParser, AIQueryOptimizer, IndexOptimizer, QueryStream
+};
+
 KESEMPATAN.KesDatabase.VectorSearch = VectorSearch;
 KESEMPATAN.KesDatabase.GraphQuery = GraphQuery;
 KESEMPATAN.KesDatabase.FullTextSearch = FullTextSearch;
@@ -1649,5 +1629,3 @@ KESEMPATAN.KesDatabase.QueryStream = QueryStream;
 if (window.Utils && window.Utils.Logger) {
     window.Utils.Logger.info('Search', 'Loaded');
 }
-
-})();

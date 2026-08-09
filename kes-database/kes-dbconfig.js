@@ -1,19 +1,8 @@
-/* ============================================================
-KESEMPATAN OS - DATABASE CONFIG
-============================================================ */
-(function () {
-'use strict';
 const KESEMPATAN = window.KESEMPATAN || {};
 window.KESEMPATAN = KESEMPATAN;
 KESEMPATAN.KesDatabase = KESEMPATAN.KesDatabase || {};
 
-if (window.__DBConfigLoaded) {
-    return;
-}
-
-window.__DBConfigLoaded = true;
-
-KESEMPATAN.KesDatabase.DB_CONFIG = Object.freeze({
+export const DB_CONFIG = Object.freeze({
     // ============================================================
     // KONTRAK FROZEN — penahan data IndexedDB
     // JANGAN rename 'name' tanpa migration antar-database
@@ -73,8 +62,8 @@ KESEMPATAN.KesDatabase.DB_CONFIG = Object.freeze({
     signalingServerUrl: 'wss://signaling.kesempatan.com'
 });
 
+KESEMPATAN.KesDatabase.DB_CONFIG = DB_CONFIG;
+
 if (window.Utils && window.Utils.Logger) {
     window.Utils.Logger.info('DBConfig', 'Loaded');
 }
-
-})();

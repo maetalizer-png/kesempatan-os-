@@ -1,37 +1,13 @@
-/* ============================================================
-KESEMPATAN OS - MONITOR
-Monitoring, Audit, Benchmark
-============================================================ */
-(function () {
-'use strict';
+import { InternalLogger, NotificationSystem, generateId } from './kes-helpers.js';
 
 const KESEMPATAN = window.KESEMPATAN || {};
 window.KESEMPATAN = KESEMPATAN;
 KESEMPATAN.KesDatabase = KESEMPATAN.KesDatabase || {};
 
-if (window.__MonitorLoaded) {
-    return;
-}
+const Logger = InternalLogger;
 
-window.__MonitorLoaded = true;
+const Notify = NotificationSystem;
 
-const Logger = window.InternalLogger || {
-    debug: function () {},
-    info: function () {},
-    warn: function () {},
-    error: function () {},
-    critical: function () {}
-};
-
-const Notify = KESEMPATAN.KesDatabase.NotificationSystem || {
-    success: function () {},
-    info: function () {},
-    warning: function () {},
-    error: function () {},
-    critical: function () {}
-};
-
-const { generateId } = KESEMPATAN.KesDatabase._dbUtils || {};
 
 function createId() {
     if (typeof generateId === 'function') {
@@ -487,9 +463,8 @@ class BenchmarkSuite {
     }
 }
 
-// ============================================================
-// EXPOSE
-// ============================================================
+export { MonitoringDashboard, AuditLog, BenchmarkSuite };
+
 KESEMPATAN.KesDatabase.MonitoringDashboard = MonitoringDashboard;
 KESEMPATAN.KesDatabase.AuditLog = AuditLog;
 KESEMPATAN.KesDatabase.BenchmarkSuite = BenchmarkSuite;
@@ -497,5 +472,3 @@ KESEMPATAN.KesDatabase.BenchmarkSuite = BenchmarkSuite;
 if (window.Utils && window.Utils.Logger) {
     window.Utils.Logger.info('Monitor', 'Loaded');
 }
-
-})();

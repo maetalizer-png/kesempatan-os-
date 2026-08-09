@@ -1,39 +1,16 @@
-/* ============================================================
-KESEMPATAN OS - SECURITY
-Encryption, CRDT, Versioning, Snapshot, MultiTenancy
-============================================================ */
-(function () {
-'use strict';
+import { DB_CONFIG } from './kes-dbconfig.js';
+import { InternalLogger, NotificationSystem, generateId } from './kes-helpers.js';
 
 const KESEMPATAN = window.KESEMPATAN || {};
 window.KESEMPATAN = KESEMPATAN;
 KESEMPATAN.KesDatabase = KESEMPATAN.KesDatabase || {};
 
-if (window.__SecurityLoaded) {
-    return;
-}
+const Config = DB_CONFIG;
 
-window.__SecurityLoaded = true;
+const Logger = InternalLogger;
 
-const Config = KESEMPATAN.KesDatabase.DB_CONFIG || {};
+const Notify = NotificationSystem;
 
-const Logger = window.InternalLogger || {
-    debug: function () {},
-    info: function () {},
-    warn: function () {},
-    error: function () {},
-    critical: function () {}
-};
-
-const Notify = KESEMPATAN.KesDatabase.NotificationSystem || {
-    success: function () {},
-    info: function () {},
-    warning: function () {},
-    error: function () {},
-    critical: function () {}
-};
-
-const { generateId } = KESEMPATAN.KesDatabase._dbUtils || {};
 
 function createId() {
     if (typeof generateId === 'function') {
@@ -639,9 +616,8 @@ class MultiTenancy {
     }
 }
 
-// ============================================================
-// EXPOSE
-// ============================================================
+export { QuantumEncryption, CRDT, DataVersioning, SnapshotManager, MultiTenancy };
+
 KESEMPATAN.KesDatabase.QuantumEncryption = QuantumEncryption;
 KESEMPATAN.KesDatabase.CRDT = CRDT;
 KESEMPATAN.KesDatabase.DataVersioning = DataVersioning;
@@ -651,5 +627,3 @@ KESEMPATAN.KesDatabase.MultiTenancy = MultiTenancy;
 if (window.Utils && window.Utils.Logger) {
     window.Utils.Logger.info('Security', 'Loaded');
 }
-
-})();

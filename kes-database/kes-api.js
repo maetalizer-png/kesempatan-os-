@@ -1,38 +1,15 @@
-/* ============================================================
-KESEMPATAN OS - API
-Database Core (KESDatabase) — GraphQL/QueryBuilder/Playground
-exploration tooling now lives in kes-api-playground.js.
-============================================================ */
-(function () {
-'use strict';
+import { DB_CONFIG } from './kes-dbconfig.js';
+import { InternalLogger, NotificationSystem } from './kes-helpers.js';
 
 const KESEMPATAN = window.KESEMPATAN || {};
 window.KESEMPATAN = KESEMPATAN;
 KESEMPATAN.KesDatabase = KESEMPATAN.KesDatabase || {};
 
-if (window.__ApiLoaded) {
-    return;
-}
+const Config = DB_CONFIG;
 
-window.__ApiLoaded = true;
+const Logger = InternalLogger;
 
-const Config = KESEMPATAN.KesDatabase.DB_CONFIG || {};
-
-const Logger = window.InternalLogger || {
-    debug: function () {},
-    info: function () {},
-    warn: function () {},
-    error: function () {},
-    critical: function () {}
-};
-
-const Notify = KESEMPATAN.KesDatabase.NotificationSystem || {
-    success: function () {},
-    info: function () {},
-    warning: function () {},
-    error: function () {},
-    critical: function () {}
-};
+const Notify = NotificationSystem;
 
 const utils = KESEMPATAN.KesDatabase._dbUtils || {};
 
@@ -1561,9 +1538,12 @@ async function migrateLegacySnapshotOnce(storeName, localStorageKey) {
     }
 }
 
-// ============================================================
-// EXPOSE
-// ============================================================
+export {
+    KESDatabase, getDatabase, FrameworkHelpers,
+    mirrorHistoryItem, mirrorSnapshot,
+    migrateLegacyArrayOnce, migrateArrayOnce, migrateLegacySnapshotOnce
+};
+
 KESEMPATAN.KesDatabase.KESDatabaseEngine = KESDatabase;
 KESEMPATAN.KesDatabase.getDatabase = getDatabase;
 KESEMPATAN.KesDatabase.FrameworkHelpers = FrameworkHelpers;
@@ -1580,5 +1560,3 @@ KESEMPATAN.KesDatabase.migrateLegacySnapshotOnce = migrateLegacySnapshotOnce;
 if (window.Utils && window.Utils.Logger) {
     window.Utils.Logger.info('API', 'Loaded');
 }
-
-})();

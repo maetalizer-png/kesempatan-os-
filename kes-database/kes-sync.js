@@ -1,39 +1,16 @@
-/* ============================================================
-KESEMPATAN OS - SYNC
-P2P, LiveQuery, CloudBackup
-============================================================ */
-(function () {
-'use strict';
+import { DB_CONFIG } from './kes-dbconfig.js';
+import { InternalLogger, NotificationSystem, generateId } from './kes-helpers.js';
 
 const KESEMPATAN = window.KESEMPATAN || {};
 window.KESEMPATAN = KESEMPATAN;
 KESEMPATAN.KesDatabase = KESEMPATAN.KesDatabase || {};
 
-if (window.__SyncLoaded) {
-    return;
-}
+const Config = DB_CONFIG;
 
-window.__SyncLoaded = true;
+const Logger = InternalLogger;
 
-const Config = KESEMPATAN.KesDatabase.DB_CONFIG || {};
+const Notify = NotificationSystem;
 
-const Logger = window.InternalLogger || {
-    debug: function () {},
-    info: function () {},
-    warn: function () {},
-    error: function () {},
-    critical: function () {}
-};
-
-const Notify = KESEMPATAN.KesDatabase.NotificationSystem || {
-    success: function () {},
-    info: function () {},
-    warning: function () {},
-    error: function () {},
-    critical: function () {}
-};
-
-const { generateId } = KESEMPATAN.KesDatabase._dbUtils || {};
 
 function createId() {
     if (typeof generateId === 'function') {
@@ -586,9 +563,8 @@ class CloudBackup {
     }
 }
 
-// ============================================================
-// EXPOSE
-// ============================================================
+export { P2PSync, LiveQuery, CloudBackup };
+
 KESEMPATAN.KesDatabase.P2PSync = P2PSync;
 KESEMPATAN.KesDatabase.LiveQuery = LiveQuery;
 KESEMPATAN.KesDatabase.CloudBackup = CloudBackup;
@@ -596,5 +572,3 @@ KESEMPATAN.KesDatabase.CloudBackup = CloudBackup;
 if (window.Utils && window.Utils.Logger) {
     window.Utils.Logger.info('Sync', 'Loaded');
 }
-
-})();

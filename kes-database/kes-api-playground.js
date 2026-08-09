@@ -1,31 +1,10 @@
-/* ============================================================
-KESEMPATAN OS - API PLAYGROUND
-GraphQL-like query layer, visual query builder, and interactive
-query playground — UI/exploration tooling built on top of
-KESDatabase.executeQuery(), split out of kes-api.js (which now
-holds only the core KESDatabase class) so the two responsibilities
-don't share one file.
-============================================================ */
-(function () {
-'use strict';
+import { InternalLogger } from './kes-helpers.js';
 
 const KESEMPATAN = window.KESEMPATAN || {};
 window.KESEMPATAN = KESEMPATAN;
 KESEMPATAN.KesDatabase = KESEMPATAN.KesDatabase || {};
 
-if (window.__ApiPlaygroundLoaded) {
-    return;
-}
-
-window.__ApiPlaygroundLoaded = true;
-
-const Logger = window.InternalLogger || {
-    debug: function () {},
-    info: function () {},
-    warn: function () {},
-    error: function () {},
-    critical: function () {}
-};
+const Logger = InternalLogger;
 
 function renderJson(elementId, data) {
     const element = document.getElementById(elementId);
@@ -228,7 +207,8 @@ class Playground {
     }
 }
 
+export { GraphQLAPI, QueryBuilder, Playground };
+
 KESEMPATAN.KesDatabase.GraphQLAPI = GraphQLAPI;
 KESEMPATAN.KesDatabase.QueryBuilder = QueryBuilder;
 KESEMPATAN.KesDatabase.Playground = Playground;
-})();

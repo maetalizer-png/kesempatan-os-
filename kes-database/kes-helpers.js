@@ -1,22 +1,10 @@
-/* ============================================================
-KESEMPATAN OS - HELPERS
-============================================================ */
-(function () {
-'use strict';
+import { DB_CONFIG } from './kes-dbconfig.js';
+
 const KESEMPATAN = window.KESEMPATAN || {};
 window.KESEMPATAN = KESEMPATAN;
 KESEMPATAN.KesDatabase = KESEMPATAN.KesDatabase || {};
 
-if (window.__HelpersLoaded) {
-    return;
-}
-
-window.__HelpersLoaded = true;
-
-// ============================================================
-// UTILITIES
-// ============================================================
-function generateId() {
+export function generateId() {
     if (globalThis.crypto && typeof globalThis.crypto.randomUUID === 'function') {
         return globalThis.crypto.randomUUID();
     }
@@ -24,30 +12,18 @@ function generateId() {
     return Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 10);
 }
 
-function sleep(ms) {
+export function sleep(ms) {
     return new Promise(function (resolve) {
         setTimeout(resolve, ms);
     });
 }
 
-const Config = KESEMPATAN.KesDatabase.DB_CONFIG || {};
-
-// ============================================================
-// SMART CACHE
-// ============================================================
-// FIX: dirujuk kes-api.js (_lazyLoad('smartCache') + health check
-// monitoring "cache") tapi TIDAK PERNAH diimplementasikan di
-// manapun (beda dari QueryBuilder/Playground yang memang ada di
-// kes-api.js sendiri) — akibatnya caching selalu diam-diam kosong,
-// typeof window.SmartCache selalu 'undefined'. LRU+TTL sederhana,
-// pakai Config.cacheTTL yang sudah lama didefinisikan di
-// kes-dbconfig.js tapi belum pernah benar-benar dipakai.
-class SmartCache {
+export class SmartCache {
     constructor(options) {
         options = options || {};
         this._store = new Map();
         this._maxSize = options.maxSize || 1000;
-        this._ttl = options.ttl || Config.cacheTTL || 3600000;
+        this._ttl = options.ttl || DB_CONFIG.cacheTTL || 3600000;
         this._hits = 0;
         this._misses = 0;
     }
@@ -112,10 +88,7 @@ class SmartCache {
     }
 }
 
-// ============================================================
-// INTERNAL LOGGER
-// ============================================================
-const InternalLogger = (function () {
+export const InternalLogger = (function () {
     const state = {
         logs: [],
         listeners: [],
@@ -222,10 +195,7 @@ const InternalLogger = (function () {
     });
 })();
 
-// ============================================================
-// NOTIFICATION SYSTEM
-// ============================================================
-const NotificationSystem = (function () {
+export const NotificationSystem = (function () {
     const state = {
         notifications: [],
         listeners: [],
@@ -380,23 +350,20 @@ const NotificationSystem = (function () {
     });
 })();
 
-// ============================================================
-// EXPOSE
-// ============================================================
-// InternalLogger stays a bare window global: dozens of unrelated files
-// (country/data loaders, hitl.js, response-cache.js, etc.) read it
-// directly as a shared cross-cutting logger.
-window.InternalLogger = InternalLogger;
-
 KESEMPATAN.KesDatabase.NotificationSystem = NotificationSystem;
 KESEMPATAN.KesDatabase.SmartCache = SmartCache;
+KESEMPATAN.KesDatabase.InternalLogger = InternalLogger;
 KESEMPATAN.KesDatabase._dbUtils = Object.freeze({
     generateId: generateId,
     sleep: sleep
 });
 
+// Bare (not KESEMPATAN.InternalLogger, which is a separate logger owned by
+// js/utils.js): dozens of unrelated files (country/data loaders, hitl.js,
+// response-cache.js, etc.) read window.InternalLogger directly as a shared
+// cross-cutting logger.
+window.InternalLogger = InternalLogger;
+
 if (window.Utils && window.Utils.Logger) {
     window.Utils.Logger.info('Helpers', 'Loaded');
 }
-
-})();

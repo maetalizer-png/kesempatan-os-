@@ -1,45 +1,22 @@
-/* ============================================================
-KESEMPATAN OS - DATABASE ENTRY POINT
-============================================================ */
-(function () {
-'use strict';
+// Static imports (in dependency order) replace the old runtime
+// document.createElement('script') loader: the ES module graph itself now
+// guarantees kes-dbconfig.js -> kes-helpers.js -> ... -> kes-api-playground.js
+// finish evaluating, in this order, before any code below runs.
+import './kes-dbconfig.js';
+import './kes-helpers.js';
+import './kes-security.js';
+import './kes-search.js';
+import './kes-monitor.js';
+import './kes-sync.js';
+import { getDatabase } from './kes-api.js';
+import './kes-api-playground.js';
+import { Utils } from '../js/utils.js';
+
 const KESEMPATAN = window.KESEMPATAN || {};
 window.KESEMPATAN = KESEMPATAN;
 
-if (window.__DatabaseEntryLoaded) {
-    return;
-}
+const Logger = Utils.Logger;
 
-window.__DatabaseEntryLoaded = true;
-
-const Utils = KESEMPATAN.Utils || window.Utils || {};
-const Logger = Utils.Logger || {
-    info: function () {},
-    warn: function () {},
-    error: function () {}
-};
-
-// ============================================================
-// DAFTAR MODULE — URUTAN PENTING
-// ============================================================
-const modules = [
-    'kes-database/kes-dbconfig.js',
-    'kes-database/kes-helpers.js',
-    'kes-database/kes-security.js',
-    'kes-database/kes-search.js',
-    'kes-database/kes-monitor.js',
-    'kes-database/kes-sync.js',
-    'kes-database/kes-api.js',
-    'kes-database/kes-api-playground.js'
-];
-
-let loaded = 0;
-const total = modules.length;
-let hasError = false;
-
-// ============================================================
-// FALLBACK DATABASE
-// ============================================================
 function createFallbackDatabase() {
     return {
         _isDummy: true,
@@ -147,55 +124,15 @@ function handleBootstrapError(error) {
     }
 }
 
-// ============================================================
-// BOOTSTRAP DATABASE
-// ============================================================
 function bootstrapDatabase() {
-    if (hasError) {
-        Logger.warn('DatabaseEntry', 'One or more database modules failed to load');
-    }
-
-    const initializer = window.KESEMPATAN?.KesDatabase?.getDatabase;
-
-    if (typeof initializer !== 'function') {
+    if (typeof getDatabase !== 'function') {
         handleBootstrapError(new Error('Database initializer unavailable'));
         return;
     }
 
-    initializer()
+    getDatabase()
         .then(handleDatabaseReady)
         .catch(handleBootstrapError);
 }
 
-// ============================================================
-// MODULE LOADER
-// ============================================================
-function loadNext() {
-    if (loaded >= total) {
-        bootstrapDatabase();
-        return;
-    }
-
-    const src = modules[loaded];
-    const script = document.createElement('script');
-
-    script.src = src;
-    script.async = false;
-
-    script.onload = function () {
-        loaded++;
-        loadNext();
-    };
-
-    script.onerror = function () {
-        hasError = true;
-        loaded++;
-        loadNext();
-    };
-
-    document.head.appendChild(script);
-}
-
-loadNext();
-
-})();
+bootstrapDatabase();
