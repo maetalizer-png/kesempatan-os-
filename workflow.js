@@ -192,18 +192,21 @@ async function executeAgentWithRetryCore(agent, context, uploadedData, retryCoun
 
     try {
         const prompt = await buildPrompt(agent, context, uploadedData);
-        // Kunci cache HARUS beda antara jalur lokal & eksternal — dua mesin
-        // dengan kualitas berbeda menimpa cache satu sama lain kalau dipukul
-        // rata di bawah 1 nama model (bug lama). 'local-llm-50m' konsisten
-        // dipakai tiap kali jawaban BENAR-BENAR datang dari model lokal.
-        // Prediksi di sini (SEBELUM generate) cuma optimasi pembacaan cache —
-        // sisi TULIS di bawah selalu pakai engine ASLI yang benar-benar
-        // dipakai, jadi prediksi meleset paling apes cuma cache-miss, tidak
-        // pernah menyajikan hasil yang salah.
-        const LOCAL_MODEL_CACHE_NAME = 'local-llm-50m';
+        // Kunci cache HARUS beda antar mesin — mesin berkualitas beda saling
+        // menimpa cache satu sama lain kalau dipukul rata di bawah 1 nama
+        // model (bug lama). Nama konsisten tiap kali jawaban BENAR-BENAR
+        // datang dari mesin itu. Prediksi di sini (SEBELUM generate) cuma
+        // optimasi pembacaan cache — sisi TULIS di bawah selalu pakai engine
+        // ASLI yang benar-benar dipakai, jadi prediksi meleset paling apes
+        // cuma cache-miss, tidak pernah menyajikan hasil yang salah.
+        const ENGINE_CACHE_NAMES = { 'local-v2': 'local-llm-v2', 'local': 'local-llm-50m' };
         const externalModelForCache = (window.CONFIG && window.CONFIG.DEFAULT_MODEL) || 'default';
-        const predictedLocal = WorkflowLLMBridge.isLocalEngineEligible && WorkflowLLMBridge.isLocalEngineEligible();
-        let modelForCache = predictedLocal ? LOCAL_MODEL_CACHE_NAME : externalModelForCache;
+        function predictEngineCacheName() {
+            if (WorkflowLLMBridge.isV2EngineEligible && WorkflowLLMBridge.isV2EngineEligible()) return ENGINE_CACHE_NAMES['local-v2'];
+            if (WorkflowLLMBridge.isLocalEngineEligible && WorkflowLLMBridge.isLocalEngineEligible()) return ENGINE_CACHE_NAMES['local'];
+            return externalModelForCache;
+        }
+        let modelForCache = predictEngineCacheName();
         const cached = await WorkflowLLMBridge.tryGetCachedAgentResult(agent, modelForCache, prompt);
         if (cached) {
             if (Logger) {
@@ -220,7 +223,7 @@ async function executeAgentWithRetryCore(agent, context, uploadedData, retryCoun
         parsed.agent = agent;
         parsed = (KnowledgeBase && KnowledgeBase.enrich) ? KnowledgeBase.enrich(parsed, context.topic) : parsed;
 
-        modelForCache = engine === 'local' ? LOCAL_MODEL_CACHE_NAME : externalModelForCache;
+        modelForCache = ENGINE_CACHE_NAMES[engine] || externalModelForCache;
         await WorkflowLLMBridge.cacheAgentResultIfValid(agent, modelForCache, prompt, parsed);
         await saveVectorMemory(agent + ': ' + (parsed.summary || ''), {
             agent: agent,

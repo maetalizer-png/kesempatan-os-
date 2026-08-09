@@ -71,15 +71,61 @@ function isLocalEngineEligible() {
         typeof window.KesempatanLLM.isReady === 'function' && window.KesempatanLLM.isReady();
 }
 
-// Mengembalikan { text, engine } — engine: 'local' | 'external'. Dulu
-// cuma mengembalikan string mentah, membuat pemanggil (workflow.js) TIDAK
-// BISA tahu mesin mana yang sebenarnya menjawab (termasuk saat lokal
+// Core Engine v2 (model pretrained sungguhan lewat @huggingface/transformers,
+// lihat llm-transformers-bridge.js) — kalau siap, INI yang dicoba PALING
+// DULU (Primary Route), sebelum Core Engine v1 (transformer buatan sendiri
+// ~50 juta parameter) dan sebelum provider API eksternal.
+function isV2EngineEligible() {
+    return !window.__kesempatanLLM2SkipThisSession && !!window.KesempatanLLM2 &&
+        typeof window.KesempatanLLM2.isReady === 'function' && window.KesempatanLLM2.isReady();
+}
+
+// Mengembalikan { text, engine } — engine: 'local-v2' | 'local' | 'external'.
+// Dulu cuma mengembalikan string mentah, membuat pemanggil (workflow.js)
+// TIDAK BISA tahu mesin mana yang sebenarnya menjawab (termasuk saat lokal
 // timeout lalu diam-diam fallback ke luar di tengah panggilan) — akibatnya
-// cache respons (response-cache.js) menyimpan hasil lokal & eksternal di
-// bawah SATU kunci model yang sama, dua mesin berkualitas beda saling
-// menimpa cache satu sama lain secara acak. Sekarang engine yang
-// SEBENARNYA dipakai selalu ikut dikembalikan.
+// cache respons (response-cache.js) menyimpan hasil dari mesin berbeda-beda
+// di bawah SATU kunci model yang sama, saling menimpa cache secara acak.
+// Sekarang engine yang SEBENARNYA dipakai selalu ikut dikembalikan.
+//
+// URUTAN (Primary Route sesuai permintaan — jangan panggil API eksternal
+// selama Worker lokal berjalan normal):
+//   1. Core Engine v2 (pretrained, WebGPU/WASM)
+//   2. Core Engine v1 (transformer buatan sendiri, selalu tersedia offline)
+//   3. Provider API eksternal (last resort)
 async function callGenerativeEngine(prompt, agent, topic) {
+    if (isV2EngineEligible()) {
+        __activeGenerateCount++;
+        const startedAt = performance.now();
+        try {
+            const text = await withTimeout(
+                window.KesempatanLLM2.generate(prompt, {}),
+                LLM_GENERATE_TIMEOUT_MS,
+                'generate Core Engine v2'
+            );
+            if (text && text.trim().length >= 10) {
+                recordLLMTelemetry('local-v2', Math.round(performance.now() - startedAt), true, { agent: agent, chars: text.length });
+                return { text: text, engine: 'local-v2' };
+            }
+            if (Logger) {
+                Logger.warn('Workflow', 'Agent "' + agent + '": Core Engine v2 hasil nyaris kosong, coba engine berikutnya');
+            }
+            recordLLMTelemetry('local-v2', Math.round(performance.now() - startedAt), false, { agent: agent, reason: 'empty-output' });
+        } catch (e) {
+            // Generasi yang masih berjalan di Worker TIDAK dibatalkan paksa
+            // (transformers.js belum terbukti mendukung interupsi per-token
+            // yang andal) — dibiarkan selesai sendiri di latar belakang,
+            // hasilnya cuma dibuang. UI tidak pernah menunggu/beku karenanya.
+            if (Logger) {
+                Logger.warn('Workflow', 'Agent "' + agent + '": Core Engine v2 gagal/timeout (' + e.message + '), coba engine berikutnya');
+            }
+            recordLLMTelemetry('local-v2', Math.round(performance.now() - startedAt), false, { agent: agent, reason: e.message });
+        } finally {
+            __activeGenerateCount--;
+        }
+        // jatuh ke Core Engine v1 di bawah (bukan langsung ke eksternal)
+    }
+
     if (isLocalEngineEligible()) {
         __activeGenerateCount++;
         const startedAt = performance.now();
@@ -188,6 +234,83 @@ function withTimeout(promise, ms, label) {
             }, ms);
         })
     ]);
+}
+
+// ============================================================
+// CORE ENGINE v2 READINESS — mirip ensureKesempatanLLMReady() di bawah,
+// tapi jauh lebih sederhana: v2 tidak perlu bootstrap corpus/training,
+// cuma initialize() sekali (unduh+muat model, dicache lewat IndexedDB di
+// llm-transformers-worker.js sehingga percobaan BERIKUTNYA jauh lebih
+// cepat). Kunci localStorage TERPISAH dari v1 supaya kegagalan salah satu
+// engine tidak ikut membuat engine yang lain dilewati.
+// ============================================================
+const LLM2_SLOW_DEVICE_KEY = 'kes_llm2_slow_device_until';
+const LLM2_INIT_TIMEOUT_MS = 90000; // unduh model pertama kali bisa perlu waktu lebih lama dari v1
+
+function isV2DeviceKnownSlow() {
+    try {
+        const until = parseInt(localStorage.getItem(LLM2_SLOW_DEVICE_KEY), 10);
+        return !isNaN(until) && Date.now() < until;
+    } catch (e) {
+        return false;
+    }
+}
+
+function markV2DeviceSlow() {
+    try {
+        localStorage.setItem(LLM2_SLOW_DEVICE_KEY, String(Date.now() + LLM_SLOW_DEVICE_TTL_MS));
+    } catch (e) {
+        InternalLogger.warn('Workflow', 'Mark v2 device slow failed: ' + e.message);
+    }
+}
+
+let __v2InitPromise = null;
+
+async function ensureKesempatanLLMv2Ready() {
+    if (window.KesempatanLLM2 && window.KesempatanLLM2.isReady && window.KesempatanLLM2.isReady()) {
+        return true;
+    }
+    if (!window.KesempatanLLM2 || !window.KesempatanLLM2.initialize) {
+        return false;
+    }
+    if (window.__kesempatanLLM2SkipThisSession) {
+        return false;
+    }
+    if (isV2DeviceKnownSlow()) {
+        window.__kesempatanLLM2SkipThisSession = true;
+        if (Logger) {
+            Logger.info('KesempatanLLM2', 'Perangkat/browser ini tercatat gagal memuat Core Engine v2 sebelumnya (cache 24 jam) — langsung coba engine lain');
+        }
+        return false;
+    }
+    // Kalau initialize() sedang berjalan (dipanggil bersamaan dari beberapa
+    // agen paralel), semua pemanggil menunggu Promise YANG SAMA, bukan
+    // memicu initialize() berkali-kali.
+    if (__v2InitPromise) {
+        return __v2InitPromise;
+    }
+    __v2InitPromise = (async function () {
+        try {
+            if (showToast) {
+                showToast('⬇️ Menyiapkan Core Engine v2 (model bisa perlu diunduh sekali)...', 'info');
+            }
+            await withTimeout(window.KesempatanLLM2.initialize(), LLM2_INIT_TIMEOUT_MS, 'inisialisasi Core Engine v2');
+            if (Logger) {
+                Logger.info('KesempatanLLM2', 'Core Engine v2 siap dipakai');
+            }
+            return true;
+        } catch (e) {
+            window.__kesempatanLLM2SkipThisSession = true;
+            markV2DeviceSlow();
+            if (Logger) {
+                Logger.warn('KesempatanLLM2', 'Inisialisasi Core Engine v2 gagal (' + e.message + ') — pakai Core Engine v1/provider luar untuk sesi ini');
+            }
+            return false;
+        } finally {
+            __v2InitPromise = null;
+        }
+    })();
+    return __v2InitPromise;
 }
 
 async function ensureKesempatanLLMReady() {
@@ -347,11 +470,13 @@ async function cacheAgentResultIfValid(agent, model, prompt, parsed) {
 KESEMPATAN.WorkflowLLMBridge = Object.freeze({
     callGenerativeEngine: callGenerativeEngine,
     ensureKesempatanLLMReady: ensureKesempatanLLMReady,
+    ensureKesempatanLLMv2Ready: ensureKesempatanLLMv2Ready,
     searchWorldData: searchWorldData,
     searchPastReports: searchPastReports,
     getAgentCacheKey: getAgentCacheKey,
     tryGetCachedAgentResult: tryGetCachedAgentResult,
     cacheAgentResultIfValid: cacheAgentResultIfValid,
-    isLocalEngineEligible: isLocalEngineEligible
+    isLocalEngineEligible: isLocalEngineEligible,
+    isV2EngineEligible: isV2EngineEligible
 });
 })();

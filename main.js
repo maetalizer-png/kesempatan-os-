@@ -372,10 +372,14 @@ function setupEventListeners() {
             return;
         }
         try {
-            if (window.KESEMPATAN?.WorkflowLLMBridge?.ensureKesempatanLLMReady) {
+            if (window.KESEMPATAN?.WorkflowLLMBridge?.ensureKesempatanLLMv2Ready) {
+                await window.KESEMPATAN.WorkflowLLMBridge.ensureKesempatanLLMv2Ready();
+            }
+            const kesempatanLLMv2Ready = window.KesempatanLLM2 && window.KesempatanLLM2.isReady && window.KesempatanLLM2.isReady();
+            if (!kesempatanLLMv2Ready && window.KESEMPATAN?.WorkflowLLMBridge?.ensureKesempatanLLMReady) {
                 await window.KESEMPATAN.WorkflowLLMBridge.ensureKesempatanLLMReady();
             }
-            const kesempatanLLMReady = window.KesempatanLLM && window.KesempatanLLM.isReady && window.KesempatanLLM.isReady();
+            const kesempatanLLMReady = kesempatanLLMv2Ready || (window.KesempatanLLM && window.KesempatanLLM.isReady && window.KesempatanLLM.isReady());
             if (!kesempatanLLMReady) {
                 const CONFIG = window.KESEMPATAN?.Config || window.CONFIG;
                 const AIClients = window.KESEMPATAN?.AIClients || window.AIClients;
