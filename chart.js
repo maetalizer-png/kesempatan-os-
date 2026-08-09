@@ -1,5 +1,9 @@
 (function() {
 "use strict";
+
+const KESEMPATAN = window.KESEMPATAN || {};
+window.KESEMPATAN = KESEMPATAN;
+
 if (window.__ChartLoaded) return;
 window.__ChartLoaded = true;
 
@@ -195,7 +199,7 @@ function loadReportHistory() {
         try {
             const reports = JSON.parse(saved);
             history = reports.slice(0, 15).reverse();
-        } catch (error) {}
+        } catch (error) { console.warn('[Chart] Load report history failed:', error.message); }
     }
     return history;
 }
@@ -431,19 +435,13 @@ const ChartManager = Object.freeze({
     getTimeChart: () => timeAnalyticsChart
 });
 
-window.KESEMPATAN = window.KESEMPATAN || {};
-window.KESEMPATAN.ChartManager = ChartManager;
-window.ChartManager = ChartManager;
-window.updateChart = updateChart;
-window.ScoreEngine = ScoreEngine;
-window.initTimeAnalytics = initTimeAnalytics;
-window.updateTimeAnalytics = updateTimeAnalytics;
+KESEMPATAN.ChartManager = ChartManager;
 })();
 
 (function autoInitChart() {
     setTimeout(() => {
-        if (typeof window.updateChart === 'function') {
-            window.updateChart({
+        if (typeof window.KESEMPATAN?.ChartManager?.updateChart === 'function') {
+            window.KESEMPATAN.ChartManager.updateChart({
                 demand: 0, competition: 0, monetization: 0, virality: 0,
                 sustainability: 0, scalability: 0, timing: 0, attention: 0,
                 execution: 0, longterm: 0

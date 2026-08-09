@@ -158,7 +158,8 @@ const PAGE_HANDLERS = {
         const element = document.getElementById('premiumPage');
         if (element) {
             element.style.display = 'block';
-            if (typeof renderOfflinePage === 'function') renderOfflinePage();
+            const inner = document.getElementById('premiumPageInner');
+            if (inner && typeof KESEMPATAN.OfflineMode?.renderFullPage === 'function') KESEMPATAN.OfflineMode.renderFullPage(inner);
         }
     },
     parallel: function() {

@@ -1,5 +1,9 @@
 (function () {
 "use strict";
+
+const KESEMPATAN = window.KESEMPATAN || {};
+window.KESEMPATAN = KESEMPATAN;
+
 if (window.__OfflineModeLoaded) return;
 window.__OfflineModeLoaded = true;
 
@@ -210,7 +214,7 @@ return '<button class="oc-tab" type="button" role="tab" data-tab-target="' + t.i
 
 function switchTab(id) {
 state.activeTab = id;
-try { localStorage.setItem(CONSTANTS.TAB_KEY, id); } catch (e) {}
+try { localStorage.setItem(CONSTANTS.TAB_KEY, id); } catch (e) { console.warn('[OfflineMode] OfflineMode failed:', e.message); }
 applyActiveTab();
 }
 
@@ -225,7 +229,7 @@ panels.forEach(function (p) { p.classList.toggle('active', p.getAttribute('data-
 }
 
 function loadConsoleLogs() { try { const s = localStorage.getItem(CONSTANTS.LOG_KEY); state.consoleLogs = s ? JSON.parse(s) : []; } catch (e) { state.consoleLogs = []; } return state.consoleLogs; }
-function saveConsoleLogs() { try { localStorage.setItem(CONSTANTS.LOG_KEY, JSON.stringify(state.consoleLogs)); } catch (e) {} }
+function saveConsoleLogs() { try { localStorage.setItem(CONSTANTS.LOG_KEY, JSON.stringify(state.consoleLogs)); } catch (e) { console.warn('[OfflineMode] saveConsoleLogs failed:', e.message); } }
 
 function addConsoleLog(message, level, source) {
 state.consoleLogs.unshift({ ts: Date.now(), message: String(message), level: level || 'info', source: source || 'SYS' });
@@ -255,7 +259,7 @@ return '<div class="oc-console-line level-' + escapeHtml(l.level) + '"><span cla
 function updateConsoleOnly() { setHTML('ocSystemConsole', renderConsoleLines()); setHTML('ocActivityLog', renderActivityLog()); }
 
 function loadCacheMetrics() { try { const s = localStorage.getItem(CONSTANTS.CACHE_METRICS_KEY); state.cacheMetrics = s ? JSON.parse(s) : { hits: 0, misses: 0 }; } catch (e) { state.cacheMetrics = { hits: 0, misses: 0 }; } return state.cacheMetrics; }
-function saveCacheMetrics() { try { localStorage.setItem(CONSTANTS.CACHE_METRICS_KEY, JSON.stringify(state.cacheMetrics)); } catch (e) {} }
+function saveCacheMetrics() { try { localStorage.setItem(CONSTANTS.CACHE_METRICS_KEY, JSON.stringify(state.cacheMetrics)); } catch (e) { console.warn('[OfflineMode] saveCacheMetrics failed:', e.message); } }
 
 function trackCacheHit(hit) {
 if (hit) state.cacheMetrics.hits++; else state.cacheMetrics.misses++;
@@ -266,7 +270,7 @@ saveCacheMetrics(); updateCacheDisplay();
 
 function getCacheHitRatio() { const t = (state.cacheMetrics.hits || 0) + (state.cacheMetrics.misses || 0); if (!t) return 0; return Math.round((state.cacheMetrics.hits || 0) / t * 100); }
 
-function measureLatency() { const t0 = performance.now(); try { localStorage.getItem(CONSTANTS.STATS_KEY); } catch (e) {} state.latencyMs = Math.max(0.1, Math.round((performance.now() - t0) * 100) / 100); }
+function measureLatency() { const t0 = performance.now(); try { localStorage.getItem(CONSTANTS.STATS_KEY); } catch (e) { console.warn('[OfflineMode] measureLatency failed:', e.message); } state.latencyMs = Math.max(0.1, Math.round((performance.now() - t0) * 100) / 100); }
 
 function updateResourceEstimates() {
 const pending = state.pendingRequests.length, cacheCount = Object.keys(state.offlineCache).length;
@@ -280,7 +284,7 @@ if (navigator.storage && navigator.storage.estimate) navigator.storage.estimate(
 
 function getLocalDatabaseInfo() {
 let keys = 0, chars = 0;
-try { for (let i = 0; i < localStorage.length; i++) { const k = localStorage.key(i); if (k && k.indexOf('kes') === 0) { keys++; chars += (localStorage.getItem(k) || '').length; } } } catch (e) {}
+try { for (let i = 0; i < localStorage.length; i++) { const k = localStorage.key(i); if (k && k.indexOf('kes') === 0) { keys++; chars += (localStorage.getItem(k) || '').length; } } } catch (e) { console.warn('[OfflineMode] OfflineMode failed:', e.message); }
 const raw = chars * 2; return { keys: keys, rawBytes: raw, size: formatBytes(raw) };
 }
 
@@ -383,32 +387,32 @@ function encryptData(d) { if (!state.encryptionEnabled) return d; try { return b
 function decryptData(e) { if (!state.encryptionEnabled || typeof e !== 'string') return e; try { return JSON.parse(decodeURIComponent(atob(e))); } catch (e2) { return e; } }
 
 function loadOfflineCache() { try { const s = localStorage.getItem(CONSTANTS.CACHE_KEY); if (s) { const d = decryptData(s); state.offlineCache = typeof d === 'object' ? d : {}; } } catch (e) { state.offlineCache = {}; } return state.offlineCache; }
-function saveOfflineCache() { try { const d = state.encryptionEnabled ? encryptData(state.offlineCache) : state.offlineCache; localStorage.setItem(CONSTANTS.CACHE_KEY, typeof d === 'string' ? d : JSON.stringify(d)); } catch (e) {} broadcastUpdate('cache_update', { cache: state.offlineCache }); }
+function saveOfflineCache() { try { const d = state.encryptionEnabled ? encryptData(state.offlineCache) : state.offlineCache; localStorage.setItem(CONSTANTS.CACHE_KEY, typeof d === 'string' ? d : JSON.stringify(d)); } catch (e) { console.warn('[OfflineMode] saveOfflineCache failed:', e.message); } broadcastUpdate('cache_update', { cache: state.offlineCache }); }
 function loadOfflineStats() {
 const def = { count: 0, lastUsed: null, lastOnline: null, avgDuration: 0, successRate: 0, failed: 0, retries: 0, success: 0, avgResponseMs: 0, responseSamples: 0 };
 try { const s = localStorage.getItem(CONSTANTS.STATS_KEY); state.stats = Object.assign({}, def, s ? JSON.parse(s) : {}); } catch (e) { state.stats = Object.assign({}, def); }
 return state.stats;
 }
-function saveOfflineStats() { try { localStorage.setItem(CONSTANTS.STATS_KEY, JSON.stringify(state.stats)); } catch (e) {} }
+function saveOfflineStats() { try { localStorage.setItem(CONSTANTS.STATS_KEY, JSON.stringify(state.stats)); } catch (e) { console.warn('[OfflineMode] saveOfflineStats failed:', e.message); } }
 function loadPendingRequests() { try { const s = localStorage.getItem(CONSTANTS.PENDING_KEY); state.pendingRequests = s ? JSON.parse(s) : []; } catch (e) { state.pendingRequests = []; } return state.pendingRequests; }
-function savePendingRequests() { try { localStorage.setItem(CONSTANTS.PENDING_KEY, JSON.stringify(state.pendingRequests)); } catch (e) {} if (state.uiDirty) state.uiDirty.pending = true; broadcastUpdate('pending_update', { pending: state.pendingRequests }); updatePendingCounter(); }
+function savePendingRequests() { try { localStorage.setItem(CONSTANTS.PENDING_KEY, JSON.stringify(state.pendingRequests)); } catch (e) { console.warn('[OfflineMode] savePendingRequests failed:', e.message); } if (state.uiDirty) state.uiDirty.pending = true; broadcastUpdate('pending_update', { pending: state.pendingRequests }); updatePendingCounter(); }
 function loadOfflineQualities() { try { const s = localStorage.getItem(CONSTANTS.QUALITY_KEY); state.qualities = s ? JSON.parse(s) : {}; } catch (e) { state.qualities = {}; } return state.qualities; }
-function saveOfflineQualities() { try { localStorage.setItem(CONSTANTS.QUALITY_KEY, JSON.stringify(state.qualities)); } catch (e) {} if (state.uiDirty) state.uiDirty.agents = true; broadcastUpdate('quality_update', { qualities: state.qualities }); }
+function saveOfflineQualities() { try { localStorage.setItem(CONSTANTS.QUALITY_KEY, JSON.stringify(state.qualities)); } catch (e) { console.warn('[OfflineMode] saveOfflineQualities failed:', e.message); } if (state.uiDirty) state.uiDirty.agents = true; broadcastUpdate('quality_update', { qualities: state.qualities }); }
 function loadOfflineKnowledge() { try { const s = localStorage.getItem(CONSTANTS.KNOWLEDGE_KEY); state.offlineKnowledge = s ? JSON.parse(s) : {}; } catch (e) { state.offlineKnowledge = {}; } return state.offlineKnowledge; }
-function saveOfflineKnowledge() { try { localStorage.setItem(CONSTANTS.KNOWLEDGE_KEY, JSON.stringify(state.offlineKnowledge)); } catch (e) {} if (state.uiDirty) state.uiDirty.stats = true; }
+function saveOfflineKnowledge() { try { localStorage.setItem(CONSTANTS.KNOWLEDGE_KEY, JSON.stringify(state.offlineKnowledge)); } catch (e) { console.warn('[OfflineMode] saveOfflineKnowledge failed:', e.message); } if (state.uiDirty) state.uiDirty.stats = true; }
 function loadOfflineContexts() { try { const s = localStorage.getItem(CONSTANTS.CONTEXT_KEY); state.contexts = s ? JSON.parse(s) : {}; } catch (e) { state.contexts = {}; } return state.contexts; }
-function saveOfflineContexts() { try { localStorage.setItem(CONSTANTS.CONTEXT_KEY, JSON.stringify(state.contexts)); } catch (e) {} if (state.uiDirty) state.uiDirty.stats = true; }
+function saveOfflineContexts() { try { localStorage.setItem(CONSTANTS.CONTEXT_KEY, JSON.stringify(state.contexts)); } catch (e) { console.warn('[OfflineMode] saveOfflineContexts failed:', e.message); } if (state.uiDirty) state.uiDirty.stats = true; }
 function loadOfflineEvolutions() { try { const s = localStorage.getItem(CONSTANTS.EVOLUTION_KEY); state.evolutions = s ? JSON.parse(s) : {}; } catch (e) { state.evolutions = {}; } return state.evolutions; }
-function saveOfflineEvolutions() { try { localStorage.setItem(CONSTANTS.EVOLUTION_KEY, JSON.stringify(state.evolutions)); } catch (e) {} if (state.uiDirty) state.uiDirty.agents = true; }
+function saveOfflineEvolutions() { try { localStorage.setItem(CONSTANTS.EVOLUTION_KEY, JSON.stringify(state.evolutions)); } catch (e) { console.warn('[OfflineMode] saveOfflineEvolutions failed:', e.message); } if (state.uiDirty) state.uiDirty.agents = true; }
 function loadOfflineFeedback() { try { const s = localStorage.getItem(CONSTANTS.FEEDBACK_KEY); state.feedbacks = s ? JSON.parse(s) : {}; } catch (e) { state.feedbacks = {}; } return state.feedbacks; }
-function saveOfflineFeedback() { try { localStorage.setItem(CONSTANTS.FEEDBACK_KEY, JSON.stringify(state.feedbacks)); } catch (e) {} if (state.uiDirty) state.uiDirty.stats = true; }
+function saveOfflineFeedback() { try { localStorage.setItem(CONSTANTS.FEEDBACK_KEY, JSON.stringify(state.feedbacks)); } catch (e) { console.warn('[OfflineMode] saveOfflineFeedback failed:', e.message); } if (state.uiDirty) state.uiDirty.stats = true; }
 function loadOfflineHistory() { try { const s = localStorage.getItem(CONSTANTS.HISTORY_KEY); return s ? JSON.parse(s) : []; } catch (e) { return []; } }
 
 function saveOfflineHistory(action, duration) {
 duration = duration || 0; const h = loadOfflineHistory();
 h.unshift({ action: action, duration: duration, timestamp: Date.now(), date: new Date().toISOString() });
 if (h.length > CONSTANTS.MAX_TIMELINE) h.pop();
-try { localStorage.setItem(CONSTANTS.HISTORY_KEY, JSON.stringify(h)); } catch (e) {}
+try { localStorage.setItem(CONSTANTS.HISTORY_KEY, JSON.stringify(h)); } catch (e) { console.warn('[OfflineMode] OfflineMode failed:', e.message); }
 if (state.uiDirty) state.uiDirty.timeline = true;
 }
 
@@ -615,19 +619,19 @@ addConsoleLog('MESH CHANNEL VERIFIED', 'ok', 'BC');
 } catch (e) { state.broadcastChannel = null; }
 }
 
-function broadcastUpdate(t, d) { if (state.broadcastChannel) { try { state.broadcastChannel.postMessage({ type: t, data: d, timestamp: Date.now() }); } catch (e) {} } }
+function broadcastUpdate(t, d) { if (state.broadcastChannel) { try { state.broadcastChannel.postMessage({ type: t, data: d, timestamp: Date.now() }); } catch (e) { console.warn('[OfflineMode] broadcastUpdate failed:', e.message); } } }
 
 function loadOfflineData() { try { const s = localStorage.getItem(CONSTANTS.SYNC_KEY); return s ? JSON.parse(s) : []; } catch (e) { return []; } }
-function saveOfflineData(d) { try { localStorage.setItem(CONSTANTS.SYNC_KEY, JSON.stringify(d)); } catch (e) {} }
+function saveOfflineData(d) { try { localStorage.setItem(CONSTANTS.SYNC_KEY, JSON.stringify(d)); } catch (e) { console.warn('[OfflineMode] saveOfflineData failed:', e.message); } }
 function queueOfflineData(d) { const q = loadOfflineData(); q.push({ id: Date.now().toString() + Math.random().toString(36).substr(2, 4), data: d, timestamp: Date.now() }); if (q.length > 100) q.shift(); saveOfflineData(q); }
 
 async function syncOfflineData() {
 if (!isActuallyOnline()) { addConsoleLog('CONTINUITY HELD :: GATEWAY SEALED', 'warn', 'RELAY'); showToast('Gateway disegel, transmisi ditunda', 'warning'); return; }
 const q = loadOfflineData(); if (!q.length) { addConsoleLog('CONTINUITY CHECK :: NO PENDING TRANSMISSION', 'info', 'RELAY'); showToast('Tidak ada transmisi tertahan', 'info'); return; }
 let synced = 0;
-for (const it of q) { try { if (window.supabaseClient) { const r = await window.supabaseClient.from('offline_sync').insert([{ data: it.data }]); if (!r.error) synced++; } else synced++; } catch (e) {} }
+for (const it of q) { try { if (window.supabaseClient) { const r = await window.supabaseClient.from('offline_sync').insert([{ data: it.data }]); if (!r.error) synced++; } else synced++; } catch (e) { console.warn('[OfflineMode] OfflineMode failed:', e.message); } }
 saveOfflineData(q.slice(synced));
-if (synced > 0) { state.lastSync = Date.now(); try { localStorage.setItem(CONSTANTS.LAST_SYNC_KEY, String(state.lastSync)); } catch (e) {} addConsoleLog('CONTINUITY COMPLETE :: ' + synced + ' TRANSMISSION(S)', 'ok', 'RELAY'); showToast(synced + ' transmisi selesai!', 'success'); }
+if (synced > 0) { state.lastSync = Date.now(); try { localStorage.setItem(CONSTANTS.LAST_SYNC_KEY, String(state.lastSync)); } catch (e) { console.warn('[OfflineMode] OfflineMode failed:', e.message); } addConsoleLog('CONTINUITY COMPLETE :: ' + synced + ' TRANSMISSION(S)', 'ok', 'RELAY'); showToast(synced + ' transmisi selesai!', 'success'); }
 renderDashboard();
 }
 
@@ -1035,7 +1039,7 @@ updateResponseDuration(performance.now() - started); addConsoleLog('CORE ENGINE 
 }
 try {
 const result = await original.call(originalAIClients, prompt, agentName, initialProvider);
-try { const parsed = JSON.parse(result); if (parsed && !parsed._offlineMeta) { instantSetCachedResponse(agentName, prompt, parsed); updateOfflineAgentQuality(agentName, 2); state.stats.success = (state.stats.success || 0) + 1; saveOfflineStats(); addConsoleLog('UPLINK RESPONSE ARCHIVED :: ' + agentName, 'ok', 'NET'); } } catch (e) {}
+try { const parsed = JSON.parse(result); if (parsed && !parsed._offlineMeta) { instantSetCachedResponse(agentName, prompt, parsed); updateOfflineAgentQuality(agentName, 2); state.stats.success = (state.stats.success || 0) + 1; saveOfflineStats(); addConsoleLog('UPLINK RESPONSE ARCHIVED :: ' + agentName, 'ok', 'NET'); } } catch (e) { console.warn('[OfflineMode] OfflineMode failed:', e.message); }
 updateResponseDuration(performance.now() - started); return result;
 } catch (e) {
 const resp = getSmartFallback(agentName, prompt); updateOfflineAgentQuality(agentName, -1); state.stats.failed = (state.stats.failed || 0) + 1; saveOfflineStats();
@@ -1132,10 +1136,7 @@ container.innerHTML = '<div class="oc-page"><div id="offlineDashboardContainer">
 setTimeout(function () { renderDashboard(); startTelemetry(); }, 120);
 }
 
-window.renderOfflinePage = function () { const inner = document.getElementById('premiumPageInner'); if (inner) renderFullPage(inner); };
-
-window.KESEMPATAN = window.KESEMPATAN || {};
-window.KESEMPATAN.OfflineMode = Object.freeze({
+KESEMPATAN.OfflineMode = Object.freeze({
 renderFullPage: renderFullPage,
 isOnline: isActuallyOnline,
 getCache: function () { return state.offlineCache; },
@@ -1177,22 +1178,9 @@ switchTab: switchTab,
 getActiveTab: function () { return state.activeTab; }
 });
 
-window.OfflineMode = {
-renderFullPage: renderFullPage, isOnline: isActuallyOnline,
-getCache: function () { return state.offlineCache; }, getCacheStats: getCacheStats, clearCache: clearOfflineCache, exportCache: exportOfflineCache, importCache: importOfflineCache,
-getPending: function () { return state.pendingRequests; }, getStats: getOfflineStats, getPerformance: getOfflinePerformance,
-getHistory: loadOfflineHistory, clearHistory: clearOfflineHistory, retryPending: retryPendingRequests, syncData: syncOfflineData,
-renderDashboard: renderDashboard, toggleSimulation: toggleOfflineSimulation, isSimulating: function () { return state.isSimulating; },
-getQuality: getOfflineAgentQuality, getFeedback: function () { return state.feedbacks; }, recordFeedback: recordOfflineFeedback,
-getContext: getOfflineContext, getEvolution: getAgentEvolution, predictPerformance: predictOfflinePerformance, getRecommendation: getOfflineAgentRecommendation,
-toggleEncryption: realTimeEncryptionToggle, isEncryptionEnabled: function () { return state.encryptionEnabled; },
-getBroadcastStatus: function () { return state.broadcastChannel !== null; },
-updateRealtimeRecommendation: updateRealtimeRecommendation, startDashboard: startTelemetry,
-stopDashboard: function () { if (state.telemetryInterval) { clearInterval(state.telemetryInterval); state.telemetryInterval = null; } if (state.dashboardInterval) { clearInterval(state.dashboardInterval); state.dashboardInterval = null; } },
-getKnowledgeBase: function () { return state.offlineKnowledge; }, extractTopic: extractTopic, showAlert: showOfflineAlert,
-getConsoleLogs: function () { return state.consoleLogs; }, clearConsoleLogs: clearConsoleLogs, runHealthCheck: runHealthCheck, getDiagnostics: getLocalDiagnostics,
-switchTab: switchTab, getActiveTab: function () { return state.activeTab; }
-};
+// Kept as a real global (not KESEMPATAN-only): voice-core.js and
+// visual-core.js read window.OfflineMode.isOnline() directly.
+window.OfflineMode = window.KESEMPATAN.OfflineMode;
 
 if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else setTimeout(init, 100);
 })();

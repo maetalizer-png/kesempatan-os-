@@ -1,5 +1,9 @@
 (function() {
 "use strict";
+
+const KESEMPATAN = window.KESEMPATAN || {};
+window.KESEMPATAN = KESEMPATAN;
+
 if (window.__ExportLoaded) return;
 window.__ExportLoaded = true;
 
@@ -423,7 +427,10 @@ const ExportManager = Object.freeze({
     renderExportSection: renderExportSection
 });
 
-window.KESEMPATAN = window.KESEMPATAN || {};
-window.KESEMPATAN.ExportManager = ExportManager;
+KESEMPATAN.ExportManager = ExportManager;
+// Kept as a real global (not KESEMPATAN-only): social-share.js reassigns
+// window.ExportManager wholesale (Object.assign with a wrapped setData) to
+// hook into export completion, and this file's own click handlers read
+// window.ExportManager fresh at click-time so they pick up that wrapper.
 window.ExportManager = ExportManager;
 })();

@@ -8,9 +8,9 @@ window.__WorkflowLoaded = true;
 
 const { CONFIG, Utils } = window;
 const { Logger, RetryEngine, KnowledgeBase, safeParseResponse, escapeHtml, showToast, InternalLogger } = Utils || {};
-const { updateChart } = window.ChartManager || {};
+const { updateChart } = window.KESEMPATAN?.ChartManager || {};
 const { autoApproveResults, hidePanel: hideHitlPanel } = window.KESEMPATAN?.HITL || {};
-const { setData: setExportData } = window.ExportManager || {};
+const { setData: setExportData } = window.KESEMPATAN?.ExportManager || {};
 const { WorkflowState, WorkflowLLMBridge } = KESEMPATAN;
 // WorkflowParallel is read live via KESEMPATAN.WorkflowParallel (not destructured):
 // workflow-parallel.js loads after this file, so a snapshot taken here would stay undefined.
@@ -433,7 +433,7 @@ function finalizeAggregation(itemsOrResults, topic, note, successToast) {
     lastAggregated = aggregated;
     lastVerifierNote = note || '';
     renderReport(aggregated, note || '');
-    if (window.ScoreEngine) window.ScoreEngine.updateFromAggregated(aggregated);
+    if (window.KESEMPATAN?.ChartManager?.ScoreEngine) window.KESEMPATAN.ChartManager.ScoreEngine.updateFromAggregated(aggregated);
     if (updateChart && aggregated.metrics) updateChart(aggregated.metrics);
     if (appDatabase) appDatabase.saveReport(topic, aggregated.score, aggregated);
     if (setExportData) setExportData(aggregated, note || '');
@@ -541,7 +541,7 @@ function forceGenerateReport(results, payload) {
     window.lastAggregated = aggregated;
     window.lastVerifierNote = 'Laporan dipaksa keluar (force generate)';
     renderReport(aggregated, 'Laporan berhasil digenerate! (' + allResults.length + ' agen)');
-    if (window.ScoreEngine) window.ScoreEngine.updateFromAggregated(aggregated);
+    if (window.KESEMPATAN?.ChartManager?.ScoreEngine) window.KESEMPATAN.ChartManager.ScoreEngine.updateFromAggregated(aggregated);
     if (updateChart && aggregated.metrics) updateChart(aggregated.metrics);
     if (setExportData) setExportData(aggregated, 'Force generate');
     if (window.KESEMPATAN?.Main?.saveReportToHistory) {

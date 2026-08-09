@@ -472,6 +472,7 @@ function initSuperSocialShare() {
                 if (window.SuperSocialShare) window.SuperSocialShare.setResult(aggregated);
             }
         });
+        if (window.KESEMPATAN) window.KESEMPATAN.ExportManager = window.ExportManager;
     }
     if (!window.SuperSocialShare) window.SuperSocialShare = new SuperSocialShare();
     window.SuperSocialShare.render();

@@ -8,6 +8,9 @@
 (function() {
     'use strict';
 
+    const KESEMPATAN = window.KESEMPATAN || {};
+    window.KESEMPATAN = KESEMPATAN;
+
     const CONFIG = {
         starCount: 1200,
         particleCount: 80,
@@ -98,9 +101,9 @@
             }
             const container = document.getElementById('bg-canvas-container');
             if (container) container.remove();
-        } catch (_) {}
+        } catch (e) { console.warn('[Background] Cleanup failed:', e.message); }
         window.__bgRenderer = null;
-        window.Background = null;
+        KESEMPATAN.Background = null;
     }
 
     window.addEventListener('beforeunload', cleanupBackground);
@@ -160,7 +163,7 @@
                     try {
                         const oldContainer = document.getElementById('bg-canvas-container');
                         if (oldContainer) oldContainer.remove();
-                    } catch (_) {}
+                    } catch (e) { console.warn('[Background] Context-lost cleanup failed:', e.message); }
                     window.__bgRenderer = null;
                     window.__bgStars = null;
                     window.__bgParticles = null;
@@ -168,7 +171,7 @@
                     window.__bgAurora = null;
                     window.__bgController = null;
                     window.__bgMain = null;
-                    window.Background = null;
+                    KESEMPATAN.Background = null;
                     defineAllModules();
                 }, false);
 
@@ -637,7 +640,7 @@
                     });
                 });
 
-                window.Background = {
+                KESEMPATAN.Background = {
                     setMode: function(mode) {
                         window.__bgController.setMode(mode);
                     },
