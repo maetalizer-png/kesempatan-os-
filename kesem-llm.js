@@ -51,11 +51,52 @@
     const pending = new Map();
     let modelReady = false;
 
+    // ============================================================
+    // LIFECYCLE — bebaskan RAM/Wasm Worker kalau tidak dipakai cukup
+    // lama, supaya ~50 juta parameter model tidak terus menempati
+    // memori padahal user sedang di halaman lain. Worker dibuat ulang
+    // LAZY (ensureWorker()) di panggilan berikutnya kalau dibutuhkan
+    // lagi — modelReady jadi false, jadi ensureKesempatanLLMReady() di
+    // workflow-llm-bridge.js otomatis memulihkan dari checkpoint.
+    // ============================================================
+    let lastActivityAt = Date.now();
+    const IDLE_DESTROY_MS = 10 * 60 * 1000;
+    let idleWatcherInterval = null;
+
+    function touchActivity() {
+        lastActivityAt = Date.now();
+    }
+
+    function destroy() {
+        if (worker) {
+            worker.terminate();
+            worker = null;
+        }
+        pending.forEach(function (entry) {
+            entry.reject(new Error('[KesempatanLLM] Worker dihentikan (destroy/idle cleanup)'));
+        });
+        pending.clear();
+        modelReady = false;
+        Logger.info('KesemLLMEntry', 'Worker dihentikan, RAM/Wasm dibebaskan — akan dibuat ulang otomatis di panggilan berikutnya');
+    }
+
+    function ensureIdleWatcher() {
+        if (idleWatcherInterval) {
+            return;
+        }
+        idleWatcherInterval = setInterval(function () {
+            if (worker && pending.size === 0 && (Date.now() - lastActivityAt) > IDLE_DESTROY_MS) {
+                destroy();
+            }
+        }, 60000);
+    }
+
     function ensureWorker() {
         if (worker) {
             return worker;
         }
         worker = new Worker('llm-worker.js');
+        ensureIdleWatcher();
         worker.onmessage = function(e) {
             if (e.data && e.data.type === 'progress') {
                 Logger.info('KesemLLMEntry', '✅ Loaded: kesem-llm/' + e.data.file + ' (' + e.data.loaded + '/' + e.data.total + ')');
@@ -84,6 +125,7 @@
     }
 
     function callWorker(type, payload) {
+        touchActivity();
         return new Promise(function(resolve, reject) {
             const id = nextId++;
             pending.set(id, { resolve: resolve, reject: reject });
@@ -234,6 +276,7 @@
         initialize: initialize,
         generate: generate,
         stop: stop,
+        destroy: destroy,
         core: {
             save: coreSave,
             load: coreLoad,

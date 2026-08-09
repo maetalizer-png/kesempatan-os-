@@ -31,9 +31,58 @@ function markDeviceSlow() {
 
 let __activeGenerateCount = 0;
 
+// ============================================================
+// TELEMETRI — window.KESEMPATAN.LLMTelemetry: hitung berapa kali jalur
+// lokal vs eksternal benar-benar dipakai, latensi, dan berapa karakter
+// dihasilkan lokal — dipakai untuk memverifikasi "Primary Route" (lokal
+// harus jadi jalur utama, eksternal cuma fallback) benar-benar terjadi
+// di lapangan, bukan cuma niat di kode.
+// ============================================================
+const LLM_TELEMETRY = window.KESEMPATAN.LLMTelemetry || (function() {
+    const store = {
+        local: { calls: 0, failures: 0, totalLatencyMs: 0, totalCharsGenerated: 0 },
+        external: { calls: 0, failures: 0, totalLatencyMs: 0 },
+        recent: []
+    };
+    window.KESEMPATAN.LLMTelemetry = store;
+    return store;
+})();
+
+function recordLLMTelemetry(engine, latencyMs, success, extra) {
+    const bucket = engine === 'local' ? LLM_TELEMETRY.local : LLM_TELEMETRY.external;
+    bucket.calls++;
+    if (!success) bucket.failures++;
+    bucket.totalLatencyMs += latencyMs;
+    if (engine === 'local' && extra && typeof extra.chars === 'number') {
+        bucket.totalCharsGenerated += extra.chars;
+    }
+    LLM_TELEMETRY.recent.push(Object.assign({ engine: engine, latencyMs: latencyMs, success: success, ts: Date.now() }, extra || {}));
+    if (LLM_TELEMETRY.recent.length > 30) {
+        LLM_TELEMETRY.recent.shift();
+    }
+}
+
+// Kondisi PERSIS yang menentukan apakah callGenerativeEngine() akan
+// mencoba jalur lokal lebih dulu — diekspos terpisah supaya workflow.js
+// bisa MEMPREDIKSI kunci cache (response-cache.js) SEBELUM generate()
+// benar-benar dipanggil, tanpa duplikasi kondisi yang bisa melenceng.
+function isLocalEngineEligible() {
+    return !window.__kesempatanLLMSkipThisSession && !!window.KesempatanLLM &&
+        typeof window.KesempatanLLM.isReady === 'function' && window.KesempatanLLM.isReady();
+}
+
+// Mengembalikan { text, engine } — engine: 'local' | 'external'. Dulu
+// cuma mengembalikan string mentah, membuat pemanggil (workflow.js) TIDAK
+// BISA tahu mesin mana yang sebenarnya menjawab (termasuk saat lokal
+// timeout lalu diam-diam fallback ke luar di tengah panggilan) — akibatnya
+// cache respons (response-cache.js) menyimpan hasil lokal & eksternal di
+// bawah SATU kunci model yang sama, dua mesin berkualitas beda saling
+// menimpa cache satu sama lain secara acak. Sekarang engine yang
+// SEBENARNYA dipakai selalu ikut dikembalikan.
 async function callGenerativeEngine(prompt, agent, topic) {
-    if (!window.__kesempatanLLMSkipThisSession && window.KesempatanLLM && window.KesempatanLLM.isReady && window.KesempatanLLM.isReady()) {
+    if (isLocalEngineEligible()) {
         __activeGenerateCount++;
+        const startedAt = performance.now();
         try {
             const stopSignal = { stopped: false };
             const genPromise = window.KesempatanLLM.generate(prompt, agent, topic, { stopSignal: stopSignal });
@@ -51,18 +100,27 @@ async function callGenerativeEngine(prompt, agent, topic) {
                     if (Logger) {
                         Logger.warn('Workflow', 'Agent "' + agent + '": KESEMPATAN LLM dihentikan (timeout ' + (LLM_GENERATE_TIMEOUT_MS / 1000) + 's) dengan hasil nyaris kosong, coba provider luar');
                     }
-                    return await window.AIClients.generateWithFallback(prompt, agent, null, topic);
+                    recordLLMTelemetry('local', Math.round(performance.now() - startedAt), false, { agent: agent, reason: 'timeout' });
+                    const extStartedAt = performance.now();
+                    const externalText = await window.AIClients.generateWithFallback(prompt, agent, null, topic);
+                    recordLLMTelemetry('external', Math.round(performance.now() - extStartedAt), true, { agent: agent, reason: 'local-timeout-fallback' });
+                    return { text: externalText, engine: 'external' };
                 }
-                return text;
+                recordLLMTelemetry('local', Math.round(performance.now() - startedAt), true, { agent: agent, chars: text.length });
+                return { text: text, engine: 'local' };
             } catch (e) {
                 clearTimeout(timeoutId);
+                recordLLMTelemetry('local', Math.round(performance.now() - startedAt), false, { agent: agent, reason: e.message });
                 throw e;
             }
         } finally {
             __activeGenerateCount--;
         }
     }
-    return await window.AIClients.generateWithFallback(prompt, agent, null, topic);
+    const extStartedAt = performance.now();
+    const externalText = await window.AIClients.generateWithFallback(prompt, agent, null, topic);
+    recordLLMTelemetry('external', Math.round(performance.now() - extStartedAt), true, { agent: agent, reason: 'local-unavailable' });
+    return { text: externalText, engine: 'external' };
 }
 
 const MAX_BOOTSTRAP_AGENTS = 999;
@@ -293,6 +351,7 @@ KESEMPATAN.WorkflowLLMBridge = Object.freeze({
     searchPastReports: searchPastReports,
     getAgentCacheKey: getAgentCacheKey,
     tryGetCachedAgentResult: tryGetCachedAgentResult,
-    cacheAgentResultIfValid: cacheAgentResultIfValid
+    cacheAgentResultIfValid: cacheAgentResultIfValid,
+    isLocalEngineEligible: isLocalEngineEligible
 });
 })();

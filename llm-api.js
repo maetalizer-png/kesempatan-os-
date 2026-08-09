@@ -73,7 +73,7 @@ async function generate(promptText, agentName, topic, extraOptions) {
     if (!options.maxNewTokens || options.maxNewTokens > LOCAL_MAX_NEW_TOKENS_CAP) {
         options.maxNewTokens = LOCAL_MAX_NEW_TOKENS_CAP;
     }
-    // FIX KUALITAS: batasi temperature khusus jalur lokal (maks 0.4).
+    // FIX KUALITAS: batasi temperature khusus jalur lokal ke rentang 0.3-0.5.
     // agentConfig.temperature (0.1-0.85 tergantung agen) di-tuning utk
     // model eksternal yang sudah matang — suhu tinggi menghasilkan variasi
     // kreatif yang WAJAR di model besar, tapi di model lokal yang masih
@@ -81,17 +81,26 @@ async function generate(promptText, agentName, topic, extraOptions) {
     // memilih token langka/kurang terlatih yang decode jadi <unk> — pola
     // persis yang terlihat di laporan user (skor 40 + <unk> berulang utk
     // agen bersuhu tinggi, sementara agen bersuhu rendah hasilnya lebih
-    // koheren). agentConfig ASLI tidak diubah (fallback ke luar tetap
-    // pakai nilai asli).
-    const LOCAL_MAX_TEMPERATURE = 0.4;
-    if (typeof options.temperature !== 'number' || options.temperature > LOCAL_MAX_TEMPERATURE) {
+    // koheren). Batas bawah 0.3 mencegah suhu terlalu rendah (0.1-0.2)
+    // membuat output kaku/berulang. agentConfig ASLI tidak diubah
+    // (fallback ke luar tetap pakai nilai asli).
+    const LOCAL_MIN_TEMPERATURE = 0.3;
+    const LOCAL_MAX_TEMPERATURE = 0.5;
+    if (typeof options.temperature !== 'number') {
+        options.temperature = 0.4;
+    } else if (options.temperature > LOCAL_MAX_TEMPERATURE) {
         options.temperature = LOCAL_MAX_TEMPERATURE;
+    } else if (options.temperature < LOCAL_MIN_TEMPERATURE) {
+        options.temperature = LOCAL_MIN_TEMPERATURE;
     }
     let finalPrompt = promptText;
     if (window.LLMRetriever && window.LLMContextBuilder) {
         try {
             const model = Core.getModel();
-            const snippets = await window.LLMRetriever.retrieveAll(topic || promptText, { topKPerSource: 3, topKFinal: 5 });
+            // Model ~50 juta parameter gampang "tenggelam" kalau context window
+            // dipenuhi cuplikan yang kurang relevan — batasi ke Top-2/Top-3 saja
+            // (bukan Top-5 seperti sebelumnya) supaya sinyal yang masuk lebih padat.
+            const snippets = await window.LLMRetriever.retrieveAll(topic || promptText, { topKPerSource: 2, topKFinal: 3 });
             if (snippets.length > 0) {
                 const built = window.LLMContextBuilder.buildContext(topic || 'Analisis peluang', promptText, snippets, model, options);
                 finalPrompt = built.prompt;

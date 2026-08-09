@@ -146,7 +146,13 @@
         seed: 42,
         logLevel: 'warn',
         maxNewTokens: 128,       // batas default token yang digenerate per panggilan
-        temperature: 0.8,
+        // Model ~50 juta parameter jauh lebih rentan berhalusinasi/mengulang
+        // kalimat dibanding model eksternal besar — suhu & nucleus dibatasi
+        // lebih ketat (0.3-0.5 / 0.85-0.9) sebagai default, plus repetition
+        // penalty supaya tidak terjebak loop kalimat yang sama.
+        temperature: 0.4,
+        topP: 0.88,
+        repetitionPenalty: 1.15,
         greedy: false            // false = sampling suhu; true = selalu ambil token termungkin
     });
 

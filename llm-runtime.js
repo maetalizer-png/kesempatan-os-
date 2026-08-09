@@ -123,12 +123,24 @@ function maskSpecialTokens(logits, vocab) {
     }
     return masked;
 }
-function sampleNextToken(logits, temperature, greedy) {
+function sampleNextToken(logits, temperature, greedy, samplingOptions) {
+    samplingOptions = samplingOptions || {};
     if (greedy) {
+        // Repetition penalty tetap berlaku di mode greedy juga — tanpa itu
+        // greedy decoding gampang terjebak loop "kata yang sama berulang".
+        if (window.LLMSampler) {
+            return window.LLMSampler.argmax(window.LLMSampler.applyRepetitionPenalty(logits, samplingOptions.recentTokenIds, samplingOptions.repetitionPenalty));
+        }
         return argmax(logits);
     }
     if (window.LLMSampler) {
-        return window.LLMSampler.sample(logits, { strategy: 'topP', p: 0.9, temperature: temperature });
+        return window.LLMSampler.sample(logits, {
+            strategy: 'topP',
+            p: typeof samplingOptions.topP === 'number' ? samplingOptions.topP : 0.9,
+            temperature: temperature,
+            repetitionPenalty: samplingOptions.repetitionPenalty,
+            recentTokenIds: samplingOptions.recentTokenIds
+        });
     }
     const T = Math.max(1e-6, temperature);
     const scaled = logits.map(function (v) { return v / T; });
@@ -175,6 +187,8 @@ async function generate(model, promptText, options) {
     const maxNewTokens = Number.isInteger(options.maxNewTokens) ? options.maxNewTokens : model.config.runtime.maxNewTokens;
     const temperature = typeof options.temperature === 'number' ? options.temperature : model.config.runtime.temperature;
     const greedy = typeof options.greedy === 'boolean' ? options.greedy : model.config.runtime.greedy;
+    const topP = typeof options.topP === 'number' ? options.topP : model.config.runtime.topP;
+    const repetitionPenalty = typeof options.repetitionPenalty === 'number' ? options.repetitionPenalty : model.config.runtime.repetitionPenalty;
     const yieldEvery = Number.isInteger(options.yieldEvery) && options.yieldEvery > 0 ? options.yieldEvery : 1;
     const pieces = Tokenizer.tokenize(promptText, model.merges);
     const promptIds = Vocabulary.encode(pieces, model.vocab);
@@ -194,7 +208,11 @@ async function generate(model, promptText, options) {
             break;
         }
         const logits = Inference.getNextTokenLogits(ids, model, model.config.model);
-        const nextId = sampleNextToken(maskSpecialTokens(logits, model.vocab), temperature, greedy);
+        const nextId = sampleNextToken(maskSpecialTokens(logits, model.vocab), temperature, greedy, {
+            topP: topP,
+            repetitionPenalty: repetitionPenalty,
+            recentTokenIds: generatedIds.slice(-64)
+        });
         if (nextId === model.vocab.eosId) {
             stoppedAtEos = true;
             break;
@@ -227,6 +245,8 @@ async function generateCached(model, promptText, options) {
     const maxNewTokens = Number.isInteger(options.maxNewTokens) ? options.maxNewTokens : model.config.runtime.maxNewTokens;
     const temperature = typeof options.temperature === 'number' ? options.temperature : model.config.runtime.temperature;
     const greedy = typeof options.greedy === 'boolean' ? options.greedy : model.config.runtime.greedy;
+    const topP = typeof options.topP === 'number' ? options.topP : model.config.runtime.topP;
+    const repetitionPenalty = typeof options.repetitionPenalty === 'number' ? options.repetitionPenalty : model.config.runtime.repetitionPenalty;
     const yieldEvery = Number.isInteger(options.yieldEvery) && options.yieldEvery > 0 ? options.yieldEvery : 1;
     const pieces = Tokenizer.tokenize(promptText, model.merges);
     const promptIds = Vocabulary.encode(pieces, model.vocab);
@@ -281,7 +301,11 @@ async function generateCached(model, promptText, options) {
             break;
         }
         const logits = result.logits[result.logits.length - 1];
-        const nextId = sampleNextToken(maskSpecialTokens(logits, model.vocab), temperature, greedy);
+        const nextId = sampleNextToken(maskSpecialTokens(logits, model.vocab), temperature, greedy, {
+            topP: topP,
+            repetitionPenalty: repetitionPenalty,
+            recentTokenIds: generatedIds.slice(-64)
+        });
         if (nextId === model.vocab.eosId) {
             stoppedAtEos = true;
             break;

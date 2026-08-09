@@ -192,7 +192,18 @@ async function executeAgentWithRetryCore(agent, context, uploadedData, retryCoun
 
     try {
         const prompt = await buildPrompt(agent, context, uploadedData);
-        const modelForCache = (window.CONFIG && window.CONFIG.DEFAULT_MODEL) || 'default';
+        // Kunci cache HARUS beda antara jalur lokal & eksternal — dua mesin
+        // dengan kualitas berbeda menimpa cache satu sama lain kalau dipukul
+        // rata di bawah 1 nama model (bug lama). 'local-llm-50m' konsisten
+        // dipakai tiap kali jawaban BENAR-BENAR datang dari model lokal.
+        // Prediksi di sini (SEBELUM generate) cuma optimasi pembacaan cache —
+        // sisi TULIS di bawah selalu pakai engine ASLI yang benar-benar
+        // dipakai, jadi prediksi meleset paling apes cuma cache-miss, tidak
+        // pernah menyajikan hasil yang salah.
+        const LOCAL_MODEL_CACHE_NAME = 'local-llm-50m';
+        const externalModelForCache = (window.CONFIG && window.CONFIG.DEFAULT_MODEL) || 'default';
+        const predictedLocal = WorkflowLLMBridge.isLocalEngineEligible && WorkflowLLMBridge.isLocalEngineEligible();
+        let modelForCache = predictedLocal ? LOCAL_MODEL_CACHE_NAME : externalModelForCache;
         const cached = await WorkflowLLMBridge.tryGetCachedAgentResult(agent, modelForCache, prompt);
         if (cached) {
             if (Logger) {
@@ -204,11 +215,12 @@ async function executeAgentWithRetryCore(agent, context, uploadedData, retryCoun
         }
 
         const generatePromise = WorkflowLLMBridge.callGenerativeEngine(prompt, agent, context.topic);
-        const raw = await generatePromise;
+        const { text: raw, engine } = await generatePromise;
         let parsed = safeParseResponse(raw);
         parsed.agent = agent;
         parsed = (KnowledgeBase && KnowledgeBase.enrich) ? KnowledgeBase.enrich(parsed, context.topic) : parsed;
 
+        modelForCache = engine === 'local' ? LOCAL_MODEL_CACHE_NAME : externalModelForCache;
         await WorkflowLLMBridge.cacheAgentResultIfValid(agent, modelForCache, prompt, parsed);
         await saveVectorMemory(agent + ': ' + (parsed.summary || ''), {
             agent: agent,

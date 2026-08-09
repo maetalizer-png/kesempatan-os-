@@ -62,21 +62,30 @@
         // systemPrompt+query saja sudah melebihi anggaran — di praktiknya
         // ini SELALU terjadi untuk prompt agen nyata, jadi try/catch di
         // llm-api.js SELALU menangkapnya dan diam-diam skip seluruh pengayaan
-        // RAG. Sekarang: kalau kelebihan, systemPrompt dipangkas dari
-        // DEPAN (bukan throw) — mempertahankan bagian AKHIR prompt yang
-        // biasanya berisi instruksi format output JSON paling penting
-        // (lihat buildPrompt() di workflow.js, instruksi itu selalu di
-        // akhir). Dipangkas ~25% panjang karakter per iterasi (bukan
-        // token-per-token yang jauh lebih lambat) — beberapa iterasi
-        // cukup konvergen karena rasio karakter:token relatif stabil.
+        // RAG. Sekarang: kalau kelebihan, systemPrompt dipangkas (bukan throw).
+        //
+        // 🔧 FIX (konsistensi dgn generateCached() di llm-runtime.js): versi
+        // SEBELUMNYA di sini memangkas cuma dari DEPAN, sama seperti yang
+        // TERBUKTI keliru di generateCached() — identitas agen ("Anda adalah
+        // RahmadRaharjo, agen analisis...") selalu ada di system prompt
+        // paling AWAL (lihat buildPrompt() di workflow.js), jadi pangkas-dari-
+        // depan-saja membuang identitas agen, bikin jawaban terasa generik.
+        // Sekarang pangkas dari TENGAH: sisakan ~40% AWAL (identitas +
+        // instruksi inti) dan sisanya di AKHIR (topik + format output yang
+        // diminta), buang bagian tengah (biasanya few-shot — panjang tapi
+        // kurang kritis). Dipangkas ~15% panjang karakter per iterasi.
         let effectiveSystemPrompt = systemPrompt || '';
         let header = effectiveSystemPrompt + '\n\nPertanyaan: ' + query + '\n\nKonteks:\n';
         let usedTokens = countTokens(header, model);
 
         let guard = 0;
-        while (usedTokens > budget && effectiveSystemPrompt.length > 0 && guard < 20) {
-            const cutLength = Math.max(1, Math.ceil(effectiveSystemPrompt.length * 0.25));
-            effectiveSystemPrompt = effectiveSystemPrompt.slice(cutLength);
+        while (usedTokens > budget && effectiveSystemPrompt.length > 40 && guard < 20) {
+            const totalKeep = Math.max(40, Math.floor(effectiveSystemPrompt.length * 0.85));
+            const headLen = Math.floor(totalKeep * 0.4);
+            const tailLen = totalKeep - headLen;
+            const head = effectiveSystemPrompt.slice(0, headLen);
+            const tail = tailLen > 0 ? effectiveSystemPrompt.slice(effectiveSystemPrompt.length - tailLen) : '';
+            effectiveSystemPrompt = head + tail;
             header = effectiveSystemPrompt + '\n\nPertanyaan: ' + query + '\n\nKonteks:\n';
             usedTokens = countTokens(header, model);
             guard++;

@@ -129,23 +129,43 @@
     }
 
     // ============================================================
+    // REPETITION PENALTY — turunkan logit token yang sudah muncul di
+    // sequence yang baru digenerate (CTRL-style: logit positif dibagi
+    // penalty, logit negatif dikali penalty, supaya keduanya bergerak
+    // ke arah "kurang mungkin dipilih lagi"). penalty=1 = tidak ada efek.
+    // ============================================================
+    function applyRepetitionPenalty(logits, recentTokenIds, penalty) {
+        if (!penalty || penalty === 1 || !recentTokenIds || recentTokenIds.length === 0) {
+            return logits;
+        }
+        const seen = new Set(recentTokenIds);
+        return logits.map(function (v, i) {
+            if (!seen.has(i)) return v;
+            return v > 0 ? v / penalty : v * penalty;
+        });
+    }
+
+    // ============================================================
     // DISPATCHER
     // ============================================================
     // options.strategy: 'greedy' | 'temperature' | 'topK' | 'topP' (default 'temperature')
+    // options.repetitionPenalty + options.recentTokenIds: opsional, diterapkan
+    // ke logits SEBELUM strategi pemilihan token manapun (termasuk greedy).
     function sample(logits, options) {
         options = options || {};
         const strategy = options.strategy || 'temperature';
         const temperature = typeof options.temperature === 'number' ? options.temperature : 0.8;
+        const penalizedLogits = applyRepetitionPenalty(logits, options.recentTokenIds, options.repetitionPenalty);
 
         switch (strategy) {
             case 'greedy':
-                return greedySample(logits);
+                return greedySample(penalizedLogits);
             case 'topK':
-                return topKSample(logits, options.k || 40, temperature);
+                return topKSample(penalizedLogits, options.k || 40, temperature);
             case 'topP':
-                return topPSample(logits, options.p || 0.9, temperature);
+                return topPSample(penalizedLogits, options.p || 0.9, temperature);
             case 'temperature':
-                return temperatureSample(logits, temperature);
+                return temperatureSample(penalizedLogits, temperature);
             default:
                 throw new Error('[LLMSampler] strategy "' + strategy + '" tidak dikenal');
         }
@@ -158,6 +178,7 @@
         temperatureSample: temperatureSample,
         topKSample: topKSample,
         topPSample: topPSample,
+        applyRepetitionPenalty: applyRepetitionPenalty,
         sample: sample
     };
 
