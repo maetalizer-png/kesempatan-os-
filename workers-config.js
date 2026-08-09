@@ -1,5 +1,9 @@
 (function() {
 'use strict';
+
+const KESEMPATAN = window.KESEMPATAN || {};
+window.KESEMPATAN = KESEMPATAN;
+
 if (window.__WorkersAIConfig) return;
 window.__WorkersAIConfig = true;
 
@@ -73,11 +77,8 @@ const AI_WORKERS_LIST = Object.freeze([
     { id: 'ai_trainer', name: 'AI Trainer', category: 'bonus', enabled: false, schedule: 'daily', lastRun: null, icon: '', priority: 4 }
 ]);
 
-window.WorkersAIConfig = {
+KESEMPATAN.WorkersConfig = {
     WORKER_CONFIG: WORKER_CONFIG,
     AI_WORKERS_LIST: AI_WORKERS_LIST
 };
-
-window.KESEMPATAN = window.KESEMPATAN || {};
-window.KESEMPATAN.WorkersConfig = window.WorkersAIConfig;
 })();

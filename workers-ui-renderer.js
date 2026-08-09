@@ -1,11 +1,15 @@
 (function() {
 'use strict';
+
+const KESEMPATAN = window.KESEMPATAN || {};
+window.KESEMPATAN = KESEMPATAN;
+
 if (window.__WorkersAIRenderer) return;
 window.__WorkersAIRenderer = true;
 
-const state = window.WorkersAIState;
-const layout = window.WorkersAILayout;
-const core = window.WorkersAICore;
+const state = KESEMPATAN.WorkersState;
+const layout = KESEMPATAN.WorkersLayout;
+const core = KESEMPATAN.WorkersCore;
 let _coreInstance = null;
 
 function getCore() {
@@ -42,7 +46,7 @@ function renderWorkersPage() {
         enablePrediction: enablePrediction
     });
     container.innerHTML = html;
-    if (window.WorkersAIEvents) window.WorkersAIEvents.attachWorkersEvents(container);
+    if (KESEMPATAN.WorkersEvents) KESEMPATAN.WorkersEvents.attachWorkersEvents(container);
     updateLogsDisplay();
     if (enablePrediction) updatePredictions();
     const logCount = document.getElementById('logCount');
@@ -62,7 +66,7 @@ function renderLogsPage() {
     const searchQuery = coreInstance.logSearchQuery || '';
     const html = layout.buildLogsLayout(logs, filterWorker, filterStatus, searchQuery);
     container.innerHTML = html;
-    if (window.WorkersAIEvents) window.WorkersAIEvents.attachLogsEvents(container);
+    if (KESEMPATAN.WorkersEvents) KESEMPATAN.WorkersEvents.attachLogsEvents(container);
     populateWorkerFilter();
 }
 
@@ -122,16 +126,17 @@ function populateWorkerFilter() {
     select.value = currentValue || 'all';
 }
 
-window.renderAIWorkersPage = renderWorkersPage;
-window.renderAIWorkersDataPage = renderLogsPage;
-window.addAIWorkerLog = function(workerId, workerName, message) {
+function addAIWorkerLog(workerId, workerName, message) {
     const worker = { id: workerId, name: workerName };
     const coreInstance = getCore();
-    coreInstance.addLog(worker, message);
+    // Fixed: was calling coreInstance.addLog (never existed on AIWorkersCore —
+    // only the prototype method _addLog does), so the "Test Log" button always
+    // threw a TypeError and the log was silently never added.
+    coreInstance._addLog(worker, message);
     updateLogsDisplay();
     if (document.getElementById('aiWorkersDataContainer')) renderLogsPage();
-};
-window.exportAIWorkersData = function() {
+}
+function exportAIWorkersData() {
     const logs = state.getLogs();
     if (logs.length === 0) {
         if (window.Utils && window.Utils.showToast) window.Utils.showToast('Tidak ada log untuk diexport', 'warning');
@@ -150,16 +155,16 @@ window.exportAIWorkersData = function() {
     a.click();
     URL.revokeObjectURL(url);
     if (window.Utils && window.Utils.showToast) window.Utils.showToast('Log exported successfully!', 'success');
-};
+}
 
-window.KESEMPATAN = window.KESEMPATAN || {};
-window.KESEMPATAN.WorkersRenderer = {
+KESEMPATAN.WorkersRenderer = {
     renderWorkersPage: renderWorkersPage,
     renderLogsPage: renderLogsPage,
     updateLogsDisplay: updateLogsDisplay,
     updatePredictions: updatePredictions,
     populateWorkerFilter: populateWorkerFilter,
-    getCore: getCore
+    getCore: getCore,
+    addAIWorkerLog: addAIWorkerLog,
+    exportAIWorkersData: exportAIWorkersData
 };
-window.WorkersAIRenderer = window.KESEMPATAN.WorkersRenderer;
 })();

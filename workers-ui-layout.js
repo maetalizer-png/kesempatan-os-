@@ -1,10 +1,14 @@
 (function() {
 'use strict';
+
+const KESEMPATAN = window.KESEMPATAN || {};
+window.KESEMPATAN = KESEMPATAN;
+
 if (window.__WorkersAILayout) return;
 window.__WorkersAILayout = true;
 
-const state = window.WorkersAIState;
-const config = window.WorkersAIConfig;
+const state = KESEMPATAN.WorkersState;
+const config = KESEMPATAN.WorkersConfig;
 if (!state || !config) return;
 
 const WORKERS_CSS = `<style>
@@ -267,7 +271,5 @@ function buildLogsLayout(logs, filterWorker, filterStatus, searchQuery) {
     return html;
 }
 
-window.KESEMPATAN = window.KESEMPATAN || {};
-window.KESEMPATAN.WorkersLayout = { buildWorkersLayout: buildWorkersLayout, buildLogsLayout: buildLogsLayout };
-window.WorkersAILayout = { buildWorkersLayout: buildWorkersLayout, buildLogsLayout: buildLogsLayout };
+KESEMPATAN.WorkersLayout = { buildWorkersLayout: buildWorkersLayout, buildLogsLayout: buildLogsLayout };
 })();

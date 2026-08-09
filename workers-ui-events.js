@@ -1,10 +1,14 @@
 (function() {
 'use strict';
+
+const KESEMPATAN = window.KESEMPATAN || {};
+window.KESEMPATAN = KESEMPATAN;
+
 if (window.__WorkersAIEvents) return;
 window.__WorkersAIEvents = true;
 
-const state = window.WorkersAIState;
-const renderer = window.WorkersAIRenderer;
+const state = KESEMPATAN.WorkersState;
+const renderer = KESEMPATAN.WorkersRenderer;
 const showToast = (window.Utils && window.Utils.showToast) || function() {};
 
 function attachWorkersEvents(container) {
@@ -167,13 +171,13 @@ function attachLogsEvents(container) {
 
     const exportBtn = document.getElementById('exportAIWorkersDataBtn');
     if (exportBtn) {
-        exportBtn.addEventListener('click', function() { window.exportAIWorkersData(); });
+        exportBtn.addEventListener('click', function() { renderer.exportAIWorkersData(); });
     }
 
     const testLogBtn = document.getElementById('testAIWorkerLogBtn');
     if (testLogBtn) {
         testLogBtn.addEventListener('click', function() {
-            window.addAIWorkerLog('test', '🔧 TEST WORKER', '✅ Log berhasil dibuat! Sistem berjalan normal.');
+            renderer.addAIWorkerLog('test', '🔧 TEST WORKER', '✅ Log berhasil dibuat! Sistem berjalan normal.');
             renderer.renderLogsPage();
             showToast('✅ Test log berhasil!', 'success');
         });
@@ -192,7 +196,5 @@ function attachLogsEvents(container) {
     }
 }
 
-window.KESEMPATAN = window.KESEMPATAN || {};
-window.KESEMPATAN.WorkersEvents = { attachWorkersEvents: attachWorkersEvents, attachLogsEvents: attachLogsEvents };
-window.WorkersAIEvents = window.KESEMPATAN.WorkersEvents;
+KESEMPATAN.WorkersEvents = { attachWorkersEvents: attachWorkersEvents, attachLogsEvents: attachLogsEvents };
 })();

@@ -1,9 +1,13 @@
 (function() {
 'use strict';
+
+const KESEMPATAN = window.KESEMPATAN || {};
+window.KESEMPATAN = KESEMPATAN;
+
 if (window.__WorkersAIState) return;
 window.__WorkersAIState = true;
 
-const config = window.WorkersAIConfig;
+const config = KESEMPATAN.WorkersConfig;
 let workers = [];
 let workerStats = {};
 let logs = [];
@@ -58,7 +62,7 @@ function loadVoiceSettings() {
     try {
         const saved = JSON.parse(localStorage.getItem('kes_voice_settings'));
         if (saved) voiceSettings = Object.assign({}, voiceSettings, saved);
-    } catch (e) {}
+    } catch (e) { console.warn('[Workers] Load voice settings failed:', e.message); }
     return voiceSettings;
 }
 function saveVoiceSettings() { localStorage.setItem('kes_voice_settings', JSON.stringify(voiceSettings)); }
@@ -82,7 +86,5 @@ const WorkersAIState = {
     saveVoiceSettings: saveVoiceSettings
 };
 
-window.KESEMPATAN = window.KESEMPATAN || {};
-window.KESEMPATAN.WorkersState = WorkersAIState;
-window.WorkersAIState = WorkersAIState;
+KESEMPATAN.WorkersState = WorkersAIState;
 })();

@@ -39,14 +39,14 @@ const PAGE_HANDLERS = {
         const element = document.getElementById('aiWorkersPage');
         if (element) {
             element.style.display = 'block';
-            if (typeof renderAIWorkersPage === 'function') renderAIWorkersPage();
+            if (typeof KESEMPATAN.WorkersRenderer?.renderWorkersPage === 'function') KESEMPATAN.WorkersRenderer.renderWorkersPage();
         }
     },
     aiworkersdata: function() {
         const element = document.getElementById('aiWorkersDataPage');
         if (element) {
             element.style.display = 'block';
-            if (typeof renderAIWorkersDataPage === 'function') renderAIWorkersDataPage();
+            if (typeof KESEMPATAN.WorkersRenderer?.renderLogsPage === 'function') KESEMPATAN.WorkersRenderer.renderLogsPage();
         }
     },
     customautoagent: function() {

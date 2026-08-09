@@ -1,10 +1,14 @@
 (function() {
 'use strict';
+
+const KESEMPATAN = window.KESEMPATAN || {};
+window.KESEMPATAN = KESEMPATAN;
+
 if (window.__WorkersAICore) return;
 window.__WorkersAICore = true;
 
-const state = window.WorkersAIState;
-const config = window.WorkersAIConfig;
+const state = KESEMPATAN.WorkersState;
+const config = KESEMPATAN.WorkersConfig;
 const WORKER_CONFIG = config.WORKER_CONFIG;
 const AI_WORKERS_LIST = config.AI_WORKERS_LIST;
 
@@ -547,6 +551,8 @@ const AIWorkersCore = function() {
     this._initPerformanceMonitor();
     this._initAutoOptimize();
     this._initLogAutoRefresh();
+    // Kept as a real global (not KESEMPATAN-only): offline-mode.js reads/replaces
+    // window.AIWorkers directly to patch in an offline task hook.
     window.AIWorkers = this;
 };
 AIWorkersCore.prototype.saveWorkers = function() { state.saveWorkers(); };
@@ -677,7 +683,7 @@ AIWorkersCore.prototype._executeWorkerTask = function(worker) {
                 }
                 window.speechSynthesis.speak(utterance);
             }
-        } catch (e) {}
+        } catch (e) { console.warn('[Workers] Voice test failed:', e.message); }
         result = 'Voice: "' + msg + '"';
         const duration = performance.now() - startTime;
         result += ' | ' + Math.round(duration) + 'ms';
@@ -905,7 +911,7 @@ AIWorkersCore.prototype.destroy = function() {
     }
 };
 
-window.WorkersAICore = {
+KESEMPATAN.WorkersCore = {
     RateLimiter: RateLimiter,
     SecurityManager: SecurityManager,
     WorkerPool: WorkerPool,
@@ -914,7 +920,4 @@ window.WorkersAICore = {
     PredictionEngine: PredictionEngine,
     AIWorkersCore: AIWorkersCore
 };
-
-window.KESEMPATAN = window.KESEMPATAN || {};
-window.KESEMPATAN.WorkersCore = window.WorkersAICore;
 })();

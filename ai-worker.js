@@ -1,5 +1,9 @@
 (function() {
 'use strict';
+
+const KESEMPATAN = window.KESEMPATAN || {};
+window.KESEMPATAN = KESEMPATAN;
+
 if (window.__WorkersAILoaderLoaded) return;
 window.__WorkersAILoaderLoaded = true;
 
@@ -20,16 +24,16 @@ function loadNext() {
         if (!hasError) {
             const pageContainer = document.getElementById('aiWorkersPage');
             if (pageContainer && pageContainer.style.display !== 'none') {
-                window.WorkersAIRenderer.renderWorkersPage();
+                KESEMPATAN.WorkersRenderer.renderWorkersPage();
             }
             const dataContainer = document.getElementById('aiWorkersDataPage');
             if (dataContainer && dataContainer.style.display !== 'none') {
-                window.WorkersAIRenderer.renderLogsPage();
+                KESEMPATAN.WorkersRenderer.renderLogsPage();
             }
             if ((!pageContainer || pageContainer.style.display === 'none') &&
                 (!dataContainer || dataContainer.style.display === 'none')) {
                 const container = document.getElementById('aiWorkersContainer');
-                if (container) window.WorkersAIRenderer.renderWorkersPage();
+                if (container) KESEMPATAN.WorkersRenderer.renderWorkersPage();
             }
         }
         return;
@@ -43,77 +47,65 @@ function loadNext() {
     document.head.appendChild(script);
 }
 
+// Kept as a real global: offline-mode.js reads/replaces window.AIWorkers
+// directly, and workers-core.js's AIWorkersCore constructor also assigns
+// itself to window.AIWorkers once instantiated (this proxy is only the
+// early-available shape before that happens).
 window.AIWorkers = {
     get workers() {
-        const core = window.WorkersAIRenderer ? window.WorkersAIRenderer.getCore() : null;
+        const core = KESEMPATAN.WorkersRenderer ? KESEMPATAN.WorkersRenderer.getCore() : null;
         return core ? core.workers : [];
     },
     get workerStats() {
-        const core = window.WorkersAIRenderer ? window.WorkersAIRenderer.getCore() : null;
+        const core = KESEMPATAN.WorkersRenderer ? KESEMPATAN.WorkersRenderer.getCore() : null;
         return core ? core.workerStats : {};
     },
     toggleWorker: function(id, enabled) {
-        const core = window.WorkersAIRenderer ? window.WorkersAIRenderer.getCore() : null;
+        const core = KESEMPATAN.WorkersRenderer ? KESEMPATAN.WorkersRenderer.getCore() : null;
         if (core) core.toggleWorker(id, enabled);
     },
     runWorker: function(worker) {
-        const core = window.WorkersAIRenderer ? window.WorkersAIRenderer.getCore() : null;
+        const core = KESEMPATAN.WorkersRenderer ? KESEMPATAN.WorkersRenderer.getCore() : null;
         if (core) return core.runWorker(worker);
     },
     runWorkerNow: function(worker) {
-        const core = window.WorkersAIRenderer ? window.WorkersAIRenderer.getCore() : null;
+        const core = KESEMPATAN.WorkersRenderer ? KESEMPATAN.WorkersRenderer.getCore() : null;
         if (core) return core.runWorkerNow(worker);
     },
     saveWorkers: function() {
-        const core = window.WorkersAIRenderer ? window.WorkersAIRenderer.getCore() : null;
+        const core = KESEMPATAN.WorkersRenderer ? KESEMPATAN.WorkersRenderer.getCore() : null;
         if (core) core.saveWorkers();
     },
     render: function() {
-        if (window.WorkersAIRenderer) window.WorkersAIRenderer.renderWorkersPage();
+        if (KESEMPATAN.WorkersRenderer) KESEMPATAN.WorkersRenderer.renderWorkersPage();
     },
     getCategoryStats: function() {
-        const core = window.WorkersAIRenderer ? window.WorkersAIRenderer.getCore() : null;
+        const core = KESEMPATAN.WorkersRenderer ? KESEMPATAN.WorkersRenderer.getCore() : null;
         return core ? core.getCategoryStats() : {};
     },
     getTotalStats: function() {
-        const core = window.WorkersAIRenderer ? window.WorkersAIRenderer.getCore() : null;
+        const core = KESEMPATAN.WorkersRenderer ? KESEMPATAN.WorkersRenderer.getCore() : null;
         return core ? core.getTotalStats() : {};
     },
     getPoolStats: function() {
-        const core = window.WorkersAIRenderer ? window.WorkersAIRenderer.getCore() : null;
+        const core = KESEMPATAN.WorkersRenderer ? KESEMPATAN.WorkersRenderer.getCore() : null;
         return core ? core.getPoolStats() : {};
     },
     setSchedule: function(workerId, schedule) {
-        const core = window.WorkersAIRenderer ? window.WorkersAIRenderer.getCore() : null;
+        const core = KESEMPATAN.WorkersRenderer ? KESEMPATAN.WorkersRenderer.getCore() : null;
         if (core) core.setSchedule(workerId, schedule);
     },
     testVoice: function() {
-        const core = window.WorkersAIRenderer ? window.WorkersAIRenderer.getCore() : null;
+        const core = KESEMPATAN.WorkersRenderer ? KESEMPATAN.WorkersRenderer.getCore() : null;
         if (core) return core.testVoice();
     },
     destroy: function() {
-        const core = window.WorkersAIRenderer ? window.WorkersAIRenderer.getCore() : null;
+        const core = KESEMPATAN.WorkersRenderer ? KESEMPATAN.WorkersRenderer.getCore() : null;
         if (core) core.destroy();
     }
 };
 
-window.renderAIWorkersPage = function() {
-    if (window.WorkersAIRenderer) window.WorkersAIRenderer.renderWorkersPage();
-};
-window.renderAIWorkersDataPage = function() {
-    if (window.WorkersAIRenderer) window.WorkersAIRenderer.renderLogsPage();
-};
-window.addAIWorkerLog = function(workerId, workerName, message) {
-    if (window.WorkersAIRenderer) window.WorkersAIRenderer.updateLogsDisplay();
-    const core = window.WorkersAIRenderer ? window.WorkersAIRenderer.getCore() : null;
-    if (core) {
-        const worker = { id: workerId, name: workerName };
-        core._addLog(worker, message);
-    }
-};
-
-window.KESEMPATAN = window.KESEMPATAN || {};
-window.KESEMPATAN.Workers = window.AIWorkers;
+KESEMPATAN.Workers = window.AIWorkers;
 
 loadNext();
 })();
