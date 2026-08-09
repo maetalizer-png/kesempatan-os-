@@ -225,14 +225,15 @@ const PAGE_HANDLERS = {
             if (noiseModule && typeof noiseModule.render === 'function') {
                 noiseModule.render();
             } else {
-                const script = document.createElement('script');
-                script.src = 'noise/noise-filtering.js';
-                script.async = false;
-                script.onload = function() {
+                // Fallback for the rare case this page is reached before index.html's
+                // own <script type="module" src="noise/noise-filtering.js"> has
+                // finished evaluating — a classic (non-module) script tag can't load
+                // a file containing import/export, so this must use a real dynamic
+                // import() instead.
+                import('../noise/noise-filtering.js').then(function() {
                     const loadedNoiseModule = getModule('NoisePage');
                     if (loadedNoiseModule && typeof loadedNoiseModule.render === 'function') loadedNoiseModule.render();
-                };
-                document.head.appendChild(script);
+                });
             }
         }
     }

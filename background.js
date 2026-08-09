@@ -5,11 +5,8 @@
     UKURAN PARTIKEL SANGAT KECIL (0.03 - 0.08)
    ============================================================ */
 
-(function() {
-    'use strict';
-
-    const KESEMPATAN = window.KESEMPATAN || {};
-    window.KESEMPATAN = KESEMPATAN;
+const KESEMPATAN = window.KESEMPATAN || {};
+window.KESEMPATAN = KESEMPATAN;
 
     const CONFIG = {
         starCount: 1200,
@@ -693,5 +690,3 @@
     }
 
     loadThreeAndInit();
-
-})();
