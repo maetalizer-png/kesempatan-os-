@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  KESEMPATAN OS adalah single-page app (navigasi antar "halaman" terjadi
+  di sisi klien lewat data-page/showPage(), bukan route server terpisah)
+  — cuma ada SATU URL yang benar-benar bisa di-crawl langsung: root "/".
+  Sengaja tidak mencantumkan URL semu untuk tiap halaman internal (mis.
+  "/dashboard", "/observation") karena URL itu tidak resolve sebagai
+  dokumen terpisah di server/CDN — mencantumkannya akan menyesatkan
+  crawler, bukan membantu pengindeksan.
+-->
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+    <url>
+        <loc>https://kesempatan-os.vercel.app/</loc>
+        <lastmod>2026-08-09</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>1.0</priority>
+    </url>
+</urlset>

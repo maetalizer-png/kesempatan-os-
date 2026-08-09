@@ -1,0 +1,20 @@
+# COOP/COEP: dibutuhkan browser supaya halaman ini dianggap "cross-origin
+# isolated" -- syarat SharedArrayBuffer, yang dipakai backend WASM
+# multi-thread ONNX Runtime Web (llm-transformers-worker.js) dan
+# mendukung WebGPU secara maksimal.
+#
+# COEP dipasang sebagai "credentialless" (bukan "require-corp") dengan
+# sengaja: require-corp mewajibkan SETIAP resource cross-origin (Google
+# Fonts, Font Awesome, Chart.js/html2canvas/jsPDF dari jsdelivr/cdnjs,
+# model dari huggingface.co) mengirim header
+# Cross-Origin-Resource-Policy sendiri -- tidak semua CDN pihak ketiga
+# yang dipakai di sini terjamin mengirim header itu, jadi require-corp
+# berisiko diam-diam mematahkan font/ikon/chart yang sudah berjalan.
+# credentialless tetap memberi cross-origin isolation (SharedArrayBuffer
+# aktif) tanpa syarat itu -- cuma melepas kredensial (cookie) dari
+# request cross-origin, yang tidak masalah untuk aset publik seperti ini.
+[[headers]]
+  for = "/*"
+  [headers.values]
+    Cross-Origin-Opener-Policy = "same-origin"
+    Cross-Origin-Embedder-Policy = "credentialless"
