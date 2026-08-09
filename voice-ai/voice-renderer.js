@@ -1,15 +1,9 @@
-(function() {
-    'use strict';
+import { VoiceState as state } from './voice-state.js';
+import { VoiceVisualizer as visualizer } from './voice-visualizer.js';
+import { VoiceLayout as layout } from './voice-layout.js';
 
-    const KESEMPATAN = window.KESEMPATAN || {};
-    window.KESEMPATAN = KESEMPATAN;
-
-    if (window.__VoiceCloneRenderer) return;
-    window.__VoiceCloneRenderer = true;
-
-const state = KESEMPATAN.VoiceState;
-const visualizer = KESEMPATAN.VoiceVisualizer;
-const layout = KESEMPATAN.VoiceLayout;
+const KESEMPATAN = window.KESEMPATAN || {};
+window.KESEMPATAN = KESEMPATAN;
 
 function ensureContainer() {
     let container = document.getElementById('voiceClonePanel');
@@ -70,5 +64,5 @@ function toggleTheme() {
     render();
 }
 
-KESEMPATAN.VoiceRenderer = { render: render, renderHistory: renderHistory, toggleTheme: toggleTheme };
-})();
+export const VoiceRenderer = { render: render, renderHistory: renderHistory, toggleTheme: toggleTheme };
+KESEMPATAN.VoiceRenderer = VoiceRenderer;

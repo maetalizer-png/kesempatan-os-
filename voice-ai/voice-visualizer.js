@@ -1,14 +1,8 @@
-(function() {
-    'use strict';
+import { VoiceState as state } from './voice-state.js';
+import { VoiceConfig as config } from './voice-config.js';
 
-    const KESEMPATAN = window.KESEMPATAN || {};
-    window.KESEMPATAN = KESEMPATAN;
-
-    if (window.__VoiceCloneVisualizer) return;
-    window.__VoiceCloneVisualizer = true;
-
-const state = KESEMPATAN.VoiceState;
-const config = KESEMPATAN.VoiceConfig;
+const KESEMPATAN = window.KESEMPATAN || {};
+window.KESEMPATAN = KESEMPATAN;
 
 const playBGM = function() {
     const track = config.VOICE_CONFIG.bgMusic[state.getSettings().bgMusic];
@@ -151,7 +145,7 @@ const stopWaveformAnimation = function() {
     drawWaveformSilent();
 };
 
-KESEMPATAN.VoiceVisualizer = {
+export const VoiceVisualizer = {
     playBGM: playBGM, stopBGM: stopBGM,
     initWaveform: initWaveform,
     drawWaveformSilent: drawWaveformSilent,
@@ -159,4 +153,4 @@ KESEMPATAN.VoiceVisualizer = {
     startWaveformAnimation: startWaveformAnimation,
     stopWaveformAnimation: stopWaveformAnimation
 };
-})();
+KESEMPATAN.VoiceVisualizer = VoiceVisualizer;

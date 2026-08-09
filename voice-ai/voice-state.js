@@ -1,21 +1,16 @@
-(function() {
-    'use strict';
+import { VoiceConfig } from './voice-config.js';
 
-    const KESEMPATAN = window.KESEMPATAN || {};
-    window.KESEMPATAN = KESEMPATAN;
+const KESEMPATAN = window.KESEMPATAN || {};
+window.KESEMPATAN = KESEMPATAN;
 
-    if (window.__VoiceCloneState) return;
-    window.__VoiceCloneState = true;
-
-const config = KESEMPATAN.VoiceConfig;
-const STORAGE_KEYS = config.STORAGE_KEYS;
-const VOICE_CONFIG = config.VOICE_CONFIG;
+const STORAGE_KEYS = VoiceConfig.STORAGE_KEYS;
+const VOICE_CONFIG = VoiceConfig.VOICE_CONFIG;
 
 let settings = Object.assign({}, VOICE_CONFIG.defaults);
 let clones = [];
 let activeCloneId = null;
 let history = [];
-let analytics = Object.assign({}, config.ANALYTICS_DEFAULTS);
+let analytics = Object.assign({}, VoiceConfig.ANALYTICS_DEFAULTS);
 let favorites = [];
 let isListening = false;
 let isSpeaking = false;
@@ -53,7 +48,7 @@ if (exists) activeCloneId = active;
 const historyData = localStorage.getItem(STORAGE_KEYS.HISTORY);
 if (historyData) history = JSON.parse(historyData);
 const analyticsData = localStorage.getItem(STORAGE_KEYS.ANALYTICS);
-if (analyticsData) analytics = Object.assign({}, config.ANALYTICS_DEFAULTS, JSON.parse(analyticsData));
+if (analyticsData) analytics = Object.assign({}, VoiceConfig.ANALYTICS_DEFAULTS, JSON.parse(analyticsData));
 const favData = localStorage.getItem(STORAGE_KEYS.FAVORITES);
 if (favData) favorites = JSON.parse(favData);
 } catch(e) { console.warn('[VoiceClone] Load settings failed:', e.message); }
@@ -72,7 +67,7 @@ localStorage.setItem(STORAGE_KEYS.FAVORITES, JSON.stringify(favorites));
 } catch(e) { console.warn('[VoiceClone] Save settings failed:', e.message); }
 };
 
-KESEMPATAN.VoiceState = {
+export const VoiceState = {
 getSettings: function() { return settings; },
 getClones: function() { return clones; },
 getActiveCloneId: function() { return activeCloneId; },
@@ -130,4 +125,4 @@ setCloneAudioChunks: function(val) { cloneAudioChunks = val; },
 load: loadSettings,
 save: saveSettings
 };
-})();
+KESEMPATAN.VoiceState = VoiceState;

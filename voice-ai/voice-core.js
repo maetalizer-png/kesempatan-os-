@@ -1,16 +1,12 @@
-(function() {
-    'use strict';
+import { VoiceState as state } from './voice-state.js';
+import { VoiceConfig } from './voice-config.js';
+import { Utils } from '../js/utils.js';
 
-    const KESEMPATAN = window.KESEMPATAN || {};
-    window.KESEMPATAN = KESEMPATAN;
+const KESEMPATAN = window.KESEMPATAN || {};
+window.KESEMPATAN = KESEMPATAN;
 
-    if (window.__VoiceCloneCore) return;
-    window.__VoiceCloneCore = true;
-
-const state = KESEMPATAN.VoiceState;
-const config = KESEMPATAN.VoiceConfig;
-const showToast = window.Utils?.showToast || function() {};
-const VOICE_CONFIG = config.VOICE_CONFIG;
+const showToast = Utils.showToast;
+const VOICE_CONFIG = VoiceConfig.VOICE_CONFIG;
 
 let availableVoices = [];
 let voicesLoaded = false;
@@ -230,7 +226,7 @@ function stopListening() {
     }
 }
 
-KESEMPATAN.VoiceCore = {
+export const VoiceCore = {
     speak: speak, stopSpeaking: stopSpeaking,
     startRecording: startRecording, stopRecording: stopRecording,
     playClone: playClone, useClone: useClone, deleteClone: deleteClone, clearActiveClone: clearActiveClone,
@@ -245,4 +241,4 @@ KESEMPATAN.VoiceCore = {
     getEvolutionSuggestion: AIInternal.getEvolutionSuggestion,
     startListening: startListening, stopListening: stopListening
 };
-})();
+KESEMPATAN.VoiceCore = VoiceCore;

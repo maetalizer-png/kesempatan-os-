@@ -1,19 +1,16 @@
-(function() {
-    'use strict';
+import { VoiceState as state } from './voice-state.js';
+import { VoiceCore as core } from './voice-core.js';
+import { VoiceRenderer as renderer } from './voice-renderer.js';
+import { VoiceVisualizer as visualizer } from './voice-visualizer.js';
+import { VoiceConfig } from './voice-config.js';
+import { Utils } from '../js/utils.js';
 
-    const KESEMPATAN = window.KESEMPATAN || {};
-    window.KESEMPATAN = KESEMPATAN;
+const KESEMPATAN = window.KESEMPATAN || {};
+window.KESEMPATAN = KESEMPATAN;
 
-    if (window.__VoiceCloneEvents) return;
-    window.__VoiceCloneEvents = true;
-
-const state = KESEMPATAN.VoiceState;
-const core = KESEMPATAN.VoiceCore;
-const renderer = KESEMPATAN.VoiceRenderer;
-const visualizer = KESEMPATAN.VoiceVisualizer;
-const showToast = window.Utils?.showToast || function() {};
-const VOICE_CONFIG = KESEMPATAN.VoiceConfig.VOICE_CONFIG;
-const LANGUAGES = KESEMPATAN.VoiceConfig.LANGUAGES;
+const showToast = Utils.showToast;
+const VOICE_CONFIG = VoiceConfig.VOICE_CONFIG;
+const LANGUAGES = VoiceConfig.LANGUAGES;
 
 const attachEvents = function(container) {
 if (!container) return;
@@ -232,5 +229,5 @@ if (typeof window.showPage === 'function') window.showPage('dashboard');
 }
 };
 
-KESEMPATAN.VoiceEvents = { attach: attachEvents };
-})();
+export const VoiceEvents = { attach: attachEvents };
+KESEMPATAN.VoiceEvents = VoiceEvents;
