@@ -191,41 +191,46 @@
             return [];
         }
 
+        const perSourceCap = CONFIG.ITEMS_PER_SOURCE || 5;
+        const rssUrl = extractRssUrl(src.url);
+
+        // Race the rss2json converter and the direct-proxy XML fetch instead of trying
+        // them sequentially: a degraded/rate-limited primary channel used to burn its full
+        // retry budget before the fallback ever got a chance, silently starving capture.
+        const [primaryResult, directResult] = await Promise.allSettled([
+            fetchWithRetry(src.url).then(function(data) {
+                return (data && data.items && data.items.length > 0) ? data.items.slice(0, perSourceCap) : [];
+            }),
+            rssUrl ? fetchRSSDirect(rssUrl).then(function(data) {
+                return (data && data.items && data.items.length > 0) ? data.items.slice(0, perSourceCap) : [];
+            }) : Promise.resolve([])
+        ]);
+
         let items = [];
-        let success = false;
-        let errorMsg = null;
+        const errorParts = [];
 
-        try {
-            const data = await fetchWithRetry(src.url);
-            if (data && data.items && data.items.length > 0) {
-                items = data.items.slice(0, CONFIG.ITEMS_PER_SOURCE || 3);
-                success = true;
-            } else {
-                errorMsg = 'Tidak ada item dari rss2json';
-            }
-        } catch (err) {
-            errorMsg = 'rss2json gagal: ' + (err.message || 'Unknown error');
+        if (primaryResult.status === 'fulfilled' && primaryResult.value.length > 0) {
+            items = items.concat(primaryResult.value);
+        } else {
+            errorParts.push('rss2json: ' + (primaryResult.status === 'rejected' ? (primaryResult.reason && primaryResult.reason.message || 'gagal') : 'kosong'));
         }
 
-        if (!success) {
-            try {
-                const rssUrl = extractRssUrl(src.url);
-                if (rssUrl) {
-                    const directData = await fetchRSSDirect(rssUrl);
-                    if (directData && directData.items && directData.items.length > 0) {
-                        items = directData.items.slice(0, CONFIG.ITEMS_PER_SOURCE || 3);
-                        success = true;
-                        errorMsg = null;
-                    } else {
-                        errorMsg = (errorMsg ? errorMsg + '; ' : '') + 'Fallback RSS tidak menghasilkan item';
-                    }
-                } else {
-                    errorMsg = (errorMsg ? errorMsg + '; ' : '') + 'Tidak dapat mengekstrak rss_url';
+        if (directResult.status === 'fulfilled' && directResult.value.length > 0) {
+            const existingTitles = new Set(items.map(function(i) { return (i.title || '').toLowerCase().trim(); }));
+            directResult.value.forEach(function(it) {
+                const t = (it.title || '').toLowerCase().trim();
+                if (!existingTitles.has(t)) {
+                    items.push(it);
+                    existingTitles.add(t);
                 }
-            } catch (fallbackErr) {
-                errorMsg = (errorMsg ? errorMsg + '; ' : '') + 'Fallback gagal: ' + (fallbackErr.message || 'Unknown');
-            }
+            });
+        } else if (rssUrl) {
+            errorParts.push('proxy langsung: ' + (directResult.status === 'rejected' ? (directResult.reason && directResult.reason.message || 'gagal') : 'kosong'));
         }
+
+        items = items.slice(0, perSourceCap * 2);
+        const success = items.length > 0;
+        const errorMsg = success ? null : errorParts.join('; ');
 
         const resultItems = [];
         if (success && items.length > 0) {

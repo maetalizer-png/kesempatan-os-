@@ -16,9 +16,9 @@
         FAVORITES_KEY: 'kes_observation_favorites',
         MAX_RETRIES: 2,
         RETRY_DELAY: 1000,
-        MAX_CONSECUTIVE_FAILS: 3,
-        SOURCE_COOLDOWN_MS: 10 * 60 * 1000,
-        ITEMS_PER_SOURCE: 5,
+        MAX_CONSECUTIVE_FAILS: 4,
+        SOURCE_COOLDOWN_MS: 5 * 60 * 1000,
+        ITEMS_PER_SOURCE: 8,
         SENTIMENT: {
             POSITIVE_WEIGHT: 1,
             NEGATIVE_WEIGHT: -1,
@@ -54,7 +54,11 @@
         { name: 'Al Jazeera', icon: 'globe', tier: 1, region: 'internasional', url: 'https://api.rss2json.com/v1/api.json?rss_url=https://www.aljazeera.com/xml/rss/all.xml' },
         { name: 'The Guardian', icon: 'newspaper', tier: 1, region: 'internasional', url: 'https://api.rss2json.com/v1/api.json?rss_url=https://www.theguardian.com/world/rss' },
         { name: 'DW News', icon: 'newspaper', tier: 1, region: 'internasional', url: 'https://api.rss2json.com/v1/api.json?rss_url=https://rss.dw.com/rdf/rss-en-top' },
-        { name: 'CNA (Asia)', icon: 'newspaper', tier: 1, region: 'internasional', url: 'https://api.rss2json.com/v1/api.json?rss_url=https://www.channelnewsasia.com/api/v1/rss-outbound-feed?_format=xml' }
+        { name: 'CNA (Asia)', icon: 'newspaper', tier: 1, region: 'internasional', url: 'https://api.rss2json.com/v1/api.json?rss_url=https://www.channelnewsasia.com/api/v1/rss-outbound-feed?_format=xml' },
+        { name: 'NYT World', icon: 'globe', tier: 1, region: 'internasional', url: 'https://api.rss2json.com/v1/api.json?rss_url=https://rss.nytimes.com/services/xml/rss/nyt/World.xml' },
+        { name: 'Sky News World', icon: 'tv', tier: 1, region: 'internasional', url: 'https://api.rss2json.com/v1/api.json?rss_url=https://feeds.skynews.com/feeds/rss/world.xml' },
+        { name: 'France24', icon: 'globe', tier: 1, region: 'internasional', url: 'https://api.rss2json.com/v1/api.json?rss_url=https://www.france24.com/en/rss' },
+        { name: 'NPR World', icon: 'radio', tier: 1, region: 'internasional', url: 'https://api.rss2json.com/v1/api.json?rss_url=https://feeds.npr.org/1004/rss.xml' }
     ]);
 
     const REGION_GROUPS = Object.freeze({
