@@ -1,30 +1,24 @@
-/* ============================================================
-   KESEMPATAN OS - CORE ENGINE v2 (Web Worker, module type)
-   📁 llm-transformers-worker.js
-
-   Menjalankan model bahasa pretrained SUNGGUHAN (bukan transformer
-   buatan sendiri seperti kesem-llm/) lewat @huggingface/transformers
-   (ONNX Runtime Web) — WebGPU sebagai backend eksekusi utama, otomatis
-   fallback ke WASM/CPU kalau perangkat/browser tidak mendukung WebGPU
-   atau pembuatan pipeline WebGPU gagal. Berjalan di Worker terpisah
-   (module Worker, karena butuh `import`/`import()`) supaya unduhan +
-   inferensi model besar tidak pernah membekukan UI thread.
-
-   MODEL: 2 pilihan pretrained, dipilih pengguna lewat halaman Pengaturan
-   (settings.js) dan disimpan di localStorage — lihat MODEL_REGISTRY di
-   bawah. Default SmolLM2-135M-Instruct (jauh lebih kecil dari Qwen2.5-0.5B)
-   dipakai kalau pengguna belum pernah memilih, karena permintaan yang
-   sama eksplisit menyebut risiko "memori overflow / HP overheat" —
-   model lebih kecil = kompatibilitas lintas-perangkat lebih luas.
-
-   CACHING: file model (bisa puluhan-ratusan MB) disimpan di IndexedDB
-   lewat custom cache transformers.js (env.useCustomCache), BUKAN cache
-   HTTP browser bawaan — sesuai permintaan eksplisit "simpan di
-   IndexedDB", dan konsisten dengan pola IndexedDB yang sudah dipakai
-   di seluruh KESEMPATAN OS (lihat kesem-llm.js, kes-database.js). Kunci
-   cache adalah URL berkas itu sendiri (termasuk nama repo model), jadi
-   otomatis terpisah per model tanpa perlu penanganan khusus.
-   ============================================================ */
+// Core Engine v2 (module Worker) — menjalankan model bahasa pretrained
+// SUNGGUHAN (bukan transformer buatan sendiri seperti kesem-llm/) lewat
+// @huggingface/transformers (ONNX Runtime Web) — WebGPU sebagai backend
+// eksekusi utama, otomatis fallback ke WASM/CPU kalau perangkat/browser
+// tidak mendukung WebGPU atau pembuatan pipeline WebGPU gagal. Berjalan
+// di Worker terpisah (module Worker, karena butuh `import`/`import()`)
+// supaya unduhan + inferensi model besar tidak pernah membekukan UI thread.
+//
+// MODEL: 2 pilihan pretrained, dipilih pengguna lewat halaman Pengaturan
+// (settings.js) dan disimpan di localStorage — lihat MODEL_REGISTRY di
+// bawah. Default SmolLM2-135M-Instruct (jauh lebih kecil dari Qwen2.5-0.5B)
+// dipakai kalau pengguna belum pernah memilih, karena model lebih kecil
+// berarti kompatibilitas lintas-perangkat lebih luas (menghindari risiko
+// memori overflow/perangkat overheat).
+//
+// CACHING: file model (bisa puluhan-ratusan MB) disimpan di IndexedDB
+// lewat custom cache transformers.js (env.useCustomCache), BUKAN cache
+// HTTP browser bawaan, konsisten dengan pola IndexedDB yang sudah dipakai
+// di seluruh KESEMPATAN OS (lihat kesem-llm.js, kes-database.js). Kunci
+// cache adalah URL berkas itu sendiri (termasuk nama repo model), jadi
+// otomatis terpisah per model tanpa perlu penanganan khusus.
 
 // MODEL_REGISTRY: tiap entri = daftar kandidat repo Hugging Face dicoba
 // berurutan (kalau kandidat pertama tidak ditemukan/berpindah nama,

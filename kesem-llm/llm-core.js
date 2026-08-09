@@ -1,34 +1,21 @@
-/* ============================================================
-KESEMPATAN OS - KESEMPATAN LLM
-📁 kesem-llm/llm-core.js
-🔥 MAIN CLASS — orkestrasi level tinggi: inisialisasi model
-(baru atau dari checkpoint tersimpan), generate teks, train,
-simpan/muat. Ini "instance" yang dipakai llm-api.js di baliknya.
-Pola sama seperti memory/llm-core.js (MAIN CLASS VectorMemoryV5).
-🔥 100% const, Zero console.log, guard idempotensi.
-============================================================ */
-(function () {
-'use strict';
-if (window.__LLMCoreLoaded) {
-    return;
-}
-window.__LLMCoreLoaded = true;
+import { LLMRuntime } from './llm-runtime.js';
+import { LLMCheckpoint } from './llm-checkpoint.js';
+import { LLMTrainer } from './llm-trainer.js';
+import { LLMTokenizer } from './llm-tokenizer.js';
+import { LLMVocabulary } from './llm-vocabulary.js';
+import { LLMWeights } from './llm-weights.js';
+
 const Logger = window.Utils?.Logger || {
     info: function () { /* silent */ },
     warn: function () { /* silent */ },
     error: function (mod, msg) { console.error('[ERROR] [' + mod + '] ' + msg); }
 };
 function requireDeps() {
-    const missing = ['LLMRuntime', 'LLMCheckpoint', 'LLMTrainer', 'LLMTokenizer']
-        .filter(function (name) { return !window[name]; });
-    if (missing.length > 0) {
-        throw new Error('[LLMCore] Modul belum dimuat: ' + missing.join(', '));
-    }
     return {
-        Runtime: window.LLMRuntime,
-        Checkpoint: window.LLMCheckpoint,
-        Trainer: window.LLMTrainer,
-        Tokenizer: window.LLMTokenizer
+        Runtime: LLMRuntime,
+        Checkpoint: LLMCheckpoint,
+        Trainer: LLMTrainer,
+        Tokenizer: LLMTokenizer
     };
 }
 let activeModel = null;
@@ -59,7 +46,7 @@ async function initialize(options) {
                 .slice(0, maxSequences)
                 .map(function (text) {
                     const pieces = Tokenizer.tokenize(text, activeModel.merges);
-                    const ids = window.LLMVocabulary.encode(pieces, activeModel.vocab);
+                    const ids = LLMVocabulary.encode(pieces, activeModel.vocab);
                     return [activeModel.vocab.bosId].concat(ids, [activeModel.vocab.eosId]);
                 })
                 .filter(function (seq) { return seq.length >= 2; });
@@ -114,7 +101,7 @@ async function train(corpusTexts, options) {
     const model = getModel();
     const sequences = corpusTexts.map(function (text) {
         const pieces = Tokenizer.tokenize(text, model.merges);
-        const ids = window.LLMVocabulary.encode(pieces, model.vocab);
+        const ids = LLMVocabulary.encode(pieces, model.vocab);
         return [model.vocab.bosId].concat(ids, [model.vocab.eosId]);
     });
     return await Trainer.trainOnCorpus(model, sequences, options);
@@ -159,7 +146,7 @@ function restoreFromCheckpointObject(checkpointObj) {
 }
 function getStats() {
     const model = getModel();
-    const W = window.LLMWeights;
+    const W = LLMWeights;
     return {
         vocabSize: model.vocab.size,
         configuredVocabSize: model.config.model.vocabSize,
@@ -170,7 +157,7 @@ function getStats() {
         parameterCount: W ? W.countParameters(model) : null
     };
 }
-window.LLMCore = {
+export const LLMCore = {
     initialize: initialize,
     isReady: isReady,
     getModel: getModel,
@@ -182,5 +169,7 @@ window.LLMCore = {
     restoreFromCheckpointObject: restoreFromCheckpointObject,
     getStats: getStats
 };
+
+window.LLMCore = LLMCore;
+
 Logger.info('LLMCore', 'llm-core.js loaded');
-})();

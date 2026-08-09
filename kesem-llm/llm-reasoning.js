@@ -1,29 +1,12 @@
-/* ============================================================
-KESEMPATAN OS - KESEMPATAN LLM
-📁 kesem-llm/llm-reasoning.js
-🔥 Orkestrasi generate() yang lebih andal: self-consistency &
-chain 2-langkah (draft → refine). Dibangun DI ATAS llm-runtime.js.
-🔧 TAHAP 2: karena LLMRuntime.generateCached() sekarang ASYNC, kedua
-fungsi di sini wajib meng-await-nya (versi lama mendorong/membaca
-hasil sinkron — akan rusak begitu generate jadi Promise).
-🔥 100% const, Zero console.log, guard idempotensi.
-============================================================ */
-(function () {
-'use strict';
-if (window.__LLMReasoningLoaded) {
-    return;
-}
-window.__LLMReasoningLoaded = true;
+import { LLMRuntime } from './llm-runtime.js';
+
 const Logger = window.Utils?.Logger || {
     info: function () { /* silent */ },
     warn: function () { /* silent */ },
     error: function (mod, msg) { console.error('[ERROR] [' + mod + '] ' + msg); }
 };
 function requireRuntime() {
-    if (!window.LLMRuntime) {
-        throw new Error('[LLMReasoning] window.LLMRuntime belum dimuat');
-    }
-    return window.LLMRuntime;
+    return LLMRuntime;
 }
 // ============================================================
 // SELF-CONSISTENCY — generate N kali (sampling), ambil yang paling
@@ -54,9 +37,11 @@ async function draftThenRefine(model, promptText, refineInstruction, options) {
     const refined = await Runtime.generateCached(model, refinePrompt, options);
     return { draft: draft, refined: refined };
 }
-window.LLMReasoning = {
+export const LLMReasoning = {
     generateWithSelfConsistency: generateWithSelfConsistency,
     draftThenRefine: draftThenRefine
 };
+
+window.LLMReasoning = LLMReasoning;
+
 Logger.info('LLMReasoning', 'llm-reasoning.js loaded');
-})();

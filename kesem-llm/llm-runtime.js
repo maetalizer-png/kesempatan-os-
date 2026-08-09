@@ -1,41 +1,19 @@
-/* ============================================================
-KESEMPATAN OS - KESEMPATAN LLM
-📁 kesem-llm/llm-runtime.js
-🔥 Titik kumpul: bikin model (tokenizer+vocab+bobot), jalankan
-context window, loop generate token demi token.
-🔧 TAHAP 2 (anti-macet): generate() sekarang ASYNC dan melepas
-kendali ke event loop (setTimeout(0)) tiap beberapa token, supaya
-browser sempat menggambar & membaca klik di sela perhitungan —
-layar TIDAK LAGI beku total saat LLM lokal bekerja. Total waktu
-generate hampir sama, tapi UI tetap hidup. generate() juga
-menghormati options.stopSignal (objek {stopped:true} atau fungsi
-→ boolean) supaya loop bisa diputus dari luar; wiring tombol STOP
-ke stopSignal dipasang terpisah (TAHAP 3), infrastruktur di sini
-sudah siap.
-🔥 100% const, Zero console.log, guard idempotensi.
-============================================================ */
-(function () {
-'use strict';
-if (window.__LLMRuntimeLoaded) {
-    return;
-}
-window.__LLMRuntimeLoaded = true;
+import { LLMConfig } from './llm-config.js';
+import { LLMTokenizer } from './llm-tokenizer.js';
+import { LLMVocabulary } from './llm-vocabulary.js';
+import { LLMInference } from './llm-inference.js';
+
 const Logger = window.Utils?.Logger || {
     info: function () { /* silent */ },
     warn: function () { /* silent */ },
     error: function (mod, msg) { console.error('[ERROR] [' + mod + '] ' + msg); }
 };
 function requireDeps() {
-    const missing = ['LLMConfig', 'LLMTokenizer', 'LLMVocabulary', 'LLMEmbedding', 'LLMInference']
-        .filter(function (name) { return !window[name]; });
-    if (missing.length > 0) {
-        throw new Error('[LLMRuntime] Modul belum dimuat: ' + missing.join(', '));
-    }
     return {
-        Config: window.LLMConfig,
-        Tokenizer: window.LLMTokenizer,
-        Vocabulary: window.LLMVocabulary,
-        Inference: window.LLMInference
+        Config: LLMConfig,
+        Tokenizer: LLMTokenizer,
+        Vocabulary: LLMVocabulary,
+        Inference: LLMInference
     };
 }
 // ============================================================
@@ -334,12 +312,14 @@ async function generateCached(model, promptText, options) {
         stoppedBySignal: stoppedBySignal
     };
 }
-window.LLMRuntime = {
+export const LLMRuntime = {
     createModel: createModel,
     generate: generate,
     generateCached: generateCached,
     sampleNextToken: sampleNextToken,
     argmax: argmax
 };
+
+window.LLMRuntime = LLMRuntime;
+
 Logger.info('LLMRuntime', 'llm-runtime.js loaded');
-})();

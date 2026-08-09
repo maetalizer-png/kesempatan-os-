@@ -1,37 +1,19 @@
-/* ============================================================
-KESEMPATAN OS - KESEMPATAN LLM
-📁 kesem-llm/llm-api.js
-🔥 Pintu publik yang akan dipanggil Workflow Engine. Kontraknya
-SENGAJA dibuat sebentuk dengan window.AIClients.generateWithFallback
-(prompt, agent, topic) → Promise<string> — supaya nanti workflow.js
-cuma butuh percabangan kecil di executeAgent(), bukan rombak API.
-Lihat [[kesempatan-llm]] catatan "Jawaban ke pertanyaan user
-alur kerja tanpa API key" untuk detail kontrak ini.
-🔥 100% const, Zero console.log, guard idempotensi.
-============================================================ */
-(function () {
-'use strict';
-if (window.__LLMApiLoaded) {
-    return;
-}
-window.__LLMApiLoaded = true;
+import { LLMCore } from './llm-core.js';
+
 const Logger = window.Utils?.Logger || {
     info: function () { /* silent */ },
     warn: function () { /* silent */ },
     error: function (mod, msg) { console.error('[ERROR] [' + mod + '] ' + msg); }
 };
 function requireCore() {
-    if (!window.LLMCore) {
-        throw new Error('[LLMApi] window.LLMCore belum dimuat');
-    }
-    return window.LLMCore;
+    return LLMCore;
 }
 // ============================================================
 // isReady() — dipakai workflow.js buat percabangan kondisional
 // gerbang apiKey (lihat rencana integrasi di [[kesempatan-llm]])
 // ============================================================
 function isReady() {
-    return !!window.LLMCore && window.LLMCore.isReady();
+    return LLMCore.isReady();
 }
 // ============================================================
 // GENERATE — kontrak utama, dipanggil dari executeAgent()
@@ -126,9 +108,11 @@ async function generate(promptText, agentName, topic, extraOptions) {
     Logger.info('LLMApi', 'generate() untuk agent "' + agentName + '" — ' + result.tokensGenerated + ' token dihasilkan' + (useRefine ? ' (draft+refine)' : ''));
     return result.text;
 }
-window.LLMApi = {
+export const LLMApi = {
     isReady: isReady,
     generate: generate
 };
+
+window.LLMApi = LLMApi;
+
 Logger.info('LLMApi', 'llm-api.js loaded');
-})();
