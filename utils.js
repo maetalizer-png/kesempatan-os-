@@ -277,6 +277,24 @@ function safeParseResponse(text) {
     }
 }
 
+function debounce(func, wait) {
+    let timeout;
+    return function executedFunction(...args) {
+        clearTimeout(timeout);
+        timeout = setTimeout(function () { func.apply(this, args); }.bind(this), wait);
+    };
+}
+
+function throttle(func, limit) {
+    let inThrottle = false;
+    return function throttled(...args) {
+        if (inThrottle) return;
+        func.apply(this, args);
+        inThrottle = true;
+        setTimeout(function () { inThrottle = false; }, limit);
+    };
+}
+
 const Utils = Object.freeze({
     escapeHtml: escapeHtml,
     showToast: showToast,
@@ -289,7 +307,9 @@ const Utils = Object.freeze({
     normalizeResponse: normalizeResponse,
     buildDegradedResponse: buildDegradedResponse,
     InternalLogger: InternalLogger,
-    METRIC_KEYS: METRIC_KEYS
+    METRIC_KEYS: METRIC_KEYS,
+    debounce: debounce,
+    throttle: throttle
 });
 
 KESEMPATAN.Utils = Utils;
