@@ -18,7 +18,7 @@ async function CAG_sendChatToAgent() {
                 setTimeout(function() {
                     window.speechSynthesis.cancel();
                 }, 50);
-            } catch (e) {}
+            } catch (e) { console.warn('[ChatAgent] Speech unlock failed:', e.message); }
         }
         const input = document.getElementById('chatAgentInput');
         const message = input.value.trim();
@@ -188,7 +188,9 @@ function CAG_initChatAgent() {
         }
     }
 
-window.ChatModule = window.ChatModule || {};
+window.KESEMPATAN = window.KESEMPATAN || {};
+window.KESEMPATAN.ChatModule = window.KESEMPATAN.ChatModule || window.ChatModule || {};
+window.ChatModule = window.KESEMPATAN.ChatModule;
 Object.assign(window.ChatModule, {
     sendChatToAgent: CAG_sendChatToAgent
 });

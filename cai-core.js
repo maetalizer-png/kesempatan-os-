@@ -33,7 +33,7 @@ async function CAI_sendChatToAI() {
                 setTimeout(function() {
                     window.speechSynthesis.cancel();
                 }, 50);
-            } catch (e) {}
+            } catch (e) { console.warn('[ChatAI] Speech unlock failed:', e.message); }
         }
         const input = document.getElementById('chatAiInput');
         const message = input.value.trim();
@@ -223,9 +223,14 @@ function CAI_initChatAi() {
         window.getChatCacheStats = CAI_getCacheStats;
     }
 
-// ---------- EXPOSE (window.ChatModule — dibangun bertahap oleh
-// chat-ai/core.js, chat-agent/core.js, forum/core.js secara aditif) ----------
-window.ChatModule = window.ChatModule || {};
+// ---------- EXPOSE (KESEMPATAN.ChatModule — dibangun bertahap oleh
+// chat-ai/core.js, chat-agent/core.js, forum/core.js secara aditif;
+// window.ChatModule tetap dipertahankan sebagai referensi objek yang SAMA
+// karena ai-voice-agents.js memodifikasi propertinya (speakText) langsung
+// lewat nama window.ChatModule) ----------
+window.KESEMPATAN = window.KESEMPATAN || {};
+window.KESEMPATAN.ChatModule = window.KESEMPATAN.ChatModule || window.ChatModule || {};
+window.ChatModule = window.KESEMPATAN.ChatModule;
 Object.assign(window.ChatModule, {
     sendChatToAI: CAI_sendChatToAI,
     speakText: CAI_speakText,
