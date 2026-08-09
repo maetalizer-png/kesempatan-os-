@@ -1,27 +1,13 @@
-/* ============================================================
-KESEMPATAN OS - MEMORY EMBEDDINGS
-============================================================ */
-(function () {
-'use strict';
+import { Utils } from '../js/utils.js';
+import { MemoryConfig } from './m-config.js';
+import { MemoryUtils } from './m-utilities.js';
 
 const KESEMPATAN = window.KESEMPATAN || {};
 window.KESEMPATAN = KESEMPATAN;
 KESEMPATAN.Memory = KESEMPATAN.Memory || {};
 
-if (window.__MemoryEmbeddingsLoaded) {
-    return;
-}
-
-window.__MemoryEmbeddingsLoaded = true;
-
-const Logger = (window.Utils && window.Utils.Logger) || {
-    info: function () {},
-    warn: function () {},
-    error: function () {}
-};
-
-const Config = KESEMPATAN.Memory.MemoryConfig || {};
-const Utils = KESEMPATAN.Memory.MemoryUtils || {};
+const Logger = Utils.Logger;
+const Config = MemoryConfig;
 
 const TEXT_MODEL = 'Xenova/all-MiniLM-L6-v2';
 const TRANSFORMERS_CDN = 'https://cdn.jsdelivr.net/npm/@xenova/transformers@2.13.0/dist/transformers.min.js';
@@ -77,8 +63,8 @@ class MultimodalEmbedding {
         const safeText = String(text || '');
 
         if (!this.isReady || !this.models.text) {
-            return Utils.simpleEmbed
-                ? Utils.simpleEmbed(safeText)
+            return MemoryUtils.simpleEmbed
+                ? MemoryUtils.simpleEmbed(safeText)
                 : this._fallbackTextEmbedding(safeText);
         }
 
@@ -90,8 +76,8 @@ class MultimodalEmbedding {
 
             return Array.from(result.data || result || []);
         } catch (error) {
-            return Utils.simpleEmbed
-                ? Utils.simpleEmbed(safeText)
+            return MemoryUtils.simpleEmbed
+                ? MemoryUtils.simpleEmbed(safeText)
                 : this._fallbackTextEmbedding(safeText);
         }
     }
@@ -139,8 +125,8 @@ class MultimodalEmbedding {
         }
 
         if (embeddings.length === 0) {
-            return Utils.simpleEmbed
-                ? Utils.simpleEmbed('default')
+            return MemoryUtils.simpleEmbed
+                ? MemoryUtils.simpleEmbed('default')
                 : this._fallbackTextEmbedding('default');
         }
 
@@ -439,11 +425,8 @@ class MultimodalEmbedding {
     }
 }
 
-// ============================================================
-// EXPOSE
-// ============================================================
+export { MultimodalEmbedding };
+
 KESEMPATAN.Memory.MultimodalEmbedding = MultimodalEmbedding;
 
 Logger.info('MemoryEmbeddings', 'Multimodal Embedding loaded');
-
-})();

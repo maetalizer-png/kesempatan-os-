@@ -1,31 +1,14 @@
-/* ============================================================
-KESEMPATAN OS - MEMORY FEDERATED LEARNING
-============================================================ */
-(function () {
-'use strict';
+import { Utils } from '../js/utils.js';
+import { MemoryConfig } from './m-config.js';
 
 const KESEMPATAN = window.KESEMPATAN || {};
 window.KESEMPATAN = KESEMPATAN;
 KESEMPATAN.Memory = KESEMPATAN.Memory || {};
 
-if (window.__MemoryLearningLoaded) {
-    return;
-}
+const Logger = Utils.Logger;
+const Config = MemoryConfig;
 
-window.__MemoryLearningLoaded = true;
-
-const Logger = (window.Utils && window.Utils.Logger) || {
-    info: function () {},
-    warn: function () {},
-    error: function () {}
-};
-
-const Config = KESEMPATAN.Memory.MemoryConfig || {};
-
-// ============================================================
-// FEDERATED LEARNING
-// ============================================================
-const FederatedLearning = {
+export const FederatedLearning = {
     _globalWeights: {
         agentPreferences: {},
         agentWeights: {},
@@ -383,9 +366,6 @@ const FederatedLearning = {
     }
 };
 
-// ============================================================
-// AUTO INIT
-// ============================================================
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', function () {
         FederatedLearning.init();
@@ -394,11 +374,6 @@ if (document.readyState === 'loading') {
     FederatedLearning.init();
 }
 
-// ============================================================
-// EXPOSE
-// ============================================================
 KESEMPATAN.Memory.FederatedLearning = FederatedLearning;
 
 Logger.info('MemoryLearning', 'Federated Learning loaded');
-
-})();

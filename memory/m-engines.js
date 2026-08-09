@@ -1,30 +1,13 @@
-/* ============================================================
-KESEMPATAN OS - MEMORY ENGINES
-============================================================ */
-(function () {
-'use strict';
+import { Utils } from '../js/utils.js';
+import { MemoryConfig } from './m-config.js';
 
 const KESEMPATAN = window.KESEMPATAN || {};
 window.KESEMPATAN = KESEMPATAN;
 KESEMPATAN.Memory = KESEMPATAN.Memory || {};
 
-if (window.__MemoryEnginesLoaded) {
-    return;
-}
+const Logger = Utils.Logger;
+const Config = MemoryConfig;
 
-window.__MemoryEnginesLoaded = true;
-
-const Logger = (window.Utils && window.Utils.Logger) || {
-    info: function () {},
-    warn: function () {},
-    error: function () {}
-};
-
-const Config = KESEMPATAN.Memory.MemoryConfig || {};
-
-// ============================================================
-// WASM ENGINE
-// ============================================================
 class WASMEngine {
     constructor() {
         this.wasm = null;
@@ -774,14 +757,11 @@ class LSHEngine {
     }
 }
 
-// ============================================================
-// EXPOSE
-// ============================================================
+export { WASMEngine, GPUEngine, HNSWEngine, LSHEngine };
+
 KESEMPATAN.Memory.WASMEngine = WASMEngine;
 KESEMPATAN.Memory.GPUEngine = GPUEngine;
 KESEMPATAN.Memory.HNSWEngine = HNSWEngine;
 KESEMPATAN.Memory.LSHEngine = LSHEngine;
 
 Logger.info('MemoryEngines', 'Engines loaded');
-
-})();

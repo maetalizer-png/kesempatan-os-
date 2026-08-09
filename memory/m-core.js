@@ -1,38 +1,20 @@
-/* ============================================================
-KESEMPATAN OS - MEMORY CORE
-============================================================ */
-(function () {
-'use strict';
+import { Utils } from '../js/utils.js';
+import { MemoryConfig } from './m-config.js';
+import { MemoryUtils } from './m-utilities.js';
+import { calculateSimilarity } from './m-metrics.js';
+import { WASMEngine, GPUEngine, HNSWEngine, LSHEngine } from './m-engines.js';
+import { ProductQuantization } from './m-quantization.js';
+import { DistributedIndex } from './m-indexers.js';
+import { MultimodalEmbedding } from './m-embeddings.js';
+import { AutoTuner } from './m-tuner.js';
+import { FederatedLearning } from './m-federated-learning.js';
 
 const KESEMPATAN = window.KESEMPATAN || {};
 window.KESEMPATAN = KESEMPATAN;
 KESEMPATAN.Memory = KESEMPATAN.Memory || {};
 
-if (window.__MemoryCoreLoaded) {
-    return;
-}
-
-window.__MemoryCoreLoaded = true;
-
-const Config = KESEMPATAN.Memory.MemoryConfig || {};
-const Utils = KESEMPATAN.Memory.MemoryUtils || {};
-const calculateSimilarity = KESEMPATAN.Memory.calculateSimilarity;
-
-const Logger = (window.Utils && window.Utils.Logger) || {
-    info: function () {},
-    warn: function () {},
-    error: function () {}
-};
-
-const WASMEngine = KESEMPATAN.Memory.WASMEngine;
-const GPUEngine = KESEMPATAN.Memory.GPUEngine;
-const HNSWEngine = KESEMPATAN.Memory.HNSWEngine;
-const LSHEngine = KESEMPATAN.Memory.LSHEngine;
-const ProductQuantization = KESEMPATAN.Memory.ProductQuantization;
-const DistributedIndex = KESEMPATAN.Memory.DistributedIndex;
-const MultimodalEmbedding = KESEMPATAN.Memory.MultimodalEmbedding;
-const AutoTuner = KESEMPATAN.Memory.AutoTuner;
-const FederatedLearning = KESEMPATAN.Memory.FederatedLearning;
+const Config = MemoryConfig;
+const Logger = Utils.Logger;
 
 // ============================================================
 // KONTRAK PENYIMPANAN — FROZEN
@@ -245,8 +227,8 @@ class VectorMemoryCore {
     // STORAGE
     // ============================================================
     async _loadFromStorage() {
-        const data = Utils.loadFromStorage
-            ? Utils.loadFromStorage(STORAGE_KEY)
+        const data = MemoryUtils.loadFromStorage
+            ? MemoryUtils.loadFromStorage(STORAGE_KEY)
             : this._fallbackLoad();
 
         if (data) {
@@ -276,8 +258,8 @@ class VectorMemoryCore {
     }
 
     async _saveToStorage() {
-        const saved = Utils.saveToStorage
-            ? Utils.saveToStorage(STORAGE_KEY, {
+        const saved = MemoryUtils.saveToStorage
+            ? MemoryUtils.saveToStorage(STORAGE_KEY, {
                 schemaVersion: SCHEMA_VERSION,
                 vectors: this.vectors,
                 stats: this.stats
@@ -309,8 +291,8 @@ class VectorMemoryCore {
     // ID GENERATOR
     // ============================================================
     _generateId() {
-        if (Utils.generateId) {
-            return Utils.generateId();
+        if (MemoryUtils.generateId) {
+            return MemoryUtils.generateId();
         }
 
         return Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 10);
@@ -320,8 +302,8 @@ class VectorMemoryCore {
     // SIMPLE EMBEDDING
     // ============================================================
     async _simpleEmbed(text) {
-        if (Utils.simpleEmbed) {
-            return Utils.simpleEmbed(text);
+        if (MemoryUtils.simpleEmbed) {
+            return MemoryUtils.simpleEmbed(text);
         }
 
         const dim = Config.DIMENSION || 384;
@@ -908,11 +890,12 @@ class VectorMemoryCore {
     }
 }
 
-// ============================================================
-// EXPOSE
-// ============================================================
+export { VectorMemoryCore };
+
 KESEMPATAN.Memory.VectorMemoryCore = VectorMemoryCore;
 KESEMPATAN.Memory.VectorMemoryEngine = VectorMemoryCore;
+
+// Bridge for consumers not yet migrated to import { VectorMemoryCore } from './m-core.js'.
 window._memoryClass = VectorMemoryCore;
 
 if (window._memoryModules) {
@@ -924,5 +907,3 @@ if (typeof document !== 'undefined') {
 }
 
 Logger.info('MemoryCore', 'Core class exposed to global');
-
-})();

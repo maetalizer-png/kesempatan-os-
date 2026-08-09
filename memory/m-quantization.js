@@ -1,31 +1,14 @@
-/* ============================================================
-KESEMPATAN OS - MEMORY QUANTIZATION
-============================================================ */
-(function () {
-'use strict';
+import { Utils } from '../js/utils.js';
+import { MemoryConfig } from './m-config.js';
 
 const KESEMPATAN = window.KESEMPATAN || {};
 window.KESEMPATAN = KESEMPATAN;
 KESEMPATAN.Memory = KESEMPATAN.Memory || {};
 
-if (window.__MemoryQuantizationLoaded) {
-    return;
-}
+const Logger = Utils.Logger;
+const Config = MemoryConfig;
 
-window.__MemoryQuantizationLoaded = true;
-
-const Logger = (window.Utils && window.Utils.Logger) || {
-    info: function () {},
-    warn: function () {},
-    error: function () {}
-};
-
-const Config = KESEMPATAN.Memory.MemoryConfig || {};
-
-// ============================================================
-// PRODUCT QUANTIZATION
-// ============================================================
-class ProductQuantization {
+export class ProductQuantization {
     constructor() {
         this.subvectors = Config.PQ_SUBVECTORS || 8;
         this.centroids = Config.PQ_CENTROIDS || 256;
@@ -239,11 +222,6 @@ class ProductQuantization {
     }
 }
 
-// ============================================================
-// EXPOSE
-// ============================================================
 KESEMPATAN.Memory.ProductQuantization = ProductQuantization;
 
 Logger.info('MemoryQuantization', 'Product Quantization loaded');
-
-})();

@@ -1,28 +1,11 @@
-/* ============================================================
-KESEMPATAN OS - MEMORY METRICS
-============================================================ */
-(function () {
-'use strict';
+import { Utils } from '../js/utils.js';
 
 const KESEMPATAN = window.KESEMPATAN || {};
 window.KESEMPATAN = KESEMPATAN;
 KESEMPATAN.Memory = KESEMPATAN.Memory || {};
 
-if (window.__MemoryMetricsLoaded) {
-    return;
-}
+const Logger = Utils.Logger;
 
-window.__MemoryMetricsLoaded = true;
-
-const Logger = (window.Utils && window.Utils.Logger) || {
-    info: function () {},
-    warn: function () {},
-    error: function () {}
-};
-
-// ============================================================
-// METRIC TYPES
-// ============================================================
 const Metrics = Object.freeze({
     COSINE: 'cosine',
     EUCLIDEAN: 'euclidean',
@@ -321,10 +304,7 @@ function chebyshevDistance(vec1, vec2) {
     return maxDist;
 }
 
-// ============================================================
-// MAIN CALCULATOR
-// ============================================================
-function calculateSimilarity(vec1, vec2, metric) {
+export function calculateSimilarity(vec1, vec2, metric) {
     if (!isValidVector(vec1) || !isValidVector(vec2)) {
         return 0;
     }
@@ -367,9 +347,8 @@ function calculateSimilarity(vec1, vec2, metric) {
     }
 }
 
-// ============================================================
-// EXPOSE
-// ============================================================
+export { Metrics as SimilarityMetrics };
+
 KESEMPATAN.Memory.SimilarityMetrics = Metrics;
 KESEMPATAN.Memory.calculateSimilarity = calculateSimilarity;
 
@@ -387,5 +366,3 @@ KESEMPATAN.Memory._metricsFunctions = Object.freeze({
 });
 
 Logger.info('MemoryMetrics', 'Metrics loaded');
-
-})();

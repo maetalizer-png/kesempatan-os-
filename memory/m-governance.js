@@ -1,24 +1,10 @@
-/* ============================================================
-KESEMPATAN OS - MEMORY GOVERNANCE
-============================================================ */
-(function () {
-'use strict';
+import { Utils } from '../js/utils.js';
 
 const KESEMPATAN = window.KESEMPATAN || {};
 window.KESEMPATAN = KESEMPATAN;
 KESEMPATAN.Memory = KESEMPATAN.Memory || {};
 
-if (window.__MemoryGovernanceLoaded) {
-    return;
-}
-
-window.__MemoryGovernanceLoaded = true;
-
-const Logger = (window.Utils && window.Utils.Logger) || {
-    info: function () {},
-    warn: function () {},
-    error: function () {}
-};
+const Logger = Utils.Logger;
 
 // ============================================================
 // KONTRAK PENYIMPANAN — FROZEN
@@ -600,10 +586,7 @@ function renderDashboard(containerId) {
     }
 }
 
-// ============================================================
-// EXPOSE
-// ============================================================
-KESEMPATAN.Memory.MemoryGovernance = {
+export const MemoryGovernance = {
     ingest: ingest,
     recordAccess: recordAccess,
     getTier: getTier,
@@ -613,6 +596,4 @@ KESEMPATAN.Memory.MemoryGovernance = {
     CONFIG: GOV_CONFIG
 };
 
-window.__MemoryGovernanceInstallGate = installGate;
-
-})();
+KESEMPATAN.Memory.MemoryGovernance = MemoryGovernance;

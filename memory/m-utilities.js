@@ -1,29 +1,13 @@
-/* ============================================================
-KESEMPATAN OS - MEMORY UTILITIES
-============================================================ */
-(function () {
-'use strict';
+import { Utils } from '../js/utils.js';
+import { MemoryConfig } from './m-config.js';
 
 const KESEMPATAN = window.KESEMPATAN || {};
 window.KESEMPATAN = KESEMPATAN;
 KESEMPATAN.Memory = KESEMPATAN.Memory || {};
 
-if (window.__MemoryUtilsLoaded) {
-    return;
-}
+const Logger = Utils.Logger;
 
-window.__MemoryUtilsLoaded = true;
-
-const Logger = (window.Utils && window.Utils.Logger) || {
-    info: function () {},
-    warn: function () {},
-    error: function () {}
-};
-
-// ============================================================
-// ID GENERATOR
-// ============================================================
-function generateId() {
+export function generateId() {
     if (globalThis.crypto && typeof globalThis.crypto.randomUUID === 'function') {
         return globalThis.crypto.randomUUID();
     }
@@ -31,19 +15,10 @@ function generateId() {
     return Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 10);
 }
 
-// ============================================================
-// CONFIG HELPER
-// ============================================================
-function getConfig() {
-    return KESEMPATAN.Memory.MemoryConfig || {
-        DIMENSION: 384,
-        SIMILARITY_THRESHOLD: 0.1
-    };
+export function getConfig() {
+    return MemoryConfig;
 }
 
-// ============================================================
-// SIMPLE EMBEDDING
-// ============================================================
 function simpleEmbed(text) {
     const config = getConfig();
     const dim = config.DIMENSION || 384;
@@ -93,9 +68,6 @@ function simpleEmbed(text) {
     return vec;
 }
 
-// ============================================================
-// STORAGE HELPER
-// ============================================================
 function loadFromStorage(key) {
     try {
         if (typeof localStorage === 'undefined') {
@@ -124,10 +96,9 @@ function saveToStorage(key, data) {
     }
 }
 
-// ============================================================
-// EXPOSE
-// ============================================================
-KESEMPATAN.Memory.MemoryUtils = Object.freeze({
+export { simpleEmbed, loadFromStorage, saveToStorage };
+
+export const MemoryUtils = Object.freeze({
     generateId: generateId,
     getConfig: getConfig,
     simpleEmbed: simpleEmbed,
@@ -135,6 +106,6 @@ KESEMPATAN.Memory.MemoryUtils = Object.freeze({
     saveToStorage: saveToStorage
 });
 
-Logger.info('MemoryUtils', 'Loaded');
+KESEMPATAN.Memory.MemoryUtils = MemoryUtils;
 
-})();
+Logger.info('MemoryUtils', 'Loaded');

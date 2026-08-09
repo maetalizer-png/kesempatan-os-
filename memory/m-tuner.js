@@ -1,31 +1,14 @@
-/* ============================================================
-KESEMPATAN OS - MEMORY AUTO TUNER
-============================================================ */
-(function () {
-'use strict';
+import { Utils } from '../js/utils.js';
+import { MemoryConfig } from './m-config.js';
 
 const KESEMPATAN = window.KESEMPATAN || {};
 window.KESEMPATAN = KESEMPATAN;
 KESEMPATAN.Memory = KESEMPATAN.Memory || {};
 
-if (window.__MemoryTunerLoaded) {
-    return;
-}
+const Logger = Utils.Logger;
+const Config = MemoryConfig;
 
-window.__MemoryTunerLoaded = true;
-
-const Logger = (window.Utils && window.Utils.Logger) || {
-    info: function () {},
-    warn: function () {},
-    error: function () {}
-};
-
-const Config = KESEMPATAN.Memory.MemoryConfig || {};
-
-// ============================================================
-// AUTO TUNER
-// ============================================================
-class AutoTuner {
+export class AutoTuner {
     constructor() {
         this.scores = [];
         this.bestConfig = null;
@@ -232,11 +215,6 @@ class AutoTuner {
     }
 }
 
-// ============================================================
-// EXPOSE
-// ============================================================
 KESEMPATAN.Memory.AutoTuner = AutoTuner;
 
 Logger.info('MemoryTuner', 'Auto-Tuner loaded');
-
-})();

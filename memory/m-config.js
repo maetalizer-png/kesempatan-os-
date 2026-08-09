@@ -1,20 +1,8 @@
-/* ============================================================
-KESEMPATAN OS - MEMORY CONFIG
-============================================================ */
-(function () {
-'use strict';
-
 const KESEMPATAN = window.KESEMPATAN || {};
 window.KESEMPATAN = KESEMPATAN;
 KESEMPATAN.Memory = KESEMPATAN.Memory || {};
 
-if (window.__MemoryConfigLoaded) {
-    return;
-}
-
-window.__MemoryConfigLoaded = true;
-
-KESEMPATAN.Memory.MemoryConfig = Object.freeze({
+export const MemoryConfig = Object.freeze({
     DIMENSION: 384,
     // Eviction threshold for _saveToStorage()'s localStorage backing (JSON.stringify
     // of the full vectors array on every save). A 384-dim embedding + metadata
@@ -47,8 +35,8 @@ KESEMPATAN.Memory.MemoryConfig = Object.freeze({
     WASM_PATH: 'vector_memory.wasm'
 });
 
+KESEMPATAN.Memory.MemoryConfig = MemoryConfig;
+
 if (window.Utils && window.Utils.Logger) {
     window.Utils.Logger.info('MemoryConfig', 'Loaded');
 }
-
-})();

@@ -1,33 +1,15 @@
-/* ============================================================
-KESEMPATAN OS - MEMORY INDEXERS
-============================================================ */
-(function () {
-'use strict';
+import { Utils } from '../js/utils.js';
+import { MemoryConfig } from './m-config.js';
+import { calculateSimilarity } from './m-metrics.js';
 
 const KESEMPATAN = window.KESEMPATAN || {};
 window.KESEMPATAN = KESEMPATAN;
 KESEMPATAN.Memory = KESEMPATAN.Memory || {};
 
-if (window.__MemoryIndexersLoaded) {
-    return;
-}
+const Logger = Utils.Logger;
+const Config = MemoryConfig;
 
-window.__MemoryIndexersLoaded = true;
-
-const Logger = (window.Utils && window.Utils.Logger) || {
-    info: function () {},
-    warn: function () {},
-    error: function () {}
-};
-
-const Config = KESEMPATAN.Memory.MemoryConfig || {};
-
-const calculateSimilarity = KESEMPATAN.Memory.calculateSimilarity;
-
-// ============================================================
-// DISTRIBUTED INDEX
-// ============================================================
-class DistributedIndex {
+export class DistributedIndex {
     constructor() {
         this.shards = new Map();
         this.numShards = Config.NUM_SHARDS || 4;
@@ -179,11 +161,6 @@ class DistributedIndex {
     }
 }
 
-// ============================================================
-// EXPOSE
-// ============================================================
 KESEMPATAN.Memory.DistributedIndex = DistributedIndex;
 
 Logger.info('MemoryIndexers', 'Distributed Index loaded');
-
-})();

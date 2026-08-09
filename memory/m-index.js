@@ -1,22 +1,9 @@
-/* ============================================================
-KESEMPATAN OS - MEMORY PUBLIC API
-============================================================ */
-(function () {
-'use strict';
+import { Utils } from '../js/utils.js';
+
 const KESEMPATAN = window.KESEMPATAN || {};
 window.KESEMPATAN = KESEMPATAN;
 
-if (window.__MemoryApiLoaded) {
-    return;
-}
-
-window.__MemoryApiLoaded = true;
-
-const Logger = KESEMPATAN.Utils?.Logger || (window.Utils && window.Utils.Logger) || {
-    info: function () {},
-    warn: function () {},
-    error: function () {}
-};
+const Logger = Utils.Logger;
 
 let attempts = 0;
 const MAX_ATTEMPTS = 100;
@@ -228,5 +215,3 @@ function createFallbackAPI() {
 Logger.info('MemoryAPI', 'Waiting for core');
 
 waitForCore();
-
-})();
