@@ -1,6 +1,9 @@
 (function() {
 "use strict";
 
+const KESEMPATAN = window.KESEMPATAN || {};
+window.KESEMPATAN = KESEMPATAN;
+
 if (window.__AIFeedbackLoadedV4) return;
 window.__AIFeedbackLoadedV4 = true;
 window.__AIFeedbackLoaded = true;
@@ -279,7 +282,7 @@ function showToast(message, type) {
         else if (type === 'warning') toast.style.borderLeftColor = '#f39c12';
         container.appendChild(toast);
         setTimeout(function() { toast.remove(); }, 3500);
-    } catch(e) {}
+    } catch(e) { console.warn('[ReactionLearning] showToast failed:', e.message); }
 }
 
 function loadLearningData() {
@@ -959,8 +962,8 @@ function startRealtimeUpdates() {
                 const el = document.getElementById(id);
                 if (el) el.textContent = value;
             }
-            if (window.updateAnomalyBadge) window.updateAnomalyBadge();
-        } catch (e) {}
+            updateAnomalyBadge();
+        } catch (e) { console.warn('[ReactionLearning] updateAnomalyBadge call failed:', e.message); }
     }, 5000);
     InternalLogger.info('AI Feedback', 'Real-time updates started');
 }
@@ -985,7 +988,7 @@ function updateAnomalyBadge() {
                 badge.style.display = 'none';
             }
         }
-    } catch(e) {}
+    } catch(e) { console.warn('[ReactionLearning] badge update failed:', e.message); }
 }
 
 function createAnomalyBadge() {
@@ -1016,7 +1019,7 @@ function renderFeedbackChart(agent, containerId) {
         return;
     }
     if (chartInstances[containerId]) {
-        try { chartInstances[containerId].destroy(); } catch(e) {}
+        try { chartInstances[containerId].destroy(); } catch(e) { console.warn('[ReactionLearning] chart destroy failed:', e.message); }
         delete chartInstances[containerId];
     }
     if (typeof Chart === 'undefined') {
@@ -1204,7 +1207,7 @@ function observeAndAddButtons(container) {
         observer.observe(container, { childList: true, subtree: true });
         const existingMessages = container.querySelectorAll('.ai-message, .agent-message, .message');
         for (const msg of existingMessages) addButtonsToMessage(msg);
-    } catch(e) {}
+    } catch(e) { console.warn('[ReactionLearning] message observer setup failed:', e.message); }
 }
 
 function addButtonsToMessage(messageDiv) {
@@ -1271,7 +1274,7 @@ function addButtonsToMessage(messageDiv) {
                 likeBtn.disabled = true;
             }
         });
-    } catch(e) {}
+    } catch(e) { console.warn('[ReactionLearning] like button state update failed:', e.message); }
 }
 
 function overrideAIClients() {
@@ -1284,7 +1287,7 @@ function overrideAIClients() {
             };
             InternalLogger.info('AI Feedback', 'AIClients override successful');
         }
-    } catch(e) {}
+    } catch(e) { console.warn('[ReactionLearning] AIClients override failed:', e.message); }
 }
 
 function exportLearningData() {
@@ -1425,7 +1428,7 @@ function setupWebSocket() {
         try {
             const savedUrl = localStorage.getItem('kes_ws_url');
             if (savedUrl) wsUrl = savedUrl;
-        } catch(e) {}
+        } catch(e) { console.warn('[ReactionLearning] load saved WS URL failed:', e.message); }
         ws = new WebSocket(wsUrl);
         ws.onopen = function() {
             InternalLogger.info('AI Feedback', 'WebSocket connected for RL');
@@ -1437,7 +1440,7 @@ function setupWebSocket() {
                     renderLearningStats();
                     updateAnomalyBadge();
                 }
-            } catch (e) {}
+            } catch (e) { console.warn('[ReactionLearning] post-feedback UI refresh failed:', e.message); }
         };
         ws.onclose = function() {
             InternalLogger.info('AI Feedback', 'WebSocket disconnected, reconnecting...');
@@ -1521,32 +1524,10 @@ window.KESEMPATAN.ReactionLearning = Object.freeze({
     RLCache: RLCache
 });
 
+// Kept as a real global (not KESEMPATAN-only): threshold-learning.js
+// monkey-patches window.recordFeedback (wraps it) to hook approval feedback
+// into the auto-learning threshold engine.
 window.recordFeedback = recordFeedback;
-window.getLearningPrompt = getLearningPrompt;
-window.predictUserPreference = predictUserPreference;
-window.detectAnomaly = detectAnomaly;
-window.getFeedbackTrend = getFeedbackTrend;
-window.detectFeedbackPatterns = detectFeedbackPatterns;
-window.analyzeFeedbackSentiment = analyzeFeedbackSentiment;
-window.generateSmartResponse = generateSmartResponse;
-window.getAgentStats = getAgentStats;
-window.getOverallStats = getOverallStats;
-window.exportLearningData = exportLearningData;
-window.importLearningData = importLearningData;
-window.resetLearningData = resetLearningData;
-window.renderLearningStatsRL = renderLearningStats;
-window.addFeedbackButtonsToMessages = addFeedbackButtonsToMessages;
-window.isMemoryAvailable = isMemoryAvailable;
-window.syncWithCloud = syncWithCloud;
-window.renderFeedbackChart = renderFeedbackChart;
-window.updateAnomalyBadge = updateAnomalyBadge;
-window.predictFuture = predictFuture;
-window.collaborateAgents = collaborateAgents;
-window.exportEncryptedData = exportEncryptedData;
-window.importEncryptedData = importEncryptedData;
-window.QLearningEngine = QLearningEngine;
-window.RLCache = RLCache;
-window.syncFromMemory = syncFromMemory;
 
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', init);

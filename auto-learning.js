@@ -1,5 +1,9 @@
 (function() {
 'use strict';
+
+const KESEMPATAN = window.KESEMPATAN || {};
+window.KESEMPATAN = KESEMPATAN;
+
 if (window.__LearningPageLoaded) return;
 window.__LearningPageLoaded = true;
 
@@ -425,7 +429,7 @@ function destroy() {
     _state.isRendering = false;
 }
 
-window.LearningPage = {
+KESEMPATAN.LearningPage = {
     render: render,
     destroy: destroy,
     exportCSV: exportCSV,
@@ -438,8 +442,6 @@ window.LearningPage = {
     }
 };
 
-window.KESEMPATAN = window.KESEMPATAN || {};
-window.KESEMPATAN.LearningPage = window.LearningPage;
 
 function loadChartJS() {
     if (typeof Chart !== 'undefined') return Promise.resolve();

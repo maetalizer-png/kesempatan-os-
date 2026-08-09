@@ -138,9 +138,9 @@ async function buildPrompt(agent, context, uploadedData) {
     prompt += 'Sekarang, analisis topik berikut: "' + context.topic + '".\nInstruksi tambahan: ' + context.instruction + "\n";
     prompt += dataSection + memSection + worldSection + historySection + kgHint + "\n\n";
     prompt += 'Berikan output dalam format JSON (hanya JSON) dengan field: agent, status, reasoning_summary, score, confidence, insight (array), strategy (array), risk (array), recommendation, demand, competition, monetization, virality, sustainability, scalability, timing, attention, execution, longterm.';
-    if (typeof window.getLearningPrompt === 'function') {
+    if (typeof window.KESEMPATAN?.ReactionLearning?.getLearningPrompt === 'function') {
         try {
-            prompt = window.getLearningPrompt(agent, prompt, context.topic);
+            prompt = window.KESEMPATAN.ReactionLearning.getLearningPrompt(agent, prompt, context.topic);
         } catch (e) {
             InternalLogger.warn('Workflow', 'getLearningPrompt failed, using base prompt: ' + e.message);
         }

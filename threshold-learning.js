@@ -52,7 +52,7 @@ const NotificationSystem = Object.freeze({
         this._notifications.push(notification);
         if (this._notifications.length > this._maxNotifications) this._notifications.shift();
         for (let i = 0; i < this._listeners.length; i++) {
-            try { this._listeners[i](notification); } catch (e) {}
+            try { this._listeners[i](notification); } catch (e) { console.warn('[AutoLearning] Notification listener failed:', e.message); }
         }
         const levelMap = { 'success': 1, 'info': 1, 'warning': 2, 'error': 3, 'critical': 4 };
         InternalLogger.log(levelMap[type] || 1, 'Notification', title + ': ' + message);
@@ -110,7 +110,7 @@ const showToast = function(message, type) {
         else if (type === 'warning') toast.style.borderLeftColor = '#f39c12';
         container.appendChild(toast);
         setTimeout(function() { toast.remove(); }, 3500);
-    } catch(e) {}
+    } catch(e) { console.warn('[AutoLearning] showToast failed:', e.message); }
 };
 
 const CONFIG = Object.freeze({
@@ -726,7 +726,7 @@ const AutoLearningUltimate = {
                     this.data.approvalHistory.sort(function(a, b) { return (a.timestamp || 0) - (b.timestamp || 0); });
                 }
             }
-        } catch (e) {}
+        } catch (e) { console.warn('[AutoLearning] Multi-tab merge check failed:', e.message); }
         this.data.dqnMemory = DQNEngine._replayMemory;
         this.data.dqnModel = DQNEngine._model;
         this.data.lstmWeights = LSTMPredictor._weights;
@@ -800,7 +800,7 @@ const AutoLearningUltimate = {
         };
         const shapResult = SHAPExplainer.explain(shapModel, [1, confidence / 100, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5]);
         this.save();
-        if (typeof window.updateAnomalyBadge === 'function') window.updateAnomalyBadge();
+        if (typeof window.KESEMPATAN?.ReactionLearning?.updateAnomalyBadge === 'function') window.KESEMPATAN.ReactionLearning.updateAnomalyBadge();
         InternalLogger.debug('AutoLearning', agent + ' → ' + (approved ? 'approved' : 'rejected') + ' (threshold: ' + newThreshold + ')');
         return {
             threshold: newThreshold, prediction: prediction, explanation: explanation,
@@ -1112,15 +1112,14 @@ window.KESEMPATAN.MultiModalLearner = MultiModalLearner;
 window.KESEMPATAN.InternalLogger = InternalLogger;
 window.KESEMPATAN.NotificationSystem = NotificationSystem;
 
+// Kept as real globals (not KESEMPATAN-only): window.AutoLearning is read
+// directly by hitl.js, main.js, workflow.js and reaction-learning.js;
+// window.InternalLogger is part of the app-wide load-order-tolerant
+// fallback logger convention used by dozens of files. DQNEngine,
+// LSTMPredictor, FederatedLearning, SHAPExplainer, MetaLearningEngine,
+// StreamingLearner, MultiModalLearner, AutoLearningUltimate and
+// NotificationSystem have no external readers, so only their
+// KESEMPATAN.X form above is kept.
 window.AutoLearning = AutoLearningUltimate;
-window.AutoLearningUltimate = AutoLearningUltimate;
-window.DQNEngine = DQNEngine;
-window.LSTMPredictor = LSTMPredictor;
-window.FederatedLearning = FederatedLearning;
-window.SHAPExplainer = SHAPExplainer;
-window.MetaLearningEngine = MetaLearningEngine;
-window.StreamingLearner = StreamingLearner;
-window.MultiModalLearner = MultiModalLearner;
 window.InternalLogger = InternalLogger;
-window.NotificationSystem = NotificationSystem;
 })();
