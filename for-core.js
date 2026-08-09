@@ -20,7 +20,8 @@ window.askAllAgents = async function(question) {
             return;
         }
         const apiKey = FOR_getApiKey();
-        if (!apiKey) {
+        const hasFallbackProvider = typeof window.getActiveProviders === 'function' && window.getActiveProviders().length > 0;
+        if (!apiKey && !hasFallbackProvider) {
             return;
         }
         

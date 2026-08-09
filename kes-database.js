@@ -29,7 +29,8 @@ const modules = [
     'kes-search.js',
     'kes-monitor.js',
     'kes-sync.js',
-    'kes-api.js'
+    'kes-api.js',
+    'kes-api-playground.js'
 ];
 
 let loaded = 0;

@@ -110,7 +110,8 @@ async function CAI_sendChatToAI() {
             }
 
             const apiKey = CAI_getApiKey();
-            if (!apiKey) {
+            const hasFallbackProvider = typeof window.getActiveProviders === 'function' && window.getActiveProviders().length > 0;
+            if (!apiKey && !hasFallbackProvider) {
                 CAI_addMessage(container, 'AI', 'Masukkan API Key.', false);
                 return;
             }

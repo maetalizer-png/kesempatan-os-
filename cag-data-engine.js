@@ -494,26 +494,41 @@ async function CAG_callAI(prompt, apiKey) {
             CAG_currentAbortController.abort();
         }
         CAG_currentAbortController = new AbortController();
-        const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
-            method: 'POST',
-            headers: {
-                'Authorization': 'Bearer ' + apiKey,
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                model: 'deepseek/deepseek-chat',
-                messages: [{ role: 'user', content: prompt }],
-                // DISAMAKAN dengan Debate/Tournament (800/0.7) atas
-                // permintaan user — dulu 500/0.3 membuat respons Chat
-                // Agent terasa lebih datar dibanding Debate.
-                max_tokens: 1200,
-                temperature: 0.7
-            }),
-            signal: CAG_currentAbortController.signal
-        });
-        const data = await response.json();
-        if (data.choices?.[0]) {
-            return data.choices[0].message.content;
+
+        if (apiKey) {
+            try {
+                const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': 'Bearer ' + apiKey,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        model: 'deepseek/deepseek-chat',
+                        messages: [{ role: 'user', content: prompt }],
+                        // DISAMAKAN dengan Debate/Tournament (800/0.7) atas
+                        // permintaan user — dulu 500/0.3 membuat respons Chat
+                        // Agent terasa lebih datar dibanding Debate.
+                        max_tokens: 1200,
+                        temperature: 0.7
+                    }),
+                    signal: CAG_currentAbortController.signal
+                });
+                const data = await response.json();
+                if (data.choices?.[0]) {
+                    return data.choices[0].message.content;
+                }
+                throw new Error(data.error?.message || 'Gagal');
+            } catch (error) {
+                if (error.name === 'AbortError') throw error;
+                // OpenRouter specifically failed — fall through to the
+                // multi-provider fallback below instead of failing outright.
+            }
         }
-        throw new Error(data.error?.message || 'Gagal');
+
+        const aiClients = window.KESEMPATAN?.AIClients || window.AIClients;
+        if (aiClients && typeof aiClients.generateWithFallback === 'function') {
+            return await aiClients.generateWithFallback(prompt, 'ChatAgent');
+        }
+        throw new Error('Tidak ada provider AI yang tersedia. Masukkan API Key OpenRouter atau konfigurasi provider lain di Pengaturan.');
     }

@@ -128,6 +128,33 @@ async function buildPrompt(agent, context, uploadedData) {
             kgHint = `\nKnowledge graph: ${summary.nodes} konsep, ${summary.edges} relasi.`;
         }
     }
+
+    // Each context section above is capped individually, but nothing capped
+    // their combined total — several long sections at once could still build
+    // an oversized prompt with no safety net. Truncate the combined "extra
+    // context" blob (not the system prompt / topic / instruction / JSON
+    // format footer, which must stay intact) to a character budget, dropping
+    // lowest-priority sections first (kg hint, then history, then world data)
+    // if it's still too long. ~4 chars/token is the same estimate this
+    // codebase already uses for cost tracking (ai-clients.js).
+    const CONTEXT_CHAR_BUDGET = 12000;
+    let extraContext = dataSection + memSection + worldSection + historySection + kgHint;
+    if (extraContext.length > CONTEXT_CHAR_BUDGET) {
+        const drop = [
+            function() { kgHint = ''; },
+            function() { historySection = ''; },
+            function() { worldSection = ''; }
+        ];
+        for (const dropSection of drop) {
+            dropSection();
+            extraContext = dataSection + memSection + worldSection + historySection + kgHint;
+            if (extraContext.length <= CONTEXT_CHAR_BUDGET) break;
+        }
+        if (extraContext.length > CONTEXT_CHAR_BUDGET) {
+            extraContext = extraContext.substring(0, CONTEXT_CHAR_BUDGET);
+        }
+    }
+
     let prompt = agentConfig.systemPrompt + "\n\n";
     if (agentConfig.fewShotExamples && agentConfig.fewShotExamples.length > 0) {
         prompt += "Contoh format output yang diharapkan:\n";
@@ -136,7 +163,7 @@ async function buildPrompt(agent, context, uploadedData) {
         });
     }
     prompt += 'Sekarang, analisis topik berikut: "' + context.topic + '".\nInstruksi tambahan: ' + context.instruction + "\n";
-    prompt += dataSection + memSection + worldSection + historySection + kgHint + "\n\n";
+    prompt += extraContext + "\n\n";
     prompt += 'Berikan output dalam format JSON (hanya JSON) dengan field: agent, status, reasoning_summary, score, confidence, insight (array), strategy (array), risk (array), recommendation, demand, competition, monetization, virality, sustainability, scalability, timing, attention, execution, longterm.';
     if (typeof window.KESEMPATAN?.ReactionLearning?.getLearningPrompt === 'function') {
         try {

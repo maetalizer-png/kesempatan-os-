@@ -50,7 +50,8 @@ async function CAG_sendChatToAgent() {
             input.value = '';
             CAG_playTypingSound();
             const apiKey = CAG_getApiKey();
-            if (!apiKey) {
+            const hasFallbackProvider = typeof window.getActiveProviders === 'function' && window.getActiveProviders().length > 0;
+            if (!apiKey && !hasFallbackProvider) {
                 CAG_addMessage(container, displayName, 'Masukkan API Key.', false);
                 return;
             }
