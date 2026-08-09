@@ -37,6 +37,7 @@
                         const instance = new Core();
                         window.VectorMemory = instance;
                         window.VectorMemoryV5 = instance;
+                        if (window.KESEMPATAN) window.KESEMPATAN.VectorMemory = instance;
                         resolve();
                     } catch(e) {
                         resolve();
@@ -64,7 +65,8 @@
                         const instance = new Core();
                         window.VectorMemory = instance;
                         window.VectorMemoryV5 = instance;
-                    } catch(e) {}
+                        if (window.KESEMPATAN) window.KESEMPATAN.VectorMemory = instance;
+                    } catch(e) { console.warn('[RapBattle] Fallback memory instance creation failed:', e.message); }
                     resolve();
                     return;
                 }

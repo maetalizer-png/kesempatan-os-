@@ -46,7 +46,7 @@ function FOR_getStaticData() {
     }
 
 function FOR_getMemoryInstance() {
-        return window.VectorMemory || window.VectorMemoryV5 || null;
+        return window.KESEMPATAN?.VectorMemory || window.VectorMemory || window.VectorMemoryV5 || null;
     }
 
 function FOR_getDatabaseInstance() {

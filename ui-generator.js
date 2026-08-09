@@ -139,7 +139,7 @@
     // 🔥 AMBIL DARI VECTOR MEMORY
     // ============================================================
     async function fetchFromVectorMemory(topic, topK) {
-        const memory = window.VectorMemory || window.VectorMemoryV5;
+        const memory = window.KESEMPATAN?.VectorMemory || window.VectorMemory || window.VectorMemoryV5;
         if (!memory || typeof memory.search !== 'function') return [];
         
         try {

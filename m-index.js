@@ -111,11 +111,19 @@ async function initAPI() {
             }
         };
 
+        // window.VectorMemory/VectorMemoryV5/MemoryAPI are kept as real
+        // globals (not KESEMPATAN-only): 18+ files across Podcast, Rap
+        // Battle, Debate, Chat AI, Chat Agent, Forum, Tournament, Workflow,
+        // Memory Manager and the LLM retriever read (and rap-battle.js also
+        // writes) them directly. KESEMPATAN.VectorMemory is the same object,
+        // added as the namespaced access point for new code.
         window.VectorMemory = api;
         window.MemoryAPI = api;
         // COMPAT ALIAS — hapus setelah grep seluruh proyek (pages/agent/
         // inline) memastikan tidak ada lagi yang memanggil VectorMemoryV5.
         window.VectorMemoryV5 = api;
+        KESEMPATAN.VectorMemory = api;
+        KESEMPATAN.MemoryAPI = api;
 
         if (typeof document !== 'undefined') {
             document.dispatchEvent(new CustomEvent('memory-api-ready'));
@@ -204,6 +212,8 @@ function createFallbackAPI() {
     window.VectorMemory = fallback;
     window.MemoryAPI = fallback;
     window.VectorMemoryV5 = fallback; // COMPAT ALIAS
+    KESEMPATAN.VectorMemory = fallback;
+    KESEMPATAN.MemoryAPI = fallback;
 
     if (typeof document !== 'undefined') {
         document.dispatchEvent(new CustomEvent('memory-api-ready', { detail: { fallback: true } }));

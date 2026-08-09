@@ -164,7 +164,7 @@
     // ============================================================
 
     function DEB_getMemoryInstance() {
-        return window.VectorMemory || window.VectorMemoryV5 || null;
+        return window.KESEMPATAN?.VectorMemory || window.VectorMemory || window.VectorMemoryV5 || null;
     }
 
     function DEB_getStaticData() {

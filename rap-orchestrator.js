@@ -32,7 +32,7 @@
     const getApiKey = KESEMPATAN.RapHelpers.getApiKey;
 
     const RapEngine = KESEMPATAN.RapEngine;
-    const memory = window.VectorMemory || window.VectorMemoryV5;
+    const memory = window.KESEMPATAN?.VectorMemory || window.VectorMemory || window.VectorMemoryV5;
 
     // ============================================================
     // 🔥 BEAT - ENHANCED WITH PATTERN SYSTEM

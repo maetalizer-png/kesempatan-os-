@@ -46,7 +46,7 @@ function CAG_getStaticData() {
     }
 
 function CAG_getMemoryInstance() {
-        return window.VectorMemory || window.VectorMemoryV5 || null;
+        return window.KESEMPATAN?.VectorMemory || window.VectorMemory || window.VectorMemoryV5 || null;
     }
 
 function CAG_getDatabaseInstance() {

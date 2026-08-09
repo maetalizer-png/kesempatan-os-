@@ -47,7 +47,7 @@ function CAI_getStaticData() {
     }
 
 function CAI_getMemoryInstance() {
-        return window.VectorMemory || window.VectorMemoryV5 || null;
+        return window.KESEMPATAN?.VectorMemory || window.VectorMemory || window.VectorMemoryV5 || null;
     }
 
 function CAI_getDatabaseInstance() {
