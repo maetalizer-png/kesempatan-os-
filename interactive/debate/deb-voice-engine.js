@@ -4,6 +4,15 @@
    pemecahan kalimat & jeda alami (lihat KESEMPATAN_OS_REORG_NOTES.md
    ronde ke-9 untuk detail perbaikan bug suara).
    ============================================================ */
+import { DEB_CONFIG } from './deb-config.js';
+import { DEB_State } from './deb-state.js';
+// Impor sirkular yang disengaja: deb-classes.js sendiri mengimpor
+// DEB_speakText/DEB_stopAllSpeech dari file ini. Aman karena kedua sisi
+// hanya memakai bindingnya di DALAM function/method body (dipanggil
+// belakangan saat runtime, setelah user memulai debat), bukan di
+// top-level module saat evaluasi.
+import { DEB_SecurityManager } from './deb-classes.js';
+
     // ============================================================
     // MESIN SUARA DEBAT — diperbaiki total.
     // Masalah lama: setiap panggilan DEB_speakText() langsung
@@ -24,7 +33,7 @@
     //    (bukan satu blok panjang datar), dan TIDAK dipotong paksa —
     //    argumen lengkap sampai selesai.
     // ============================================================
-    function DEB_hashAgentKey(key) {
+    export function DEB_hashAgentKey(key) {
         let hash = 0;
         const str = String(key || '');
         for (let i = 0; i < str.length; i++) {
@@ -33,7 +42,7 @@
         return hash;
     }
 
-    function DEB_getVoiceProfile(agentKey) {
+    export function DEB_getVoiceProfile(agentKey) {
         // Dua profil kontras: satu lebih rendah & tenang, satu lebih
         // tinggi & cepat — supaya dua agen yang bicara bergantian
         // benar-benar terasa seperti dua orang berbeda, bukan gema
@@ -48,7 +57,7 @@
         return PROFILES[DEB_hashAgentKey(agentKey) % 2];
     }
 
-    function DEB_getIndonesianVoices() {
+    export function DEB_getIndonesianVoices() {
         const voices = (window.speechSynthesis && window.speechSynthesis.getVoices()) || [];
         const idVoices = voices.filter(function(v) {
             return v.lang === 'id-ID' || v.lang.indexOf('id') === 0;
@@ -56,7 +65,7 @@
         return idVoices.length > 0 ? idVoices : voices;
     }
 
-    function DEB_splitIntoSentences(text) {
+    export function DEB_splitIntoSentences(text) {
         const parts = text.match(/[^.!?]+[.!?]*/g);
         if (!parts || parts.length === 0) {
             return [text];
@@ -64,7 +73,7 @@
         return parts.map(function(s) { return s.trim(); }).filter(Boolean);
     }
 
-    function DEB_speakUtteranceChain(text, profile) {
+    export function DEB_speakUtteranceChain(text, profile) {
         return new Promise(function(resolve) {
             if (!window.speechSynthesis) {
                 resolve();
@@ -101,8 +110,8 @@
         });
     }
 
-    function DEB_speakText(text, agentKey) {
-        if (!DEB_speechEnabled || !text || text.length === 0) {
+    export function DEB_speakText(text, agentKey) {
+        if (!DEB_State.speechEnabled || !text || text.length === 0) {
             return Promise.resolve();
         }
         // FIX (laporan user: kata "asterisk asterisk" terdengar diucapkan
@@ -119,30 +128,25 @@
         // DEB_SecurityManager) sudah pasti termuat duluan di titik INI
         // dipanggil (baru jalan saat user klik "Mulai Debat", jauh
         // setelah seluruh rantai modul selesai dimuat).
-        const stripped = (typeof DEB_SecurityManager !== 'undefined' && DEB_SecurityManager.stripMarkdown)
-            ? DEB_SecurityManager.stripMarkdown(text)
-            : text;
+        const stripped = DEB_SecurityManager.stripMarkdown(text);
         const cleanText = stripped.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ').trim();
         if (!cleanText) {
             return Promise.resolve();
         }
         const profile = DEB_getVoiceProfile(agentKey);
         // Antre di belakang ucapan sebelumnya — tidak lagi memotongnya.
-        DEB_speechQueue = DEB_speechQueue.then(function() {
+        DEB_State.speechQueue = DEB_State.speechQueue.then(function() {
             return DEB_speakUtteranceChain(cleanText, profile);
         }).catch(function() {
             return Promise.resolve();
         });
-        return DEB_speechQueue;
+        return DEB_State.speechQueue;
     }
 
-    function DEB_stopAllSpeech() {
-        DEB_speechQueue = Promise.resolve();
+    export function DEB_stopAllSpeech() {
+        DEB_State.speechQueue = Promise.resolve();
         if (window.speechSynthesis) {
             window.speechSynthesis.cancel();
         }
     }
-
-    // ============================================================
-    // 3. CACHE SYSTEM
     // ============================================================

@@ -3,39 +3,41 @@
    OTAK DEBAT — cache, smart search, integrasi World/Memory/
    Database, simpan hasil debat ke memory.
    ============================================================ */
+import { DEB_CONFIG } from './deb-config.js';
+import { DEB_State } from './deb-state.js';
 
-    function DEB_getCached(key) {
-        const entry = DEB_queryCache.get(key);
+    export function DEB_getCached(key) {
+        const entry = DEB_State.queryCache.get(key);
         if (!entry) {
             return null;
         }
         if (Date.now() - entry.timestamp > DEB_CONFIG.CACHE_TTL) {
-            DEB_queryCache.delete(key);
+            DEB_State.queryCache.delete(key);
             return null;
         }
         return entry.data;
     }
 
-    function DEB_setCache(key, data) {
-        if (DEB_queryCache.size >= DEB_CONFIG.MAX_CACHE) {
-            const firstKey = DEB_queryCache.keys().next().value;
-            DEB_queryCache.delete(firstKey);
+    export function DEB_setCache(key, data) {
+        if (DEB_State.queryCache.size >= DEB_CONFIG.MAX_CACHE) {
+            const firstKey = DEB_State.queryCache.keys().next().value;
+            DEB_State.queryCache.delete(firstKey);
         }
-        DEB_queryCache.set(key, {
+        DEB_State.queryCache.set(key, {
             data: data,
             timestamp: Date.now()
         });
     }
 
-    function DEB_clearCache() {
-        DEB_queryCache.clear();
+    export function DEB_clearCache() {
+        DEB_State.queryCache.clear();
     }
 
-    function DEB_getCacheStats() {
+    export function DEB_getCacheStats() {
         return {
-            size: DEB_queryCache.size,
+            size: DEB_State.queryCache.size,
             maxSize: DEB_CONFIG.MAX_CACHE,
-            keys: Array.from(DEB_queryCache.keys())
+            keys: Array.from(DEB_State.queryCache.keys())
         };
     }
 
@@ -43,7 +45,7 @@
     // 4. SMART SEARCH — 6 FAKTOR SCORING!
     // ============================================================
 
-    function DEB_smartSearch(query, data, threshold) {
+    export function DEB_smartSearch(query, data, threshold) {
         threshold = threshold || DEB_CONFIG.SEARCH_THRESHOLD;
         if (!data || data.length === 0) {
             return [];
@@ -140,7 +142,7 @@
     // ============================================================
     // 5. SIMILARITY CALCULATOR
     // ============================================================
-    function DEB_calculateSimilarity(vec1, vec2) {
+    export function DEB_calculateSimilarity(vec1, vec2) {
         if (!vec1 || !vec2) {
             return 0;
         }
@@ -163,20 +165,20 @@
     // 6. FUNGSI INTEGRASI EKSTERNAL
     // ============================================================
 
-    function DEB_getMemoryInstance() {
+    export function DEB_getMemoryInstance() {
         return window.KESEMPATAN?.VectorMemory || window.VectorMemory || window.VectorMemoryV5 || null;
     }
 
-    function DEB_getStaticData() {
+    export function DEB_getStaticData() {
         return window.__STATIC_DATA || [];
     }
 
-    function DEB_getDatabaseInstance() {
+    export function DEB_getDatabaseInstance() {
         return window.KESDatabase || window.getDatabaseV10 || null;
     }
 
     // DARI WORLD.JS (STATIS) — PAKAI SMART SEARCH
-    function DEB_fetchStaticData(topic) {
+    export function DEB_fetchStaticData(topic) {
         const staticData = DEB_getStaticData();
         if (staticData.length === 0) {
             return [];
@@ -192,7 +194,7 @@
     }
 
     // DARI VECTOR MEMORY (DINAMIS)
-    async function DEB_fetchFromVectorMemory(topic, topK) {
+    export async function DEB_fetchFromVectorMemory(topic, topK) {
         const memory = DEB_getMemoryInstance();
         if (!memory || typeof memory.search !== 'function') {
             return [];
@@ -217,7 +219,7 @@
     }
 
     // DARI KES DATABASE
-    async function DEB_fetchFromDatabase(topic, limit) {
+    export async function DEB_fetchFromDatabase(topic, limit) {
         const db = DEB_getDatabaseInstance();
         if (!db) {
             return [];
@@ -256,7 +258,7 @@
     }
 
     // GABUNGKAN SEMUA DARI 3 SUMBER — DENGAN CACHE & PARALLEL!
-    async function DEB_getAllContext(topic, options) {
+    export async function DEB_getAllContext(topic, options) {
         options = options || {};
         const cacheKey = topic + '|' + JSON.stringify(options);
 
@@ -358,7 +360,7 @@
         return result;
     }
 
-    async function DEB_saveDebateToMemory(debateData) {
+    export async function DEB_saveDebateToMemory(debateData) {
         const memory = DEB_getMemoryInstance();
         const db = DEB_getDatabaseInstance();
 
@@ -403,7 +405,3 @@
             } catch (_) { console.warn('[DebDataEngine] db save failed'); }
         }
     }
-
-    // ============================================================
-    // 7. SECURE CONFIGURATION
-    // ============================================================

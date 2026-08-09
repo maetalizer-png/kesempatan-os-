@@ -10,7 +10,7 @@
 // di core.js/debate-arena.js) diam-diam tidak pernah muncul (dijaga
 // `if (DEB_showToast)` yang selalu false, jadi tidak pernah error/
 // ketahuan). Diperbaiki jadi rename saat destructure.
-const { showToast: DEB_showToast } = window.Utils || {};
+export const { showToast: DEB_showToast } = window.Utils || {};
 
     // ============================================================
     // RESOLVER DATA AGEN — TIDAK ADA ROSTER/NAMA HARDCODE.
@@ -20,7 +20,7 @@ const { showToast: DEB_showToast } = window.Utils || {};
     // hanya jaring pengaman terakhir kalau registry tidak tersedia.
     // ============================================================
 
-    function DEB_getFullAgentPool() {
+export function DEB_getFullAgentPool() {
         let boxes = document.querySelectorAll('.agent-checkbox[data-agent]');
         if (boxes.length === 0 && window.KESEMPATAN?.AgentRenderer?.renderAllAgents) {
             // Dashboard belum sempat dibuka sesi ini -> checkbox agen belum
@@ -42,7 +42,7 @@ const { showToast: DEB_showToast } = window.Utils || {};
         return pool;
     }
 
-    function DEB_humanizeAgentName(agent) {
+export function DEB_humanizeAgentName(agent) {
         if (!agent || typeof agent !== 'string') {
             return '';
         }
@@ -53,7 +53,7 @@ const { showToast: DEB_showToast } = window.Utils || {};
             .trim();
     }
 
-    function DEB_getAgentProfile(agent) {
+export function DEB_getAgentProfile(agent) {
         if (window.getAgentConfig) {
             const cfg = window.getAgentConfig(agent);
             if (cfg) {
@@ -68,7 +68,7 @@ const { showToast: DEB_showToast } = window.Utils || {};
         return { name: DEB_humanizeAgentName(agent), role: '', emoji: '', systemPrompt: '' };
     }
 
-    function DEB_populateAgentSelect(selectEl, preferredIndex) {
+export function DEB_populateAgentSelect(selectEl, preferredIndex) {
         if (!selectEl) {
             return;
         }
@@ -91,7 +91,7 @@ const { showToast: DEB_showToast } = window.Utils || {};
     // 1. KONFIGURASI
     // ============================================================
 
-    const DEB_CONFIG = {
+export const DEB_CONFIG = {
         STORAGE_KEY: 'debate_history_v12',
         THEME_KEY: 'debate_theme',
         CACHE_KEY: 'debate_cache_v12',
@@ -115,11 +115,3 @@ const { showToast: DEB_showToast } = window.Utils || {};
         },
         DEFAULT_MODEL: 'deepseek'
     };
-
-    // ============================================================
-    // 2. SHARED SPEECH (SAMA DENGAN CHAT.JS)
-    // ============================================================
-    // Default FALSE — harus disamakan dengan checkbox "Mode Voice Debat"
-    // yang defaultnya juga unchecked. Sebelumnya ini true, jadi debat
-    // sudah bicara duluan sebelum user sempat mencentang kotaknya sama
-    // sekali (checkbox jadi terkesan tidak berfungsi).

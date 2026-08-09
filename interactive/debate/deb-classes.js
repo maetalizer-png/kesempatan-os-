@@ -5,7 +5,13 @@
    DEB_DebateHistory. Dimuat SEBELUM debate-arena.js (DEB_DebateArena
    memakai semua kelas ini).
    ============================================================ */
-    class DEB_SecureConfig {
+import { DEB_CONFIG } from './deb-config.js';
+import { DEB_State } from './deb-state.js';
+// Impor sirkular yang disengaja — lihat catatan di deb-voice-engine.js.
+import { DEB_speakText, DEB_stopAllSpeech } from './deb-voice-engine.js';
+import { DEB_saveDebateToMemory } from './deb-data-engine.js';
+
+    export class DEB_SecureConfig {
         constructor() {
             this.API_PROXY = '/api/ai/debate';
             this.STORAGE_KEY = DEB_CONFIG.STORAGE_KEY;
@@ -24,7 +30,7 @@
     // ============================================================
     // 8. DEBATE STATE
     // ============================================================
-    class DEB_DebateState {
+    export class DEB_DebateState {
         constructor() {
             this.status = 'idle';
             this.currentRound = 0;
@@ -80,7 +86,7 @@
     // ============================================================
     // 9. SECURITY & SANITIZATION
     // ============================================================
-    class DEB_SecurityManager {
+    export class DEB_SecurityManager {
         static sanitizeHTML(str) {
             if (!str) {
                 return '';
@@ -159,7 +165,7 @@
     // ============================================================
     // 10. DEBATE ANALYTICS
     // ============================================================
-    class DEB_DebateAnalytics {
+    export class DEB_DebateAnalytics {
         constructor() {
             this.scores = {
                 agentA: { logic: 0, evidence: 0, rhetoric: 0, total: 0 },
@@ -259,7 +265,7 @@
     // ============================================================
     // 11. VOICE MANAGER (FIX — PAKAI SPEAKTEXT!)
     // ============================================================
-    class DEB_VoiceManager {
+    export class DEB_VoiceManager {
         constructor() {
             this.isActive = false;
             this.recognition = null;
@@ -368,10 +374,10 @@
             this.isSpeaking = false;
         }
 
-        // FIX: Toggle juga sync dengan DEB_speechEnabled global
+        // FIX: Toggle juga sync dengan DEB_State.speechEnabled global
         toggle() {
             this.isActive = !this.isActive;
-            DEB_speechEnabled = this.isActive;
+            DEB_State.speechEnabled = this.isActive;
             if (!this.isActive) {
                 this.stopSpeaking();
                 this.stopListening();
@@ -387,7 +393,7 @@
     // ============================================================
     // 12. DEBATE EXPORTER
     // ============================================================
-    class DEB_DebateExporter {
+    export class DEB_DebateExporter {
         static async exportToPDF(debateData, filename) {
             filename = filename || 'debate-result.pdf';
             try {
@@ -486,7 +492,7 @@
     // ============================================================
     // 13. DEBATE HISTORY MANAGER
     // ============================================================
-    class DEB_DebateHistory {
+    export class DEB_DebateHistory {
         constructor() {
             this.storageKey = DEB_CONFIG.STORAGE_KEY;
             this.maxItems = DEB_CONFIG.MAX_HISTORY;

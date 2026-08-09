@@ -3,6 +3,12 @@
    INTI DEBAT — upgrade UI, modal riwayat, CSS, instansiasi
    DEB_DebateArena, render panel, init. Dimuat PALING TERAKHIR.
    ============================================================ */
+import { DEB_CONFIG, DEB_showToast, DEB_getAgentProfile, DEB_populateAgentSelect } from './deb-config.js';
+import { DEB_State } from './deb-state.js';
+import { DEB_clearCache, DEB_getCacheStats } from './deb-data-engine.js';
+import { DEB_SecurityManager } from './deb-classes.js';
+import { DEB_DebateArena } from './deb-debate-arena.js';
+
     window.KESEMPATAN = window.KESEMPATAN || {};
 
     function DEB_upgradeDebateUI() {
@@ -231,7 +237,7 @@
             });
             if (voiceToggle.checked) {
                 debate.voice.isActive = true;
-                DEB_speechEnabled = true;
+                DEB_State.speechEnabled = true;
             }
         }
 

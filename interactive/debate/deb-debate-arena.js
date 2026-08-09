@@ -5,7 +5,15 @@
    Dipakai juga oleh Turnamen (interactive/tournament/) sebagai
    mesin "satu pertandingan" dalam bracket.
    ============================================================ */
-    class DEB_DebateArena {
+import { DEB_CONFIG, DEB_showToast, DEB_getAgentProfile } from './deb-config.js';
+import { DEB_speakText } from './deb-voice-engine.js';
+import { DEB_getAllContext } from './deb-data-engine.js';
+import {
+    DEB_DebateState, DEB_SecureConfig, DEB_VoiceManager, DEB_DebateAnalytics,
+    DEB_DebateHistory, DEB_DebateExporter, DEB_SecurityManager
+} from './deb-classes.js';
+
+    export class DEB_DebateArena {
         constructor() {
             this.state = new DEB_DebateState();
             this.config = new DEB_SecureConfig();
