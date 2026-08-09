@@ -1,15 +1,10 @@
-(function() {
-"use strict";
+import { Utils } from './utils.js';
 
 const KESEMPATAN = window.KESEMPATAN || {};
 window.KESEMPATAN = KESEMPATAN;
 
-if (window.__ExportLoaded) return;
-window.__ExportLoaded = true;
-
-const Utils = window.KESEMPATAN?.Utils || window.Utils || {};
-const escapeHtml = Utils.escapeHtml || window.escapeHtml || function(str) { return String(str); };
-const showToast = Utils.showToast || window.showToast || function() {};
+const escapeHtml = Utils.escapeHtml || function(str) { return String(str); };
+const showToast = Utils.showToast || function() {};
 const Logger = Utils.Logger || { system: function() {}, info: function() {}, warn: function() {}, error: function() {}, success: function() {} };
 
 let lastAggregated = null;
@@ -412,7 +407,7 @@ if (document.readyState === "loading") {
     initExportUI();
 }
 
-const ExportManager = Object.freeze({
+export const ExportManager = Object.freeze({
     setData: setExportData,
     toJSON: exportToJSON,
     toHTML: exportToHTML,
@@ -433,4 +428,3 @@ KESEMPATAN.ExportManager = ExportManager;
 // hook into export completion, and this file's own click handlers read
 // window.ExportManager fresh at click-time so they pick up that wrapper.
 window.ExportManager = ExportManager;
-})();

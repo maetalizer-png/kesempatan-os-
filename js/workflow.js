@@ -2,14 +2,17 @@ import { CONFIG } from './config.js';
 import { Utils } from './utils.js';
 import { WorkflowState } from './workflow-state.js';
 import { WorkflowLLMBridge } from './workflow-llm-bridge.js';
+import { ChartManager } from './chart.js';
+import { HITL } from './hitl.js';
+import { ExportManager } from './export.js';
 
 const KESEMPATAN = window.KESEMPATAN || {};
 window.KESEMPATAN = KESEMPATAN;
 
 const { Logger, RetryEngine, KnowledgeBase, safeParseResponse, escapeHtml, showToast, InternalLogger } = Utils;
-const { updateChart } = window.KESEMPATAN?.ChartManager || {};
-const { autoApproveResults, hidePanel: hideHitlPanel } = window.KESEMPATAN?.HITL || {};
-const { setData: setExportData } = window.KESEMPATAN?.ExportManager || {};
+const { updateChart } = ChartManager;
+const { autoApproveResults, hidePanel: hideHitlPanel } = HITL;
+const { setData: setExportData } = ExportManager;
 // WorkflowParallel is read live via KESEMPATAN.WorkflowParallel (not imported):
 // workflow-parallel.js also reads KESEMPATAN.WorkflowEngine (defined below)
 // lazily at call time, so the two modules stay mutually referential without
@@ -467,9 +470,7 @@ function renderReport(agg, note) {
 
     if (window.__lastWorkflowResults && window.__lastWorkflowResults.length > 0) {
         setTimeout(function() {
-            if (typeof window.KESEMPATAN?.HITL?.addHITLButtonToReport === 'function') {
-                window.KESEMPATAN.HITL.addHITLButtonToReport(window.__lastWorkflowResults);
-            }
+            HITL.addHITLButtonToReport(window.__lastWorkflowResults);
         }, 500);
     }
 }
@@ -483,10 +484,10 @@ function finalizeAggregation(itemsOrResults, topic, note, successToast) {
     lastAggregated = aggregated;
     lastVerifierNote = note || '';
     renderReport(aggregated, note || '');
-    if (window.KESEMPATAN?.ChartManager?.ScoreEngine) window.KESEMPATAN.ChartManager.ScoreEngine.updateFromAggregated(aggregated);
-    if (updateChart && aggregated.metrics) updateChart(aggregated.metrics);
+    ChartManager.ScoreEngine.updateFromAggregated(aggregated);
+    if (aggregated.metrics) updateChart(aggregated.metrics);
     if (appDatabase) appDatabase.saveReport(topic, aggregated.score, aggregated);
-    if (setExportData) setExportData(aggregated, note || '');
+    setExportData(aggregated, note || '');
     if (window.KESEMPATAN?.Main?.saveReportToHistory) window.KESEMPATAN.Main.saveReportToHistory(aggregated, topic);
     if (hideHitlPanel) hideHitlPanel();
     if (showToast && successToast) showToast(successToast, 'success');
@@ -529,8 +530,8 @@ function forceGenerateReport(results, payload) {
         allResults = results.map(function(r) {
             return { agent: r.agent, originalResult: r, approved: true, editedScore: r.score || 50 };
         });
-    } else if (window.KESEMPATAN?.HITL && window.KESEMPATAN.HITL.getAllResults) {
-        const hitlResults = window.KESEMPATAN.HITL.getAllResults();
+    } else {
+        const hitlResults = HITL.getAllResults();
         if (hitlResults && hitlResults.length > 0) allResults = hitlResults;
     }
 
@@ -591,9 +592,9 @@ function forceGenerateReport(results, payload) {
     window.lastAggregated = aggregated;
     window.lastVerifierNote = 'Laporan dipaksa keluar (force generate)';
     renderReport(aggregated, 'Laporan berhasil digenerate! (' + allResults.length + ' agen)');
-    if (window.KESEMPATAN?.ChartManager?.ScoreEngine) window.KESEMPATAN.ChartManager.ScoreEngine.updateFromAggregated(aggregated);
-    if (updateChart && aggregated.metrics) updateChart(aggregated.metrics);
-    if (setExportData) setExportData(aggregated, 'Force generate');
+    ChartManager.ScoreEngine.updateFromAggregated(aggregated);
+    if (aggregated.metrics) updateChart(aggregated.metrics);
+    setExportData(aggregated, 'Force generate');
     if (window.KESEMPATAN?.Main?.saveReportToHistory) {
         window.KESEMPATAN.Main.saveReportToHistory(aggregated, payload?.topic || 'Opportunity');
     }
@@ -602,7 +603,7 @@ function forceGenerateReport(results, payload) {
     } catch (e) {
         InternalLogger.warn('Workflow', 'Save last aggregated failed: ' + e.message);
     }
-    if (hideHitlPanel) hideHitlPanel();
+    hideHitlPanel();
     if (showToast) showToast('📊 Laporan siap! Skor: ' + finalScore + '/100', 'success');
 
     const progressSpan = document.getElementById('agentProgress');
@@ -612,9 +613,7 @@ function forceGenerateReport(results, payload) {
 
     window.__lastWorkflowResults = results;
     setTimeout(function() {
-        if (typeof window.KESEMPATAN?.HITL?.addHITLButtonToReport === 'function') {
-            window.KESEMPATAN.HITL.addHITLButtonToReport(results);
-        }
+        HITL.addHITLButtonToReport(results);
     }, 600);
 
     InternalLogger.info("LAPORAN", "✅ Laporan berhasil digenerate! Skor: " + finalScore);

@@ -1,20 +1,10 @@
-(function() {
-"use strict";
+import { METRIC_KEYS } from './utils.js';
 
 const KESEMPATAN = window.KESEMPATAN || {};
 window.KESEMPATAN = KESEMPATAN;
 
-if (window.__ChartLoaded) return;
-window.__ChartLoaded = true;
-
 let opportunityChart = null;
 let timeAnalyticsChart = null;
-
-const METRIC_KEYS = (window.KESEMPATAN?.Utils?.METRIC_KEYS) || (window.Utils && window.Utils.METRIC_KEYS) || [
-    'demand', 'competition', 'monetization', 'virality',
-    'sustainability', 'scalability', 'timing', 'attention',
-    'execution', 'longterm'
-];
 
 const METRIC_LABELS = [
     'Demand', 'Competition', 'Monetization', 'Virality',
@@ -424,7 +414,7 @@ const ScoreEngine = {
     }
 };
 
-const ChartManager = Object.freeze({
+export const ChartManager = Object.freeze({
     updateChart: updateChart,
     initTimeAnalytics: initTimeAnalytics,
     updateTimeAnalytics: updateTimeAnalytics,
@@ -436,16 +426,11 @@ const ChartManager = Object.freeze({
 });
 
 KESEMPATAN.ChartManager = ChartManager;
-})();
 
-(function autoInitChart() {
-    setTimeout(() => {
-        if (typeof window.KESEMPATAN?.ChartManager?.updateChart === 'function') {
-            window.KESEMPATAN.ChartManager.updateChart({
-                demand: 0, competition: 0, monetization: 0, virality: 0,
-                sustainability: 0, scalability: 0, timing: 0, attention: 0,
-                execution: 0, longterm: 0
-            });
-        }
-    }, 500);
-})();
+setTimeout(() => {
+    updateChart({
+        demand: 0, competition: 0, monetization: 0, virality: 0,
+        sustainability: 0, scalability: 0, timing: 0, attention: 0,
+        execution: 0, longterm: 0
+    });
+}, 500);

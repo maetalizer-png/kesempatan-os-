@@ -1,13 +1,7 @@
-(function() {
-'use strict';
+import { Utils } from './utils.js';
 
 const KESEMPATAN = window.KESEMPATAN || {};
 window.KESEMPATAN = KESEMPATAN;
-
-if (window.__HITLLoaded) return;
-window.__HITLLoaded = true;
-
-const Utils = window.KESEMPATAN?.Utils || window.Utils || {};
 
 const escapeHtml = Utils.escapeHtml || function(str) {
     if (!str) return '';
@@ -581,7 +575,7 @@ function addHITLButtonToReport(results) {
     reportContainer.appendChild(btnWrapper);
 }
 
-const HITL = Object.freeze({
+export const HITL = Object.freeze({
     renderPanel: renderHitlPanel,
     setConfirmCallback: setHitlConfirmCallback,
     getApprovedResults: getApprovedResults,
@@ -611,4 +605,3 @@ if (document.readyState === 'loading') {
 }
 
 InternalLogger.info('HITL', 'HITL module loaded');
-})();
