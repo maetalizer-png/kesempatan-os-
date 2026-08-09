@@ -4,62 +4,57 @@
    🔥 ENHANCE: Temperature lebih tinggi untuk kreativitas maksimal
    ============================================================ */
 
-(function() {
-    'use strict';
+const KESEMPATAN = window.KESEMPATAN || {};
+window.KESEMPATAN = KESEMPATAN;
 
-    const KESEMPATAN = window.KESEMPATAN || {};
-    window.KESEMPATAN = KESEMPATAN;
+// ========== CONFIG ==========
+const CONFIG = {
+    // Storage
+    STORAGE_KEY: 'rap_battle_history_v11',
+    MAX_HISTORY: 50,
 
-    if (window.__RapConfig) return;
-    window.__RapConfig = true;
+    // Voice
+    VOICE_RATE: 0.95,
+    VOICE_PITCH: 1.1,
 
-    // ========== CONFIG ==========
-    const CONFIG = {
-        // Storage
-        STORAGE_KEY: 'rap_battle_history_v11',
-        MAX_HISTORY: 50,
+    // Battle
+    MAX_ROUNDS: 7,
+    BEAT_BPM: 140,
+    REACTIONS: ['🔥', '😂', '🎉', '💯', '👏', '🔥🔥', '💀'],
 
-        // Voice
-        VOICE_RATE: 0.95,
-        VOICE_PITCH: 1.1,
+    // 🔥 AI CONFIG — KREATIVITAS TINGGI
+    AI_TEMPERATURE: 1.0,       // lebih tinggi = lebih kreatif & berani (default 0.85)
+    AI_MAX_TOKENS: 800,        // lebih panjang untuk cerita yang lebih kaya
 
-        // Battle
-        MAX_ROUNDS: 7,
-        BEAT_BPM: 140,
-        REACTIONS: ['🔥', '😂', '🎉', '💯', '👏', '🔥🔥', '💀'],
+    // 🔥 RHYTHM CONFIG — Longgar, fokus ke ekspresi
+    TARGET_SYLLABLES: 11,
+    SYLLABLE_TOLERANCE: 5      // lebih longgar (6-16) biar ekspresi bebas
+};
 
-        // 🔥 AI CONFIG — KREATIVITAS TINGGI
-        AI_TEMPERATURE: 1.0,       // lebih tinggi = lebih kreatif & berani (default 0.85)
-        AI_MAX_TOKENS: 800,        // lebih panjang untuk cerita yang lebih kaya
+// ========== STATE ==========
+const rapState = {
+    status: 'idle',
+    currentRound: 0,
+    maxRounds: 3,
+    topic: '',
+    agentA: '',
+    agentB: '',
+    history: [],
+    startTime: null,
+    timerId: null
+};
 
-        // 🔥 RHYTHM CONFIG — Longgar, fokus ke ekspresi
-        TARGET_SYLLABLES: 11,
-        SYLLABLE_TOLERANCE: 5      // lebih longgar (6-16) biar ekspresi bebas
-    };
+let rapBattleActive = false;
+let rapAbort = false;
 
-    // ========== STATE ==========
-    const rapState = {
-        status: 'idle',
-        currentRound: 0,
-        maxRounds: 3,
-        topic: '',
-        agentA: '',
-        agentB: '',
-        history: [],
-        startTime: null,
-        timerId: null
-    };
+// ========== EXPORT ==========
+export const RapConfig = {
+    CONFIG: CONFIG,
+    rapState: rapState,
+    getRapBattleActive: function() { return rapBattleActive; },
+    setRapBattleActive: function(val) { rapBattleActive = val; },
+    getRapAbort: function() { return rapAbort; },
+    setRapAbort: function(val) { rapAbort = val; }
+};
 
-    let rapBattleActive = false;
-    let rapAbort = false;
-
-    // ========== EXPORT ==========
-    KESEMPATAN.RapConfig = {
-        CONFIG: CONFIG,
-        rapState: rapState,
-        getRapBattleActive: function() { return rapBattleActive; },
-        setRapBattleActive: function(val) { rapBattleActive = val; },
-        getRapAbort: function() { return rapAbort; },
-        setRapAbort: function(val) { rapAbort = val; }
-    };
-})();
+KESEMPATAN.RapConfig = RapConfig;

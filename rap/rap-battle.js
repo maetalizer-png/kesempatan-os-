@@ -1,21 +1,34 @@
-/* ============================================================
-   📁 rap/rap-battle.js (LAZY LOADER)
-   ✅ Load semua modul rap secara sequential
-   🔥 ✅ SUDAH TUNGGU MEMORY.JS SIAP!
-   🔥 ✅ LOAD ENGINE-ENGINE BARU (character, intelligence, optimizer)!
-   ============================================================ */
+// Static imports (in dependency order) replace the old runtime
+// document.createElement('script') loader: the ES module graph itself now
+// guarantees rap-config.js -> rap-helpers.js -> ... -> rap-main.js finish
+// evaluating, in this order, before any code below runs.
+import './rap-config.js';
+import './rap-helpers.js';
+import './rap-character.js';
+import './rap-intelligence.js';
+import './rap-optimizer.js';
+import './rap-soundbank.js';
+import './rap-engine.js';
+import './rap-orchestrator.js';
+import './rap-logic.js';
+import './rap-ui-style.js';
+import './rap-ui-layout.js';
+import './rap-ui-renderer.js';
+import './rap-ui-events.js';
+import './rap-ui.js';
+import './rap-main.js';
 
 (function() {
     'use strict';
     const KESEMPATAN = window.KESEMPATAN || {};
     window.KESEMPATAN = KESEMPATAN;
 
-    if (window.__RapLoaderLoaded) return;
-    window.__RapLoaderLoaded = true;
-
-    // ============================================================
-    // 🔥 WAIT FOR MEMORY.JS
-    // ============================================================
+    // rap-main.js already ran its own init() by this point (synchronously
+    // on DOMContentLoaded or immediately if the document was already
+    // complete) — this module still waits for VectorMemory readiness
+    // (a genuinely async condition, not a load-order issue static imports
+    // can solve) before re-invoking init() so memory-dependent battle
+    // context is available once VectorMemory finishes initializing.
     const waitForMemory = function() {
         return new Promise(function(resolve) {
             // 1. CEK LANGSUNG
@@ -79,93 +92,9 @@
         });
     };
 
-    // ============================================================
-    // 📦 MODULES (URUTAN PENTING!)
-    // ============================================================
-    const MODULES = [
-        // 1. Konfigurasi & Helpers
-        'rap/rap-config.js',
-        'rap/rap-helpers.js',
-
-        // ============================================================
-        // 🔥🔥🔥 ENGINE BARU (LOAD DULU SEBELUM ENGINE WRAPPER) 🔥🔥🔥
-        // ============================================================
-        'rap/rap-character.js',      // Character Engine (35+ persona + emosi)
-        'rap/rap-intelligence.js',    // Intelligence Engine (multi-agen + strategi)
-        'rap/rap-optimizer.js',       // Optimizer Engine (learning + quality)
-        'rap/rap-soundbank.js',       // 🔥 BARU: Soundbank Engine (24 lagu + rekomendasi per rapper)
-
-        // ============================================================
-        // 🔥 ENGINE WRAPPER (INTEGRATOR KETIGANYA)
-        // ============================================================
-        'rap/rap-engine.js',                 // Wrapper / Integrator
-
-        // ============================================================
-        // 🔥 CORE RAP BATTLE
-        // ============================================================
-        'rap/rap-orchestrator.js',
-        'rap/rap-logic.js',
-
-        // ============================================================
-        // 🔥 UI
-        // ============================================================
-        'rap/rap-ui-style.js',
-        'rap/rap-ui-layout.js',
-        'rap/rap-ui-renderer.js',
-        'rap/rap-ui-events.js',
-        'rap/rap-ui.js',
-
-        // ============================================================
-        // 🔥 MAIN
-        // ============================================================
-        'rap/rap-main.js'
-    ];
-
-    let loaded = 0;
-    const total = MODULES.length;
-    let hasError = false;
-
-    // ============================================================
-    // 🔥 LOAD NEXT
-    // ============================================================
-    const loadNext = function() {
-        if (loaded >= total) {
-            if (!hasError && KESEMPATAN.RapBattleMain && typeof KESEMPATAN.RapBattleMain.init === 'function') {
-                if (!window.__RapInitDone) {
-                    window.__RapInitDone = true;
-                    waitForMemory().then(function() {
-                        // (init log dihapus)
-                        KESEMPATAN.RapBattleMain.init();
-                    });
-                }
-            }
-            return;
-        }
-
-        const src = MODULES[loaded];
-        const script = document.createElement('script');
-        script.src = src;
-        script.async = false;
-        
-        script.onload = function() {
-            loaded++;
-            // (progress log dihapus)
-            loadNext();
-        };
-        
-        script.onerror = function() {
-            hasError = true;
-            // (error log dihapus)
-            loaded++;
-            loadNext();
-        };
-        
-        document.head.appendChild(script);
-    };
-
-    // ============================================================
-    // 🚀 START
-    // ============================================================
-    // (start log dihapus)
-    loadNext();
+    if (KESEMPATAN.RapBattleMain && typeof KESEMPATAN.RapBattleMain.init === 'function') {
+        waitForMemory().then(function() {
+            KESEMPATAN.RapBattleMain.init();
+        });
+    }
 })();
