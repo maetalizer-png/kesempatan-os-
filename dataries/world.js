@@ -1,23 +1,59 @@
-/* ============================================================
-KESEMPATAN OS - WORLD LOADER
-Auto-loader data statis & dinamis (country, city, lingo, src,
-marplace, paluang, sapaan). Data statis -> __STATIC_DATA,
-data dinamis -> VectorMemory.
-============================================================ */
-(function () {
-'use strict';
+// KESEMPATAN OS - WORLD LOADER
+// Menggabungkan seluruh data statis (country, city, lingo, marplace,
+// paluang, sapaan) lewat static import, lalu memilah tiap item ke
+// __STATIC_DATA (memori langsung) atau VectorMemory (dinamis) sesuai
+// tipenya. Sumber berita (src/global.js, src/international.js,
+// src/regional.js) diimpor untuk EFEK SAMPING saja — file-file itu
+// mengambil data lewat fetch RSS async dan mendaftarkan hasilnya ke
+// window.__DATA_REGISTER sendiri begitu selesai, karena isinya belum
+// ada sama sekali pada saat modul dievaluasi (beda dari 38 sumber data
+// statis di atas yang isinya sudah pasti ada begitu file diimpor).
 
-// ============================================================
-// CEK DOUBLE LOAD
-// ============================================================
+import { DATA as SAPAAN_GREETINGS } from './sapaan/greetings.js';
+import { DATA as SAPAAN_INTERAKTIF } from './sapaan/interaktif.js';
+import { DATA as COUNTRY_ASIAN_TENGGARA } from './country/asian-tenggara.js';
+import { DATA as COUNTRY_ASIAN_TIMUR } from './country/asian-timur.js';
+import { DATA as COUNTRY_ASIAN_SELATAN } from './country/asian-selatan.js';
+import { DATA as COUNTRY_ASIAN_BARAT } from './country/asian-barat.js';
+import { DATA as COUNTRY_ASIAN_TENGAH } from './country/asian-tengah.js';
+import { DATA as COUNTRY_EROPAN_TIMUR } from './country/eropan-timur.js';
+import { DATA as COUNTRY_EROPAN_BARAT } from './country/eropan-barat.js';
+import { DATA as COUNTRY_EROPAN_SELATAN } from './country/eropan-selatan.js';
+import { DATA as COUNTRY_EROPAN_TENGAH } from './country/eropan-tengah.js';
+import { DATA as COUNTRY_EROPAN_UTARA } from './country/eropan-utara.js';
+import { DATA as COUNTRY_AMERICAN_UTARA } from './country/american-utara.js';
+import { DATA as COUNTRY_AMERICAN_TENGAH } from './country/american-tengah.js';
+import { DATA as COUNTRY_AMERICAN_KARIBIA } from './country/american-karibia.js';
+import { DATA as COUNTRY_AMERICAN_SELATAN } from './country/american-selatan.js';
+import { DATA as COUNTRY_AFRICAN_UTARA } from './country/african-utara.js';
+import { DATA as COUNTRY_AFRICAN_TIMUR } from './country/african-timur.js';
+import { DATA as COUNTRY_AFRICAN_SELATAN } from './country/african-selatan.js';
+import { DATA as COUNTRY_AFRICAN_BARAT } from './country/african-barat.js';
+import { DATA as COUNTRY_AFRICAN_TENGAH } from './country/african-tengah.js';
+import { DATA as COUNTRY_OSENIAN } from './country/osenian.js';
+import { DATA as CITIES_ASIA_TENGGARA } from './cities/asia-tenggara.js';
+import { DATA as LINGO_ASEAN_TENGGARA } from './lingo/asean-tenggara.js';
+import { DATA as LINGO_ASEAN_TIMUR } from './lingo/asean-timur.js';
+import { DATA as LINGO_ASEAN_SELATAN } from './lingo/asean-selatan.js';
+import { DATA as LINGO_ASEAN_BARAT } from './lingo/asean-barat.js';
+import { DATA as LINGO_ASEAN_TENGAH } from './lingo/asean-tengah.js';
+import { DATA as MARPLACE_ECOMMERCE } from './marplace/ecommerce.js';
+import { DATA as MARPLACE_PROPERTI } from './marplace/properti.js';
+import { DATA as MARPLACE_OTOMOTIF } from './marplace/otomotif.js';
+import { DATA as MARPLACE_FREELANCE } from './marplace/freelance.js';
+import { DATA as MARPLACE_KARIR } from './marplace/karir.js';
+import { DATA as PALUANG_SEKTOR } from './paluang/sektor.js';
+import { DATA as PALUANG_PELUANG_DAERAH } from './paluang/peluang-daerah.js';
+import { DATA as PALUANG_TREN } from './paluang/tren.js';
+import { DATA as PALUANG_KOMPETENSI } from './paluang/kompetensi.js';
+import { DATA as PALUANG_INVESTASI } from './paluang/investasi.js';
+
+import './src/regional.js';
+import './src/global.js';
+import './src/international.js';
+
 const KESEMPATAN = window.KESEMPATAN || {};
 window.KESEMPATAN = KESEMPATAN;
-
-if (window.__WorldLoaderLoaded) {
-    return;
-}
-
-window.__WorldLoaderLoaded = true;
 
 // ============================================================
 // FALLBACK LOGGER
@@ -57,7 +93,6 @@ const InternalLogger = window.InternalLogger || {
 const CONFIG = Object.freeze({
     BATCH_SIZE: 10,
     DELAY_BETWEEN_BATCH: 100,
-    DELAY_BETWEEN_FILES: 50,
     MAX_RETRIES: 2,
     RETRY_DELAY: 2000,
     MAX_DATA_PER_SESSION: 1000,
@@ -66,76 +101,39 @@ const CONFIG = Object.freeze({
 });
 
 // ============================================================
-// DAFTAR FILE YANG AKAN DI-LOAD
+// GABUNGKAN 38 SUMBER DATA STATIS KE __DATA_REGISTER
+// Dulu tiap file men-daftarkan dirinya sendiri ke window.__DATA_REGISTER
+// sebagai efek samping saat <script> dieksekusi (dynamic loader). Sekarang
+// tiap file mengekspor array datanya langsung — penggabungan dilakukan
+// di SATU tempat ini. window.__DATA_REGISTER tetap dipertahankan sebagai
+// bridge karena masih dibaca konsumen luar (interactive/chat-ai/cai-data-engine.js)
+// dan oleh src/global.js dkk. yang menambahkan hasil fetch RSS-nya belakangan.
 // ============================================================
-const FILES_TO_LOAD = Object.freeze([
-    // ========== SAPAAN (2 file - 26 sapaan + 82 balasan kabar) ==========
-    // FIX: dipindah ke PALING AWAL (sebelumnya paling akhir dari daftar
-    // file). Loader ini sequential dengan jeda 500ms/file + 1000ms/batch
-    // simpan, jadi kalau sapaan ada di urutan terakhir butuh belasan-
-    // puluhan detik dulu baru siap. Padahal sapaan paling sering
-    // dibutuhkan di detik-detik pertama sesi chat (user buka app lalu
-    // langsung bilang "selamat pagi"). Datanya kecil jadi taruh di depan
-    // tidak menunda data lain secara berarti.
-    'dataries/sapaan/greetings.js',
-    'dataries/sapaan/interaktif.js',
-    // ========== ASIA (5 file - 48 negara) ==========
-    'dataries/country/asian-tenggara.js',
-    'dataries/country/asian-timur.js',
-    'dataries/country/asian-selatan.js',
-    'dataries/country/asian-barat.js',
-    'dataries/country/asian-tengah.js',
-    // ========== EROPA (5 file - 42 negara) ==========
-    'dataries/country/eropan-timur.js',
-    'dataries/country/eropan-barat.js',
-    'dataries/country/eropan-selatan.js',
-    'dataries/country/eropan-tengah.js',
-    'dataries/country/eropan-utara.js',
-    // ========== AMERIKA (4 file - 30 negara) ==========
-    'dataries/country/american-utara.js',
-    'dataries/country/american-tengah.js',
-    'dataries/country/american-karibia.js',
-    'dataries/country/american-selatan.js',
-    // ========== AFRIKA (5 file - 29 negara) ==========
-    'dataries/country/african-utara.js',
-    'dataries/country/african-timur.js',
-    'dataries/country/african-selatan.js',
-    'dataries/country/african-barat.js',
-    'dataries/country/african-tengah.js',
-    // ========== OSEANIA (1 file - 20 negara) ==========
-    'dataries/country/osenian.js',
-    // ========== CITIES (1 file - 12 kota) ==========
-    'dataries/cities/asia-tenggara.js',
-    // ========== LINGO (5 file - 100+ bahasa) ==========
-    'dataries/lingo/asean-tenggara.js',
-    'dataries/lingo/asean-timur.js',
-    'dataries/lingo/asean-selatan.js',
-    'dataries/lingo/asean-barat.js',
-    'dataries/lingo/asean-tengah.js',
-    // ========== SRC (3 file - 120+ sumber) ==========
-    'dataries/src/regional.js',
-    'dataries/src/global.js',
-    'dataries/src/international.js',
-    // ========== MARPLACE (5 file - 22 data) ==========
-    'dataries/marplace/ecommerce.js',
-    'dataries/marplace/properti.js',
-    'dataries/marplace/otomotif.js',
-    'dataries/marplace/freelance.js',
-    'dataries/marplace/karir.js',
-    // ========== PALUANG (5 file - 27 data) ==========
-    'dataries/paluang/sektor.js',
-    'dataries/paluang/peluang-daerah.js',
-    'dataries/paluang/tren.js',
-    'dataries/paluang/kompetensi.js',
-    'dataries/paluang/investasi.js'
-]);
+window.__DATA_REGISTER = window.__DATA_REGISTER || [];
+window.__DATA_REGISTER.push(
+    ...SAPAAN_GREETINGS, ...SAPAAN_INTERAKTIF,
+    ...COUNTRY_ASIAN_TENGGARA, ...COUNTRY_ASIAN_TIMUR, ...COUNTRY_ASIAN_SELATAN,
+    ...COUNTRY_ASIAN_BARAT, ...COUNTRY_ASIAN_TENGAH,
+    ...COUNTRY_EROPAN_TIMUR, ...COUNTRY_EROPAN_BARAT, ...COUNTRY_EROPAN_SELATAN,
+    ...COUNTRY_EROPAN_TENGAH, ...COUNTRY_EROPAN_UTARA,
+    ...COUNTRY_AMERICAN_UTARA, ...COUNTRY_AMERICAN_TENGAH, ...COUNTRY_AMERICAN_KARIBIA,
+    ...COUNTRY_AMERICAN_SELATAN,
+    ...COUNTRY_AFRICAN_UTARA, ...COUNTRY_AFRICAN_TIMUR, ...COUNTRY_AFRICAN_SELATAN,
+    ...COUNTRY_AFRICAN_BARAT, ...COUNTRY_AFRICAN_TENGAH,
+    ...COUNTRY_OSENIAN,
+    ...CITIES_ASIA_TENGGARA,
+    ...LINGO_ASEAN_TENGGARA, ...LINGO_ASEAN_TIMUR, ...LINGO_ASEAN_SELATAN,
+    ...LINGO_ASEAN_BARAT, ...LINGO_ASEAN_TENGAH,
+    ...MARPLACE_ECOMMERCE, ...MARPLACE_PROPERTI, ...MARPLACE_OTOMOTIF,
+    ...MARPLACE_FREELANCE, ...MARPLACE_KARIR,
+    ...PALUANG_SEKTOR, ...PALUANG_PELUANG_DAERAH, ...PALUANG_TREN,
+    ...PALUANG_KOMPETENSI, ...PALUANG_INVESTASI
+);
+const STATIC_SOURCE_COUNT = 38;
 
 // ============================================================
 // STATE
 // ============================================================
-let loadedFiles = 0;
-const totalFiles = FILES_TO_LOAD.length;
-let hasError = false;
 let isProcessing = false;
 let isPaused = false;
 let totalDataItems = 0;
@@ -153,63 +151,6 @@ let dynamicCount = 0;
 const sleep = function (ms) {
     return new Promise(function (resolve) {
         setTimeout(resolve, ms);
-    });
-};
-
-// ============================================================
-// LOAD FILE SATU PER SATU
-// ============================================================
-const loadFile = function (path) {
-    return new Promise(function (resolve) {
-        const script = document.createElement('script');
-
-        script.src = path;
-        script.async = false;
-
-        script.onload = function () {
-            loadedFiles++;
-            InternalLogger.info('WorldLoader', 'Loaded: ' + path + ' (' + loadedFiles + '/' + totalFiles + ')');
-            resolve();
-        };
-
-        script.onerror = function () {
-            fetch(path)
-                .then(function (r) {
-                    if (!r.ok) {
-                        throw new Error('HTTP ' + r.status);
-                    }
-
-                    return r.text();
-                })
-                .then(function (code) {
-                    try {
-                        // === ZONA MERAH (KEAMANAN) ===
-                        // eval() mengeksekusi string sebagai kode. Aman HANYA
-                        // selama isi file data sepenuhnya lokal & tepercaya.
-                        // Jika sumber data bisa dipengaruhi pihak luar, ganti
-                        // fallback ini (mis. tolak, atau parse sebagai data
-                        // murni via JSON terkontrol). Jangan biarkan eval
-                        // menelan input yang tidak tepercaya.
-                        eval(code);
-                        loadedFiles++;
-                        InternalLogger.info('WorldLoader', 'Loaded (fallback): ' + path + ' (' + loadedFiles + '/' + totalFiles + ')');
-                        resolve();
-                    } catch (e) {
-                        hasError = true;
-                        loadedFiles++;
-                        InternalLogger.warn('WorldLoader', 'Error in: ' + path + ' - ' + e.message);
-                        resolve();
-                    }
-                })
-                .catch(function (err) {
-                    hasError = true;
-                    loadedFiles++;
-                    InternalLogger.warn('WorldLoader', 'Failed: ' + path + ' (' + err.message + ')');
-                    resolve();
-                });
-        };
-
-        document.head.appendChild(script);
     });
 };
 
@@ -457,45 +398,20 @@ const processAllData = async function () {
 };
 
 // ============================================================
-// LOAD SEMUA FILE
+// JALANKAN
+// Sumber statis sudah pasti tersedia begitu modul ini dievaluasi (static
+// import), jadi tidak perlu lagi menunggu N file dimuat satu per satu
+// lewat <script> tag — cukup proses __DATA_REGISTER langsung.
 // ============================================================
-const loadAllFiles = async function () {
-    InternalLogger.info('WorldLoader', 'Loading ' + totalFiles + ' files');
-    InternalLogger.info('WorldLoader', 'Country Asia: 5 files (48 countries)');
-    InternalLogger.info('WorldLoader', 'Country Eropa: 5 files (42 countries)');
-    InternalLogger.info('WorldLoader', 'Country Amerika: 4 files (30 countries)');
-    InternalLogger.info('WorldLoader', 'Country Afrika: 5 files (29 countries)');
-    InternalLogger.info('WorldLoader', 'Country Oseania: 1 file (20 countries)');
-    InternalLogger.info('WorldLoader', 'Cities: 1 file (12 cities)');
-    InternalLogger.info('WorldLoader', 'Lingo: 5 files (100+ languages)');
-    InternalLogger.info('WorldLoader', 'Src: 3 files (120+ sources)');
-    InternalLogger.info('WorldLoader', 'Marplace: 5 files (22 data)');
-    InternalLogger.info('WorldLoader', 'Paluang: 5 files (27 data)');
-    InternalLogger.info('WorldLoader', 'Sapaan: 2 files (26 sapaan)');
-    InternalLogger.info('WorldLoader', 'TOTAL: 200+ countries, 100+ languages, 27 peluang, 26 sapaan');
-
-    for (let i = 0; i < FILES_TO_LOAD.length; i++) {
-        await loadFile(FILES_TO_LOAD[i]);
-
-        if (i < FILES_TO_LOAD.length - 1) {
-            await sleep(CONFIG.DELAY_BETWEEN_FILES);
-        }
-    }
-
-    if (hasError) {
-        InternalLogger.warn('WorldLoader', 'Loaded with errors, continuing');
-    } else {
-        InternalLogger.info('WorldLoader', 'All ' + totalFiles + ' files loaded');
-    }
+const runWorldLoader = async function () {
+    InternalLogger.info('WorldLoader', 'Sources: ' + STATIC_SOURCE_COUNT + ' static (country/city/lingo/marplace/paluang/sapaan) + 3 dynamic (src/*)');
+    InternalLogger.info('WorldLoader', window.__DATA_REGISTER.length + ' static items registered');
 
     await processAllData();
 
     if (typeof document !== 'undefined') {
         document.dispatchEvent(new CustomEvent('world-ready', {
             detail: {
-                filesLoaded: loadedFiles,
-                totalFiles: totalFiles,
-                hasError: hasError,
                 dataCount: (window.__DATA_REGISTER || []).length,
                 staticCount: staticCount,
                 dynamicCount: dynamicCount,
@@ -509,7 +425,7 @@ const loadAllFiles = async function () {
 // PUBLIC API
 // ============================================================
 const WorldLoader = Object.freeze({
-    load: loadAllFiles,
+    load: runWorldLoader,
     pause: function () {
         isPaused = true;
         InternalLogger.info('WorldLoader', 'Paused');
@@ -520,10 +436,7 @@ const WorldLoader = Object.freeze({
     },
     getStatus: function () {
         return Object.freeze({
-            isComplete: loadedFiles >= totalFiles && !isProcessing,
-            loadedFiles: loadedFiles,
-            totalFiles: totalFiles,
-            hasError: hasError,
+            isComplete: !isProcessing,
             isProcessing: isProcessing,
             isPaused: isPaused,
             dataCount: (window.__DATA_REGISTER || []).length,
@@ -566,37 +479,19 @@ const WorldLoader = Object.freeze({
     }
 });
 
-// ============================================================
-// EKSEKUSI
-// ============================================================
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', function () {
-        setTimeout(loadAllFiles, 500);
-    });
-} else {
-    setTimeout(loadAllFiles, 500);
-}
-
-// ============================================================
-// EXPOSE
-// ============================================================
 KESEMPATAN.WorldLoader = WorldLoader;
-window.__WorldLoaderLoaded = true;
 
 // Inisialisasi __STATIC_DATA
 if (typeof window.__STATIC_DATA === 'undefined') {
     window.__STATIC_DATA = [];
 }
 
-InternalLogger.info('WorldLoader', 'WorldLoader ready');
-InternalLogger.info('WorldLoader', totalFiles + ' files registered');
-InternalLogger.info('WorldLoader', '200+ countries loaded');
-InternalLogger.info('WorldLoader', '100+ languages loaded');
-InternalLogger.info('WorldLoader', 'Marplace loaded');
-InternalLogger.info('WorldLoader', 'Paluang (5 files) loaded');
-InternalLogger.info('WorldLoader', 'Sapaan loaded');
-InternalLogger.info('WorldLoader', 'Batch size: ' + CONFIG.BATCH_SIZE);
-InternalLogger.info('WorldLoader', 'Static data -> Memory | Dynamic -> VectorMemory');
-InternalLogger.info('WorldLoader', 'Max dynamic: ' + CONFIG.MAX_DYNAMIC_VECTORS);
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', function () {
+        setTimeout(runWorldLoader, 500);
+    });
+} else {
+    setTimeout(runWorldLoader, 500);
+}
 
-})();
+InternalLogger.info('WorldLoader', 'WorldLoader ready');
