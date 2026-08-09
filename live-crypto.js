@@ -274,6 +274,10 @@
     let updateInterval = null;
     let arbitrageInterval = null;
     let globalInterval = null;
+    let clockInterval = null;
+    let marketSummaryInterval = null;
+    let marketRecapInterval = null;
+    let predictMarketInterval = null;
     let isScanning = false;
     let lastBtcPrice = 0;
     let bestArbitrageToday = 0;
@@ -1452,8 +1456,9 @@
             }
         }
         tickClock();
-        setInterval(tickClock, 1000);
-        
+        if (clockInterval) clearInterval(clockInterval);
+        clockInterval = setInterval(tickClock, 1000);
+
         startAutoUpdate();
         
         try {
@@ -1473,15 +1478,18 @@
             fetchGlobalData();
         }, 5000);
         
-        setInterval(function() {
+        if (marketSummaryInterval) clearInterval(marketSummaryInterval);
+        marketSummaryInterval = setInterval(function() {
             marketSummary();
         }, 6 * 60 * 60 * 1000);
-        
-        setInterval(function() {
+
+        if (marketRecapInterval) clearInterval(marketRecapInterval);
+        marketRecapInterval = setInterval(function() {
             marketRecap();
         }, 60 * 60 * 1000);
-        
-        setInterval(function() {
+
+        if (predictMarketInterval) clearInterval(predictMarketInterval);
+        predictMarketInterval = setInterval(function() {
             predictMarket();
         }, 4 * 60 * 60 * 1000);
     }
