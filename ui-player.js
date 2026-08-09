@@ -518,7 +518,7 @@
         state.bgAudio = new Audio(music.url);
         state.bgAudio.loop = true;
         state.bgAudio.volume = 0.15;
-        state.bgAudio.play().catch(function() {});
+        state.bgAudio.play().catch(function(e) { console.warn('[UiPlayer] Background music autoplay blocked:', e.message); });
     }
 
     function stopBackgroundMusic() {

@@ -56,7 +56,7 @@
                         obsContext.marketInsight = (insight && insight.summary) ? insight.summary.replace(/<[^>]+>/g, '') : '';
                     }
                 }
-            } catch (e) {}
+            } catch (e) { console.warn('[TorTournamentArena] Observation insight lookup failed:', e.message); }
             try {
                 if (window.NoisePage && typeof window.NoisePage.checkText === 'function' && topic) {
                     const check = window.NoisePage.checkText(topic);
@@ -64,7 +64,7 @@
                         obsContext.credibilityNote = 'Topik mengandung kata yang perlu diverifikasi: ' + check.reason;
                     }
                 }
-            } catch (e) {}
+            } catch (e) { console.warn('[TorTournamentArena] NoisePage credibility check failed:', e.message); }
             
             this.state.staticData = staticData;
             this.state.memoryData = memoryData;

@@ -1013,12 +1013,12 @@
             };
 
             if (memory && typeof memory.save === 'function') {
-                memory.save(battleSummary, battleMetadata).catch(function() {});
+                memory.save(battleSummary, battleMetadata).catch(function(e) { console.warn('[RapOrchestrator] memory.save failed:', e.message); });
             }
 
             const db = window.KESDatabase || (window.getDatabaseV10 ? window.getDatabaseV10() : null);
             if (db && typeof db.save === 'function') {
-                db.save('rap_battle_history', Object.assign({ summary: battleSummary }, battleMetadata)).catch(function() {});
+                db.save('rap_battle_history', Object.assign({ summary: battleSummary }, battleMetadata)).catch(function(e) { console.warn('[RapOrchestrator] db.save failed:', e.message); });
             }
         } catch (e) {
             // Kegagalan simpan memori/database tidak boleh mengganggu hasil

@@ -212,7 +212,7 @@ function shareData(agentRanking) {
     const topAgents = agentRanking.slice(0, 5).map(function(a) { return a.agent + ': ' + a.approvalRate + '%'; }).join('\n');
     navigator.share({ title: 'KESEMPATAN OS - Auto-Learning Stats', text: 'Auto-Learning Performance Report\n\nTop 5 Agents:\n' + topAgents + '\n\nTotal Agents: ' + agentRanking.length + '\n' + new Date().toLocaleDateString(), url: window.location.href })
         .then(function() { showToast('Berhasil dibagikan!', 'success'); })
-        .catch(function() {});
+        .catch(function(e) { console.warn('[AutoLearning] shareData cancelled/failed:', e.message); });
 }
 
 function setupEventDelegation(container, agentRanking) {

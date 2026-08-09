@@ -495,7 +495,7 @@ async function CAI_getAllContext(query, options) {
                     obsContext.marketInsight = (insight && insight.summary) ? insight.summary.replace(/<[^>]+>/g, '') : '';
                 }
             }
-        } catch (e) {}
+        } catch (e) { console.warn('[CaiDataEngine] Observation insight lookup failed:', e.message); }
         try {
             if (window.NoisePage && typeof window.NoisePage.checkText === 'function' && query) {
                 const check = window.NoisePage.checkText(query);
@@ -503,7 +503,7 @@ async function CAI_getAllContext(query, options) {
                     obsContext.credibilityNote = 'Query mengandung kata yang perlu diverifikasi: ' + check.reason;
                 }
             }
-        } catch (e) {}
+        } catch (e) { console.warn('[CaiDataEngine] NoisePage credibility check failed:', e.message); }
 
         const result = {
             static: staticData,

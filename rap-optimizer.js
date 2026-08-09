@@ -123,7 +123,7 @@
                 if (cfg.TARGET_SYLLABLES) targetSyllables = cfg.TARGET_SYLLABLES;
                 if (cfg.SYLLABLE_TOLERANCE) syllableTolerance = cfg.SYLLABLE_TOLERANCE;
             }
-        } catch(e) {}
+        } catch(e) { console.warn('[RapOptimizer] RapConfig lookup failed:', e.message); }
     }
     updateTargetFromConfig();
 

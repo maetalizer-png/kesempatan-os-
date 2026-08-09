@@ -279,7 +279,7 @@ else state.memEstimate = clamp(18 + cacheCount + pending * 2 + ((Math.sin(Date.n
 const cores = navigator.hardwareConcurrency || 4;
 const load = (state.latencyMs * 1.8) + (pending * 2.4) + (cacheCount / 18) + (state.consoleLogs.length / 25) + ((Math.sin(Date.now() / 15000) + 1) * 3);
 state.cpuEstimate = clamp(Math.round((load / cores) * 18 + 4), 2, 97);
-if (navigator.storage && navigator.storage.estimate) navigator.storage.estimate().then(function (e) { state.storageEstimate = e; }).catch(function () {});
+if (navigator.storage && navigator.storage.estimate) navigator.storage.estimate().then(function (e) { state.storageEstimate = e; }).catch(function (e) { console.warn('[OfflineMode] storage.estimate failed:', e.message); });
 }
 
 function getLocalDatabaseInfo() {

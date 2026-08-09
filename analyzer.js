@@ -170,7 +170,7 @@
                 AUTO_TRIGGER_CONFIG.enabled = parsed.enabled !== undefined ? parsed.enabled : true;
                 AUTO_TRIGGER_CONFIG.minConfidence = parsed.minConfidence || 85;
             }
-        } catch(e) {}
+        } catch(e) { console.warn('[ObsAnalyzer] loadAutoTriggerPrefs failed:', e.message); }
     }
 
     function saveAutoTriggerPrefs() {
@@ -179,7 +179,7 @@
                 enabled: AUTO_TRIGGER_CONFIG.enabled,
                 minConfidence: AUTO_TRIGGER_CONFIG.minConfidence
             }));
-        } catch(e) {}
+        } catch(e) { console.warn('[ObsAnalyzer] saveAutoTriggerPrefs failed:', e.message); }
     }
 
     function saveTriggerHistory(signal, analyzed) {

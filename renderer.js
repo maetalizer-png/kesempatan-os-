@@ -45,14 +45,14 @@
                 state.favorites = JSON.parse(saved);
                 return true;
             }
-        } catch(e) {}
+        } catch(e) { console.warn('[ObsRenderer] loadFavorites failed:', e.message); }
         return false;
     }
 
     function saveFavorites() {
         try {
             localStorage.setItem(CONFIG.FAVORITES_KEY, JSON.stringify(state.favorites));
-        } catch(e) {}
+        } catch(e) { console.warn('[ObsRenderer] saveFavorites failed:', e.message); }
     }
 
     function toggleFavorite(id) {
@@ -70,7 +70,7 @@
         try {
             const saved = localStorage.getItem(CONFIG.THEME_KEY);
             if (saved === 'light') state.darkMode = false;
-        } catch(e) {}
+        } catch(e) { console.warn('[ObsRenderer] loadTheme failed:', e.message); }
     }
 
     function toggleTheme() {
@@ -298,7 +298,7 @@
             if (saved) {
                 state.signals = JSON.parse(saved);
             }
-        } catch(e) {}
+        } catch(e) { console.warn('[ObsRenderer] init: load signals failed:', e.message); }
 
         if (state.signals.length === 0) {
             state.isRefreshing = true;

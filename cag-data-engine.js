@@ -231,7 +231,7 @@ async function CAG_fetchFromVectorMemory(query, topK) {
             } else if (typeof memory.add === 'function') {
                 await memory.add(metadata);
             }
-        } catch (_) {}
+        } catch (_) { console.warn('[CagDataEngine] memory save failed'); }
     }
 
 async function CAG_fetchFromDatabase(query, limit) {
@@ -343,7 +343,7 @@ async function CAG_getAllContext(query, options) {
                     obsContext.marketInsight = (insight && insight.summary) ? insight.summary.replace(/<[^>]+>/g, '') : '';
                 }
             }
-        } catch (e) {}
+        } catch (e) { console.warn('[CagDataEngine] Observation insight lookup failed:', e.message); }
         try {
             if (window.NoisePage && typeof window.NoisePage.checkText === 'function' && query) {
                 const check = window.NoisePage.checkText(query);
@@ -351,7 +351,7 @@ async function CAG_getAllContext(query, options) {
                     obsContext.credibilityNote = 'Query mengandung kata yang perlu diverifikasi: ' + check.reason;
                 }
             }
-        } catch (e) {}
+        } catch (e) { console.warn('[CagDataEngine] NoisePage credibility check failed:', e.message); }
 
         const result = {
             static: staticData,

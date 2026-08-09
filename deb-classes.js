@@ -358,7 +358,7 @@
             if (this.recognition) {
                 try {
                     this.recognition.stop();
-                } catch(_) {}
+                } catch(_) { console.warn('[DebClasses] recognition.stop failed'); }
                 this.recognition = null;
             }
         }

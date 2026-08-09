@@ -127,7 +127,7 @@
                     if (cfg.AI_TEMPERATURE) temperature = cfg.AI_TEMPERATURE;
                     if (cfg.AI_MAX_TOKENS) maxTokens = cfg.AI_MAX_TOKENS;
                 }
-            } catch(e) {}
+            } catch(e) { console.warn('[RapEngine] RapConfig lookup failed:', e.message); }
 
             try {
                 const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {

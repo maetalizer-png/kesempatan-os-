@@ -303,7 +303,7 @@
                 title: 'KESEMPATAN OS Podcast',
                 text: state.podcastText.substring(0, 500) + '...',
                 url: window.location.href
-            }).catch(function() {});
+            }).catch(function(e) { console.warn('[PodcastHandlers] share cancelled/failed:', e.message); });
         } else {
             navigator.clipboard.writeText(state.podcastText).then(function() {
                 showToast('📋 Naskah disalin!');

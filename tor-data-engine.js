@@ -129,7 +129,7 @@
                 } else if (typeof memory.add === 'function') {
                     await memory.add(metadata);
                 }
-            } catch (_) {}
+            } catch (_) { console.warn('[TorDataEngine] memory save failed'); }
         }
 
         if (db) {
@@ -142,7 +142,7 @@
                 } else if (db.save && typeof db.save === 'function') {
                     await db.save('debate_history', record);
                 }
-            } catch (_) {}
+            } catch (_) { console.warn('[TorDataEngine] db save failed'); }
         }
     }
 

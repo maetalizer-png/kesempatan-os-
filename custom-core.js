@@ -386,7 +386,7 @@
         const url = window.location.origin + window.location.pathname + '?import=' + encoded;
         navigator.clipboard.writeText(url).then(function() {
             if (showToast) showToast('Link share disalin! Bisa dibagikan ke orang lain.', 'success');
-        }).catch(function() {});
+        }).catch(function(e) { console.warn('[CustomCore] clipboard writeText failed:', e.message); });
     };
 
     const selectAllAgents = function() {

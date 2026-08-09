@@ -163,7 +163,7 @@ function importSettings(file) {
 function exportVoiceMP3() { showToast('Gunakan perekam sistem untuk MP3', 'info'); }
 
 function shareVoice(text) {
-    if (navigator.share) navigator.share({ title: 'KESEMPATAN OS', text: text }).catch(function() {});
+    if (navigator.share) navigator.share({ title: 'KESEMPATAN OS', text: text }).catch(function(e) { console.warn('[VoiceCore] shareVoice cancelled/failed:', e.message); });
     else if (navigator.clipboard) navigator.clipboard.writeText(text);
 }
 

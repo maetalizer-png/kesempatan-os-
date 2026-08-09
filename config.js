@@ -56,7 +56,7 @@ try {
         const encodedKey = localStorage.getItem(`kes_api_key_${provider}`);
         if (encodedKey) {
             try { CONFIG.API_KEYS[provider] = decodeURIComponent(atob(encodedKey)); }
-            catch (error) {}
+            catch (error) { console.warn('[Config] Failed to decode stored API key for', provider, error.message); }
         }
     }
     const savedThreshold = localStorage.getItem('kes_auto_approve_threshold');
@@ -67,7 +67,7 @@ try {
     if (costLimit) CONFIG.MONTHLY_API_LIMIT_USD = parseFloat(costLimit);
     const speechEnabled = localStorage.getItem('kes_speech_enabled');
     if (speechEnabled !== null) CONFIG.FEATURES.speechEnabled = speechEnabled === 'true';
-} catch (error) {}
+} catch (error) { console.warn('[Config] Failed to load saved preferences from localStorage:', error.message); }
 
 function getActiveProviders() {
     const activeProviders = [];

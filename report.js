@@ -173,7 +173,7 @@ function shareReport(agg) {
         title: 'KESEMPATAN OS - Report',
         text: 'Intelligence Report\n\nScore: ' + (agg.score || 0) + '/100\n\n' + (agg.summary || '') + '\n\nInsights: ' + (agg.insight || []).slice(0, 3).join(', '),
         url: window.location.href
-    }).then(function() { showToast('Berhasil dibagikan!', 'success'); }).catch(function() {});
+    }).then(function() { showToast('Berhasil dibagikan!', 'success'); }).catch(function(e) { console.warn('[Report] shareReport cancelled/failed:', e.message); });
 }
 
 function setupAutoRefresh() {

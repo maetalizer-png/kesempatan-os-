@@ -127,7 +127,7 @@ function enhance2x() {
             }
         }
         ctx.putImageData(d, 0, 0);
-    } catch (e) {}
+    } catch (e) { console.warn('[AiEditorUltimate] enhance2x sharpen failed:', e.message); }
     const img = new Image();
     img.onload = function() { loadEditorImage(img, 'Enhance 2x selesai'); };
     img.src = c.toDataURL('image/png');
@@ -440,7 +440,7 @@ function exportTrim() {
             const vs = vp.captureStream();
             vs.getAudioTracks().forEach(function(t) { stream.addTrack(t); });
         }
-    } catch (err) {}
+    } catch (err) { console.warn('[AiEditorUltimate] captureStream audio track merge failed:', err.message); }
     const mime = pickMime();
     const rec = new MediaRecorder(stream, mime ? { mimeType: mime } : undefined);
     const chunks = [];

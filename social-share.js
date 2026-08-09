@@ -96,7 +96,7 @@ class SuperSocialShare {
     loadScheduled() { try { return JSON.parse(localStorage.getItem('kes_super_share_scheduled')) || []; } catch (e) { return []; } }
     saveScheduled() { localStorage.setItem('kes_super_share_scheduled', JSON.stringify(this.scheduledPosts)); }
     saveState() { localStorage.setItem('kes_super_share_state', JSON.stringify({ lastResult: this.lastResult, timestamp: Date.now() })); }
-    restoreState() { try { const s = JSON.parse(localStorage.getItem('kes_super_share_state')); if (s && s.lastResult) this.lastResult = s.lastResult; } catch (e) {} }
+    restoreState() { try { const s = JSON.parse(localStorage.getItem('kes_super_share_state')); if (s && s.lastResult) this.lastResult = s.lastResult; } catch (e) { console.warn('[SocialShare] restoreState failed:', e.message); } }
     setResult(r) { this.lastResult = r; this.saveState(); }
     delay(ms) { return new Promise(function(res) { setTimeout(res, ms); }); }
     getApiKey() {

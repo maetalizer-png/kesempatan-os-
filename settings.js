@@ -109,7 +109,7 @@ function render() {
         window.ResponseCacheManager.getStats().then(function(stats) {
             const cacheSpan = document.getElementById('cacheCountInfo');
             if (cacheSpan) cacheSpan.textContent = stats.valid;
-        }).catch(function() {});
+        }).catch(function(e) { console.warn('[Settings] ResponseCacheManager.getStats failed:', e.message); });
     }
 
     const providerSelect = document.getElementById('aiProviderSelect');

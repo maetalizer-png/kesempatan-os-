@@ -216,7 +216,7 @@ const CostTracker = {
                 this.monthlyLimit = data.monthlyLimit || 10;
                 this.alerts = data.alerts || { 50: false, 70: false, 80: false, 90: false, 100: false };
             }
-        } catch (error) {}
+        } catch (error) { console.warn('[AIClients] CostTracker.load failed:', error.message); }
     },
     getStats() {
         const today = new Date().toISOString().split('T')[0];

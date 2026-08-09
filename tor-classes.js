@@ -440,7 +440,7 @@
             if (this.recognition) {
                 try {
                     this.recognition.stop();
-                } catch(e) {}
+                } catch(e) { console.warn('[TorClasses] recognition.stop failed:', e.message); }
                 this.recognition = null;
             }
         }
