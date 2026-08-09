@@ -403,7 +403,10 @@ class VectorMemoryCore {
 
         this.cache.set(vector.id, vector);
 
-        await this._saveToStorage();
+        const persisted = await this._saveToStorage();
+        if (!persisted) {
+            Logger.warn('VectorMemoryCore', 'Persist failed (storage quota?) — memory kept in-session only, will be lost on reload: ' + vector.id);
+        }
 
         this.stats.totalVectors = this.vectors.length;
 

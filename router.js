@@ -7,6 +7,26 @@ function getModule(moduleName) {
     return KESEMPATAN[moduleName] || window[moduleName];
 }
 
+// Pages whose module exposes a destroy() that tears down intervals/listeners
+// set up by its render(). The router has no generic "page exit" hook, so
+// nothing called these outside of window 'beforeunload' (tab close) — which
+// never fires on in-app navigation. Revisiting one of these pages N times
+// left N copies of its timers/listeners running (the same bug class fixed
+// individually in live-crypto.js and visual-events.js). This map lets
+// showPage() call destroy() on the page being left, for the modules known to
+// implement one safely (verified idempotent — each guards its own state
+// before clearing, so calling destroy() even when nothing was rendered yet
+// is a no-op).
+const PAGE_DESTROY_MAP = {
+    memory: 'MemoryPage',
+    report: 'ReportPage',
+    telemetry: 'TelemetryPage',
+    learning: 'LearningPage',
+    cache: 'CachePage',
+    noise: 'NoisePage'
+};
+let currentPageId = null;
+
 // Pages that render entirely through getModule(X).render(), with the same
 // "not available" fallback message — no page-specific logic beyond the
 // module name and label, so a small table covers all of them.
@@ -231,6 +251,18 @@ function renderSimplePage(pageId, pageInner) {
 }
 
 function showPage(pageId) {
+    if (currentPageId && currentPageId !== pageId && PAGE_DESTROY_MAP[currentPageId]) {
+        const outgoingModule = getModule(PAGE_DESTROY_MAP[currentPageId]);
+        if (outgoingModule && typeof outgoingModule.destroy === 'function') {
+            try {
+                outgoingModule.destroy();
+            } catch (error) {
+                console.warn('[Router] destroy() failed for outgoing page', currentPageId, ':', error.message);
+            }
+        }
+    }
+    currentPageId = pageId;
+
     const sidebarElement = document.getElementById('sidebar');
     if (sidebarElement) sidebarElement.classList.remove('open');
 

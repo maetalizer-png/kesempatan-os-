@@ -16,7 +16,16 @@ window.__MemoryConfigLoaded = true;
 
 KESEMPATAN.Memory.MemoryConfig = Object.freeze({
     DIMENSION: 384,
-    MAX_MEMORY: 10000000,
+    // Eviction threshold for _saveToStorage()'s localStorage backing (JSON.stringify
+    // of the full vectors array on every save). A 384-dim embedding + metadata
+    // serializes to roughly 8-9KB per record, and localStorage quota is realistically
+    // ~5-10MB total (shared with every other key this app uses) — the old value
+    // (10,000,000) was far above what any browser can hold, so prune() (which IS
+    // already called automatically from save() whenever this threshold is exceeded)
+    // never ran before QuotaExceededError started silently failing every write. 500
+    // records is ~4-4.5MB worst case, leaving headroom for the rest of the app's
+    // localStorage usage.
+    MAX_MEMORY: 500,
     CACHE_TTL: 3600000,
     BATCH_SIZE: 1000,
     SIMILARITY_THRESHOLD: 0.1,
