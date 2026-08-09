@@ -3,13 +3,24 @@
    INTI CHAT AGENT — kirim pesan, render panel, init, ekspor
    window.ChatModule. Dimuat PALING TERAKHIR.
    ============================================================ */
+import { CAG_CONFIG, CAG_PROMPT_SAPAN } from './cag-config.js';
+import { CAG_State } from './cag-state.js';
+import {
+    CAG_callAI, CAG_getAgentDisplayName, CAG_getAllContext, CAG_loadPreferences,
+    CAG_populateAgentSelect, CAG_saveMessageToMemory
+} from './cag-data-engine.js';
+import {
+    CAG_addMessage, CAG_addStreamingMessage, CAG_finishStreamingMessage, CAG_getApiKey,
+    CAG_loadTheme, CAG_playTypingSound, CAG_saveMessageToHistory, CAG_showTypingIndicator,
+    CAG_speakText, CAG_streamTextToElement
+} from './cag-ui-render.js';
 
 async function CAG_sendChatToAgent() {
         // FIX: penjaga anti-panggil-ganda yang sama seperti sendChatToAI().
-        if (CAG_isSendingToAgent) {
+        if (CAG_State.isSendingToAgent) {
             return;
         }
-        if (CAG_speechEnabled && window.speechSynthesis) {
+        if (CAG_State.speechEnabled && window.speechSynthesis) {
             try {
                 window.speechSynthesis.cancel();
                 const unlockUtterance = new SpeechSynthesisUtterance('ok');
@@ -25,7 +36,7 @@ async function CAG_sendChatToAgent() {
         if (!message) {
             return;
         }
-        CAG_isSendingToAgent = true;
+        CAG_State.isSendingToAgent = true;
         const sendBtn = document.getElementById('chatAgentSendBtn');
         if (sendBtn) sendBtn.disabled = true;
 
@@ -134,7 +145,7 @@ async function CAG_sendChatToAgent() {
                 }
             }
         } finally {
-            CAG_isSendingToAgent = false;
+            CAG_State.isSendingToAgent = false;
             if (sendBtn) sendBtn.disabled = false;
         }
     }
@@ -161,12 +172,12 @@ function CAG_renderChatAgentPanel() {
     }
 
 function CAG_initChatAgentPrefs() {
-    CAG_userPreferences = CAG_loadPreferences();
-    if (CAG_userPreferences.language) {
-        CAG_languagePreference = CAG_userPreferences.language;
+    CAG_State.userPreferences = CAG_loadPreferences();
+    if (CAG_State.userPreferences.language) {
+        CAG_State.languagePreference = CAG_State.userPreferences.language;
     }
-    if (CAG_userPreferences.style) {
-        CAG_stylePreference = CAG_userPreferences.style;
+    if (CAG_State.userPreferences.style) {
+        CAG_State.stylePreference = CAG_State.userPreferences.style;
     }
 }
 

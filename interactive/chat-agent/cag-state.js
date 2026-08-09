@@ -1,19 +1,27 @@
 /* ============================================================
    interactive/chat-agent/cag-state.js
    STATE BERSAMA CHAT AGENT (independen dari modul chat lain)
-   Catatan: CAG_userPreferences pakai default kosong dulu — dihidupkan
-   dengan nilai asli localStorage di core.js saat CAG_initChatAgent().
+   Diimpor oleh cag-data-engine.js, cag-ui-render.js, cag-core.js —
+   semuanya membaca/menulis field pada objek CAG_State yang sama
+   (bukan variabel top-level terpisah lagi, karena ES module tidak
+   membagi scope top-level antar file seperti classic script dulu).
+
+   Catatan: CAG_State.userPreferences pakai default kosong dulu —
+   dihidupkan dengan nilai asli localStorage di core.js saat
+   CAG_initChatAgent().
    ============================================================ */
-let CAG_currentUtterance = null;
-let CAG_recognition = null;
-let CAG_isListening = false;
-let CAG_currentAbortController = null;
-let CAG_darkMode = true;
-let CAG_typingSoundEnabled = true;
-let CAG_typingSoundContext = null;
-let CAG_queryCache = new Map();
-let CAG_speechEnabled = true;
-let CAG_userPreferences = {};
-let CAG_stylePreference = 'casual';
-let CAG_languagePreference = 'id';
-let CAG_isSendingToAgent = false;
+export const CAG_State = {
+    currentUtterance: null,
+    recognition: null,
+    isListening: false,
+    currentAbortController: null,
+    darkMode: true,
+    typingSoundEnabled: true,
+    typingSoundContext: null,
+    queryCache: new Map(),
+    speechEnabled: true,
+    userPreferences: {},
+    stylePreference: 'casual',
+    languagePreference: 'id',
+    isSendingToAgent: false
+};

@@ -2,10 +2,14 @@
    interactive/chat-agent/cag-ui-render.js
    TAMPILAN CHAT AGENT — suara, riwayat, tema, reaksi, streaming.
    ============================================================ */
+import { CAG_CONFIG } from './cag-config.js';
+import { CAG_State } from './cag-state.js';
+// Impor sirkular yang disengaja — lihat catatan di cag-data-engine.js.
+import { CAG_getAgentAvatar } from './cag-data-engine.js';
 
 // ---------- SUARA (TTS/STT) ----------
 // Sama seperti CAI_stripMarkdown — cegah TTS baca tanda markdown secara harfiah.
-function CAG_stripMarkdown(text) {
+export function CAG_stripMarkdown(text) {
         return text
             .replace(/\*\*\*(.*?)\*\*\*/g, '$1')
             .replace(/\*\*(.*?)\*\*/g, '$1')
@@ -18,8 +22,8 @@ function CAG_stripMarkdown(text) {
             .replace(/~~(.*?)~~/g, '$1');
     }
 
-function CAG_speakText(text) {
-        if (!CAG_speechEnabled) {
+export function CAG_speakText(text) {
+        if (!CAG_State.speechEnabled) {
             return;
         }
         if (!text || text.length === 0) {
@@ -28,7 +32,7 @@ function CAG_speakText(text) {
         window.speechSynthesis.cancel();
         const cleanText = CAG_stripMarkdown(text).replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ').substring(0, 600);
         const utterance = new SpeechSynthesisUtterance(cleanText);
-        utterance.lang = CAG_languagePreference === 'en' ? 'en-US' : 'id-ID';
+        utterance.lang = CAG_State.languagePreference === 'en' ? 'en-US' : 'id-ID';
         utterance.rate = 0.92;
         const voices = window.speechSynthesis.getVoices();
         const targetVoice = voices.find(function(v) {
@@ -50,28 +54,28 @@ function CAG_speakText(text) {
         utterance.onerror = function() {
             clearInterval(keepAlive);
         };
-        CAG_currentUtterance = utterance;
+        CAG_State.currentUtterance = utterance;
         window.speechSynthesis.speak(utterance);
     }
 
-function CAG_startVoiceInput(inputId) {
+export function CAG_startVoiceInput(inputId) {
         if (!('webkitSpeechRecognition' in window || 'SpeechRecognition' in window)) {
             return;
         }
-        if (CAG_isListening) {
-            if (CAG_recognition) {
-                CAG_recognition.stop();
+        if (CAG_State.isListening) {
+            if (CAG_State.recognition) {
+                CAG_State.recognition.stop();
             }
-            CAG_isListening = false;
+            CAG_State.isListening = false;
             return;
         }
         const SpeechRecognition = window.webkitSpeechRecognition || window.SpeechRecognition;
-        CAG_recognition = new SpeechRecognition();
-        CAG_recognition.lang = CAG_languagePreference === 'en' ? 'en-US' : 'id-ID';
-        CAG_recognition.continuous = false;
-        CAG_recognition.interimResults = true;
-        CAG_recognition.onstart = function() {
-            CAG_isListening = true;
+        CAG_State.recognition = new SpeechRecognition();
+        CAG_State.recognition.lang = CAG_State.languagePreference === 'en' ? 'en-US' : 'id-ID';
+        CAG_State.recognition.continuous = false;
+        CAG_State.recognition.interimResults = true;
+        CAG_State.recognition.onstart = function() {
+            CAG_State.isListening = true;
             const btn = document.querySelector('[data-voice-for="' + inputId + '"]');
             if (btn) {
                 btn.textContent = 'Merekam...';
@@ -79,7 +83,7 @@ function CAG_startVoiceInput(inputId) {
                 btn.style.borderColor = '#FF6B6B';
             }
         };
-        CAG_recognition.onresult = function(e) {
+        CAG_State.recognition.onresult = function(e) {
             const transcript = e.results[0][0].transcript;
             const input = document.getElementById(inputId);
             if (input) {
@@ -92,8 +96,8 @@ function CAG_startVoiceInput(inputId) {
                 }
             }
         };
-        CAG_recognition.onend = function() {
-            CAG_isListening = false;
+        CAG_State.recognition.onend = function() {
+            CAG_State.isListening = false;
             const btn = document.querySelector('[data-voice-for="' + inputId + '"]');
             if (btn) {
                 btn.textContent = 'Rekam';
@@ -101,8 +105,8 @@ function CAG_startVoiceInput(inputId) {
                 btn.style.borderColor = '';
             }
         };
-        CAG_recognition.onerror = function() {
-            CAG_isListening = false;
+        CAG_State.recognition.onerror = function() {
+            CAG_State.isListening = false;
             const btn = document.querySelector('[data-voice-for="' + inputId + '"]');
             if (btn) {
                 btn.textContent = 'Rekam';
@@ -110,11 +114,11 @@ function CAG_startVoiceInput(inputId) {
                 btn.style.borderColor = '';
             }
         };
-        CAG_recognition.start();
+        CAG_State.recognition.start();
     }
 
 // ---------- HISTORY (localStorage) ----------
-function CAG_saveChatHistory(panelId, messages) {
+export function CAG_saveChatHistory(panelId, messages) {
         try {
             const history = JSON.parse(localStorage.getItem(CAG_CONFIG.STORAGE_KEY) || '{}');
             history[panelId] = messages.slice(-CAG_CONFIG.MAX_HISTORY);
@@ -124,7 +128,7 @@ function CAG_saveChatHistory(panelId, messages) {
         }
     }
 
-function CAG_loadChatHistory(panelId) {
+export function CAG_loadChatHistory(panelId) {
         try {
             const history = JSON.parse(localStorage.getItem(CAG_CONFIG.STORAGE_KEY) || '{}');
             return history[panelId] || [];
@@ -133,7 +137,7 @@ function CAG_loadChatHistory(panelId) {
         }
     }
 
-function CAG_clearChatHistory(panelId) {
+export function CAG_clearChatHistory(panelId) {
         try {
             const history = JSON.parse(localStorage.getItem(CAG_CONFIG.STORAGE_KEY) || '{}');
             delete history[panelId];
@@ -143,13 +147,13 @@ function CAG_clearChatHistory(panelId) {
         }
     }
 
-function CAG_saveMessageToHistory(panelId, sender, message, isUser) {
+export function CAG_saveMessageToHistory(panelId, sender, message, isUser) {
         const history = CAG_loadChatHistory(panelId);
         history.push({ sender: sender, message: message, time: CAG_getTimestamp(), isUser: isUser });
         CAG_saveChatHistory(panelId, history);
     }
 
-function CAG_searchChat(panelId, query) {
+export function CAG_searchChat(panelId, query) {
         const container = document.getElementById(panelId);
         if (!container) {
             return [];
@@ -176,7 +180,7 @@ function CAG_searchChat(panelId, query) {
         return results;
     }
 
-function CAG_exportChatPDF(panelId, filename) {
+export function CAG_exportChatPDF(panelId, filename) {
         filename = filename || 'chat-history.pdf';
         const container = document.getElementById(panelId);
         if (!container) {
@@ -230,7 +234,7 @@ function CAG_exportChatPDF(panelId, filename) {
     }
 
 // ---------- EMOJI, TYPING SOUND, TEMA ----------
-function CAG_toggleEmojiPicker(inputId) {
+export function CAG_toggleEmojiPicker(inputId) {
         const existingPicker = document.getElementById('emojiPickerContainer');
         if (existingPicker) {
             existingPicker.remove();
@@ -275,43 +279,43 @@ function CAG_toggleEmojiPicker(inputId) {
         }, 100);
     }
 
-function CAG_initTypingSound() {
+export function CAG_initTypingSound() {
         try {
-            CAG_typingSoundContext = new (window.AudioContext || window.webkitAudioContext)();
+            CAG_State.typingSoundContext = new (window.AudioContext || window.webkitAudioContext)();
         } catch (_) {
             // Silent fail
         }
     }
 
-function CAG_playTypingSound() {
-        if (!CAG_typingSoundEnabled || !CAG_typingSoundContext) {
+export function CAG_playTypingSound() {
+        if (!CAG_State.typingSoundEnabled || !CAG_State.typingSoundContext) {
             return;
         }
         try {
-            const oscillator = CAG_typingSoundContext.createOscillator();
-            const gainNode = CAG_typingSoundContext.createGain();
+            const oscillator = CAG_State.typingSoundContext.createOscillator();
+            const gainNode = CAG_State.typingSoundContext.createGain();
             oscillator.connect(gainNode);
-            gainNode.connect(CAG_typingSoundContext.destination);
+            gainNode.connect(CAG_State.typingSoundContext.destination);
             oscillator.frequency.value = 800 + Math.random() * 400;
             oscillator.type = 'sine';
             gainNode.gain.value = 0.03;
             oscillator.start();
-            oscillator.stop(CAG_typingSoundContext.currentTime + 0.05);
+            oscillator.stop(CAG_State.typingSoundContext.currentTime + 0.05);
         } catch (_) {
             // Silent fail
         }
     }
 
-function CAG_toggleTypingSound() {
-        CAG_typingSoundEnabled = !CAG_typingSoundEnabled;
-        localStorage.setItem('kes_typing_sound', CAG_typingSoundEnabled);
+export function CAG_toggleTypingSound() {
+        CAG_State.typingSoundEnabled = !CAG_State.typingSoundEnabled;
+        localStorage.setItem('kes_typing_sound', CAG_State.typingSoundEnabled);
     }
 
-function CAG_toggleTheme() {
-        CAG_darkMode = !CAG_darkMode;
+export function CAG_toggleTheme() {
+        CAG_State.darkMode = !CAG_State.darkMode;
         const root = document.documentElement;
         const chatContainer = document.getElementById('interactivePage');
-        if (CAG_darkMode) {
+        if (CAG_State.darkMode) {
             root.style.setProperty('--chat-bg', '#0a0a1a');
             root.style.setProperty('--chat-text', '#ffffff');
             root.style.setProperty('--chat-border', 'rgba(0,255,163,0.1)');
@@ -332,29 +336,29 @@ function CAG_toggleTheme() {
                 chatContainer.style.color = '#1a1a2e';
             }
         }
-        localStorage.setItem(CAG_CONFIG.THEME_KEY, CAG_darkMode ? 'dark' : 'light');
+        localStorage.setItem(CAG_CONFIG.THEME_KEY, CAG_State.darkMode ? 'dark' : 'light');
         CAG_updateThemeUI();
     }
 
-function CAG_updateThemeUI() {
+export function CAG_updateThemeUI() {
         const btn = document.getElementById('themeToggleBtn');
         if (btn) {
-            btn.textContent = CAG_darkMode ? 'Gelap' : 'Terang';
-            btn.title = CAG_darkMode ? 'Switch to Light' : 'Switch to Dark';
+            btn.textContent = CAG_State.darkMode ? 'Gelap' : 'Terang';
+            btn.title = CAG_State.darkMode ? 'Switch to Light' : 'Switch to Dark';
         }
     }
 
-function CAG_loadTheme() {
+export function CAG_loadTheme() {
         const saved = localStorage.getItem(CAG_CONFIG.THEME_KEY);
         if (saved === 'light') {
-            CAG_darkMode = false;
+            CAG_State.darkMode = false;
             CAG_toggleTheme();
         }
         CAG_updateThemeUI();
     }
 
 // ---------- UTIL TAMPILAN ----------
-function CAG_renderMarkdown(text) {
+export function CAG_renderMarkdown(text) {
         let html = CAG_escapeHtml(text);
         html = html.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
         html = html.replace(/\*(.*?)\*/g, '<em>$1</em>');
@@ -363,7 +367,7 @@ function CAG_renderMarkdown(text) {
         return html;
     }
 
-function CAG_exportChat(panelId) {
+export function CAG_exportChat(panelId) {
         const container = document.getElementById(panelId);
         if (!container) {
             return;
@@ -388,7 +392,7 @@ function CAG_exportChat(panelId) {
         URL.revokeObjectURL(url);
     }
 
-function CAG_escapeHtml(text) {
+export function CAG_escapeHtml(text) {
         if (!text) {
             return '';
         }
@@ -397,12 +401,12 @@ function CAG_escapeHtml(text) {
         return div.innerHTML.replace(/\n/g, '<br>');
     }
 
-function CAG_getTimestamp() {
+export function CAG_getTimestamp() {
         const now = new Date();
         return now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     }
 
-function CAG_getApiKey() {
+export function CAG_getApiKey() {
         const input = document.getElementById('apiKeyInput');
         if (input?.value?.length > 10) {
             return input.value.trim();
@@ -414,7 +418,7 @@ function CAG_getApiKey() {
     }
 
 // ---------- REAKSI & EDIT PESAN ----------
-function CAG_addReaction(messageWrapper, emoji) {
+export function CAG_addReaction(messageWrapper, emoji) {
         const existing = messageWrapper.querySelector('.reaction-bar');
         if (existing) {
             const btn = existing.querySelector('[data-reaction="' + emoji + '"]');
@@ -457,7 +461,7 @@ function CAG_addReaction(messageWrapper, emoji) {
         }
     }
 
-function CAG_showReactionPicker(messageWrapper) {
+export function CAG_showReactionPicker(messageWrapper) {
         const existing = document.getElementById('reactionPicker');
         if (existing) {
             existing.remove();
@@ -497,7 +501,7 @@ function CAG_showReactionPicker(messageWrapper) {
         }, 100);
     }
 
-function CAG_editMessage(messageWrapper) {
+export function CAG_editMessage(messageWrapper) {
         const body = messageWrapper.querySelector('.message-body');
         const currentText = body.textContent;
         const picker = document.getElementById('reactionPicker');
@@ -540,7 +544,7 @@ function CAG_editMessage(messageWrapper) {
         };
     }
 
-function CAG_deleteMessage(messageWrapper) {
+export function CAG_deleteMessage(messageWrapper) {
         const container = messageWrapper.closest('.chat-messages-premium');
         if (container) {
             const panelId = container.id;
@@ -556,14 +560,14 @@ function CAG_deleteMessage(messageWrapper) {
     }
 
 // ---------- RENDER PESAN & STREAMING ----------
-function CAG_cancelAIRequest() {
-        if (CAG_currentAbortController) {
-            CAG_currentAbortController.abort();
-            CAG_currentAbortController = null;
+export function CAG_cancelAIRequest() {
+        if (CAG_State.currentAbortController) {
+            CAG_State.currentAbortController.abort();
+            CAG_State.currentAbortController = null;
         }
     }
 
-function CAG_addStreamingMessage(container, sender) {
+export function CAG_addStreamingMessage(container, sender) {
         const time = CAG_getTimestamp();
         const wrapper = document.createElement('div');
         wrapper.className = 'message-wrapper';
@@ -584,7 +588,7 @@ function CAG_addStreamingMessage(container, sender) {
         };
     }
 
-function CAG_finishStreamingMessage(wrapper, cursorSpan, textSpan, rawText) {
+export function CAG_finishStreamingMessage(wrapper, cursorSpan, textSpan, rawText) {
         if (cursorSpan) {
             cursorSpan.remove();
         }
@@ -593,7 +597,7 @@ function CAG_finishStreamingMessage(wrapper, cursorSpan, textSpan, rawText) {
         }
     }
 
-async function CAG_streamTextToElement(textSpan, text, speed) {
+export async function CAG_streamTextToElement(textSpan, text, speed) {
         speed = speed || 15;
         for (let i = 0; i < text.length; i++) {
             textSpan.textContent += text[i];
@@ -603,7 +607,7 @@ async function CAG_streamTextToElement(textSpan, text, speed) {
         }
     }
 
-function CAG_showTypingIndicator(container) {
+export function CAG_showTypingIndicator(container) {
         const typingDiv = document.createElement('div');
         typingDiv.className = 'typing-indicator-modern';
         typingDiv.id = 'typingIndicator';
@@ -613,7 +617,7 @@ function CAG_showTypingIndicator(container) {
         return typingDiv;
     }
 
-function CAG_addMessage(container, sender, message, isUser) {
+export function CAG_addMessage(container, sender, message, isUser) {
         if (!container) {
             return;
         }

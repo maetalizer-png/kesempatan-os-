@@ -3,57 +3,66 @@
    OTAK CHAT AGENT — cache, integrasi World/Memory/Database,
    smart search, roster agen dinamis, panggilan AI.
    ============================================================ */
+import { CAG_CONFIG } from './cag-config.js';
+import { CAG_State } from './cag-state.js';
+// Impor sirkular yang disengaja: cag-ui-render.js sendiri mengimpor
+// CAG_getAgentAvatar dari file ini. Aman karena kedua sisi hanya
+// memakai bindingnya di DALAM function body (dipanggil belakangan saat
+// runtime), bukan di top-level module saat evaluasi — ES module
+// mendukung impor sirkular selama tidak ada sisi yang butuh nilainya
+// SEBELUM kedua modul selesai dievaluasi.
+import { CAG_escapeHtml } from './cag-ui-render.js';
 
 // ---------- CACHE SYSTEM ----------
-function CAG_getCached(key) {
-        const entry = CAG_queryCache.get(key);
+export function CAG_getCached(key) {
+        const entry = CAG_State.queryCache.get(key);
         if (!entry) {
             return null;
         }
         if (Date.now() - entry.timestamp > CAG_CONFIG.CACHE_TTL) {
-            CAG_queryCache.delete(key);
+            CAG_State.queryCache.delete(key);
             return null;
         }
         return entry.data;
     }
 
-function CAG_setCache(key, data) {
-        if (CAG_queryCache.size >= CAG_CONFIG.MAX_CACHE) {
-            const firstKey = CAG_queryCache.keys().next().value;
-            CAG_queryCache.delete(firstKey);
+export function CAG_setCache(key, data) {
+        if (CAG_State.queryCache.size >= CAG_CONFIG.MAX_CACHE) {
+            const firstKey = CAG_State.queryCache.keys().next().value;
+            CAG_State.queryCache.delete(firstKey);
         }
-        CAG_queryCache.set(key, {
+        CAG_State.queryCache.set(key, {
             data: data,
             timestamp: Date.now()
         });
     }
 
-function CAG_clearCache() {
-        CAG_queryCache.clear();
+export function CAG_clearCache() {
+        CAG_State.queryCache.clear();
     }
 
-function CAG_getCacheStats() {
+export function CAG_getCacheStats() {
         return {
-            size: CAG_queryCache.size,
+            size: CAG_State.queryCache.size,
             maxSize: CAG_CONFIG.MAX_CACHE,
-            keys: Array.from(CAG_queryCache.keys())
+            keys: Array.from(CAG_State.queryCache.keys())
         };
     }
 
 // ---------- INTEGRASI DATA (World / Memory / Database) ----------
-function CAG_getStaticData() {
+export function CAG_getStaticData() {
         return window.__STATIC_DATA || [];
     }
 
-function CAG_getMemoryInstance() {
+export function CAG_getMemoryInstance() {
         return window.KESEMPATAN?.VectorMemory || window.VectorMemory || window.VectorMemoryV5 || null;
     }
 
-function CAG_getDatabaseInstance() {
+export function CAG_getDatabaseInstance() {
         return window.KESDatabase || window.getDatabaseV10 || null;
     }
 
-function CAG_smartSearch(query, data, threshold) {
+export function CAG_smartSearch(query, data, threshold) {
         threshold = threshold || CAG_CONFIG.SEARCH_THRESHOLD;
         if (!data || data.length === 0) {
             return [];
@@ -150,7 +159,7 @@ function CAG_smartSearch(query, data, threshold) {
         return filtered.slice(0, CAG_CONFIG.MAX_RESULTS);
     }
 
-function CAG_calculateSimilarity(vec1, vec2) {
+export function CAG_calculateSimilarity(vec1, vec2) {
         if (!vec1 || !vec2) {
             return 0;
         }
@@ -169,7 +178,7 @@ function CAG_calculateSimilarity(vec1, vec2) {
         return dot / (Math.sqrt(norm1) * Math.sqrt(norm2));
     }
 
-function CAG_fetchStaticData(query) {
+export function CAG_fetchStaticData(query) {
         const staticData = CAG_getStaticData();
         if (staticData.length === 0) {
             return [];
@@ -185,7 +194,7 @@ function CAG_fetchStaticData(query) {
     }
 
 // ---------- FETCH KONTEKS (3 SUMBER) ----------
-async function CAG_fetchFromVectorMemory(query, topK) {
+export async function CAG_fetchFromVectorMemory(query, topK) {
         const memory = CAG_getMemoryInstance();
         if (!memory || typeof memory.search !== 'function') {
             return [];
@@ -212,7 +221,7 @@ async function CAG_fetchFromVectorMemory(query, topK) {
     // BARU: dulu Chat Agent cuma MEMBACA dari Vector Memory, tidak
     // pernah menyimpan hasil percakapan kembali. Meniru pola yang sudah
     // terbukti di Debate (DEB_saveDebateToMemory) dan Chat AI.
-    async function CAG_saveMessageToMemory(userMessage, aiResponse, agentName) {
+    export async function CAG_saveMessageToMemory(userMessage, aiResponse, agentName) {
         const memory = CAG_getMemoryInstance();
         if (!memory) return;
 
@@ -234,7 +243,7 @@ async function CAG_fetchFromVectorMemory(query, topK) {
         } catch (_) { console.warn('[CagDataEngine] memory save failed'); }
     }
 
-async function CAG_fetchFromDatabase(query, limit) {
+export async function CAG_fetchFromDatabase(query, limit) {
         const db = CAG_getDatabaseInstance();
         if (!db) {
             return [];
@@ -272,7 +281,7 @@ async function CAG_fetchFromDatabase(query, limit) {
         return [];
     }
 
-async function CAG_getAllContext(query, options) {
+export async function CAG_getAllContext(query, options) {
         options = options || {};
         const cacheKey = query + '|' + JSON.stringify(options);
         
@@ -375,7 +384,7 @@ async function CAG_getAllContext(query, options) {
     }
 
 // ---------- PREFERENSI ----------
-function CAG_loadPreferences() {
+export function CAG_loadPreferences() {
         try {
             const saved = localStorage.getItem(CAG_CONFIG.PREF_KEY);
             if (saved) {
@@ -404,15 +413,15 @@ function CAG_loadPreferences() {
         };
     }
 
-function CAG_savePreferences(prefs) {
+export function CAG_savePreferences(prefs) {
         try {
             localStorage.setItem(CAG_CONFIG.PREF_KEY, JSON.stringify(prefs));
-            CAG_userPreferences = prefs;
+            CAG_State.userPreferences = prefs;
             if (prefs.language) {
-                CAG_languagePreference = prefs.language;
+                CAG_State.languagePreference = prefs.language;
             }
             if (prefs.style) {
-                CAG_stylePreference = prefs.style;
+                CAG_State.stylePreference = prefs.style;
             }
         } catch (_) {
             // Silent fail
@@ -420,7 +429,7 @@ function CAG_savePreferences(prefs) {
     }
 
 // ---------- ROSTER AGEN DINAMIS (dari .agent-checkbox dashboard) ----------
-function CAG_humanizeAgentName(agent) {
+export function CAG_humanizeAgentName(agent) {
         if (!agent || typeof agent !== 'string') {
             return '';
         }
@@ -431,7 +440,7 @@ function CAG_humanizeAgentName(agent) {
             .trim();
     }
 
-function CAG_getAgentProfile(agent) {
+export function CAG_getAgentProfile(agent) {
         if (window.getAgentConfig) {
             const cfg = window.getAgentConfig(agent);
             if (cfg) {
@@ -446,12 +455,12 @@ function CAG_getAgentProfile(agent) {
         return { name: CAG_humanizeAgentName(agent), role: '', emoji: '', systemPrompt: '' };
     }
 
-function CAG_getAgentDisplayName(agent) {
+export function CAG_getAgentDisplayName(agent) {
         const profile = CAG_getAgentProfile(agent);
         return (profile.emoji ? profile.emoji + ' ' : '') + profile.name;
     }
 
-function CAG_getFullAgentPool() {
+export function CAG_getFullAgentPool() {
         let boxes = document.querySelectorAll('.agent-checkbox[data-agent]');
         if (boxes.length === 0 && window.KESEMPATAN?.AgentRenderer?.renderAllAgents) {
             window.KESEMPATAN?.AgentRenderer?.renderAllAgents();
@@ -469,7 +478,7 @@ function CAG_getFullAgentPool() {
         return pool;
     }
 
-function CAG_populateAgentSelect(selectEl) {
+export function CAG_populateAgentSelect(selectEl) {
         if (!selectEl) {
             return;
         }
@@ -483,17 +492,17 @@ function CAG_populateAgentSelect(selectEl) {
         }).join('');
     }
 
-function CAG_getAgentAvatar(agent) {
+export function CAG_getAgentAvatar(agent) {
         const profile = CAG_getAgentProfile(agent);
         return profile.emoji || '';
     }
 
 // ---------- PANGGILAN AI ----------
-async function CAG_callAI(prompt, apiKey) {
-        if (CAG_currentAbortController) {
-            CAG_currentAbortController.abort();
+export async function CAG_callAI(prompt, apiKey) {
+        if (CAG_State.currentAbortController) {
+            CAG_State.currentAbortController.abort();
         }
-        CAG_currentAbortController = new AbortController();
+        CAG_State.currentAbortController = new AbortController();
 
         if (apiKey) {
             try {
@@ -512,7 +521,7 @@ async function CAG_callAI(prompt, apiKey) {
                         max_tokens: 1200,
                         temperature: 0.7
                     }),
-                    signal: CAG_currentAbortController.signal
+                    signal: CAG_State.currentAbortController.signal
                 });
                 const data = await response.json();
                 if (data.choices?.[0]) {
