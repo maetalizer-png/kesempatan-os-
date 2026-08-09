@@ -1,19 +1,19 @@
-(function() {
-"use strict";
+import { CONFIG } from './config.js';
+import { Utils } from './utils.js';
+import { WorkflowState } from './workflow-state.js';
+import { WorkflowLLMBridge } from './workflow-llm-bridge.js';
+
 const KESEMPATAN = window.KESEMPATAN || {};
 window.KESEMPATAN = KESEMPATAN;
 
-if (window.__WorkflowLoaded) return;
-window.__WorkflowLoaded = true;
-
-const { CONFIG, Utils } = window;
-const { Logger, RetryEngine, KnowledgeBase, safeParseResponse, escapeHtml, showToast, InternalLogger } = Utils || {};
+const { Logger, RetryEngine, KnowledgeBase, safeParseResponse, escapeHtml, showToast, InternalLogger } = Utils;
 const { updateChart } = window.KESEMPATAN?.ChartManager || {};
 const { autoApproveResults, hidePanel: hideHitlPanel } = window.KESEMPATAN?.HITL || {};
 const { setData: setExportData } = window.KESEMPATAN?.ExportManager || {};
-const { WorkflowState, WorkflowLLMBridge } = KESEMPATAN;
-// WorkflowParallel is read live via KESEMPATAN.WorkflowParallel (not destructured):
-// workflow-parallel.js loads after this file, so a snapshot taken here would stay undefined.
+// WorkflowParallel is read live via KESEMPATAN.WorkflowParallel (not imported):
+// workflow-parallel.js also reads KESEMPATAN.WorkflowEngine (defined below)
+// lazily at call time, so the two modules stay mutually referential without
+// a real circular import between them.
 
 const WORKFLOW_CONFIG = Object.freeze({
     maxRetries: 3,
@@ -208,7 +208,7 @@ async function executeAgentWithRetryCore(agent, context, uploadedData, retryCoun
         // ASLI yang benar-benar dipakai, jadi prediksi meleset paling apes
         // cuma cache-miss, tidak pernah menyajikan hasil yang salah.
         const ENGINE_CACHE_NAMES = { 'local-v2': 'local-llm-v2', 'local': 'local-llm-50m' };
-        const externalModelForCache = (window.CONFIG && window.CONFIG.DEFAULT_MODEL) || 'default';
+        const externalModelForCache = CONFIG.DEFAULT_MODEL || 'default';
         function predictEngineCacheName() {
             if (WorkflowLLMBridge.isV2EngineEligible && WorkflowLLMBridge.isV2EngineEligible()) return ENGINE_CACHE_NAMES['local-v2'];
             if (WorkflowLLMBridge.isLocalEngineEligible && WorkflowLLMBridge.isLocalEngineEligible()) return ENGINE_CACHE_NAMES['local'];
@@ -621,7 +621,7 @@ function forceGenerateReport(results, payload) {
     return true;
 }
 
-const WorkflowEngine = {
+export const WorkflowEngine = {
     async start(payload, uploadedContent) {
         if (workflowLock) {
             if (showToast) showToast("Workflow sedang berjalan", "error");
@@ -972,4 +972,3 @@ KESEMPATAN.WorkflowEngine = WorkflowEngine;
 
 InternalLogger.info('Workflow', 'Workflow engine loaded');
 InternalLogger.info('Workflow', 'HITL panel siap');
-})();

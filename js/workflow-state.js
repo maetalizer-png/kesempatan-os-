@@ -1,12 +1,9 @@
-(function() {
-'use strict';
+import { Utils } from './utils.js';
+
 const KESEMPATAN = window.KESEMPATAN || {};
 window.KESEMPATAN = KESEMPATAN;
 
-if (window.__WorkflowStateLoaded) return;
-window.__WorkflowStateLoaded = true;
-
-const { showToast, InternalLogger } = window.Utils || {};
+const { showToast, InternalLogger } = Utils;
 
 let analyticsData = [];
 const WORKFLOW_STATE_KEY = 'kes_workflow_state';
@@ -151,7 +148,7 @@ function loadAnalytics() {
 
 loadAnalytics();
 
-KESEMPATAN.WorkflowState = Object.freeze({
+export const WorkflowState = Object.freeze({
     addWorkflowControls: addWorkflowControls,
     removeWorkflowControls: removeWorkflowControls,
     saveWorkflowState: saveWorkflowState,
@@ -161,4 +158,5 @@ KESEMPATAN.WorkflowState = Object.freeze({
     saveAnalytics: saveAnalytics,
     loadAnalytics: loadAnalytics
 });
-})();
+
+KESEMPATAN.WorkflowState = WorkflowState;

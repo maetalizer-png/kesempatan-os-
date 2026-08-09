@@ -1,12 +1,9 @@
-(function() {
-'use strict';
+import { Utils } from './utils.js';
+
 const KESEMPATAN = window.KESEMPATAN || {};
 window.KESEMPATAN = KESEMPATAN;
 
-if (window.__WorkflowLLMBridgeLoaded) return;
-window.__WorkflowLLMBridgeLoaded = true;
-
-const { Logger, showToast, InternalLogger } = window.Utils || {};
+const { Logger, showToast, InternalLogger } = Utils;
 
 const LLM_GENERATE_TIMEOUT_MS = 45000;
 const LLM_SLOW_DEVICE_KEY = 'kes_llm_slow_device_until';
@@ -499,7 +496,7 @@ async function cacheAgentResultIfValid(agent, model, prompt, parsed) {
     }
 }
 
-KESEMPATAN.WorkflowLLMBridge = Object.freeze({
+export const WorkflowLLMBridge = Object.freeze({
     callGenerativeEngine: callGenerativeEngine,
     ensureKesempatanLLMReady: ensureKesempatanLLMReady,
     ensureKesempatanLLMv2Ready: ensureKesempatanLLMv2Ready,
@@ -512,4 +509,5 @@ KESEMPATAN.WorkflowLLMBridge = Object.freeze({
     isV2EngineEligible: isV2EngineEligible,
     getPersistedModelChoice: getPersistedModelChoice
 });
-})();
+
+KESEMPATAN.WorkflowLLMBridge = WorkflowLLMBridge;

@@ -1,12 +1,13 @@
-(function() {
-'use strict';
+import { Utils } from './utils.js';
+
 const KESEMPATAN = window.KESEMPATAN || {};
 window.KESEMPATAN = KESEMPATAN;
 
-if (window.__WorkflowParallelLoaded) return;
-window.__WorkflowParallelLoaded = true;
-
-const { Logger, showToast } = window.Utils || {};
+const { Logger, showToast } = Utils;
+// KESEMPATAN.Runtime.WorkflowConfig/WorkflowRuntimeFlags and
+// KESEMPATAN.WorkflowEngine are read live (not imported): workflow.js
+// also reads KESEMPATAN.WorkflowParallel live, so the two modules stay
+// mutually referential without a real circular import between them.
 
 let workflowStartTime = null;
 let timerInterval = null;
@@ -338,7 +339,7 @@ if (document.readyState === 'loading') {
     initWorkflowModeUI();
 }
 
-KESEMPATAN.WorkflowParallel = Object.freeze({
+export const WorkflowParallel = Object.freeze({
     detectOptimalBatchSize: detectOptimalBatchSize,
     getOptimalBatchSize: getOptimalBatchSize,
     getRateLimit: getRateLimit,
@@ -352,4 +353,5 @@ KESEMPATAN.WorkflowParallel = Object.freeze({
     renderWorkflowModeSelector: renderWorkflowModeSelector,
     initWorkflowModeUI: initWorkflowModeUI
 });
-})();
+
+KESEMPATAN.WorkflowParallel = WorkflowParallel;
