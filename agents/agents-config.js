@@ -1,7 +1,6 @@
-(function() {
-"use strict";
+import { CONFIG } from '../js/config.js';
 
-window.AGENTS_CONFIG = window.AGENTS_CONFIG || {};
+export const AGENTS_CONFIG = {};
 
 async function loadPrompt(agentName) {
     const currentYear = new Date().getFullYear();
@@ -15,7 +14,7 @@ async function loadPrompt(agentName) {
     return `Anda adalah ahli ${agentName}. Analisis berdasarkan bidang keahlian Anda untuk tahun ${currentYear}. Output dalam format JSON.`;
 }
 
-window.extendBisnisAgents = async function() {
+export async function extendBisnisAgents() {
     const bisnisAgents = {
         RahmadRaharjo: { name: "Rahmad Raharjo", role: "Senior Business Strategist & Opportunity Analyst", systemPrompt: await loadPrompt('rahmadraharjo'), temperature: 0.85, maxTokens: 1300, fewShotExamples: [] },
         Manager: { name: "Manager", role: "Strategic Business Coordinator with 15+ years experience", systemPrompt: await loadPrompt('manager'), temperature: 0.5, maxTokens: 1300, fewShotExamples: [] },
@@ -34,38 +33,37 @@ window.extendBisnisAgents = async function() {
     };
 
     for (const [key, value] of Object.entries(bisnisAgents)) {
-        window.AGENTS_CONFIG[key] = value;
+        AGENTS_CONFIG[key] = value;
     }
 
-    if (typeof window.CONFIG !== 'undefined' && window.CONFIG.AGENTS) {
+    if (CONFIG.AGENTS) {
         for (const agent of Object.keys(bisnisAgents)) {
-            if (!window.CONFIG.AGENTS.includes(agent)) {
-                window.CONFIG.AGENTS.push(agent);
+            if (!CONFIG.AGENTS.includes(agent)) {
+                CONFIG.AGENTS.push(agent);
             }
         }
     }
 
-    window.AGENTS_BISNIS = Object.keys(bisnisAgents);
+    const AGENTS_BISNIS = Object.keys(bisnisAgents);
 
     window.KESEMPATAN = window.KESEMPATAN || {};
     window.KESEMPATAN.Agents = window.KESEMPATAN.Agents || {};
-    window.KESEMPATAN.Agents.Bisnis = window.AGENTS_BISNIS;
-    window.KESEMPATAN.Agents.Config = window.AGENTS_CONFIG;
+    window.KESEMPATAN.Agents.Bisnis = AGENTS_BISNIS;
+    window.KESEMPATAN.Agents.Config = AGENTS_CONFIG;
 
     if (window.KESEMPATAN?.AgentRenderer?.renderAllAgents) {
         window.KESEMPATAN.AgentRenderer.renderAllAgents();
     }
-};
+}
 
 if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => window.extendBisnisAgents());
+    document.addEventListener('DOMContentLoaded', () => extendBisnisAgents());
 } else {
-    window.extendBisnisAgents();
+    extendBisnisAgents();
 }
-})();
 
-function getAgentConfig(agentName) {
-    return window.AGENTS_CONFIG[agentName] || {
+export function getAgentConfig(agentName) {
+    return AGENTS_CONFIG[agentName] || {
         name: agentName,
         role: "General AI",
         systemPrompt: "Analisis peluang bisnis, beri output dalam format JSON dengan field: reasoning_summary (max 100 kata), score (0-100), confidence (0-100), insight (array of string, max 5), strategy (array of string, max 5), risk (array of string, max 5), recommendation (string, max 150 kata), dan demand, competition, monetization, virality, sustainability, scalability, timing, attention, execution, longterm (semua 0-100).",
@@ -75,8 +73,9 @@ function getAgentConfig(agentName) {
     };
 }
 
-if (typeof window !== 'undefined') {
-    window.KESEMPATAN = window.KESEMPATAN || {};
-    window.KESEMPATAN.getAgentConfig = getAgentConfig;
-    window.getAgentConfig = getAgentConfig;
-}
+window.KESEMPATAN = window.KESEMPATAN || {};
+window.KESEMPATAN.getAgentConfig = getAgentConfig;
+
+// Bridge for consumers not yet migrated to import { AGENTS_CONFIG, getAgentConfig } from '../agents/agents-config.js'.
+window.AGENTS_CONFIG = AGENTS_CONFIG;
+window.getAgentConfig = getAgentConfig;
