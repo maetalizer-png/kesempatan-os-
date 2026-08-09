@@ -1,13 +1,9 @@
-(function() {
-'use strict';
+import { WorkersConfig } from './workers-config.js';
 
 const KESEMPATAN = window.KESEMPATAN || {};
 window.KESEMPATAN = KESEMPATAN;
 
-if (window.__WorkersAIState) return;
-window.__WorkersAIState = true;
-
-const config = KESEMPATAN.WorkersConfig;
+const config = WorkersConfig;
 let workers = [];
 let workerStats = {};
 let logs = [];
@@ -67,7 +63,7 @@ function loadVoiceSettings() {
 }
 function saveVoiceSettings() { localStorage.setItem('kes_voice_settings', JSON.stringify(voiceSettings)); }
 
-const WorkersAIState = {
+export const WorkersState = {
     getWorkers: function() { return workers; },
     getStats: function() { return workerStats; },
     getLogs: function() { return logs; },
@@ -86,5 +82,4 @@ const WorkersAIState = {
     saveVoiceSettings: saveVoiceSettings
 };
 
-KESEMPATAN.WorkersState = WorkersAIState;
-})();
+KESEMPATAN.WorkersState = WorkersState;

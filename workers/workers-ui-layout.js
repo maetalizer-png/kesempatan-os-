@@ -1,15 +1,9 @@
-(function() {
-'use strict';
+import { WorkersState } from './workers-state.js';
 
 const KESEMPATAN = window.KESEMPATAN || {};
 window.KESEMPATAN = KESEMPATAN;
 
-if (window.__WorkersAILayout) return;
-window.__WorkersAILayout = true;
-
-const state = KESEMPATAN.WorkersState;
-const config = KESEMPATAN.WorkersConfig;
-if (!state || !config) return;
+const state = WorkersState;
 
 const WORKERS_CSS = `<style>
 #aiWorkersPage, #aiWorkersDataPage, #aiWorkersDataContainer, .result-container { overflow-x: hidden !important; width: 100% !important; max-width: 100% !important; word-break: break-word !important; }
@@ -271,5 +265,5 @@ function buildLogsLayout(logs, filterWorker, filterStatus, searchQuery) {
     return html;
 }
 
-KESEMPATAN.WorkersLayout = { buildWorkersLayout: buildWorkersLayout, buildLogsLayout: buildLogsLayout };
-})();
+export const WorkersLayout = { buildWorkersLayout: buildWorkersLayout, buildLogsLayout: buildLogsLayout };
+KESEMPATAN.WorkersLayout = WorkersLayout;

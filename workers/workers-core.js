@@ -1,16 +1,15 @@
-(function() {
-'use strict';
+import { WorkersState } from './workers-state.js';
+import { WorkersConfig } from './workers-config.js';
+import { Utils } from '../js/utils.js';
 
 const KESEMPATAN = window.KESEMPATAN || {};
 window.KESEMPATAN = KESEMPATAN;
 
-if (window.__WorkersAICore) return;
-window.__WorkersAICore = true;
-
-const state = KESEMPATAN.WorkersState;
-const config = KESEMPATAN.WorkersConfig;
+const state = WorkersState;
+const config = WorkersConfig;
 const WORKER_CONFIG = config.WORKER_CONFIG;
 const AI_WORKERS_LIST = config.AI_WORKERS_LIST;
+const showToast = Utils.showToast;
 
 const RateLimiter = function(maxPerMinute) {
     this._maxPerMinute = maxPerMinute;
@@ -911,7 +910,7 @@ AIWorkersCore.prototype.destroy = function() {
     }
 };
 
-KESEMPATAN.WorkersCore = {
+export const WorkersCore = {
     RateLimiter: RateLimiter,
     SecurityManager: SecurityManager,
     WorkerPool: WorkerPool,
@@ -920,4 +919,4 @@ KESEMPATAN.WorkersCore = {
     PredictionEngine: PredictionEngine,
     AIWorkersCore: AIWorkersCore
 };
-})();
+KESEMPATAN.WorkersCore = WorkersCore;

@@ -1,15 +1,13 @@
-(function() {
-'use strict';
+import { WorkersState } from './workers-state.js';
+import { WorkersLayout } from './workers-ui-layout.js';
+import { WorkersCore } from './workers-core.js';
 
 const KESEMPATAN = window.KESEMPATAN || {};
 window.KESEMPATAN = KESEMPATAN;
 
-if (window.__WorkersAIRenderer) return;
-window.__WorkersAIRenderer = true;
-
-const state = KESEMPATAN.WorkersState;
-const layout = KESEMPATAN.WorkersLayout;
-const core = KESEMPATAN.WorkersCore;
+const state = WorkersState;
+const layout = WorkersLayout;
+const core = WorkersCore;
 let _coreInstance = null;
 
 function getCore() {
@@ -157,7 +155,7 @@ function exportAIWorkersData() {
     if (window.Utils && window.Utils.showToast) window.Utils.showToast('Log exported successfully!', 'success');
 }
 
-KESEMPATAN.WorkersRenderer = {
+export const WorkersRenderer = {
     renderWorkersPage: renderWorkersPage,
     renderLogsPage: renderLogsPage,
     updateLogsDisplay: updateLogsDisplay,
@@ -167,4 +165,4 @@ KESEMPATAN.WorkersRenderer = {
     addAIWorkerLog: addAIWorkerLog,
     exportAIWorkersData: exportAIWorkersData
 };
-})();
+KESEMPATAN.WorkersRenderer = WorkersRenderer;

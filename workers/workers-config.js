@@ -1,13 +1,7 @@
-(function() {
-'use strict';
-
 const KESEMPATAN = window.KESEMPATAN || {};
 window.KESEMPATAN = KESEMPATAN;
 
-if (window.__WorkersAIConfig) return;
-window.__WorkersAIConfig = true;
-
-const WORKER_CONFIG = Object.freeze({
+export const WORKER_CONFIG = Object.freeze({
     selfHealingEnabled: localStorage.getItem('kes_worker_self_healing') !== 'false',
     maxConcurrent: parseInt(localStorage.getItem('kes_worker_max_concurrent')) || 5,
     rateLimitPerMinute: parseInt(localStorage.getItem('kes_worker_rate_limit')) || 100,
@@ -19,7 +13,7 @@ const WORKER_CONFIG = Object.freeze({
     logAutoRefresh: parseInt(localStorage.getItem('kes_worker_log_refresh')) || 5
 });
 
-const AI_WORKERS_LIST = Object.freeze([
+export const AI_WORKERS_LIST = Object.freeze([
     { id: 'bitcoin_trader', name: 'Bitcoin Trader AI', category: 'crypto', enabled: false, schedule: 'hourly', lastRun: null, icon: '₿', priority: 5 },
     { id: 'crypto_portfolio', name: 'Crypto Portfolio', category: 'crypto', enabled: false, schedule: 'daily', lastRun: null, icon: '', priority: 4 },
     { id: 'onchain_analyst', name: 'On-Chain Analyst', category: 'crypto', enabled: false, schedule: 'hourly', lastRun: null, icon: '', priority: 4 },
@@ -77,8 +71,8 @@ const AI_WORKERS_LIST = Object.freeze([
     { id: 'ai_trainer', name: 'AI Trainer', category: 'bonus', enabled: false, schedule: 'daily', lastRun: null, icon: '', priority: 4 }
 ]);
 
-KESEMPATAN.WorkersConfig = {
+export const WorkersConfig = {
     WORKER_CONFIG: WORKER_CONFIG,
     AI_WORKERS_LIST: AI_WORKERS_LIST
 };
-})();
+KESEMPATAN.WorkersConfig = WorkersConfig;

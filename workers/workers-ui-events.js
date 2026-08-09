@@ -1,15 +1,12 @@
-(function() {
-'use strict';
+import { WorkersState } from './workers-state.js';
+import { WorkersRenderer as renderer } from './workers-ui-renderer.js';
+import { Utils } from '../js/utils.js';
 
 const KESEMPATAN = window.KESEMPATAN || {};
 window.KESEMPATAN = KESEMPATAN;
 
-if (window.__WorkersAIEvents) return;
-window.__WorkersAIEvents = true;
-
-const state = KESEMPATAN.WorkersState;
-const renderer = KESEMPATAN.WorkersRenderer;
-const showToast = (window.Utils && window.Utils.showToast) || function() {};
+const state = WorkersState;
+const showToast = Utils.showToast;
 
 function attachWorkersEvents(container) {
     if (!container) return;
@@ -196,5 +193,5 @@ function attachLogsEvents(container) {
     }
 }
 
-KESEMPATAN.WorkersEvents = { attachWorkersEvents: attachWorkersEvents, attachLogsEvents: attachLogsEvents };
-})();
+export const WorkersEvents = { attachWorkersEvents: attachWorkersEvents, attachLogsEvents: attachLogsEvents };
+KESEMPATAN.WorkersEvents = WorkersEvents;
