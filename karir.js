@@ -18,7 +18,10 @@
 
 (function() {
     'use strict';
-    
+
+    const KESEMPATAN = window.KESEMPATAN || {};
+    window.KESEMPATAN = KESEMPATAN;
+
     // ==========================================================
     // 1. CEK DOUBLE LOAD
     // ==========================================================
@@ -1913,8 +1916,8 @@
     // ==========================================================
     // 14. API FUNCTIONS
     // ==========================================================
-    if (typeof window.MarplaceKarirAPI === 'undefined') {
-        window.MarplaceKarirAPI = {
+    if (typeof KESEMPATAN.MarplaceKarirAPI === 'undefined') {
+        KESEMPATAN.MarplaceKarirAPI = {
             // SEARCH (5)
             getJobPlatforms: function(query) {
                 const cacheKey = 'getJobPlatforms_' + (query || 'all');

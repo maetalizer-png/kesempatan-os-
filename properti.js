@@ -19,7 +19,10 @@
 
 (function() {
     'use strict';
-    
+
+    const KESEMPATAN = window.KESEMPATAN || {};
+    window.KESEMPATAN = KESEMPATAN;
+
     // ==========================================================
     // 1. CEK DOUBLE LOAD
     // ==========================================================
@@ -1504,8 +1507,8 @@
     // ==========================================================
     // 14. API FUNCTIONS
     // ==========================================================
-    if (typeof window.MarplacePropertiAPI === 'undefined') {
-        window.MarplacePropertiAPI = {
+    if (typeof KESEMPATAN.MarplacePropertiAPI === 'undefined') {
+        KESEMPATAN.MarplacePropertiAPI = {
             // SEARCH (5)
             getPropertyPlatforms: function(query) {
                 const cacheKey = 'getPropertyPlatforms_' + (query || 'all');

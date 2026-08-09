@@ -17,7 +17,10 @@
 
 (function() {
     'use strict';
-    
+
+    const KESEMPATAN = window.KESEMPATAN || {};
+    window.KESEMPATAN = KESEMPATAN;
+
     // ==========================================================
     // 1. CEK DOUBLE LOAD
     // ==========================================================
@@ -1866,8 +1869,8 @@
     // ==========================================================
     // 13. API FUNCTIONS
     // ==========================================================
-    if (typeof window.MarplaceOtomotifAPI === 'undefined') {
-        window.MarplaceOtomotifAPI = {
+    if (typeof KESEMPATAN.MarplaceOtomotifAPI === 'undefined') {
+        KESEMPATAN.MarplaceOtomotifAPI = {
             // BASE FUNCTIONS
             getAutomotive: function(query) {
                 const cacheKey = 'getAutomotive_' + (query || 'all');

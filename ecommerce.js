@@ -36,7 +36,10 @@
 
 (function() {
     'use strict';
-    
+
+    const KESEMPATAN = window.KESEMPATAN || {};
+    window.KESEMPATAN = KESEMPATAN;
+
     // ==========================================================
     // 1. CEK DOUBLE LOAD
     // ==========================================================
@@ -1576,8 +1579,8 @@
     // 10. API FUNCTIONS (READY TO USE!)
     // ==========================================================
     
-    if (typeof window.MarplaceAPI === 'undefined') {
-        window.MarplaceAPI = {
+    if (typeof KESEMPATAN.MarplaceAPI === 'undefined') {
+        KESEMPATAN.MarplaceAPI = {
             // ==========================================================
             // BASE FUNCTIONS
             // ==========================================================
