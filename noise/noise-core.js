@@ -1,20 +1,15 @@
-(function() {
-    'use strict';
+import { NoiseConfig } from './noise-config.js';
+import { NoiseUtils } from './noise-utils.js';
+import { NoiseState } from './noise-state.js';
 
-    const KESEMPATAN = window.KESEMPATAN || {};
-    window.KESEMPATAN = KESEMPATAN;
+const KESEMPATAN = window.KESEMPATAN || {};
+window.KESEMPATAN = KESEMPATAN;
 
-    if (window.__NoiseCoreLoaded) {
-        return;
-    }
-    window.__NoiseCoreLoaded = true;
-
-    const CONFIG = KESEMPATAN.NoiseConfig?.CONFIG || {};
-    const Utils = KESEMPATAN.NoiseUtils?.Utils || {};
-    const InternalLogger = KESEMPATAN.NoiseUtils?.InternalLogger || { info: function() {} };
-    const NoiseState = KESEMPATAN.NoiseState || {};
-    const noiseIcon = KESEMPATAN.NoiseConfig?.noiseIcon || function() { return ''; };
-    const _state = NoiseState.state || {};
+    const CONFIG = NoiseConfig.CONFIG;
+    const Utils = NoiseUtils.Utils;
+    const InternalLogger = NoiseUtils.InternalLogger;
+    const noiseIcon = NoiseConfig.noiseIcon;
+    const _state = NoiseState.state;
     const _verdictRegistry = NoiseState.verdictRegistry || new Map();
     const _aiCache = NoiseState.aiCache || new Map();
     const _scanCountHistory = NoiseState.scanCountHistory || [];
@@ -545,7 +540,7 @@
 
     loadState();
 
-    KESEMPATAN.NoiseCore = {
+    export const NoiseCore = {
         scan: scan,
         start: startScan,
         stop: stopScan,
@@ -561,4 +556,4 @@
         updateNotificationButton: updateNotificationButton,
         getState: function() { return _state; }
     };
-})();
+    KESEMPATAN.NoiseCore = NoiseCore;

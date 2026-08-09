@@ -1,15 +1,9 @@
-(function() {
-    'use strict';
+import { NoiseConfig } from './noise-config.js';
 
-    const KESEMPATAN = window.KESEMPATAN || {};
-    window.KESEMPATAN = KESEMPATAN;
+const KESEMPATAN = window.KESEMPATAN || {};
+window.KESEMPATAN = KESEMPATAN;
 
-    if (window.__NoiseUtilsLoaded) {
-        return;
-    }
-    window.__NoiseUtilsLoaded = true;
-
-    const CONFIG = KESEMPATAN.NoiseConfig?.CONFIG || {};
+    const CONFIG = NoiseConfig.CONFIG;
 
     const InternalLogger = (function() {
         const _logs = [];
@@ -219,8 +213,8 @@
         }
     });
 
-    KESEMPATAN.NoiseUtils = {
-        InternalLogger: InternalLogger,
-        Utils: Utils
-    };
-})();
+export const NoiseUtils = {
+    InternalLogger: InternalLogger,
+    Utils: Utils
+};
+KESEMPATAN.NoiseUtils = NoiseUtils;

@@ -1,17 +1,11 @@
-(function() {
-    'use strict';
+import { NoiseUtils } from './noise-utils.js';
+import { NoiseState } from './noise-state.js';
 
-    const KESEMPATAN = window.KESEMPATAN || {};
-    window.KESEMPATAN = KESEMPATAN;
+const KESEMPATAN = window.KESEMPATAN || {};
+window.KESEMPATAN = KESEMPATAN;
 
-    if (window.__NoiseChartLoaded) {
-        return;
-    }
-    window.__NoiseChartLoaded = true;
-
-    const InternalLogger = KESEMPATAN.NoiseUtils?.InternalLogger || { info: function() {}, warn: function() {} };
-    const NoiseState = KESEMPATAN.NoiseState || {};
-    const _state = NoiseState.state || {};
+    const InternalLogger = NoiseUtils.InternalLogger;
+    const _state = NoiseState.state;
 
     function renderHistoryChart() {
         try {
@@ -171,8 +165,8 @@
         }
     }
 
-    KESEMPATAN.NoiseChart = {
-        renderHistoryChart: renderHistoryChart,
-        renderVerdictRing: renderVerdictRing
-    };
-})();
+export const NoiseChart = {
+    renderHistoryChart: renderHistoryChart,
+    renderVerdictRing: renderVerdictRing
+};
+KESEMPATAN.NoiseChart = NoiseChart;

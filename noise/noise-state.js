@@ -1,16 +1,11 @@
-(function() {
-    'use strict';
+import { NoiseConfig } from './noise-config.js';
+import { NoiseUtils } from './noise-utils.js';
 
-    const KESEMPATAN = window.KESEMPATAN || {};
-    window.KESEMPATAN = KESEMPATAN;
+const KESEMPATAN = window.KESEMPATAN || {};
+window.KESEMPATAN = KESEMPATAN;
 
-    if (window.__NoiseStateLoaded) {
-        return;
-    }
-    window.__NoiseStateLoaded = true;
-
-    const CONFIG = KESEMPATAN.NoiseConfig?.CONFIG || {};
-    const Utils = KESEMPATAN.NoiseUtils?.Utils || {};
+    const CONFIG = NoiseConfig.CONFIG;
+    const Utils = NoiseUtils.Utils;
 
     const IDB = {
         _db: null,
@@ -177,21 +172,21 @@
         _mounted = val;
     }
 
-    KESEMPATAN.NoiseState = {
-        IDB: IDB,
-        state: _state,
-        verdictRegistry: _verdictRegistry,
-        aiCache: _aiCache,
-        scanCountHistory: _scanCountHistory,
-        lastSignalTimestamps: _lastSignalTimestamps,
-        setVerdict: setVerdict,
-        getVerdict: getVerdict,
-        getCachedAI: getCachedAI,
-        setCachedAI: setCachedAI,
-        addCleanupFn: addCleanupFn,
-        getState: getState,
-        getCleanupFns: getCleanupFns,
-        getMounted: getMounted,
-        setMounted: setMounted
-    };
-})();
+export const NoiseState = {
+    IDB: IDB,
+    state: _state,
+    verdictRegistry: _verdictRegistry,
+    aiCache: _aiCache,
+    scanCountHistory: _scanCountHistory,
+    lastSignalTimestamps: _lastSignalTimestamps,
+    setVerdict: setVerdict,
+    getVerdict: getVerdict,
+    getCachedAI: getCachedAI,
+    setCachedAI: setCachedAI,
+    addCleanupFn: addCleanupFn,
+    getState: getState,
+    getCleanupFns: getCleanupFns,
+    getMounted: getMounted,
+    setMounted: setMounted
+};
+KESEMPATAN.NoiseState = NoiseState;

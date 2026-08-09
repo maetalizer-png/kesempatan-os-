@@ -1,20 +1,16 @@
-(function() {
-    'use strict';
+import { NoiseConfig } from './noise-config.js';
+import { NoiseUtils } from './noise-utils.js';
+import { NoiseState } from './noise-state.js';
+import { NoiseCore } from './noise-core.js';
+import { NoiseChart } from './noise-chart.js';
+import { NoiseEvents } from './noise-events.js';
 
-    const KESEMPATAN = window.KESEMPATAN || {};
-    window.KESEMPATAN = KESEMPATAN;
+const KESEMPATAN = window.KESEMPATAN || {};
+window.KESEMPATAN = KESEMPATAN;
 
-    if (window.__NoiseUIRenderLoaded) return;
-    window.__NoiseUIRenderLoaded = true;
-
-    const CONFIG = KESEMPATAN.NoiseConfig?.CONFIG || {};
-    const Utils = KESEMPATAN.NoiseUtils?.Utils || {};
-    const NoiseState = KESEMPATAN.NoiseState || {};
-    const NoiseCore = KESEMPATAN.NoiseCore || {};
-    const NoiseChart = KESEMPATAN.NoiseChart || {};
-    const NoiseEvents = KESEMPATAN.NoiseEvents || {};
-    const noiseIcon = KESEMPATAN.NoiseConfig?.noiseIcon || function() { return ''; };
-    const _state = NoiseState.state || {};
+    const Utils = NoiseUtils.Utils;
+    const noiseIcon = NoiseConfig.noiseIcon;
+    const _state = NoiseState.state;
 
     function updateStatsUI() {
         const stats = _state.stats;
@@ -492,13 +488,13 @@
         if (NoiseEvents.attachEvents) NoiseEvents.attachEvents(inner);
     }
 
-    KESEMPATAN.NoiseUIRender = {
-        renderDashboard: renderDashboard,
-        updateStatsUI: updateStatsUI,
-        updateStatusUI: updateStatusUI,
-        updateSignalList: updateSignalList,
-        updateHistoryList: updateHistoryList,
-        setStatusFilter: setStatusFilter,
-        setSentimentFilter: setSentimentFilter
-    };
-})();
+export const NoiseUIRender = {
+    renderDashboard: renderDashboard,
+    updateStatsUI: updateStatsUI,
+    updateStatusUI: updateStatusUI,
+    updateSignalList: updateSignalList,
+    updateHistoryList: updateHistoryList,
+    setStatusFilter: setStatusFilter,
+    setSentimentFilter: setSentimentFilter
+};
+KESEMPATAN.NoiseUIRender = NoiseUIRender;

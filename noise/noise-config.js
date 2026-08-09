@@ -1,13 +1,5 @@
-(function() {
-    'use strict';
-
-    const KESEMPATAN = window.KESEMPATAN || {};
-    window.KESEMPATAN = KESEMPATAN;
-
-    if (window.__NoiseConfigLoaded) {
-        return;
-    }
-    window.__NoiseConfigLoaded = true;
+const KESEMPATAN = window.KESEMPATAN || {};
+window.KESEMPATAN = KESEMPATAN;
 
     const CONFIG = Object.freeze({
         STORAGE_KEY: 'kes_noise_filter_data_v2',
@@ -79,9 +71,9 @@
             colorAttr + (extraStyle || '') + '">' + path + '</svg>';
     }
 
-    KESEMPATAN.NoiseConfig = {
-        CONFIG: CONFIG,
-        NOISE_ICON_PATHS: NOISE_ICON_PATHS,
-        noiseIcon: noiseIcon
-    };
-})();
+export const NoiseConfig = {
+    CONFIG: CONFIG,
+    NOISE_ICON_PATHS: NOISE_ICON_PATHS,
+    noiseIcon: noiseIcon
+};
+KESEMPATAN.NoiseConfig = NoiseConfig;

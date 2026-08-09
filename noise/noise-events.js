@@ -1,19 +1,13 @@
-(function() {
-    'use strict';
+import { NoiseUtils } from './noise-utils.js';
+import { NoiseState } from './noise-state.js';
+import { NoiseCore } from './noise-core.js';
+import { NoiseExport } from './noise-export.js';
 
-    const KESEMPATAN = window.KESEMPATAN || {};
-    window.KESEMPATAN = KESEMPATAN;
+const KESEMPATAN = window.KESEMPATAN || {};
+window.KESEMPATAN = KESEMPATAN;
 
-    if (window.__NoiseEventsLoaded) {
-        return;
-    }
-    window.__NoiseEventsLoaded = true;
-
-    const Utils = KESEMPATAN.NoiseUtils?.Utils || {};
-    const NoiseState = KESEMPATAN.NoiseState || {};
-    const NoiseCore = KESEMPATAN.NoiseCore || {};
-    const NoiseExport = KESEMPATAN.NoiseExport || {};
-    const _state = NoiseState.state || {};
+    const Utils = NoiseUtils.Utils;
+    const _state = NoiseState.state;
 
     function attachEvents(container) {
         if (!container) return;
@@ -125,7 +119,7 @@
         }
     }
 
-    KESEMPATAN.NoiseEvents = {
-        attachEvents: attachEvents
-    };
-})();
+export const NoiseEvents = {
+    attachEvents: attachEvents
+};
+KESEMPATAN.NoiseEvents = NoiseEvents;

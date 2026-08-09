@@ -1,18 +1,12 @@
-(function() {
-    'use strict';
+import { NoiseUtils } from './noise-utils.js';
+import { NoiseState } from './noise-state.js';
+import { NoiseCore } from './noise-core.js';
 
-    const KESEMPATAN = window.KESEMPATAN || {};
-    window.KESEMPATAN = KESEMPATAN;
+const KESEMPATAN = window.KESEMPATAN || {};
+window.KESEMPATAN = KESEMPATAN;
 
-    if (window.__NoiseExportLoaded) {
-        return;
-    }
-    window.__NoiseExportLoaded = true;
-
-    const Utils = KESEMPATAN.NoiseUtils?.Utils || {};
-    const NoiseState = KESEMPATAN.NoiseState || {};
-    const NoiseCore = KESEMPATAN.NoiseCore || {};
-    const _state = NoiseState.state || {};
+    const Utils = NoiseUtils.Utils;
+    const _state = NoiseState.state;
 
     function exportData(format) {
         format = format || 'json';
@@ -68,9 +62,9 @@
         window.print();
     }
 
-    KESEMPATAN.NoiseExport = {
-        exportData: exportData,
-        clearHistory: clearHistory,
-        printDashboard: printDashboard
-    };
-})();
+export const NoiseExport = {
+    exportData: exportData,
+    clearHistory: clearHistory,
+    printDashboard: printDashboard
+};
+KESEMPATAN.NoiseExport = NoiseExport;
