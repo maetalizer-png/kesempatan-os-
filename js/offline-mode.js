@@ -1,11 +1,7 @@
-(function () {
-"use strict";
+import { Utils } from './utils.js';
 
 const KESEMPATAN = window.KESEMPATAN || {};
 window.KESEMPATAN = KESEMPATAN;
-
-if (window.__OfflineModeLoaded) return;
-window.__OfflineModeLoaded = true;
 
 const OFFLINE_SAMPLE_AGENTS = ['RahmadRaharjo', 'Manager', 'StartupFounder', 'SundanyaAsep'];
 
@@ -15,8 +11,8 @@ if (p.length === 1) return p[0].slice(0, 2).toUpperCase();
 return (p[0][0] + (p[p.length - 1][0] || '')).toUpperCase();
 }
 
-const showToast = (window.Utils && window.Utils.showToast)
-? window.Utils.showToast
+const showToast = Utils.showToast
+? Utils.showToast
 : function (msg, type) {
 const c = document.getElementById('toastContainer');
 if (!c) return;
@@ -1136,7 +1132,7 @@ container.innerHTML = '<div class="oc-page"><div id="offlineDashboardContainer">
 setTimeout(function () { renderDashboard(); startTelemetry(); }, 120);
 }
 
-KESEMPATAN.OfflineMode = Object.freeze({
+export const OfflineMode = Object.freeze({
 renderFullPage: renderFullPage,
 isOnline: isActuallyOnline,
 getCache: function () { return state.offlineCache; },
@@ -1178,9 +1174,10 @@ switchTab: switchTab,
 getActiveTab: function () { return state.activeTab; }
 });
 
+KESEMPATAN.OfflineMode = OfflineMode;
+
 // Kept as a real global (not KESEMPATAN-only): voice-core.js and
 // visual-core.js read window.OfflineMode.isOnline() directly.
-window.OfflineMode = window.KESEMPATAN.OfflineMode;
+window.OfflineMode = OfflineMode;
 
 if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else setTimeout(init, 100);
-})();

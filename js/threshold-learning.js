@@ -1,9 +1,3 @@
-(function() {
-'use strict';
-if (window.__LearningUltimateLoaded) return;
-window.__LearningUltimateLoaded = true;
-window.__LearningLoaded = true;
-
 const InternalLogger = Object.freeze({
     _logs: [],
     _maxLogs: 1000,
@@ -1100,6 +1094,8 @@ else window.addEventListener('load', installLearningHooks);
     }
 })();
 
+export { AutoLearningUltimate as AutoLearning };
+
 window.KESEMPATAN = window.KESEMPATAN || {};
 window.KESEMPATAN.AutoLearning = AutoLearningUltimate;
 window.KESEMPATAN.DQNEngine = DQNEngine;
@@ -1122,4 +1118,3 @@ window.KESEMPATAN.NotificationSystem = NotificationSystem;
 // KESEMPATAN.X form above is kept.
 window.AutoLearning = AutoLearningUltimate;
 window.InternalLogger = InternalLogger;
-})();
