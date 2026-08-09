@@ -1,11 +1,5 @@
-(function() {
-'use strict';
-
 const KESEMPATAN = window.KESEMPATAN || {};
 window.KESEMPATAN = KESEMPATAN;
-
-if (window.__VisualAIConfig) return;
-window.__VisualAIConfig = true;
 
 const STORAGE_KEYS = {
     HISTORY: 'kes_visual_agent_history',
@@ -60,7 +54,7 @@ const SOCIAL_COLORS = {
     colorful: '#9B59B6'
 };
 
-const VisualAIConfig = {
+export const VisualConfig = {
     STORAGE_KEYS: STORAGE_KEYS,
     DEFAULT_VALUES: DEFAULT_VALUES,
     AVATAR_COLORS: AVATAR_COLORS,
@@ -70,5 +64,4 @@ const VisualAIConfig = {
     SOCIAL_COLORS: SOCIAL_COLORS
 };
 
-KESEMPATAN.VisualConfig = VisualAIConfig;
-})();
+KESEMPATAN.VisualConfig = VisualConfig;

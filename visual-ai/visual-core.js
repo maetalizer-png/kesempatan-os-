@@ -1,13 +1,7 @@
-(function() {
-'use strict';
+import { VisualConfig as config } from './visual-config.js';
 
 const KESEMPATAN = window.KESEMPATAN || {};
 window.KESEMPATAN = KESEMPATAN;
-
-if (window.__VisualAICore) return;
-window.__VisualAICore = true;
-
-const config = KESEMPATAN.VisualConfig;
 
 const THREE_JS_URL = 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js';
 let THREE = window.THREE || null;
@@ -343,7 +337,7 @@ class AIInternal {
     }
 }
 
-KESEMPATAN.VisualCore = {
+export const VisualCore = {
     loadThreeJS: loadThreeJS,
     threeReady: function() { return threeReady; },
     threeLoadFailed: function() { return threeLoadFailed; },
@@ -352,4 +346,4 @@ KESEMPATAN.VisualCore = {
     AIInternal: AIInternal,
     createAI: function() { return new AIInternal(); }
 };
-})();
+KESEMPATAN.VisualCore = VisualCore;

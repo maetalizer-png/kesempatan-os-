@@ -1,15 +1,10 @@
-(function() {
-'use strict';
+import { VisualConfig } from './visual-config.js';
 
 const KESEMPATAN = window.KESEMPATAN || {};
 window.KESEMPATAN = KESEMPATAN;
 
-if (window.__VisualAIState) return;
-window.__VisualAIState = true;
-
-const config = KESEMPATAN.VisualConfig || {};
-const STORAGE_KEYS = config.STORAGE_KEYS || {};
-const DEFAULT = config.DEFAULT_VALUES || {};
+const STORAGE_KEYS = VisualConfig.STORAGE_KEYS;
+const DEFAULT = VisualConfig.DEFAULT_VALUES;
 
 const SafeStorage = {
     get: function(key, fallback) {
@@ -77,7 +72,7 @@ function addToHistory(result) {
     saveHistory();
 }
 
-const VisualAIState = {
+export const VisualState = {
     getHistory: function() { return history; },
     getApiMode: function() { return apiMode; },
     getGoogleKey: function() { return googleVisionKey; },
@@ -114,5 +109,4 @@ const VisualAIState = {
     storage: SafeStorage
 };
 
-KESEMPATAN.VisualState = VisualAIState;
-})();
+KESEMPATAN.VisualState = VisualState;

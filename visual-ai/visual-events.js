@@ -1,25 +1,19 @@
-(function() {
-'use strict';
+import { VisualState as state } from './visual-state.js';
+import { VisualCore as core } from './visual-core.js';
+import { VisualRenderer as renderer } from './visual-renderer.js';
+import { VisualEngineModule } from './visual-engine.js';
+import { Utils } from '../js/utils.js';
 
 const KESEMPATAN = window.KESEMPATAN || {};
 window.KESEMPATAN = KESEMPATAN;
 
-if (window.__VisualAIEvents) return;
-window.__VisualAIEvents = true;
-
-const state = KESEMPATAN.VisualState;
-const core = KESEMPATAN.VisualCore;
-const renderer = KESEMPATAN.VisualRenderer;
-const showToast = window.Utils?.showToast || function() {};
+const showToast = Utils.showToast;
 
 let visualEngine = null;
 
 function getEngine() {
     if (!visualEngine) {
-        const Engine = KESEMPATAN.VisualEngine;
-        if (Engine && typeof Engine.create === 'function') {
-            visualEngine = Engine.create();
-        }
+        visualEngine = VisualEngineModule.create();
     }
     return visualEngine;
 }
@@ -815,8 +809,8 @@ function attachEvents() {
     }
 }
 
-KESEMPATAN.VisualEvents = {
+export const VisualEvents = {
     attach: attachEvents,
     handleFiles: handleFiles
 };
-})();
+KESEMPATAN.VisualEvents = VisualEvents;

@@ -1,15 +1,9 @@
-(function() {
-'use strict';
+import { VisualState as state } from './visual-state.js';
+import { VisualCore as core } from './visual-core.js';
+import { VisualConfig as config } from './visual-config.js';
 
 const KESEMPATAN = window.KESEMPATAN || {};
 window.KESEMPATAN = KESEMPATAN;
-
-if (window.__VisualAIEngine) return;
-window.__VisualAIEngine = true;
-
-const state = KESEMPATAN.VisualState;
-const core = KESEMPATAN.VisualCore;
-const config = KESEMPATAN.VisualConfig;
 
 function disposeObject3D(object) {
     if (!object) return;
@@ -451,5 +445,5 @@ class VisualEngine {
     }
 }
 
-KESEMPATAN.VisualEngine = { create: function() { return new VisualEngine(); } };
-})();
+export const VisualEngineModule = { create: function() { return new VisualEngine(); } };
+KESEMPATAN.VisualEngine = VisualEngineModule;
