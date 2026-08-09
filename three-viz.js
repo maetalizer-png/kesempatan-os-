@@ -54,6 +54,7 @@ class KES3DViz {
         this.dataPoints = [];
         this.init();
         this.setupEventListeners();
+        this.setupVisibilityHandling();
         this.animate();
     }
 
@@ -320,6 +321,23 @@ class KES3DViz {
         this.container.style.cursor = 'grab';
     }
 
+    // Tab di latar belakang = render loop tetap jalan penuh (requestAnimationFrame
+    // browser TIDAK otomatis berhenti untuk WebGL canvas seperti untuk elemen
+    // biasa) — GPU/CPU terus terpakai untuk sesuatu yang tidak terlihat sama
+    // sekali. Hentikan render loop saat tab disembunyikan, lanjutkan otomatis
+    // saat kembali terlihat.
+    setupVisibilityHandling() {
+        this._onVisibilityChange = function() {
+            if (document.hidden) {
+                this.isAnimating = false;
+            } else if (this.scene && !this.isAnimating) {
+                this.isAnimating = true;
+                this.animate();
+            }
+        }.bind(this);
+        document.addEventListener('visibilitychange', this._onVisibilityChange);
+    }
+
     animate() {
         if (!this.isAnimating || !this.scene) return;
         this.animationId = requestAnimationFrame(function() {
@@ -407,6 +425,10 @@ class KES3DViz {
         if (this.animationId) {
             cancelAnimationFrame(this.animationId);
             this.animationId = null;
+        }
+        if (this._onVisibilityChange) {
+            document.removeEventListener('visibilitychange', this._onVisibilityChange);
+            this._onVisibilityChange = null;
         }
         if (this.renderer) {
             this.renderer.dispose();

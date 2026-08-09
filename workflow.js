@@ -17,8 +17,16 @@ const { WorkflowState, WorkflowLLMBridge } = KESEMPATAN;
 
 const WORKFLOW_CONFIG = Object.freeze({
     maxRetries: 3,
-    maxBatchSize: 10,
-    minBatchSize: 2,
+    // Dulu sampai 10 agen berjalan bersamaan di perangkat RAM/core tinggi
+    // (detectOptimalBatchSize() di workflow-parallel.js) — termasuk banyak
+    // HP modern yang sekarang melaporkan navigator.deviceMemory>=8 dan
+    // hardwareConcurrency>=8. Setiap agen paralel = 1 panggilan generate()
+    // (lokal atau eksternal) berjalan bersamaan; 10 sekaligus berisiko
+    // memori Worker/GPU overflow atau HP kepanasan. Dibatasi ke 3-5 sesuai
+    // permintaan eksplisit — getOptimalBatchSize() tetap mendeteksi
+    // kapasitas perangkat, cuma clamp-nya sekarang lebih ketat.
+    maxBatchSize: 5,
+    minBatchSize: 3,
     enablePriorityQueue: true,
     parallelRetries: 3,
     sequentialThreshold: 5,
