@@ -4,7 +4,7 @@
    ============================================================ */
     // 1. KONFIGURASI
     // ============================================================
-    const FOR_CONFIG = {
+export const FOR_CONFIG = {
         STORAGE_KEY: 'kes_chat_history_v25',
         THEME_KEY: 'kes_chat_theme',
         PREF_KEY: 'kes_chat_preferences',

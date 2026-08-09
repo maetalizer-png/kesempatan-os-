@@ -3,26 +3,29 @@
    TAMPILAN FORUM — suara, riwayat, tema, emoji, reaksi, streaming,
    render pesan forum.
    ============================================================ */
+import { FOR_CONFIG } from './for-config.js';
+import { FOR_State } from './for-state.js';
+import { FOR_getAgentAvatar } from './for-data-engine.js';
 
 // ---------- SUARA (STT) ----------
-function FOR_startVoiceInput(inputId) {
+export function FOR_startVoiceInput(inputId) {
         if (!('webkitSpeechRecognition' in window || 'SpeechRecognition' in window)) {
             return;
         }
-        if (FOR_isListening) {
-            if (FOR_recognition) {
-                FOR_recognition.stop();
+        if (FOR_State.isListening) {
+            if (FOR_State.recognition) {
+                FOR_State.recognition.stop();
             }
-            FOR_isListening = false;
+            FOR_State.isListening = false;
             return;
         }
         const SpeechRecognition = window.webkitSpeechRecognition || window.SpeechRecognition;
-        FOR_recognition = new SpeechRecognition();
-        FOR_recognition.lang = FOR_languagePreference === 'en' ? 'en-US' : 'id-ID';
-        FOR_recognition.continuous = false;
-        FOR_recognition.interimResults = true;
-        FOR_recognition.onstart = function() {
-            FOR_isListening = true;
+        FOR_State.recognition = new SpeechRecognition();
+        FOR_State.recognition.lang = FOR_State.languagePreference === 'en' ? 'en-US' : 'id-ID';
+        FOR_State.recognition.continuous = false;
+        FOR_State.recognition.interimResults = true;
+        FOR_State.recognition.onstart = function() {
+            FOR_State.isListening = true;
             const btn = document.querySelector('[data-voice-for="' + inputId + '"]');
             if (btn) {
                 btn.textContent = 'Merekam...';
@@ -30,7 +33,7 @@ function FOR_startVoiceInput(inputId) {
                 btn.style.borderColor = '#FF6B6B';
             }
         };
-        FOR_recognition.onresult = function(e) {
+        FOR_State.recognition.onresult = function(e) {
             const transcript = e.results[0][0].transcript;
             const input = document.getElementById(inputId);
             if (input) {
@@ -43,8 +46,8 @@ function FOR_startVoiceInput(inputId) {
                 }
             }
         };
-        FOR_recognition.onend = function() {
-            FOR_isListening = false;
+        FOR_State.recognition.onend = function() {
+            FOR_State.isListening = false;
             const btn = document.querySelector('[data-voice-for="' + inputId + '"]');
             if (btn) {
                 btn.textContent = 'Rekam';
@@ -52,8 +55,8 @@ function FOR_startVoiceInput(inputId) {
                 btn.style.borderColor = '';
             }
         };
-        FOR_recognition.onerror = function() {
-            FOR_isListening = false;
+        FOR_State.recognition.onerror = function() {
+            FOR_State.isListening = false;
             const btn = document.querySelector('[data-voice-for="' + inputId + '"]');
             if (btn) {
                 btn.textContent = 'Rekam';
@@ -61,11 +64,11 @@ function FOR_startVoiceInput(inputId) {
                 btn.style.borderColor = '';
             }
         };
-        FOR_recognition.start();
+        FOR_State.recognition.start();
     }
 
 // ---------- HISTORY (localStorage) ----------
-function FOR_saveChatHistory(panelId, messages) {
+export function FOR_saveChatHistory(panelId, messages) {
         try {
             const history = JSON.parse(localStorage.getItem(FOR_CONFIG.STORAGE_KEY) || '{}');
             history[panelId] = messages.slice(-FOR_CONFIG.MAX_HISTORY);
@@ -75,7 +78,7 @@ function FOR_saveChatHistory(panelId, messages) {
         }
     }
 
-function FOR_loadChatHistory(panelId) {
+export function FOR_loadChatHistory(panelId) {
         try {
             const history = JSON.parse(localStorage.getItem(FOR_CONFIG.STORAGE_KEY) || '{}');
             return history[panelId] || [];
@@ -84,7 +87,7 @@ function FOR_loadChatHistory(panelId) {
         }
     }
 
-function FOR_clearChatHistory(panelId) {
+export function FOR_clearChatHistory(panelId) {
         try {
             const history = JSON.parse(localStorage.getItem(FOR_CONFIG.STORAGE_KEY) || '{}');
             delete history[panelId];
@@ -94,14 +97,14 @@ function FOR_clearChatHistory(panelId) {
         }
     }
 
-function FOR_saveMessageToHistory(panelId, sender, message, isUser) {
+export function FOR_saveMessageToHistory(panelId, sender, message, isUser) {
         const history = FOR_loadChatHistory(panelId);
         history.push({ sender: sender, message: message, time: FOR_getTimestamp(), isUser: isUser });
         FOR_saveChatHistory(panelId, history);
     }
 
 // ---------- EMOJI, TYPING SOUND, TEMA ----------
-function FOR_toggleEmojiPicker(inputId) {
+export function FOR_toggleEmojiPicker(inputId) {
         const existingPicker = document.getElementById('emojiPickerContainer');
         if (existingPicker) {
             existingPicker.remove();
@@ -146,43 +149,43 @@ function FOR_toggleEmojiPicker(inputId) {
         }, 100);
     }
 
-function FOR_initTypingSound() {
+export function FOR_initTypingSound() {
         try {
-            FOR_typingSoundContext = new (window.AudioContext || window.webkitAudioContext)();
+            FOR_State.typingSoundContext = new (window.AudioContext || window.webkitAudioContext)();
         } catch (_) {
             // Silent fail
         }
     }
 
-function FOR_playTypingSound() {
-        if (!FOR_typingSoundEnabled || !FOR_typingSoundContext) {
+export function FOR_playTypingSound() {
+        if (!FOR_State.typingSoundEnabled || !FOR_State.typingSoundContext) {
             return;
         }
         try {
-            const oscillator = FOR_typingSoundContext.createOscillator();
-            const gainNode = FOR_typingSoundContext.createGain();
+            const oscillator = FOR_State.typingSoundContext.createOscillator();
+            const gainNode = FOR_State.typingSoundContext.createGain();
             oscillator.connect(gainNode);
-            gainNode.connect(FOR_typingSoundContext.destination);
+            gainNode.connect(FOR_State.typingSoundContext.destination);
             oscillator.frequency.value = 800 + Math.random() * 400;
             oscillator.type = 'sine';
             gainNode.gain.value = 0.03;
             oscillator.start();
-            oscillator.stop(FOR_typingSoundContext.currentTime + 0.05);
+            oscillator.stop(FOR_State.typingSoundContext.currentTime + 0.05);
         } catch (_) {
             // Silent fail
         }
     }
 
-function FOR_toggleTypingSound() {
-        FOR_typingSoundEnabled = !FOR_typingSoundEnabled;
-        localStorage.setItem('kes_typing_sound', FOR_typingSoundEnabled);
+export function FOR_toggleTypingSound() {
+        FOR_State.typingSoundEnabled = !FOR_State.typingSoundEnabled;
+        localStorage.setItem('kes_typing_sound', FOR_State.typingSoundEnabled);
     }
 
-function FOR_toggleTheme() {
-        FOR_darkMode = !FOR_darkMode;
+export function FOR_toggleTheme() {
+        FOR_State.darkMode = !FOR_State.darkMode;
         const root = document.documentElement;
         const chatContainer = document.getElementById('interactivePage');
-        if (FOR_darkMode) {
+        if (FOR_State.darkMode) {
             root.style.setProperty('--chat-bg', '#0a0a1a');
             root.style.setProperty('--chat-text', '#ffffff');
             root.style.setProperty('--chat-border', 'rgba(0,255,163,0.1)');
@@ -203,29 +206,29 @@ function FOR_toggleTheme() {
                 chatContainer.style.color = '#1a1a2e';
             }
         }
-        localStorage.setItem(FOR_CONFIG.THEME_KEY, FOR_darkMode ? 'dark' : 'light');
+        localStorage.setItem(FOR_CONFIG.THEME_KEY, FOR_State.darkMode ? 'dark' : 'light');
         FOR_updateThemeUI();
     }
 
-function FOR_updateThemeUI() {
+export function FOR_updateThemeUI() {
         const btn = document.getElementById('themeToggleBtn');
         if (btn) {
-            btn.textContent = FOR_darkMode ? 'Gelap' : 'Terang';
-            btn.title = FOR_darkMode ? 'Switch to Light' : 'Switch to Dark';
+            btn.textContent = FOR_State.darkMode ? 'Gelap' : 'Terang';
+            btn.title = FOR_State.darkMode ? 'Switch to Light' : 'Switch to Dark';
         }
     }
 
-function FOR_loadTheme() {
+export function FOR_loadTheme() {
         const saved = localStorage.getItem(FOR_CONFIG.THEME_KEY);
         if (saved === 'light') {
-            FOR_darkMode = false;
+            FOR_State.darkMode = false;
             FOR_toggleTheme();
         }
         FOR_updateThemeUI();
     }
 
 // ---------- UTIL TAMPILAN ----------
-function FOR_renderMarkdown(text) {
+export function FOR_renderMarkdown(text) {
         let html = FOR_escapeHtml(text);
         html = html.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
         html = html.replace(/\*(.*?)\*/g, '<em>$1</em>');
@@ -234,7 +237,7 @@ function FOR_renderMarkdown(text) {
         return html;
     }
 
-function FOR_escapeHtml(text) {
+export function FOR_escapeHtml(text) {
         if (!text) {
             return '';
         }
@@ -243,12 +246,12 @@ function FOR_escapeHtml(text) {
         return div.innerHTML.replace(/\n/g, '<br>');
     }
 
-function FOR_getTimestamp() {
+export function FOR_getTimestamp() {
         const now = new Date();
         return now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     }
 
-function FOR_getApiKey() {
+export function FOR_getApiKey() {
         const input = document.getElementById('apiKeyInput');
         if (input?.value?.length > 10) {
             return input.value.trim();
@@ -260,7 +263,7 @@ function FOR_getApiKey() {
     }
 
 // ---------- REAKSI & EDIT PESAN ----------
-function FOR_addReaction(messageWrapper, emoji) {
+export function FOR_addReaction(messageWrapper, emoji) {
         const existing = messageWrapper.querySelector('.reaction-bar');
         if (existing) {
             const btn = existing.querySelector('[data-reaction="' + emoji + '"]');
@@ -303,7 +306,7 @@ function FOR_addReaction(messageWrapper, emoji) {
         }
     }
 
-function FOR_showReactionPicker(messageWrapper) {
+export function FOR_showReactionPicker(messageWrapper) {
         const existing = document.getElementById('reactionPicker');
         if (existing) {
             existing.remove();
@@ -343,7 +346,7 @@ function FOR_showReactionPicker(messageWrapper) {
         }, 100);
     }
 
-function FOR_editMessage(messageWrapper) {
+export function FOR_editMessage(messageWrapper) {
         const body = messageWrapper.querySelector('.message-body');
         const currentText = body.textContent;
         const picker = document.getElementById('reactionPicker');
@@ -386,7 +389,7 @@ function FOR_editMessage(messageWrapper) {
         };
     }
 
-function FOR_deleteMessage(messageWrapper) {
+export function FOR_deleteMessage(messageWrapper) {
         const container = messageWrapper.closest('.chat-messages-premium');
         if (container) {
             const panelId = container.id;
@@ -402,7 +405,7 @@ function FOR_deleteMessage(messageWrapper) {
     }
 
 // ---------- RENDER PESAN & STREAMING ----------
-function FOR_addStreamingMessage(container, sender) {
+export function FOR_addStreamingMessage(container, sender) {
         const time = FOR_getTimestamp();
         const wrapper = document.createElement('div');
         wrapper.className = 'message-wrapper';
@@ -423,13 +426,13 @@ function FOR_addStreamingMessage(container, sender) {
         };
     }
 
-function FOR_finishStreamingMessage(wrapper, cursorSpan) {
+export function FOR_finishStreamingMessage(wrapper, cursorSpan) {
         if (cursorSpan) {
             cursorSpan.remove();
         }
     }
 
-async function FOR_streamTextToElement(textSpan, text, speed) {
+export async function FOR_streamTextToElement(textSpan, text, speed) {
         speed = speed || 15;
         for (let i = 0; i < text.length; i++) {
             textSpan.textContent += text[i];
@@ -439,7 +442,7 @@ async function FOR_streamTextToElement(textSpan, text, speed) {
         }
     }
 
-function FOR_showTypingIndicator(container) {
+export function FOR_showTypingIndicator(container) {
         const typingDiv = document.createElement('div');
         typingDiv.className = 'typing-indicator-modern';
         typingDiv.id = 'typingIndicator';
@@ -449,7 +452,7 @@ function FOR_showTypingIndicator(container) {
         return typingDiv;
     }
 
-function FOR_addMessage(container, sender, message, isUser) {
+export function FOR_addMessage(container, sender, message, isUser) {
         if (!container) {
             return;
         }
@@ -526,7 +529,7 @@ function FOR_addMessage(container, sender, message, isUser) {
         FOR_saveChatHistory(panelId, history);
     }
 
-function FOR_addForumMessage(sender, message, isUser) {
+export function FOR_addForumMessage(sender, message, isUser) {
         const container = document.getElementById('interactiveForumMessages');
         if (!container) {
             return;

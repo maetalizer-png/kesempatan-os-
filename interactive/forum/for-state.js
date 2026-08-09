@@ -1,19 +1,26 @@
 /* ============================================================
    interactive/forum/for-state.js
    STATE BERSAMA FORUM (independen dari modul chat lain)
-   Catatan: FOR_userPreferences pakai default kosong — dihidupkan di
-   core.js saat FOR_initForum().
+   Diimpor oleh for-data-engine.js, for-ui-render.js, for-core.js —
+   semuanya membaca/menulis field pada objek FOR_State yang sama
+   (bukan variabel top-level terpisah lagi, karena ES module tidak
+   membagi scope top-level antar file seperti classic script dulu).
+
+   Catatan: FOR_State.userPreferences pakai default kosong — dihidupkan
+   di core.js saat FOR_initForum().
    ============================================================ */
-let FOR_currentUtterance = null;
-let FOR_recognition = null;
-let FOR_isListening = false;
-let FOR_typingSoundEnabled = true;
-let FOR_typingSoundContext = null;
-let FOR_queryCache = new Map();
-let FOR_forumAbort = false;
-let FOR_forumRunning = false;
-let FOR_darkMode = true;
-let FOR_currentAbortController = null;
-let FOR_userPreferences = {};
-let FOR_stylePreference = 'casual';
-let FOR_languagePreference = 'id';
+export const FOR_State = {
+    currentUtterance: null,
+    recognition: null,
+    isListening: false,
+    typingSoundEnabled: true,
+    typingSoundContext: null,
+    queryCache: new Map(),
+    forumAbort: false,
+    forumRunning: false,
+    darkMode: true,
+    currentAbortController: null,
+    userPreferences: {},
+    stylePreference: 'casual',
+    languagePreference: 'id'
+};

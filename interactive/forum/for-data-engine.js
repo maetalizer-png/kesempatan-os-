@@ -3,57 +3,59 @@
    OTAK FORUM — cache, integrasi World/Memory/Database, smart
    search, penyusun prompt forum, panggilan AI.
    ============================================================ */
+import { FOR_CONFIG } from './for-config.js';
+import { FOR_State } from './for-state.js';
 
 // ---------- CACHE SYSTEM ----------
-function FOR_getCached(key) {
-        const entry = FOR_queryCache.get(key);
+export function FOR_getCached(key) {
+        const entry = FOR_State.queryCache.get(key);
         if (!entry) {
             return null;
         }
         if (Date.now() - entry.timestamp > FOR_CONFIG.CACHE_TTL) {
-            FOR_queryCache.delete(key);
+            FOR_State.queryCache.delete(key);
             return null;
         }
         return entry.data;
     }
 
-function FOR_setCache(key, data) {
-        if (FOR_queryCache.size >= FOR_CONFIG.MAX_CACHE) {
-            const firstKey = FOR_queryCache.keys().next().value;
-            FOR_queryCache.delete(firstKey);
+export function FOR_setCache(key, data) {
+        if (FOR_State.queryCache.size >= FOR_CONFIG.MAX_CACHE) {
+            const firstKey = FOR_State.queryCache.keys().next().value;
+            FOR_State.queryCache.delete(firstKey);
         }
-        FOR_queryCache.set(key, {
+        FOR_State.queryCache.set(key, {
             data: data,
             timestamp: Date.now()
         });
     }
 
-function FOR_clearCache() {
-        FOR_queryCache.clear();
+export function FOR_clearCache() {
+        FOR_State.queryCache.clear();
     }
 
-function FOR_getCacheStats() {
+export function FOR_getCacheStats() {
         return {
-            size: FOR_queryCache.size,
+            size: FOR_State.queryCache.size,
             maxSize: FOR_CONFIG.MAX_CACHE,
-            keys: Array.from(FOR_queryCache.keys())
+            keys: Array.from(FOR_State.queryCache.keys())
         };
     }
 
 // ---------- INTEGRASI DATA (World / Memory / Database) ----------
-function FOR_getStaticData() {
+export function FOR_getStaticData() {
         return window.__STATIC_DATA || [];
     }
 
-function FOR_getMemoryInstance() {
+export function FOR_getMemoryInstance() {
         return window.KESEMPATAN?.VectorMemory || window.VectorMemory || window.VectorMemoryV5 || null;
     }
 
-function FOR_getDatabaseInstance() {
+export function FOR_getDatabaseInstance() {
         return window.KESDatabase || window.getDatabaseV10 || null;
     }
 
-function FOR_smartSearch(query, data, threshold) {
+export function FOR_smartSearch(query, data, threshold) {
         threshold = threshold || FOR_CONFIG.SEARCH_THRESHOLD;
         if (!data || data.length === 0) {
             return [];
@@ -150,7 +152,7 @@ function FOR_smartSearch(query, data, threshold) {
         return filtered.slice(0, FOR_CONFIG.MAX_RESULTS);
     }
 
-function FOR_calculateSimilarity(vec1, vec2) {
+export function FOR_calculateSimilarity(vec1, vec2) {
         if (!vec1 || !vec2) {
             return 0;
         }
@@ -169,7 +171,7 @@ function FOR_calculateSimilarity(vec1, vec2) {
         return dot / (Math.sqrt(norm1) * Math.sqrt(norm2));
     }
 
-function FOR_fetchStaticData(query) {
+export function FOR_fetchStaticData(query) {
         const staticData = FOR_getStaticData();
         if (staticData.length === 0) {
             return [];
@@ -185,7 +187,7 @@ function FOR_fetchStaticData(query) {
     }
 
 // ---------- FETCH KONTEKS (3 SUMBER) ----------
-async function FOR_fetchFromVectorMemory(query, topK) {
+export async function FOR_fetchFromVectorMemory(query, topK) {
         const memory = FOR_getMemoryInstance();
         if (!memory || typeof memory.search !== 'function') {
             return [];
@@ -212,7 +214,7 @@ async function FOR_fetchFromVectorMemory(query, topK) {
     // BARU: dulu Forum cuma MEMBACA dari Vector Memory, tidak pernah
     // menyimpan hasil diskusi kembali. Meniru pola yang sudah terbukti
     // di Debate (DEB_saveDebateToMemory), Chat AI, dan Chat Agent.
-    async function FOR_saveMessageToMemory(userMessage, aiResponse, agentName) {
+    export async function FOR_saveMessageToMemory(userMessage, aiResponse, agentName) {
         const memory = FOR_getMemoryInstance();
         if (!memory) return;
 
@@ -234,7 +236,7 @@ async function FOR_fetchFromVectorMemory(query, topK) {
         } catch (e) { console.warn('[Forum] Save to memory failed:', e.message); }
     }
 
-async function FOR_fetchFromDatabase(query, limit) {
+export async function FOR_fetchFromDatabase(query, limit) {
         const db = FOR_getDatabaseInstance();
         if (!db) {
             return [];
@@ -272,7 +274,7 @@ async function FOR_fetchFromDatabase(query, limit) {
         return [];
     }
 
-async function FOR_getAllContext(query, options) {
+export async function FOR_getAllContext(query, options) {
         options = options || {};
         const cacheKey = query + '|' + JSON.stringify(options);
         
@@ -375,7 +377,7 @@ async function FOR_getAllContext(query, options) {
     }
 
 // ---------- BUILD PROMPT FORUM ----------
-function FOR_buildForumPrompt(agent, role, question, context, agentSystemPrompt) {
+export function FOR_buildForumPrompt(agent, role, question, context, agentSystemPrompt) {
         let prompt = 'Kamu adalah ' + agent + ', ' + role + '.\n\n';
         if (agentSystemPrompt) {
             // FIX KUALITAS: sebelumnya cuma "Kamu adalah X, role satu
@@ -429,7 +431,7 @@ function FOR_buildForumPrompt(agent, role, question, context, agentSystemPrompt)
     }
 
 // ---------- PREFERENSI ----------
-function FOR_loadPreferences() {
+export function FOR_loadPreferences() {
         try {
             const saved = localStorage.getItem(FOR_CONFIG.PREF_KEY);
             if (saved) {
@@ -458,15 +460,15 @@ function FOR_loadPreferences() {
         };
     }
 
-function FOR_savePreferences(prefs) {
+export function FOR_savePreferences(prefs) {
         try {
             localStorage.setItem(FOR_CONFIG.PREF_KEY, JSON.stringify(prefs));
-            FOR_userPreferences = prefs;
+            FOR_State.userPreferences = prefs;
             if (prefs.language) {
-                FOR_languagePreference = prefs.language;
+                FOR_State.languagePreference = prefs.language;
             }
             if (prefs.style) {
-                FOR_stylePreference = prefs.style;
+                FOR_State.stylePreference = prefs.style;
             }
         } catch (_) {
             // Silent fail
@@ -474,7 +476,7 @@ function FOR_savePreferences(prefs) {
     }
 
 // ---------- IDENTITAS AGEN ----------
-function FOR_humanizeAgentName(agent) {
+export function FOR_humanizeAgentName(agent) {
         if (!agent || typeof agent !== 'string') {
             return '';
         }
@@ -485,7 +487,7 @@ function FOR_humanizeAgentName(agent) {
             .trim();
     }
 
-function FOR_getAgentProfile(agent) {
+export function FOR_getAgentProfile(agent) {
         if (window.getAgentConfig) {
             const cfg = window.getAgentConfig(agent);
             if (cfg) {
@@ -500,22 +502,22 @@ function FOR_getAgentProfile(agent) {
         return { name: FOR_humanizeAgentName(agent), role: '', emoji: '', systemPrompt: '' };
     }
 
-function FOR_getAgentDisplayName(agent) {
+export function FOR_getAgentDisplayName(agent) {
         const profile = FOR_getAgentProfile(agent);
         return (profile.emoji ? profile.emoji + ' ' : '') + profile.name;
     }
 
-function FOR_getAgentAvatar(agent) {
+export function FOR_getAgentAvatar(agent) {
         const profile = FOR_getAgentProfile(agent);
         return profile.emoji || '';
     }
 
 // ---------- PANGGILAN AI ----------
-async function FOR_callAI(prompt, apiKey) {
-        if (FOR_currentAbortController) {
-            FOR_currentAbortController.abort();
+export async function FOR_callAI(prompt, apiKey) {
+        if (FOR_State.currentAbortController) {
+            FOR_State.currentAbortController.abort();
         }
-        FOR_currentAbortController = new AbortController();
+        FOR_State.currentAbortController = new AbortController();
 
         if (apiKey) {
             try {
@@ -534,7 +536,7 @@ async function FOR_callAI(prompt, apiKey) {
                         max_tokens: 1200,
                         temperature: 0.7
                     }),
-                    signal: FOR_currentAbortController.signal
+                    signal: FOR_State.currentAbortController.signal
                 });
                 const data = await response.json();
                 if (data.choices?.[0]) {

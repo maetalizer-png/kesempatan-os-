@@ -4,9 +4,21 @@
    UI lintas panel, preferensi, notifikasi, render panel, init,
    ekspor window.ChatModule. Dimuat PALING TERAKHIR.
    ============================================================ */
+import { FOR_CONFIG } from './for-config.js';
+import { FOR_State } from './for-state.js';
+import {
+    FOR_buildForumPrompt, FOR_callAI, FOR_clearCache, FOR_getAgentDisplayName,
+    FOR_getAllContext, FOR_getCacheStats, FOR_loadPreferences, FOR_saveMessageToMemory,
+    FOR_savePreferences
+} from './for-data-engine.js';
+import {
+    FOR_addForumMessage, FOR_addMessage, FOR_clearChatHistory, FOR_getApiKey,
+    FOR_loadChatHistory, FOR_loadTheme, FOR_playTypingSound, FOR_startVoiceInput,
+    FOR_toggleEmojiPicker, FOR_toggleTheme
+} from './for-ui-render.js';
 
 window.askAllAgents = async function(question) {
-        if (FOR_forumRunning) {
+        if (FOR_State.forumRunning) {
             return;
         }
         if (document.querySelectorAll('.agent-checkbox[data-agent]').length === 0 && window.KESEMPATAN?.AgentRenderer?.renderAllAgents) {
@@ -33,8 +45,8 @@ window.askAllAgents = async function(question) {
             maxResults: FOR_CONFIG.MAX_RESULTS
         });
         
-        FOR_forumAbort = false;
-        FOR_forumRunning = true;
+        FOR_State.forumAbort = false;
+        FOR_State.forumRunning = true;
         const sendBtn = document.getElementById('forumSendBtn');
         const stopBtn = document.getElementById('forumStopBtn');
         if (sendBtn) {
@@ -46,7 +58,7 @@ window.askAllAgents = async function(question) {
         FOR_addForumMessage('Anda', question, true);
         
         for (let i = 0; i < agents.length; i++) {
-            if (FOR_forumAbort) {
+            if (FOR_State.forumAbort) {
                 break;
             }
             const agent = agents[i];
@@ -81,12 +93,12 @@ window.askAllAgents = async function(question) {
                 FOR_addForumMessage(displayName, 'Error: ' + err.message, false);
             }
         }
-        if (FOR_forumAbort) {
+        if (FOR_State.forumAbort) {
             FOR_addForumMessage('Forum', 'Proses dihentikan.', false);
         } else {
             FOR_addForumMessage('Forum', 'Selesai! ' + agents.length + ' agen memberikan pendapat.', false);
         }
-        FOR_forumRunning = false;
+        FOR_State.forumRunning = false;
         if (sendBtn) {
             sendBtn.style.display = 'inline-block';
         }
@@ -421,7 +433,7 @@ function FOR_showPreferencesPanel() {
         panel.id = 'preferencesPanel';
         panel.style.cssText = 'position:fixed; top:50%; left:50%; transform:translate(-50%,-50%); background:#1a1a2e; border:1px solid rgba(0,255,163,0.2); border-radius:16px; padding:24px; z-index:9999; max-width:420px; width:90%; box-shadow:0 20px 60px rgba(0,0,0,0.8); animation:fadeIn 0.3s ease;';
         panel.innerHTML = '<h3 style="color:#00FFA3;margin:0 0 16px 0;">Preferensi Chat</h3>' +
-            '<div style="margin-bottom:12px;"><label style="color:#A0B3C9;font-size:12px;display:block;margin-bottom:4px;">Gaya Jawaban</label><select id="prefStyle" style="width:100%;padding:8px;border-radius:8px;background:rgba(0,0,0,0.3);border:1px solid rgba(0,255,163,0.2);color:#fff;"><option value="casual" ' + (FOR_userPreferences.style === 'casual' ? 'selected' : '') + '>Santai</option><option value="formal" ' + (FOR_userPreferences.style === 'formal' ? 'selected' : '') + '>Formal</option></select></div>' +
+            '<div style="margin-bottom:12px;"><label style="color:#A0B3C9;font-size:12px;display:block;margin-bottom:4px;">Gaya Jawaban</label><select id="prefStyle" style="width:100%;padding:8px;border-radius:8px;background:rgba(0,0,0,0.3);border:1px solid rgba(0,255,163,0.2);color:#fff;"><option value="casual" ' + (FOR_State.userPreferences.style === 'casual' ? 'selected' : '') + '>Santai</option><option value="formal" ' + (FOR_State.userPreferences.style === 'formal' ? 'selected' : '') + '>Formal</option></select></div>' +
             '<div style="display:flex;gap:8px;"><button onclick="window.savePreferencesPanel()" style="flex:1;padding:8px;border:none;border-radius:8px;background:linear-gradient(135deg,#00FFA3,#00AA6E);color:#03050A;font-weight:bold;cursor:pointer;">Simpan</button><button onclick="document.getElementById(\'preferencesPanel\').remove()" style="padding:8px 16px;border:1px solid rgba(255,255,255,0.1);border-radius:8px;background:transparent;color:#A0B3C9;cursor:pointer;">Tutup</button></div>';
         document.body.appendChild(panel);
     }
@@ -430,12 +442,12 @@ window.savePreferencesPanel = function() {
         const style = document.getElementById('prefStyle').value;
         const prefs = {
             style: style,
-            categories: FOR_userPreferences.categories,
-            updateInterval: FOR_userPreferences.updateInterval,
-            sources: FOR_userPreferences.sources
+            categories: FOR_State.userPreferences.categories,
+            updateInterval: FOR_State.userPreferences.updateInterval,
+            sources: FOR_State.userPreferences.sources
         };
         FOR_savePreferences(prefs);
-        FOR_stylePreference = style;
+        FOR_State.stylePreference = style;
         const panel = document.getElementById('preferencesPanel');
         if (panel) {
             panel.remove();
@@ -478,7 +490,7 @@ function FOR_renderForumPanel() {
     }
 
 function FOR_initForumPrefs() {
-    FOR_userPreferences = FOR_loadPreferences();
+    FOR_State.userPreferences = FOR_loadPreferences();
 }
 
 function FOR_initForum() {
@@ -504,7 +516,7 @@ function FOR_initForum() {
         }
         if (forumStop) {
             forumStop.onclick = function() {
-                FOR_forumAbort = true;
+                FOR_State.forumAbort = true;
             };
         }
         if (forumInput) {
