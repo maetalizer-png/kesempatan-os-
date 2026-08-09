@@ -1,11 +1,5 @@
-(function() {
-'use strict';
-
 const KESEMPATAN = window.KESEMPATAN || {};
 window.KESEMPATAN = KESEMPATAN;
-
-if (window.__ExecutePanelLoaded) return;
-window.__ExecutePanelLoaded = true;
 
 function renderUI(container) {
     if (!container) return;
@@ -18,9 +12,10 @@ function renderUI(container) {
         '</div>';
 }
 
-KESEMPATAN.ExecutePanel = Object.freeze({ renderUI: renderUI });
+export const ExecutePanel = Object.freeze({ renderUI: renderUI });
+
+KESEMPATAN.ExecutePanel = ExecutePanel;
 
 document.addEventListener('DOMContentLoaded', function() {
     renderUI(document.getElementById('executePanelContainer'));
 });
-})();

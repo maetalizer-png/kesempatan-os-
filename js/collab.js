@@ -1,9 +1,5 @@
-(function() {
-'use strict';
-if (window.__CollabPageLoaded) {
-return;
-}
-window.__CollabPageLoaded = true;
+import { Main } from './main.js';
+
 function renderUI(container) {
 if (!container) {
 return;
@@ -32,21 +28,24 @@ container.innerHTML =
 const createBtn = document.getElementById('createProjectBtn');
 const joinBtn = document.getElementById('joinProjectBtn');
 const sendBtn = document.getElementById('sendChatBtn');
-if (createBtn && window.KESEMPATAN?.Main?.createProject) {
-createBtn.onclick = window.KESEMPATAN.Main.createProject;
+if (createBtn) {
+createBtn.onclick = Main.createProject;
 }
-if (joinBtn && window.KESEMPATAN?.Main?.joinProject) {
-joinBtn.onclick = window.KESEMPATAN.Main.joinProject;
+if (joinBtn) {
+joinBtn.onclick = Main.joinProject;
 }
-if (sendBtn && window.KESEMPATAN?.Main?.sendChatMessage) {
-sendBtn.onclick = window.KESEMPATAN.Main.sendChatMessage;
+if (sendBtn) {
+sendBtn.onclick = Main.sendChatMessage;
 }
 if (window.CollabClient && typeof window.CollabClient.attachEvents === 'function') {
 window.CollabClient.attachEvents();
 }
 }
-window.KESEMPATAN = window.KESEMPATAN || {};
-window.KESEMPATAN.Collab = Object.freeze({
+const KESEMPATAN = window.KESEMPATAN || {};
+window.KESEMPATAN = KESEMPATAN;
+
+export const Collab = Object.freeze({
 renderUI: renderUI
 });
-})();
+
+KESEMPATAN.Collab = Collab;

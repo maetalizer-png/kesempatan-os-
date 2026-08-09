@@ -1,11 +1,5 @@
-(function() {
-'use strict';
-
 const KESEMPATAN = window.KESEMPATAN || {};
 window.KESEMPATAN = KESEMPATAN;
-
-if (window.__ReportPanelLoaded) return;
-window.__ReportPanelLoaded = true;
 
 function renderUI(container) {
     if (!container) return;
@@ -18,9 +12,10 @@ function renderUI(container) {
         '</div>';
 }
 
-KESEMPATAN.ReportPanel = Object.freeze({ renderUI: renderUI });
+export const ReportPanel = Object.freeze({ renderUI: renderUI });
+
+KESEMPATAN.ReportPanel = ReportPanel;
 
 document.addEventListener('DOMContentLoaded', function() {
     renderUI(document.getElementById('reportPanelContainer'));
 });
-})();

@@ -1,11 +1,7 @@
-(function() {
-'use strict';
+import { ChartManager } from './chart.js';
 
 const KESEMPATAN = window.KESEMPATAN || {};
 window.KESEMPATAN = KESEMPATAN;
-
-if (window.__TimeAnalyticsPanelLoaded) return;
-window.__TimeAnalyticsPanelLoaded = true;
 
 function renderUI(container) {
     if (!container) return;
@@ -19,14 +15,11 @@ function renderUI(container) {
         '</div>';
 }
 
-KESEMPATAN.TimeAnalyticsPanel = Object.freeze({ renderUI: renderUI });
+export const TimeAnalyticsPanel = Object.freeze({ renderUI: renderUI });
+
+KESEMPATAN.TimeAnalyticsPanel = TimeAnalyticsPanel;
 
 document.addEventListener('DOMContentLoaded', function() {
     renderUI(document.getElementById('timeAnalyticsContainer'));
-    if (typeof KESEMPATAN.ChartManager?.initTimeAnalytics === 'function') {
-        KESEMPATAN.ChartManager.initTimeAnalytics();
-    } else if (typeof window.initTimeAnalytics === 'function') {
-        window.initTimeAnalytics();
-    }
+    ChartManager.initTimeAnalytics();
 });
-})();

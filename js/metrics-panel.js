@@ -1,11 +1,5 @@
-(function() {
-'use strict';
-
 const KESEMPATAN = window.KESEMPATAN || {};
 window.KESEMPATAN = KESEMPATAN;
-
-if (window.__MetricsPanelLoaded) return;
-window.__MetricsPanelLoaded = true;
 
 const METRICS = [
     { key: 'demand', label: '1. Demand' },
@@ -54,9 +48,10 @@ function renderUI(container) {
         '</div>';
 }
 
-KESEMPATAN.MetricsPanel = Object.freeze({ renderUI: renderUI, METRICS: METRICS });
+export const MetricsPanel = Object.freeze({ renderUI: renderUI, METRICS: METRICS });
+
+KESEMPATAN.MetricsPanel = MetricsPanel;
 
 document.addEventListener('DOMContentLoaded', function() {
     renderUI(document.getElementById('metricsPanelContainer'));
 });
-})();

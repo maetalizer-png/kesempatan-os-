@@ -1,11 +1,7 @@
-(function() {
-'use strict';
+import { CONFIG } from './config.js';
 
 const KESEMPATAN = window.KESEMPATAN || {};
 window.KESEMPATAN = KESEMPATAN;
-
-if (window.__ThresholdPanelLoaded) return;
-window.__ThresholdPanelLoaded = true;
 
 function renderUI(container) {
     if (!container) return;
@@ -37,19 +33,16 @@ function initThresholdSlider() {
             const thresholdValue = parseInt(e.target.value, 10);
             span.textContent = thresholdValue + '%';
             if (noteSpan) noteSpan.textContent = thresholdValue;
-            if (KESEMPATAN.Config) {
-                KESEMPATAN.Config.AUTO_APPROVE_CONFIDENCE = thresholdValue;
-            } else if (window.CONFIG) {
-                window.CONFIG.AUTO_APPROVE_CONFIDENCE = thresholdValue;
-            }
+            CONFIG.AUTO_APPROVE_CONFIDENCE = thresholdValue;
             localStorage.setItem('kes_auto_approve_threshold', thresholdValue);
         });
     }
 }
 
-KESEMPATAN.ThresholdPanel = Object.freeze({ renderUI: renderUI });
+export const ThresholdPanel = Object.freeze({ renderUI: renderUI });
+
+KESEMPATAN.ThresholdPanel = ThresholdPanel;
 
 document.addEventListener('DOMContentLoaded', function() {
     renderUI(document.getElementById('thresholdContainer'));
 });
-})();
