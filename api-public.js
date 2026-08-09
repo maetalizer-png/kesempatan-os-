@@ -9,6 +9,13 @@ window.__PublicAPILoaded = true;
 const API_SERVER_URL = localStorage.getItem('kes_api_server_url') || 'http://localhost:3456';
 let currentApiKey = localStorage.getItem('kes_api_key_real') || '';
 
+function escapeHtml(text) {
+    if (typeof window.escapeHtml === 'function') return window.escapeHtml(text);
+    const div = document.createElement('div');
+    div.textContent = text == null ? '' : String(text);
+    return div.innerHTML;
+}
+
 const showToast = function(message, type) {
     type = type || 'info';
     const container = document.getElementById('toastContainer');
@@ -107,7 +114,7 @@ async function testEndpoint(endpoint) {
             headers: { 'X-API-Key': currentApiKey }
         });
         const data = await response.json();
-        resultDiv.innerHTML = '<div style="color: #00FFA3;">Status: ' + response.status + '</div><pre style="margin-top: 8px; white-space: pre-wrap; word-break: break-all;">' + JSON.stringify(data, null, 2) + '</pre>';
+        resultDiv.innerHTML = '<div style="color: #00FFA3;">Status: ' + response.status + '</div><pre style="margin-top: 8px; white-space: pre-wrap; word-break: break-all;">' + escapeHtml(JSON.stringify(data, null, 2)) + '</pre>';
     } catch(e) {
         resultDiv.innerHTML = '<div style="color: #FF4444;">Error: ' + e.message + '</div>';
     }
@@ -137,7 +144,7 @@ async function testAnalyze() {
             })
         });
         const data = await response.json();
-        resultDiv.innerHTML = '<div style="color: #00FFA3;">Analysis Complete!</div><div style="margin-top: 8px;"><strong>Skor: </strong>' + (data.report?.score || '?') + '/100</div><div style="margin-top: 4px;"><strong>Ringkasan: </strong>' + (data.report?.summary || '') + '</div><pre style="margin-top: 8px; white-space: pre-wrap; word-break: break-all;">' + JSON.stringify(data, null, 2) + '</pre>';
+        resultDiv.innerHTML = '<div style="color: #00FFA3;">Analysis Complete!</div><div style="margin-top: 8px;"><strong>Skor: </strong>' + escapeHtml(data.report?.score || '?') + '/100</div><div style="margin-top: 4px;"><strong>Ringkasan: </strong>' + escapeHtml(data.report?.summary || '') + '</div><pre style="margin-top: 8px; white-space: pre-wrap; word-break: break-all;">' + escapeHtml(JSON.stringify(data, null, 2)) + '</pre>';
     } catch(e) {
         resultDiv.innerHTML = '<div style="color: #FF4444;">Error: ' + e.message + '</div>';
     }
