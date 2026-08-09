@@ -1,9 +1,7 @@
-/* ============================================================
-KESEMPATAN OS - AI EDITOR WORKER
-Menjalankan konvolusi sharpen 3x3 dari enhance2x() (ai-editor-ultimate.js)
-di luar main thread. Loop-nya sama persis dengan versi sinkron sebelumnya
-— hanya lokasi eksekusinya yang berubah, bukan hasilnya.
-============================================================ */
+// AI Editor Worker — menjalankan konvolusi sharpen 3x3 dari enhance2x()
+// (ai-editor-ultimate.js) di luar main thread. Loop-nya sama persis dengan
+// versi sinkron sebelumnya — hanya lokasi eksekusinya yang berubah, bukan
+// hasilnya.
 'use strict';
 
 self.onmessage = function (e) {
