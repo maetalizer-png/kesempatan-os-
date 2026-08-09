@@ -1,9 +1,4 @@
-(function() {
-'use strict';
-if (window.__ConfigLoaded) return;
-window.__ConfigLoaded = true;
-
-const CONFIG = {
+export const CONFIG = {
     APP_NAME: 'KESEMPATAN OS',
     PROVIDERS: {
         local: { name: 'LLM Lokal (Prioritas, Tanpa API Key)', model: 'kesempatan-llm-local', free: true, local: true, description: 'Jalan langsung di perangkat via Web Worker, tidak butuh koneksi/API key/biaya. Prioritas utama — provider lain di bawah ini cuma cadangan opsional.' },
@@ -69,7 +64,7 @@ try {
     if (speechEnabled !== null) CONFIG.FEATURES.speechEnabled = speechEnabled === 'true';
 } catch (error) { console.warn('[Config] Failed to load saved preferences from localStorage:', error.message); }
 
-function getActiveProviders() {
+export function getActiveProviders() {
     const activeProviders = [];
     for (const provider of CONFIG.PROVIDER_FALLBACK) {
         if (CONFIG.API_KEYS[provider] && CONFIG.API_KEYS[provider].length > 0) activeProviders.push(provider);
@@ -77,17 +72,17 @@ function getActiveProviders() {
     return activeProviders;
 }
 
-function isProviderFree(provider) {
+export function isProviderFree(provider) {
     return CONFIG.PROVIDERS[provider]?.free === true;
 }
 
-function getProviderPrice(provider, type = 'output') {
+export function getProviderPrice(provider, type = 'output') {
     const providerConfig = CONFIG.PROVIDERS[provider];
     if (!providerConfig) return { input: 0, output: 0 };
     return { input: providerConfig.priceInput || 0, output: providerConfig.priceOutput || 0 };
 }
 
-function updateApiKey(provider, apiKey) {
+export function updateApiKey(provider, apiKey) {
     if (CONFIG.API_KEYS.hasOwnProperty(provider)) {
         CONFIG.API_KEYS[provider] = apiKey;
         localStorage.setItem(`kes_api_key_${provider}`, btoa(encodeURIComponent(apiKey)));
@@ -96,7 +91,7 @@ function updateApiKey(provider, apiKey) {
     return false;
 }
 
-function setActiveProvider(provider) {
+export function setActiveProvider(provider) {
     if (CONFIG.PROVIDERS[provider]) {
         CONFIG.AI_PROVIDER = provider;
         localStorage.setItem('kes_ai_provider', provider);
@@ -113,10 +108,11 @@ window.KESEMPATAN.getProviderPrice = getProviderPrice;
 window.KESEMPATAN.updateApiKey = updateApiKey;
 window.KESEMPATAN.setActiveProvider = setActiveProvider;
 
+// Bridge for consumers not yet migrated to `import { CONFIG } from './config.js'`.
+// Remove once every consumer reads window.KESEMPATAN.Config instead of this bare global.
 window.CONFIG = CONFIG;
 window.getActiveProviders = getActiveProviders;
 window.isProviderFree = isProviderFree;
 window.getProviderPrice = getProviderPrice;
 window.updateApiKey = updateApiKey;
 window.setActiveProvider = setActiveProvider;
-})();

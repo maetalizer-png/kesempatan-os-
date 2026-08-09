@@ -1,10 +1,5 @@
-(function() {
-'use strict';
 const KESEMPATAN = window.KESEMPATAN || {};
 window.KESEMPATAN = KESEMPATAN;
-
-if (window.__UtilsLoaded) return;
-window.__UtilsLoaded = true;
 
 const InternalLogger = Object.freeze({
     _logs: [],
@@ -40,7 +35,7 @@ const InternalLogger = Object.freeze({
     getLevel: function() { return this._level; }
 });
 
-function showToast(message, type) {
+export function showToast(message, type) {
     type = type || 'info';
     const container = document.getElementById('toastContainer');
     if (!container) return;
@@ -53,7 +48,7 @@ function showToast(message, type) {
     setTimeout(function() { toast.remove(); }, 3500);
 }
 
-function escapeHtml(value) {
+export function escapeHtml(value) {
     if (!value) return '';
     const entityMap = { '&': '&amp;', '<': '&lt;', '>': '&gt;' };
     return String(value).replace(/[&<>]/g, function(char) { return entityMap[char]; });
@@ -97,8 +92,8 @@ const Logger = Object.freeze({
 
 const RetryEngine = Object.freeze({
     execute: async function(action, retries, delay) {
-        retries = retries || CONFIG?.MAX_RETRIES || 2;
-        delay = delay || CONFIG?.RETRY_BASE_DELAY || 1500;
+        retries = retries || window.KESEMPATAN?.Config?.MAX_RETRIES || 2;
+        delay = delay || window.KESEMPATAN?.Config?.RETRY_BASE_DELAY || 1500;
         let attempt = 0;
         while (attempt <= retries) {
             try {
@@ -147,7 +142,7 @@ const KnowledgeBase = Object.freeze({
     }
 });
 
-const METRIC_KEYS = [
+export const METRIC_KEYS = [
     'demand', 'competition', 'monetization', 'virality',
     'sustainability', 'scalability', 'timing', 'attention',
     'execution', 'longterm'
@@ -198,7 +193,7 @@ function clampToPercentage(value) {
     return Math.min(100, Math.max(0, value));
 }
 
-function normalizeResponse(data) {
+export function normalizeResponse(data) {
     const metrics = {};
     for (let i = 0; i < METRIC_KEYS.length; i++) {
         const metricKey = METRIC_KEYS[i];
@@ -226,7 +221,7 @@ function normalizeResponse(data) {
     };
 }
 
-function buildDegradedResponse(rawText) {
+export function buildDegradedResponse(rawText) {
     const raw = (typeof rawText === 'string' ? rawText : '').trim();
     if (!raw) return { ...FALLBACK_RESPONSE };
     const summary = raw.substring(0, 300);
@@ -249,7 +244,7 @@ function removeTrailingCommas(jsonText) {
     return jsonText.replace(/,(\s*[}\]])/g, '$1');
 }
 
-function safeParseResponse(text) {
+export function safeParseResponse(text) {
     try {
         let cleaned = text.replace(/```json/gi, '').replace(/```/g, '').trim();
         const firstBrace = cleaned.indexOf('{');
@@ -277,7 +272,7 @@ function safeParseResponse(text) {
     }
 }
 
-function debounce(func, wait) {
+export function debounce(func, wait) {
     let timeout;
     return function executedFunction(...args) {
         clearTimeout(timeout);
@@ -285,7 +280,7 @@ function debounce(func, wait) {
     };
 }
 
-function throttle(func, limit) {
+export function throttle(func, limit) {
     let inThrottle = false;
     return function throttled(...args) {
         if (inThrottle) return;
@@ -295,7 +290,7 @@ function throttle(func, limit) {
     };
 }
 
-const Utils = Object.freeze({
+export const Utils = Object.freeze({
     escapeHtml: escapeHtml,
     showToast: showToast,
     Logger: Logger,
@@ -312,16 +307,18 @@ const Utils = Object.freeze({
     throttle: throttle
 });
 
+export { Logger, InternalLogger };
+
 KESEMPATAN.Utils = Utils;
 KESEMPATAN.Logger = Logger;
 KESEMPATAN.InternalLogger = InternalLogger;
 
-// Compat aliases: most of the app still reads these as bare window globals.
-// Remove once every consumer has migrated to window.KESEMPATAN.Utils.*.
+// Bridge for the ~90 files not yet migrated to `import { Utils } from './utils.js'`.
+// Remove once every consumer reads window.KESEMPATAN.Utils.* (or imports directly)
+// instead of this bare global.
 window.Utils = Utils;
 window.escapeHtml = escapeHtml;
 window.showToast = showToast;
 window.safeParseResponse = safeParseResponse;
 
-InternalLogger.info('Utils', 'KESEMPATAN.Utils loaded');
-})();
+InternalLogger.info('Utils', 'KESEMPATAN.Utils loaded (ES module)');
