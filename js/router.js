@@ -1,5 +1,3 @@
-(function() {
-'use strict';
 const KESEMPATAN = window.KESEMPATAN || {};
 window.KESEMPATAN = KESEMPATAN;
 
@@ -336,9 +334,10 @@ document.querySelectorAll('#premiumSubmenu button, #marketdataSubmenu button, #k
     });
 });
 
-KESEMPATAN.Router = Object.freeze({ showPage: showPage, getModule: getModule });
+export const Router = Object.freeze({ showPage: showPage, getModule: getModule });
+
+KESEMPATAN.Router = Router;
 
 // Compat alias: 16+ not-yet-migrated files still call window.showPage directly.
 // Remove once they're migrated to window.KESEMPATAN.Router.showPage.
 window.showPage = showPage;
-})();

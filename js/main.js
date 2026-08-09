@@ -1,12 +1,17 @@
-(function() {
-'use strict';
+import { CONFIG } from './config.js';
+import { Utils } from './utils.js';
+import { AIClients } from './ai-clients.js';
+import { ResponseCacheManager } from './response-cache.js';
+import { ChartManager } from './chart.js';
+import { HITL } from './hitl.js';
+import { ExportManager } from './export.js';
+import { WorkflowLLMBridge } from './workflow-llm-bridge.js';
+import { WorkflowEngine } from './workflow.js';
+import { AgentRenderer } from './agent-renderer.js';
+
 const KESEMPATAN = window.KESEMPATAN || {};
 window.KESEMPATAN = KESEMPATAN;
 
-if (window.__MainLoaded) return;
-window.__MainLoaded = true;
-
-const Utils = KESEMPATAN.Utils || window.Utils || {};
 const Logger = Utils.Logger || {
     system: function() {},
     success: function(type, message) {
@@ -135,15 +140,9 @@ function restoreLastReportOnLoad() {
         if (!container || container.dataset.reportRendered === 'true') return;
         const latest = history[0];
         window.lastAggregated = latest;
-        if (window.KESEMPATAN?.ChartManager?.ScoreEngine) {
-            window.KESEMPATAN.ChartManager.ScoreEngine.updateFromAggregated(latest);
-        } else if (window.ScoreEngine) {
-            window.ScoreEngine.updateFromAggregated(latest);
-        }
-        if (window.KESEMPATAN?.ChartManager?.updateChart && latest.metrics) {
-            window.KESEMPATAN.ChartManager.updateChart(latest.metrics);
-        } else if (window.updateChart && latest.metrics) {
-            window.updateChart(latest.metrics);
+        ChartManager.ScoreEngine.updateFromAggregated(latest);
+        if (latest.metrics) {
+            ChartManager.updateChart(latest.metrics);
         }
         renderReportSummaryToContainer(latest);
         container.dataset.reportRendered = 'true';
@@ -157,15 +156,9 @@ function loadReportFromHistory(id) {
     const report = history.find(function(item) { return item.id === id; });
     if (!report) return;
     window.lastAggregated = report;
-    if (window.KESEMPATAN?.ChartManager?.ScoreEngine) {
-        window.KESEMPATAN.ChartManager.ScoreEngine.updateFromAggregated(report);
-    } else if (window.ScoreEngine) {
-        window.ScoreEngine.updateFromAggregated(report);
-    }
-    if (window.KESEMPATAN?.ChartManager?.updateChart && report.metrics) {
-        window.KESEMPATAN.ChartManager.updateChart(report.metrics);
-    } else if (window.updateChart && report.metrics) {
-        window.updateChart(report.metrics);
+    ChartManager.ScoreEngine.updateFromAggregated(report);
+    if (report.metrics) {
+        ChartManager.updateChart(report.metrics);
     }
     renderReportSummaryToContainer(report);
     const container = document.getElementById('reportContainer');
@@ -185,16 +178,12 @@ function resetReportDisplay() {
         container.innerHTML = '';
         delete container.dataset.reportRendered;
     }
-    const scoreEngine = window.KESEMPATAN?.ChartManager?.ScoreEngine || window.ScoreEngine;
-    if (scoreEngine && scoreEngine.updateFromAggregated) {
-        const emptyMetrics = {};
-        for (const metricKey of scoreEngine.metricsKeys) {
-            emptyMetrics[metricKey] = 0;
-        }
-        scoreEngine.updateFromAggregated({ metrics: emptyMetrics });
+    const emptyMetrics = {};
+    for (const metricKey of ChartManager.ScoreEngine.metricsKeys) {
+        emptyMetrics[metricKey] = 0;
     }
-    const updateChart = window.KESEMPATAN?.ChartManager?.updateChart || window.updateChart;
-    if (typeof updateChart === 'function') updateChart({});
+    ChartManager.ScoreEngine.updateFromAggregated({ metrics: emptyMetrics });
+    ChartManager.updateChart({});
 }
 
 function clearAllHistory() {
@@ -257,17 +246,14 @@ function testNotification() {
 }
 
 function setup3DHooks() {
-    const scoreEngine = window.KESEMPATAN?.ChartManager?.ScoreEngine || window.ScoreEngine;
-    if (scoreEngine && scoreEngine.updateFromAggregated) {
-        const original = scoreEngine.updateFromAggregated;
-        scoreEngine.updateFromAggregated = function(aggregated) {
-            const result = original.call(this, aggregated);
-            if (window.KESEMPATAN?.ThreeViz?.update3DVizMetrics && aggregated?.metrics) {
-                window.KESEMPATAN.ThreeViz.update3DVizMetrics(aggregated.metrics);
-            }
-            return result;
-        };
-    }
+    const original = ChartManager.ScoreEngine.updateFromAggregated;
+    ChartManager.ScoreEngine.updateFromAggregated = function(aggregated) {
+        const result = original.call(this, aggregated);
+        if (window.KESEMPATAN?.ThreeViz?.update3DVizMetrics && aggregated?.metrics) {
+            window.KESEMPATAN.ThreeViz.update3DVizMetrics(aggregated.metrics);
+        }
+        return result;
+    };
     if (window.Telemetry && window.Telemetry.recordLatency) {
         const original = window.Telemetry.recordLatency;
         window.Telemetry.recordLatency = function(agent, latency) {
@@ -302,8 +288,6 @@ async function initApiKeyStatus() {
             return;
         }
         span.textContent = 'Memeriksa...';
-        const AIClients = window.KESEMPATAN?.AIClients || window.AIClients;
-        const CONFIG = window.KESEMPATAN?.Config || window.CONFIG;
         const isValid = await AIClients.validateApiKey(CONFIG.AI_PROVIDER, key);
         span.textContent = isValid ? 'Valid' : 'Tidak valid';
         span.className = 'api-status ' + (isValid ? 'valid' : 'invalid');
@@ -323,7 +307,6 @@ function setupFileUpload() {
     fileInput.addEventListener('change', async function(e) {
         const file = e.target.files[0];
         if (!file) return;
-        const CONFIG = window.KESEMPATAN?.Config || window.CONFIG;
         if (file.size > CONFIG.MAX_UPLOAD_SIZE_MB * 1024 * 1024) {
             statusDiv.innerText = 'File terlalu besar (max ' + CONFIG.MAX_UPLOAD_SIZE_MB + ' MB)';
             fileInput.value = '';
@@ -372,17 +355,13 @@ function setupEventListeners() {
             return;
         }
         try {
-            if (window.KESEMPATAN?.WorkflowLLMBridge?.ensureKesempatanLLMv2Ready) {
-                await window.KESEMPATAN.WorkflowLLMBridge.ensureKesempatanLLMv2Ready();
-            }
+            await WorkflowLLMBridge.ensureKesempatanLLMv2Ready();
             const kesempatanLLMv2Ready = window.KesempatanLLM2 && window.KesempatanLLM2.isReady && window.KesempatanLLM2.isReady();
-            if (!kesempatanLLMv2Ready && window.KESEMPATAN?.WorkflowLLMBridge?.ensureKesempatanLLMReady) {
-                await window.KESEMPATAN.WorkflowLLMBridge.ensureKesempatanLLMReady();
+            if (!kesempatanLLMv2Ready) {
+                await WorkflowLLMBridge.ensureKesempatanLLMReady();
             }
             const kesempatanLLMReady = kesempatanLLMv2Ready || (window.KesempatanLLM && window.KesempatanLLM.isReady && window.KesempatanLLM.isReady());
             if (!kesempatanLLMReady) {
-                const CONFIG = window.KESEMPATAN?.Config || window.CONFIG;
-                const AIClients = window.KESEMPATAN?.AIClients || window.AIClients;
                 const provider = CONFIG.AI_PROVIDER;
                 let key = CONFIG.API_KEYS[provider];
                 if (!key && apiKey) key = apiKey;
@@ -399,7 +378,7 @@ function setupEventListeners() {
                 localStorage.setItem('kes_api_key_' + provider, obfuscate.encrypt(key));
             }
             const uploaded = window.__uploadedData || '';
-            await window.KESEMPATAN.WorkflowEngine.start({ topic: topic, instruction: instruction }, uploaded);
+            await WorkflowEngine.start({ topic: topic, instruction: instruction }, uploaded);
         } catch (error) {
             const shortMessage = (error && error.message) ? error.message : String(error);
             showToast('Gagal memulai eksekusi: ' + shortMessage, 'error');
@@ -426,14 +405,19 @@ function setupEventListeners() {
 
 function initUI() {
     const quickAgents = document.getElementById('quickAgents');
-    const CONFIG = window.KESEMPATAN?.Config || window.CONFIG;
     if (quickAgents && CONFIG?.AGENTS) {
         quickAgents.textContent = CONFIG.AGENTS.length;
     }
 }
 
+// CONFIG/Utils/AIClients/ResponseCacheManager/ChartManager/HITL/ExportManager/
+// WorkflowEngine are real static imports above, so they're guaranteed ready
+// by the time this file's own top-level code runs — only VectorMemory and
+// AutoLearning are still genuinely uncertain (populated asynchronously by
+// memory/m-index.js and js/threshold-learning.js, neither of which is an ES
+// module yet), so those are the only ones still worth polling for.
 function waitForModules() {
-    const required = ['CONFIG', 'Utils', 'AIClients', 'ResponseCacheManager', 'VectorMemory', 'AutoLearning', 'ChartManager', 'HITL', 'ExportManager', 'WorkflowEngine'];
+    const required = ['VectorMemory', 'AutoLearning'];
     const allLoaded = required.every(function(moduleName) {
         return window[moduleName] || window.KESEMPATAN?.[moduleName];
     });
@@ -458,18 +442,16 @@ function waitForModules() {
 }
 
 async function initApp() {
-    const CONFIG = window.KESEMPATAN?.Config || window.CONFIG;
     Logger.system(CONFIG.APP_NAME);
     restoreLastReportOnLoad();
 
     if (window.KESEMPATAN?.KesDatabase?.getDatabase) {
         try {
             const db = await window.KESEMPATAN.KesDatabase.getDatabase();
-            if (window.KESEMPATAN?.ResponseCache?.setDatabase) window.KESEMPATAN.ResponseCache.setDatabase(db);
-            else if (window.setCacheDatabase) window.setCacheDatabase(db);
+            ResponseCacheManager.setDatabase(db);
             if (window.setMemoryDatabase) window.setMemoryDatabase(db);
             if (window.setLearningDatabase) window.setLearningDatabase(db);
-            if (window.KESEMPATAN?.WorkflowEngine?.setDatabase) window.KESEMPATAN.WorkflowEngine.setDatabase(db);
+            WorkflowEngine.setDatabase(db);
 
             // One-time durable backup of pre-existing report history.
             if (!db._isDummy) {
@@ -493,7 +475,7 @@ async function initApp() {
         try {
             window.knowledgeGraph = new KnowledgeGraph();
             await window.knowledgeGraph.load();
-            if (window.KESEMPATAN?.WorkflowEngine?.setKnowledgeGraph) window.KESEMPATAN.WorkflowEngine.setKnowledgeGraph(window.knowledgeGraph);
+            WorkflowEngine.setKnowledgeGraph(window.knowledgeGraph);
         } catch (error) {
             Logger.warn('INIT', 'KnowledgeGraph gagal (lanjut tanpa KG): ' + error.message);
         }
@@ -503,8 +485,6 @@ async function initApp() {
     catch (error) { Logger.warn('INIT', 'AutoLearning.load gagal: ' + error.message); }
 
     try {
-        const AIClients = window.KESEMPATAN?.AIClients || window.AIClients;
-        const ResponseCacheManager = window.KESEMPATAN?.ResponseCache || window.ResponseCacheManager;
         AIClients.setCache(ResponseCacheManager);
     } catch (error) {
         Logger.warn('INIT', 'AIClients.setCache gagal: ' + error.message);
@@ -519,22 +499,15 @@ async function initApp() {
     setupFileUpload();
     bindNotificationTestButton();
 
-    const ResponseCacheManager = window.KESEMPATAN?.ResponseCache || window.ResponseCacheManager;
-    if (ResponseCacheManager && ResponseCacheManager.updateStatsDisplay) {
-        ResponseCacheManager.updateStatsDisplay();
-    }
+    ResponseCacheManager.updateStatsDisplay();
 
     setup3DHooks();
 
-    if (KESEMPATAN.AgentRenderer?.renderAllAgents) {
-        try {
-            KESEMPATAN.AgentRenderer.renderAllAgents();
-            Logger.system('Agen berhasil dirender dari data (agent-renderer.js)');
-        } catch (error) {
-            Logger.error('RENDER', 'Gagal render agen: ' + error.message);
-        }
-    } else {
-        Logger.warn('RENDER', 'renderAllAgents tidak ditemukan, pastikan agent-renderer.js sudah di-load');
+    try {
+        AgentRenderer.renderAllAgents();
+        Logger.system('Agen berhasil dirender dari data (agent-renderer.js)');
+    } catch (error) {
+        Logger.error('RENDER', 'Gagal render agen: ' + error.message);
     }
 
     if (typeof window.KESEMPATAN?.AgentControl?.updateSelectedCount === 'function') {
@@ -560,7 +533,7 @@ window.addEventListener('unhandledrejection', function(event) {
     }
 });
 
-KESEMPATAN.Main = Object.freeze({
+export const Main = Object.freeze({
     initApp: initApp,
     waitForModules: waitForModules,
     saveReportToHistory: saveReportToHistory,
@@ -575,7 +548,8 @@ KESEMPATAN.Main = Object.freeze({
     testNotification: testNotification
 });
 
+KESEMPATAN.Main = Main;
+
 document.addEventListener('DOMContentLoaded', function() {
     setTimeout(waitForModules, 100);
 });
-})();
