@@ -97,17 +97,9 @@ function cropRatio(ratio) {
     img.src = c.toDataURL('image/png');
 }
 
-function enhance2x() {
-    if (!currentImage) { toast('Tidak ada gambar!', 'error'); return; }
-    toast('Enhance: upscale 2x + sharpen...', 'warning');
-    const w = Math.min(4096, currentImage.width * 2);
-    const h = Math.min(4096, currentImage.height * 2);
-    const c = document.createElement('canvas');
-    c.width = w; c.height = h;
-    const ctx = c.getContext('2d');
-    ctx.imageSmoothingEnabled = true;
-    ctx.imageSmoothingQuality = 'high';
-    ctx.drawImage(currentImage, 0, 0, w, h);
+function sharpenSync(ctx, w, h) {
+    // Synchronous fallback for environments without Worker support — identical
+    // loop to what used to run unconditionally on the main thread.
     try {
         const d = ctx.getImageData(0, 0, w, h);
         const src = new Uint8ClampedArray(d.data);
@@ -127,10 +119,58 @@ function enhance2x() {
             }
         }
         ctx.putImageData(d, 0, 0);
-    } catch (e) { console.warn('[AiEditorUltimate] enhance2x sharpen failed:', e.message); }
-    const img = new Image();
-    img.onload = function() { loadEditorImage(img, 'Enhance 2x selesai'); };
-    img.src = c.toDataURL('image/png');
+    } catch (e) { console.warn('[AiEditorUltimate] enhance2x sharpen (sync fallback) failed:', e.message); }
+}
+
+function enhance2x() {
+    if (!currentImage) { toast('Tidak ada gambar!', 'error'); return; }
+    toast('Enhance: upscale 2x + sharpen...', 'warning');
+    const w = Math.min(4096, currentImage.width * 2);
+    const h = Math.min(4096, currentImage.height * 2);
+    const c = document.createElement('canvas');
+    c.width = w; c.height = h;
+    const ctx = c.getContext('2d');
+    ctx.imageSmoothingEnabled = true;
+    ctx.imageSmoothingQuality = 'high';
+    ctx.drawImage(currentImage, 0, 0, w, h);
+
+    const finish = function() {
+        const img = new Image();
+        img.onload = function() { loadEditorImage(img, 'Enhance 2x selesai'); };
+        img.src = c.toDataURL('image/png');
+    };
+
+    if (typeof Worker === 'undefined') {
+        sharpenSync(ctx, w, h);
+        finish();
+        return;
+    }
+
+    // Offload the 3x3 sharpen convolution (O(w*h*9*3) — multi-second freeze on a
+    // modest photo when run synchronously) to a Web Worker so the tab stays
+    // responsive while it runs.
+    try {
+        const d = ctx.getImageData(0, 0, w, h);
+        const worker = new Worker('ai-editor-worker.js');
+        const srcBuffer = new Uint8ClampedArray(d.data).buffer;
+        worker.onmessage = function(e) {
+            const out = new Uint8ClampedArray(e.data.buffer);
+            ctx.putImageData(new ImageData(out, w, h), 0, 0);
+            worker.terminate();
+            finish();
+        };
+        worker.onerror = function(err) {
+            console.warn('[AiEditorUltimate] enhance2x worker failed, falling back to sync:', err.message);
+            worker.terminate();
+            sharpenSync(ctx, w, h);
+            finish();
+        };
+        worker.postMessage({ buffer: srcBuffer, width: w, height: h }, [srcBuffer]);
+    } catch (e) {
+        console.warn('[AiEditorUltimate] enhance2x worker setup failed, falling back to sync:', e.message);
+        sharpenSync(ctx, w, h);
+        finish();
+    }
 }
 
 function autoFix() {

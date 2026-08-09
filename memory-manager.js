@@ -97,7 +97,9 @@ const _state = {
     autoRefreshInterval: 10000,
     isPageVisible: true,
     searchQuery: '',
-    searchResults: []
+    searchResults: [],
+    searchDebounceId: null,
+    searchRequestId: 0
 };
 
 async function getMemoryStats() {
@@ -321,25 +323,44 @@ async function render() {
     const searchInput = document.getElementById('searchMemoryInput');
     const clearSearchBtn = document.getElementById('clearSearchBtn');
     if (searchInput) {
-        const searchHandler = async function(e) {
+        const searchHandler = function(e) {
             const query = e.target.value.trim();
             _state.searchQuery = query;
             if (clearSearchBtn) clearSearchBtn.style.display = query.length > 0 ? 'inline-block' : 'none';
             const resultsEl = document.getElementById('searchResults');
-            if (query.length >= 2) {
+
+            if (_state.searchDebounceId) {
+                clearTimeout(_state.searchDebounceId);
+                _state.searchDebounceId = null;
+            }
+
+            if (query.length === 0) {
+                _state.searchResults = [];
+                if (resultsEl) resultsEl.style.display = 'none';
+                return;
+            }
+            if (query.length < 2) {
+                if (resultsEl) {
+                    resultsEl.style.display = 'block';
+                    resultsEl.innerHTML = '<div style="color:#5a6a7a;text-align:center;padding:10px;font-size:12px;">Ketik minimal 2 karakter untuk mencari</div>';
+                }
+                return;
+            }
+
+            // Debounce the actual search (250ms) so rapid typing doesn't fire a full
+            // vector scan per keystroke, and tag each search with a request id so a
+            // slow, stale response can never overwrite a newer one's results (only
+            // the most recently-started request is allowed to update the DOM).
+            _state.searchDebounceId = setTimeout(async function() {
+                const requestId = ++_state.searchRequestId;
                 const results = await searchMemory(query);
+                if (requestId !== _state.searchRequestId) return;
                 if (resultsEl) {
                     resultsEl.style.display = 'block';
                     if (results.length > 0) updateSearchUI(results);
                     else resultsEl.innerHTML = '<div style="color:#5a6a7a;text-align:center;padding:10px;font-size:12px;">Tidak ada hasil untuk "' + escapeHtml(query) + '"</div>';
                 }
-            } else if (query.length === 0) {
-                _state.searchResults = [];
-                if (resultsEl) resultsEl.style.display = 'none';
-            } else if (resultsEl) {
-                resultsEl.style.display = 'block';
-                resultsEl.innerHTML = '<div style="color:#5a6a7a;text-align:center;padding:10px;font-size:12px;">Ketik minimal 2 karakter untuk mencari</div>';
-            }
+            }, 250);
         };
         searchInput.addEventListener('input', searchHandler);
         _state.handlers.push({ element: searchInput, event: 'input', handler: searchHandler });
@@ -386,6 +407,7 @@ function destroy() {
     handlers.forEach(function(h) { if (h.element && h.element.removeEventListener) h.element.removeEventListener(h.event, h.handler); });
     _state.handlers = [];
     if (_state.intervalId) { clearInterval(_state.intervalId); _state.intervalId = null; }
+    if (_state.searchDebounceId) { clearTimeout(_state.searchDebounceId); _state.searchDebounceId = null; }
     window.__memoryManagerVisibilitySetup = false;
     _state.isRendering = false;
 }
