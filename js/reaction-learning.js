@@ -1,12 +1,5 @@
-(function() {
-"use strict";
-
 const KESEMPATAN = window.KESEMPATAN || {};
 window.KESEMPATAN = KESEMPATAN;
-
-if (window.__AIFeedbackLoadedV4) return;
-window.__AIFeedbackLoadedV4 = true;
-window.__AIFeedbackLoaded = true;
 
 const InternalLogger = Object.freeze({
     _logs: [],
@@ -1494,8 +1487,7 @@ function init() {
     }
 }
 
-window.KESEMPATAN = window.KESEMPATAN || {};
-window.KESEMPATAN.ReactionLearning = Object.freeze({
+export const ReactionLearning = Object.freeze({
     recordFeedback: recordFeedback,
     getLearningPrompt: getLearningPrompt,
     predictUserPreference: predictUserPreference,
@@ -1524,6 +1516,8 @@ window.KESEMPATAN.ReactionLearning = Object.freeze({
     RLCache: RLCache
 });
 
+KESEMPATAN.ReactionLearning = ReactionLearning;
+
 // Kept as a real global (not KESEMPATAN-only): threshold-learning.js
 // monkey-patches window.recordFeedback (wraps it) to hook approval feedback
 // into the auto-learning threshold engine.
@@ -1536,4 +1530,3 @@ if (document.readyState === 'loading') {
 }
 
 InternalLogger.info('AI Feedback', 'Reinforcement learning module ready');
-})();
