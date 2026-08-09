@@ -1,24 +1,9 @@
-(function() {
-'use strict';
+import { Utils } from '../js/utils.js';
 
 const KESEMPATAN = window.KESEMPATAN || {};
 window.KESEMPATAN = KESEMPATAN;
 
-if (window.__ReportPageLoaded) return;
-window.__ReportPageLoaded = true;
-
-const Utils = KESEMPATAN.Utils || window.Utils || {};
-const showToast = Utils.showToast || function(msg, type) {
-    const container = document.getElementById('toastContainer');
-    if (!container) return;
-    const toast = document.createElement('div');
-    toast.className = 'toast';
-    toast.textContent = msg;
-    const colors = { error: '#e74c3c', success: '#2ecc71', warning: '#f39c12', info: '#3498db' };
-    toast.style.borderLeftColor = colors[type] || '#00FFA3';
-    container.appendChild(toast);
-    setTimeout(function() { toast.remove(); }, 3500);
-};
+const showToast = Utils.showToast;
 
 function escapeHtml(text) {
     if (!text) return '';
@@ -371,7 +356,7 @@ function addPrintStyles() {
     document.head.appendChild(style);
 }
 
-KESEMPATAN.ReportPage = {
+export const ReportPage = {
     render: render,
     destroy: destroy,
     exportJSON: exportReportJSON,
@@ -380,6 +365,7 @@ KESEMPATAN.ReportPage = {
     share: shareReport,
     print: function() { window.print(); }
 };
+KESEMPATAN.ReportPage = ReportPage;
 
 loadChartJS().then(function() {
     addPrintStyles();
@@ -388,4 +374,3 @@ loadChartJS().then(function() {
 });
 
 window.addEventListener('beforeunload', function() { destroy(); });
-})();

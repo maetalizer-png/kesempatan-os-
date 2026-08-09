@@ -1,11 +1,7 @@
-(function() {
-'use strict';
+import { Utils } from '../js/utils.js';
 
 const KESEMPATAN = window.KESEMPATAN || {};
 window.KESEMPATAN = KESEMPATAN;
-
-if (window.__LearningPageLoaded) return;
-window.__LearningPageLoaded = true;
 
 const InternalLogger = (function() {
     const _logs = [];
@@ -23,18 +19,7 @@ const InternalLogger = (function() {
     });
 })();
 
-const Utils = window.Utils || {};
-const showToast = Utils.showToast || function(msg, type) {
-    const c = document.getElementById('toastContainer');
-    if (!c) return;
-    const t = document.createElement('div');
-    t.className = 'toast';
-    t.textContent = msg;
-    const colors = { error: '#e74c3c', success: '#2ecc71', warning: '#f39c12', info: '#3498db' };
-    t.style.borderLeftColor = colors[type] || '#00FFA3';
-    c.appendChild(t);
-    setTimeout(function() { t.remove(); }, 3500);
-};
+const showToast = Utils.showToast;
 
 function escapeHtml(text) {
     if (!text) return '';
@@ -429,7 +414,7 @@ function destroy() {
     _state.isRendering = false;
 }
 
-KESEMPATAN.LearningPage = {
+export const LearningPage = {
     render: render,
     destroy: destroy,
     exportCSV: exportCSV,
@@ -441,6 +426,7 @@ KESEMPATAN.LearningPage = {
         return { isCompareMode: _state.isCompareMode, compareAgents: _state.compareAgents.slice(), currentFilter: _state.currentFilter, currentSearch: _state.currentSearch, historyCount: _state.historyData.length };
     }
 };
+KESEMPATAN.LearningPage = LearningPage;
 
 
 function loadChartJS() {
@@ -460,4 +446,3 @@ loadChartJS().then(function() {
 });
 
 window.addEventListener('beforeunload', function() { destroy(); });
-})();

@@ -1,11 +1,7 @@
-(function() {
-'use strict';
+import { Utils } from '../js/utils.js';
 
 const KESEMPATAN = window.KESEMPATAN || {};
 window.KESEMPATAN = KESEMPATAN;
-
-if (window.__MemoryPageLoaded) return;
-window.__MemoryPageLoaded = true;
 
 const InternalLogger = (function() {
     const _logs = [];
@@ -25,18 +21,7 @@ const InternalLogger = (function() {
     });
 })();
 
-const Utils = KESEMPATAN.Utils || window.Utils || {};
-const showToast = Utils.showToast || function(msg, type) {
-    const container = document.getElementById('toastContainer');
-    if (!container) return;
-    const toast = document.createElement('div');
-    toast.className = 'toast';
-    toast.textContent = msg;
-    if (type === 'error') toast.style.borderLeftColor = '#e74c3c';
-    if (type === 'success') toast.style.borderLeftColor = '#2ecc71';
-    container.appendChild(toast);
-    setTimeout(function() { toast.remove(); }, 3500);
-};
+const showToast = Utils.showToast;
 
 function escapeHtml(text) {
     if (!text) return '';
@@ -412,7 +397,7 @@ function destroy() {
     _state.isRendering = false;
 }
 
-const MemoryPage = {
+export const MemoryPage = {
     render: render,
     destroy: destroy,
     refresh: function() { render(); },
@@ -445,4 +430,3 @@ KESEMPATAN.MemoryPage = MemoryPage;
 const inner0 = document.getElementById('pageInner');
 if (inner0 && inner0.parentElement && inner0.parentElement.style.display !== 'none') render();
 window.addEventListener('beforeunload', function() { destroy(); });
-})();

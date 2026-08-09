@@ -1,29 +1,15 @@
 /**
-TELEMETRY ANALYTICS - Self Contained Module
+TELEMETRY ANALYTICS
 Gaya Observasion: transparan menyatu ke latar, bordir chamfer
 BENTUK A/B TERSAMBUNG (teknik rim: outer warna garis + 1px,
-inner ::before gelap opaque). Zero var, zero alert, zero console.log.
+inner ::before gelap opaque).
 */
-(function() {
-'use strict';
+import { Utils } from '../js/utils.js';
 
 const KESEMPATAN = window.KESEMPATAN || {};
 window.KESEMPATAN = KESEMPATAN;
 
-if (window.__TelemetryPageLoaded) return;
-window.__TelemetryPageLoaded = true;
-const Utils = KESEMPATAN.Utils || window.Utils || {};
-const showToast = Utils.showToast || function(msg, type) {
-    const container = document.getElementById('toastContainer');
-    if (!container) return;
-    const toast = document.createElement('div');
-    toast.className = 'toast';
-    toast.textContent = msg;
-    if (type === 'error') toast.style.borderLeftColor = '#e74c3c';
-    if (type === 'success') toast.style.borderLeftColor = '#2ecc71';
-    container.appendChild(toast);
-    setTimeout(function() { toast.remove(); }, 3500);
-};
+const showToast = Utils.showToast;
 const escapeHtml = window.escapeHtml || function(str) {
     if (!str) return '';
     return str.replace(/[&<>]/g, function(m) {
@@ -246,7 +232,8 @@ if (window.Telemetry && window.Telemetry.emitter) {
         if (pageContent && pageContent.style.display !== 'none') render();
     });
 }
-KESEMPATAN.TelemetryPage = { render: render, startAutoRefresh: startAutoRefresh, stopAutoRefresh: stopAutoRefresh, destroy: destroy };
+export const TelemetryPage = { render: render, startAutoRefresh: startAutoRefresh, stopAutoRefresh: stopAutoRefresh, destroy: destroy };
+KESEMPATAN.TelemetryPage = TelemetryPage;
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', startAutoRefresh);
 } else {
@@ -256,4 +243,3 @@ window.addEventListener('beforeunload', function() {
     stopAutoRefresh();
     if (chartInstance) { chartInstance.destroy(); chartInstance = null; }
 });
-})();
