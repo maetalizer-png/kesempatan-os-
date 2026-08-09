@@ -1,5 +1,9 @@
 (function() {
 'use strict';
+
+const KESEMPATAN = window.KESEMPATAN || {};
+window.KESEMPATAN = KESEMPATAN;
+
 if (window.__AgentPoolLoaded) return;
 window.__AgentPoolLoaded = true;
 
@@ -67,9 +71,7 @@ function renderUI(container) {
     wireTabs();
 }
 
-window.KESEMPATAN = window.KESEMPATAN || {};
-window.KESEMPATAN.AgentPool = Object.freeze({ renderUI: renderUI, switchTab: switchTab, CATEGORIES: CATEGORIES });
-window.AgentPool = { renderUI: renderUI, switchTab: switchTab, CATEGORIES: CATEGORIES };
+KESEMPATAN.AgentPool = Object.freeze({ renderUI: renderUI, switchTab: switchTab, CATEGORIES: CATEGORIES });
 
 document.addEventListener('DOMContentLoaded', function() {
     renderUI(document.getElementById('agentPoolContainer'));

@@ -7,7 +7,7 @@ if (typeof window.extendScienceAgents === 'undefined') {
             try {
                 const response = await fetch(`${agentName}.txt`);
                 if (response.ok) return await response.text();
-            } catch (error) {}
+            } catch (error) { console.warn('[AgentsConfig] loadPrompt fetch failed:', error.message); }
             return `Anda adalah ahli ${agentName}. Analisis berdasarkan bidang keahlian Anda. Output dalam format JSON.`;
         }
 

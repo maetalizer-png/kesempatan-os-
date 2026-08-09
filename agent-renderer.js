@@ -14,11 +14,16 @@
             politik: [],
             global: []
         };
-        if (window.AGENTS_BISNIS && Array.isArray(window.AGENTS_BISNIS)) agents.bisnis = window.AGENTS_BISNIS;
-        if (window.AGENTS_SCIENCE && Array.isArray(window.AGENTS_SCIENCE)) agents.sains = window.AGENTS_SCIENCE;
-        if (window.AGENTS_GENERAL && Array.isArray(window.AGENTS_GENERAL)) agents.umum = window.AGENTS_GENERAL;
-        if (window.AGENTS_POLITICS && Array.isArray(window.AGENTS_POLITICS)) agents.politik = window.AGENTS_POLITICS;
-        if (window.AGENTS_GLOBAL && Array.isArray(window.AGENTS_GLOBAL)) agents.global = window.AGENTS_GLOBAL;
+        const bisnis = KESEMPATAN.Agents?.Bisnis || window.AGENTS_BISNIS;
+        const sains = KESEMPATAN.Agents?.Science || window.AGENTS_SCIENCE;
+        const umum = KESEMPATAN.Agents?.General || window.AGENTS_GENERAL;
+        const politik = KESEMPATAN.Agents?.Politics || window.AGENTS_POLITICS;
+        const global = KESEMPATAN.Agents?.Global || window.AGENTS_GLOBAL;
+        if (bisnis && Array.isArray(bisnis)) agents.bisnis = bisnis;
+        if (sains && Array.isArray(sains)) agents.sains = sains;
+        if (umum && Array.isArray(umum)) agents.umum = umum;
+        if (politik && Array.isArray(politik)) agents.politik = politik;
+        if (global && Array.isArray(global)) agents.global = global;
         return agents;
     }
 

@@ -11,7 +11,7 @@ async function loadPrompt(agentName) {
             const text = await response.text();
             return text.replace(/\{\{TAHUN\}\}/g, currentYear);
         }
-    } catch (error) {}
+    } catch (error) { console.warn('[AgentsConfig] loadPrompt fetch failed:', error.message); }
     return `Anda adalah ahli ${agentName}. Analisis berdasarkan bidang keahlian Anda untuk tahun ${currentYear}. Output dalam format JSON.`;
 }
 

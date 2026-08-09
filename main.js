@@ -533,8 +533,8 @@ async function initApp() {
         Logger.warn('RENDER', 'renderAllAgents tidak ditemukan, pastikan agent-renderer.js sudah di-load');
     }
 
-    if (typeof window.updateSelectedCount === 'function') {
-        setTimeout(function() { window.updateSelectedCount(); }, 100);
+    if (typeof window.KESEMPATAN?.AgentControl?.updateSelectedCount === 'function') {
+        setTimeout(function() { window.KESEMPATAN.AgentControl.updateSelectedCount(); }, 100);
     }
 
     Logger.success('SISTEM', 'KESEMPATAN OS siap - Fitur lengkap + Custom Agents + Render Agen!');
