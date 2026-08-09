@@ -42,7 +42,12 @@
     // 11. INITIALIZATION
     // ============================================================
     const tournamentArena = new TRN_DebateArena();
+    // window.TournamentArena must stay bare: the history list below renders
+    // onclick="window.TournamentArena?.exporter/history...()" strings, which
+    // can only resolve a real window global, never window.KESEMPATAN.X.
     window.TournamentArena = tournamentArena;
+    window.KESEMPATAN = window.KESEMPATAN || {};
+    window.KESEMPATAN.TournamentArena = tournamentArena;
 
 
     function TRN_injectTournamentArenaStyle() {

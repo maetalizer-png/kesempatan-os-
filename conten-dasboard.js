@@ -1,5 +1,8 @@
 (function() {
 'use strict';
+const KESEMPATAN = window.KESEMPATAN || {};
+window.KESEMPATAN = KESEMPATAN;
+
 if (window.__ContenDasboardLoaded) return;
 window.__ContenDasboardLoaded = true;
 
@@ -27,7 +30,7 @@ function stripParens(badgeElement) {
                 if (cleaned !== nodeValue) node.nodeValue = cleaned;
             }
         }
-    } catch (error) {}
+    } catch (error) { console.warn('[ContenDasboard] stripParens failed:', error.message); }
 }
 
 function renderUI(container) {
@@ -84,9 +87,7 @@ function renderUI(container) {
     }
 }
 
-window.KESEMPATAN = window.KESEMPATAN || {};
-window.KESEMPATAN.ContenDasboard = Object.freeze({ renderUI: renderUI });
-window.ContenDasboard = { renderUI: renderUI };
+KESEMPATAN.ContenDasboard = Object.freeze({ renderUI: renderUI });
 
 document.addEventListener('DOMContentLoaded', function() {
     renderUI(document.getElementById('contenDasboardContainer'));

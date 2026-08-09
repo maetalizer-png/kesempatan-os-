@@ -1,5 +1,8 @@
 (function() {
     'use strict';
+    const KESEMPATAN = window.KESEMPATAN || {};
+    window.KESEMPATAN = KESEMPATAN;
+
     if (window.__NewsAggregatorLoaded) return;
     window.__NewsAggregatorLoaded = true;
 
@@ -87,7 +90,7 @@
                             });
                         }.bind(this));
                     }
-                } catch (e) {}
+                } catch (e) { console.warn('[NewsAggregator] fetchLokalNews source failed:', source.name, e.message); }
             }
             return allNews.slice(0, 15);
         }
@@ -299,9 +302,8 @@
         }
     }
 
-    window.KESEMPATAN = window.KESEMPATAN || {};
-    window.KESEMPATAN.NewsAggregator = new NewsAggregator();
-    window.NewsAggregator = window.KESEMPATAN.NewsAggregator;
+    KESEMPATAN.NewsAggregator = new NewsAggregator();
+    window.NewsAggregator = KESEMPATAN.NewsAggregator;
 
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', function() { window.NewsAggregator.render(); });

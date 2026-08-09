@@ -10,6 +10,9 @@ data dinamis -> VectorMemory.
 // ============================================================
 // CEK DOUBLE LOAD
 // ============================================================
+const KESEMPATAN = window.KESEMPATAN || {};
+window.KESEMPATAN = KESEMPATAN;
+
 if (window.__WorldLoaderLoaded) {
     return;
 }
@@ -577,7 +580,7 @@ if (document.readyState === 'loading') {
 // ============================================================
 // EXPOSE
 // ============================================================
-window.WorldLoader = WorldLoader;
+KESEMPATAN.WorldLoader = WorldLoader;
 window.__WorldLoaderLoaded = true;
 
 // Inisialisasi __STATIC_DATA

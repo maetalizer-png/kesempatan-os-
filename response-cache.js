@@ -1,6 +1,9 @@
 (function() {
 'use strict';
 
+const KESEMPATAN = window.KESEMPATAN || {};
+window.KESEMPATAN = KESEMPATAN;
+
 const InternalLogger = (function() {
     const _logs = [];
     const _maxLogs = 50;
@@ -209,7 +212,7 @@ async function getStats() {
             try {
                 const str = JSON.stringify(e);
                 sizeBytes += str.length * 2;
-            } catch (err) {}
+            } catch (err) { InternalLogger.warn('ResponseCache', 'Size calc skipped for entry: ' + err.message); }
         });
         const sizeMB = (sizeBytes / (1024 * 1024)).toFixed(2);
         return {
@@ -719,11 +722,11 @@ const ResponseCacheManager = Object.freeze({
     search: filterCache
 });
 
-window.KESEMPATAN = window.KESEMPATAN || {};
-window.KESEMPATAN.ResponseCache = ResponseCacheManager;
+KESEMPATAN.ResponseCache = ResponseCacheManager;
 window.ResponseCacheManager = ResponseCacheManager;
 window.setCacheDatabase = setDatabase;
-window.CachePage = {
+
+const CachePageManager = {
     render: renderCachePage,
     destroy: destroy,
     setDatabase: setDatabase,
@@ -756,6 +759,11 @@ window.CachePage = {
         return false;
     }
 };
+// CachePage stays bare (in addition to the KESEMPATAN pointer below) because
+// cache-db-bridge.js reads window.CachePage directly as an explicit fallback
+// when window.KESEMPATAN.ResponseCache isn't ready yet.
+KESEMPATAN.CachePage = CachePageManager;
+window.CachePage = CachePageManager;
 
 const container = document.getElementById('cachePage');
 if (container && container.parentElement && container.parentElement.style.display !== 'none') {

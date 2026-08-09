@@ -476,10 +476,12 @@
                     };
                 }) || [];
             } catch(e) {
+                console.warn('[LiveCrypto] Trending fetch failed:', e.message);
             }
             
             updateUI();
         } catch(error) {
+            console.warn('[LiveCrypto] fetchGlobalData failed:', error.message);
         }
     }
     
@@ -600,6 +602,7 @@
             lastFearScore = parseInt(data.data?.[0]?.value || 50);
             localStorage.setItem('kes_last_sentiment', lastSentiment);
         } catch(e) {
+            console.warn('[LiveCrypto] updateSentiment failed:', e.message);
         }
     }
     
@@ -680,6 +683,7 @@
                 bestArbitrageToday = maxProfit;
             }
         } catch (error) {
+            console.warn('[LiveCrypto] scanArbitrage failed:', error.message);
         } finally {
             isScanning = false;
         }
@@ -781,6 +785,7 @@
                 entryDiv.innerHTML = agent + ': ' + advice.substring(0, 100);
                 logBox.appendChild(entryDiv);
             } catch(e) {
+                console.warn('[LiveCrypto] compareAllAgents request failed for', agent, e.message);
             }
         }
         logBox.scrollTop = logBox.scrollHeight;
@@ -807,6 +812,7 @@
                 logBox.scrollTop = logBox.scrollHeight;
             }
         } catch(e) {
+            console.warn('[LiveCrypto] marketSummary failed:', e.message);
         }
     }
     
@@ -826,6 +832,7 @@
                 logBox.scrollTop = logBox.scrollHeight;
             }
         } catch(e) {
+            console.warn('[LiveCrypto] marketRecap failed:', e.message);
         }
     }
     
@@ -862,6 +869,7 @@
                 logBox.scrollTop = logBox.scrollHeight;
             }
         } catch(e) {
+            console.warn('[LiveCrypto] predictMarket failed:', e.message);
         }
     }
     

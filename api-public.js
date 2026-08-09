@@ -1,5 +1,8 @@
 (function() {
 "use strict";
+const KESEMPATAN = window.KESEMPATAN || {};
+window.KESEMPATAN = KESEMPATAN;
+
 if (window.__PublicAPILoaded) return;
 window.__PublicAPILoaded = true;
 
@@ -218,16 +221,10 @@ function renderUI() {
     document.getElementById('testAnalyzeBtn')?.addEventListener('click', testAnalyze);
 }
 
-window.KESEMPATAN = window.KESEMPATAN || {};
-window.KESEMPATAN.PublicAPI = Object.freeze({
+KESEMPATAN.PublicAPI = Object.freeze({
     renderUI: renderUI,
     getApiKey: function() { return currentApiKey; }
 });
-
-window.PublicAPI = {
-    renderUI: renderUI,
-    getApiKey: function() { return currentApiKey; }
-};
 
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', function() { setTimeout(renderUI, 100); });
