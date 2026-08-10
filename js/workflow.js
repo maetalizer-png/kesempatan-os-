@@ -737,28 +737,56 @@ export const WorkflowEngine = {
                     Logger.system('⚡ Batch ' + batchNum + '/' + totalBatches + ': ' + batch.join(', ') + ' (with retry)');
                 }
 
-                const batchResults = await Promise.all(
+                const batchResults = await Promise.allSettled(
                     batch.map(function(agent) {
                         return executeAgentWithRetryParallel(agent, payload, uploadedContent);
                     })
                 );
 
-                finalResults.push.apply(finalResults, batchResults);
-                results.push.apply(results, batchResults);
-                completed += batchResults.length;
+                // Convert settled results to uniform format
+                const processedBatch = [];
+                for (let j = 0; j < batchResults.length; j++) {
+                    const settled = batchResults[j];
+                    if (settled.status === 'fulfilled') {
+                        processedBatch.push(settled.value);
+                    } else {
+                        // Handle rejected promises gracefully
+                        processedBatch.push({
+                            agent: batch[j],
+                            status: "failed",
+                            summary: "Error: " + (settled.reason?.message || 'Unknown error').substring(0, 100),
+                            score: 0,
+                            confidence: 10,
+                            insight: [],
+                            strategy: [],
+                            risk: [],
+                            recommendation: "",
+                            reasoning_summary: "",
+                            demand: 0, competition: 0, monetization: 0, virality: 0,
+                            sustainability: 0, scalability: 0, timing: 0, attention: 0,
+                            execution: 0, longterm: 0
+                        });
+                        if (Logger) Logger.error(batch[j], 'Promise rejected: ' + (settled.reason?.message || 'Unknown'));
+                    }
+                }
+
+                finalResults.push.apply(finalResults, processedBatch);
+                results.push.apply(results, processedBatch);
+                completed += processedBatch.length;
 
                 if (progressSpan) progressSpan.textContent = completed + '/' + totalAgents;
                 if (progressFill) progressFill.style.width = (completed / totalAgents * 100) + '%';
 
-                for (let j = 0; j < batchResults.length; j++) {
-                    const result = batchResults[j];
+                for (let j = 0; j < processedBatch.length; j++) {
+                    const result = processedBatch[j];
                     if (logBox) {
                         const line = document.createElement("div");
                         line.style.marginBottom = "8px";
-                        line.style.borderLeft = "3px solid #FFD700";
+                        line.style.borderLeft = result.status === 'failed' ? "3px solid #FF6B6B" : "3px solid #FFD700";
                         line.style.paddingLeft = "10px";
                         line.style.fontSize = "12px";
-                        line.innerHTML = '<span style="color:#FFD700;">⚡ ' + result.agent + '</span> selesai | Skor: ' + result.score + ' | Conf: ' + result.confidence + '%';
+                        const statusIcon = result.status === 'failed' ? '❌' : '⚡';
+                        line.innerHTML = '<span style="color:' + (result.status === 'failed' ? '#FF6B6B' : '#FFD700') + ';">' + statusIcon + ' ' + result.agent + '</span> selesai | Skor: ' + result.score + ' | Conf: ' + result.confidence + '%';
                         logBox.appendChild(line);
                         logBox.scrollTop = logBox.scrollHeight;
                     }
