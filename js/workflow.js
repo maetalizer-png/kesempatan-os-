@@ -964,7 +964,19 @@ export const WorkflowEngine = {
     },
 
     setDatabase: function(db) { appDatabase = db; },
-    setKnowledgeGraph: function(kg) { knowledgeGraph = kg; }
+    setKnowledgeGraph: function(kg) { knowledgeGraph = kg; },
+
+    // Headless entry point for callers outside the dashboard (e.g. ai-agent/
+    // workflow-engine.js) that need to run one analysis agent without going
+    // through start()'s DOM scan (.agent-checkbox:checked, #apiKeyInput) or
+    // its workflowLock/UI progress bookkeeping. Reuses the exact same
+    // prompt-building, caching, retry and memory-save path start() itself
+    // uses per agent — highlightAgent/markAgentCompleted inside it already
+    // no-op safely when there's no matching .agent-badge in the DOM.
+    async runSingleAgent(agentName, topic, instruction, uploadedData) {
+        const context = { topic: topic, instruction: instruction || 'Analisis peluang dan berikan rekomendasi.' };
+        return executeAgentWithRetrySequential(agentName, context, uploadedData || null, 0);
+    }
 };
 
 KESEMPATAN.WorkflowEngine = WorkflowEngine;
