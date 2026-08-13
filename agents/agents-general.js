@@ -1,14 +1,8 @@
 import { CONFIG } from '../js/config.js';
 import { AGENTS_CONFIG } from './agents-config.js';
+import { loadPrompt } from './prompt-loader.js';
 
 export async function extendGeneralAgents() {
-    async function loadPrompt(agentName) {
-        try {
-            const response = await fetch(`prompts/${agentName}.txt`);
-            if (response.ok) return await response.text();
-        } catch (error) { console.warn('[AgentsConfig] loadPrompt fetch failed:', error.message); }
-        return `Anda adalah ahli ${agentName}. Analisis berdasarkan bidang keahlian Anda. Output dalam format JSON.`;
-    }
 
     const generalAgents = {
         Hukum: { name: "Hukum", role: "Profesor Hukum", systemPrompt: await loadPrompt('hukum'), temperature: 0.5, maxTokens: 1500, fewShotExamples: [] },

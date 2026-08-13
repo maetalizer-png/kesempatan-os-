@@ -382,7 +382,7 @@ export function FOR_buildForumPrompt(agent, role, question, context, agentSystem
         if (agentSystemPrompt) {
             // FIX KUALITAS: sebelumnya cuma "Kamu adalah X, role satu
             // kalimat". Sekarang selipkan PROFIL KEAHLIAN LENGKAP
-            // (systemPrompt dari prompts/*.txt, sama yg dipakai Dashboard)
+            // (systemPrompt dari prompts/*.json, sama yg dipakai Dashboard)
             // supaya jawaban forum benar2 mencerminkan keahlian spesifik
             // agen, bukan jawaban generik yg bisa ditulis agen mana pun.
             prompt += 'PROFIL & KEAHLIAN LENGKAP ANDA:\n' + agentSystemPrompt + '\n';

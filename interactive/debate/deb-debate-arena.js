@@ -172,7 +172,7 @@ import {
             const persona = profile.name + (profile.role ? ', seorang ' + profile.role : '');
             // FIX KUALITAS: sebelumnya persona cuma "nama + role 1 kalimat".
             // Sekarang selipkan PROFIL KEAHLIAN LENGKAP (systemPrompt dari
-            // prompts/*.txt, sama yg dipakai Dashboard) supaya argumen debat
+            // prompts/*.json, sama yg dipakai Dashboard) supaya argumen debat
             // benar2 mencerminkan cara berpikir & ketajaman analisis khas
             // agen tsb, bukan argumen generik yang bisa ditulis agen mana pun.
             const expertiseBlock = profile.systemPrompt

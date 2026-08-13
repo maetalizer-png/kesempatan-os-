@@ -1,4 +1,5 @@
 import { Utils } from './utils.js';
+import { getDatasetTexts } from '../dataset/index.js';
 
 const KESEMPATAN = window.KESEMPATAN || {};
 window.KESEMPATAN = KESEMPATAN;
@@ -196,6 +197,13 @@ async function callGenerativeEngine(prompt, agent, topic) {
 
 const MAX_BOOTSTRAP_AGENTS = 999;
 const MAX_BOOTSTRAP_TEXT_LENGTH = 800;
+// Batas kontribusi dataset/ ke korpus bootstrap. Korpus ini juga dipakai
+// melatih ulang tokenizer BPE (createModel() di kesem-llm/llm-runtime.js),
+// yang biaya komputasinya naik seiring ukuran korpus — dibatasi supaya
+// dataset (bisa >150 entri) tidak membuat inisialisasi jadi lambat,
+// sambil tetap menambah keragaman materi jauh di luar 55 system prompt.
+const MAX_DATASET_ENTRIES = 120;
+const MAX_DATASET_TEXT_LENGTH = 500;
 
 function buildBootstrapCorpus() {
     const texts = [];
@@ -218,6 +226,14 @@ function buildBootstrapCorpus() {
                 });
             }
         });
+    }
+    try {
+        const datasetTexts = getDatasetTexts(MAX_DATASET_ENTRIES, MAX_DATASET_TEXT_LENGTH);
+        texts.push.apply(texts, datasetTexts);
+    } catch (e) {
+        if (Logger) {
+            Logger.warn('KesempatanLLM', 'dataset/ gagal dimuat ke korpus bootstrap, lanjut tanpa itu: ' + e.message);
+        }
     }
     return texts;
 }

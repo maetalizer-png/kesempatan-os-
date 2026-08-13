@@ -1,17 +1,10 @@
 import { CONFIG } from '../js/config.js';
+import { loadPrompt as loadPromptShared } from './prompt-loader.js';
 
 export const AGENTS_CONFIG = {};
 
 async function loadPrompt(agentName) {
-    const currentYear = new Date().getFullYear();
-    try {
-        const response = await fetch(`prompts/${agentName}.txt`);
-        if (response.ok) {
-            const text = await response.text();
-            return text.replace(/\{\{TAHUN\}\}/g, currentYear);
-        }
-    } catch (error) { console.warn('[AgentsConfig] loadPrompt fetch failed:', error.message); }
-    return `Anda adalah ahli ${agentName}. Analisis berdasarkan bidang keahlian Anda untuk tahun ${currentYear}. Output dalam format JSON.`;
+    return loadPromptShared(agentName, { replaceYear: true });
 }
 
 export async function extendBisnisAgents() {

@@ -135,7 +135,7 @@ async function CAG_sendChatToAgent() {
             if (agentSystemPrompt) {
                 // FIX KUALITAS: sebelumnya cuma pakai roleDesc (1 kalimat
                 // singkat, mis. "Senior Business Strategist"). Sekarang
-                // inject PROFIL KEAHLIAN LENGKAP dari prompts/*.txt (sama
+                // inject PROFIL KEAHLIAN LENGKAP dari prompts/*.json (sama
                 // yg dipakai Dashboard) — instruksi analisis, gaya
                 // berpikir, dan disiplin per-agen ikut terpakai di sini.
                 // Instruksi format JSON di ujung prompt asli DIABAIKAN
