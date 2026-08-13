@@ -328,6 +328,120 @@ const runFullTests = async function(options) {
     };
 };
 // ============================================================
+// REAL ASSERTION TESTS (Fase 0 roadmap: unit test scoring engine +
+// snapshot test agent output — the checks above only confirm a function
+// EXISTS, never that it computes the right thing. These call the real,
+// unmodified production functions with known inputs and assert on the
+// actual output.)
+// ============================================================
+const assertEqual = function(results, name, actual, expected) {
+    const ok = JSON.stringify(actual) === JSON.stringify(expected);
+    results.push({ name: name, pass: ok, actual: actual, expected: expected });
+    InternalLogger[ok ? 'info' : 'error']('Assert', (ok ? '[OK] ' : '[ERR] ') + name +
+        (ok ? '' : ' — expected ' + JSON.stringify(expected) + ', got ' + JSON.stringify(actual)));
+};
+const assertTrue = function(results, name, condition, detail) {
+    results.push({ name: name, pass: !!condition, detail: detail });
+    InternalLogger[condition ? 'info' : 'error']('Assert', (condition ? '[OK] ' : '[ERR] ') + name + (detail ? ' — ' + detail : ''));
+};
+
+// --- LLMSampler (kesem-llm/llm-sampler.js): pure math, zero dependencies ---
+function testLLMSampler(results) {
+    const S = window.LLMSampler;
+    if (!S) { assertTrue(results, 'LLMSampler tersedia', false, 'window.LLMSampler tidak ditemukan — halaman ini tidak memuat kesem-llm/llm-sampler.js'); return; }
+    const probs = S.softmax([1, 2, 3]);
+    const sum = probs.reduce(function(a, b) { return a + b; }, 0);
+    assertTrue(results, 'softmax() jumlah probabilitas ~1', Math.abs(sum - 1) < 1e-9, 'sum=' + sum);
+    assertTrue(results, 'softmax() urutan naik monoton untuk logit naik', probs[0] < probs[1] && probs[1] < probs[2], JSON.stringify(probs));
+    assertEqual(results, 'argmax() memilih indeks nilai terbesar', S.argmax([0.1, 0.7, 0.2]), 1);
+    assertEqual(results, 'argmax() tie-break ke indeks pertama', S.argmax([5, 5, 1]), 0);
+}
+
+// --- Utils (js/utils.js) ---
+function testUtils(results) {
+    const U = window.Utils;
+    if (!U) { assertTrue(results, 'Utils tersedia', false, 'window.Utils tidak ditemukan'); return; }
+    assertEqual(results, 'escapeHtml() escape tag script', U.escapeHtml('<script>alert(1)</script>'), '&lt;script&gt;alert(1)&lt;/script&gt;');
+    assertEqual(results, 'escapeHtml() escape ampersand', U.escapeHtml('A & B'), 'A &amp; B');
+    if (typeof U.safeParseResponse === 'function') {
+        const clean = U.safeParseResponse('{"score": 80, "summary": "ok"}');
+        assertEqual(results, 'safeParseResponse() JSON bersih', clean && clean.score, 80);
+        const fenced = U.safeParseResponse('```json\n{"score": 55}\n```');
+        assertEqual(results, 'safeParseResponse() JSON dalam code fence', fenced && fenced.score, 55);
+        const trailingComma = U.safeParseResponse('{"score": 70, "summary": "ok",}');
+        assertEqual(results, 'safeParseResponse() toleran trailing comma', trailingComma && trailingComma.score, 70);
+    }
+}
+
+// --- WorkflowEngine.aggregateResults (js/workflow.js): 10-dimension scoring engine ---
+function testAggregateResults(results) {
+    const WE = window.KESEMPATAN && window.KESEMPATAN.WorkflowEngine;
+    if (!WE || typeof WE.aggregateResults !== 'function') {
+        assertTrue(results, 'WorkflowEngine.aggregateResults tersedia', false, 'halaman ini tidak memuat js/workflow.js');
+        return;
+    }
+    const fullMetrics = { demand: 100, competition: 100, monetization: 100, virality: 100, sustainability: 100, scalability: 100, timing: 100, attention: 100, execution: 100, longterm: 100 };
+    const halfMetrics = { demand: 50, competition: 50, monetization: 50, virality: 50, sustainability: 50, scalability: 50, timing: 50, attention: 50, execution: 50, longterm: 50 };
+
+    const single = WE.aggregateResults([{ agent: 'A', confidence: 100, metrics: fullMetrics, insight: ['x'], strategy: [], risk: [], recommendation: 'r' }], 'topic');
+    assertEqual(results, 'aggregateResults() 1 agen skor penuh -> score 100', single.score, 100);
+
+    // Dua agen dengan metrik BEDA NILAI (bukan salah satunya nol) dan
+    // confidence beda -> ini membedakan rata-rata TERTIMBANG confidence
+    // dari rata-rata polos. A=100@conf100, B=50@conf50:
+    //   tertimbang: (100*1.0 + 50*0.5) / 1.5 = 83.33 -> round 83
+    //   polos (bug lama-nya): (100 + 50) / 1.5 = 100  <- beda, jadi test ini akan gagal kalau bobot hilang
+    const weighted = WE.aggregateResults([
+        { agent: 'A', confidence: 100, metrics: fullMetrics, insight: [], strategy: [], risk: [], recommendation: '' },
+        { agent: 'B', confidence: 50, metrics: halfMetrics, insight: [], strategy: [], risk: [], recommendation: '' }
+    ], 'topic');
+    assertEqual(results, 'aggregateResults() rata-rata tertimbang confidence (bukan rata-rata polos)', weighted.metrics.demand, 83);
+
+    const withFailure = WE.aggregateResults([
+        { agent: 'A', confidence: 100, metrics: fullMetrics, insight: [], strategy: [], risk: [], recommendation: '' },
+        { agent: 'B', status: 'failed', score: 0, metrics: null }
+    ], 'topic');
+    assertEqual(results, 'aggregateResults() agen gagal tidak ikut menjatuhkan skor', withFailure.score, 100);
+    assertEqual(results, 'aggregateResults() agen gagal masuk failedCount', withFailure.failedCount, 1);
+    assertEqual(results, 'aggregateResults() agen gagal tidak masuk validCount', withFailure.validCount, 1);
+
+    const empty = WE.aggregateResults([], 'topic');
+    assertEqual(results, 'aggregateResults() tanpa agen valid -> fallback score 0', empty.score, 0);
+}
+
+// --- AGENTS_CONFIG (agents/agents-config.js + kategori) structural integrity ---
+function testAgentsConfig(results) {
+    const AC = window.AGENTS_CONFIG;
+    if (!AC) { assertTrue(results, 'AGENTS_CONFIG tersedia', false, 'window.AGENTS_CONFIG tidak ditemukan'); return; }
+    const keys = Object.keys(AC);
+    assertTrue(results, 'AGENTS_CONFIG punya minimal 1 agen', keys.length > 0, 'count=' + keys.length);
+    let malformed = [];
+    keys.forEach(function(key) {
+        const a = AC[key];
+        const ok = a && typeof a.name === 'string' && a.name.length > 0 &&
+            typeof a.role === 'string' && a.role.length > 0 &&
+            typeof a.systemPrompt === 'string' &&
+            typeof a.temperature === 'number' && a.temperature >= 0 && a.temperature <= 1 &&
+            typeof a.maxTokens === 'number' && a.maxTokens > 0;
+        if (!ok) malformed.push(key);
+    });
+    assertTrue(results, 'Setiap agen di AGENTS_CONFIG punya name/role/systemPrompt/temperature/maxTokens valid', malformed.length === 0, malformed.length ? 'rusak: ' + malformed.join(', ') : (keys.length + ' agen diperiksa'));
+}
+
+const runRealAssertions = async function() {
+    InternalLogger.info('TestRunner', 'Starting REAL ASSERTION TESTS');
+    const results = [];
+    testLLMSampler(results);
+    testUtils(results);
+    testAggregateResults(results);
+    testAgentsConfig(results);
+    const pass = results.filter(function(r) { return r.pass; }).length;
+    const fail = results.length - pass;
+    InternalLogger.info('TestRunner', 'REAL ASSERTIONS: ' + pass + '/' + results.length + ' pass' + (fail ? ', ' + fail + ' FAILED' : ''));
+    return { total: results.length, pass: pass, fail: fail, results: results };
+};
+
+// ============================================================
 // QUICK TEST
 // ============================================================
 const quickTest = async function() {
@@ -346,6 +460,7 @@ const quickTest = async function() {
 // ============================================================
 window.runFullTests = runFullTests;
 window.quickTest = quickTest;
+window.runRealAssertions = runRealAssertions;
 window.CoverageReport = CoverageReport;
 window.SnapshotManager = SnapshotManager;
 window.PerformanceBaseline = PerformanceBaseline;
@@ -354,4 +469,5 @@ InternalLogger.info('TestRunner', 'FULL TEST SUITE ready!');
 InternalLogger.info('TestRunner', '   - runFullTests() → Full test with coverage');
 InternalLogger.info('TestRunner', '   - runFullTests({watch: true}) → Watch mode');
 InternalLogger.info('TestRunner', '   - quickTest() → Quick test (Smoke + Unit)');
+InternalLogger.info('TestRunner', '   - runRealAssertions() → Real behavior assertions (bukan cuma existence check)');
 })();

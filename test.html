@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<title>KESEMPATAN OS — Test Harness</title>
+<style>
+    body { background:#05070c; color:#E0E6ED; font-family: ui-monospace, monospace; padding: 20px; }
+    h1 { color:#00FFA3; font-size: 16px; }
+    #summary { font-size: 14px; margin: 14px 0; padding: 10px; border-radius: 8px; background: rgba(255,255,255,0.04); }
+    .row { padding: 3px 0; font-size: 12px; }
+    .pass { color: #00FFA3; }
+    .fail { color: #FF6B6B; }
+</style>
+</head>
+<body>
+<h1>KESEMPATAN OS — Real Assertion Test Harness</h1>
+<div id="summary">Menjalankan test...</div>
+<div id="rows"></div>
+
+<!--
+    Dev-only harness (tidak dimuat oleh index.html/chat-kesempatan.html).
+    Import HANYA modul yang benar-benar dibutuhkan test.js
+    (RealAssertions di test.js), bukan seluruh aplikasi — supaya test
+    jalan cepat dan tidak bergantung ke DOM/network yang tidak relevan.
+-->
+<script type="module">
+    import { AGENTS_CONFIG, extendBisnisAgents } from './agents/agents-config.js';
+    import { extendGeneralAgents } from './agents/agents-general.js';
+    import { extendGlobalAgents } from './agents/agents-global.js';
+    import { extendPoliticsAgents } from './agents/agents-politics.js';
+    import { extendScienceAgents } from './agents/agent-science.js';
+    import './kesem-llm/llm-sampler.js';
+    import './js/workflow.js'; // menempel window.KESEMPATAN.WorkflowEngine
+
+    // Kategori agen di-populate async (masing-masing await loadPrompt() ->
+    // fetch prompts/*.txt) — tunggu semuanya beres dulu supaya
+    // AGENTS_CONFIG benar-benar lengkap sebelum test jalan, alih-alih
+    // menebak durasi lewat setTimeout.
+    await Promise.all([
+        extendBisnisAgents(),
+        extendGeneralAgents(),
+        extendGlobalAgents(),
+        extendPoliticsAgents(),
+        extendScienceAgents()
+    ]);
+
+    window.dispatchEvent(new CustomEvent('test-deps-ready'));
+</script>
+
+<!-- test.js sendiri classic script (bukan module) supaya konsisten dengan
+     cara ia sudah ditulis — dimuat setelah modul-modul di atas terdaftar
+     ke window/window.KESEMPATAN. -->
+<script src="./test.js"></script>
+<script>
+    window.addEventListener('test-deps-ready', async function () {
+        const report = await window.runRealAssertions();
+        const summaryEl = document.getElementById('summary');
+        const rowsEl = document.getElementById('rows');
+        summaryEl.className = report.fail === 0 ? 'pass' : 'fail';
+        summaryEl.textContent = report.pass + '/' + report.total + ' test lulus' + (report.fail ? ' — ' + report.fail + ' GAGAL' : ' — semua lulus');
+        rowsEl.innerHTML = report.results.map(function (r) {
+            return '<div class="row ' + (r.pass ? 'pass' : 'fail') + '">' + (r.pass ? '[OK] ' : '[FAIL] ') + r.name + '</div>';
+        }).join('');
+        window.__testReport = report; // dibaca Playwright/automation lain
+    });
+</script>
+</body>
+</html>

@@ -976,7 +976,12 @@ export const WorkflowEngine = {
     async runSingleAgent(agentName, topic, instruction, uploadedData) {
         const context = { topic: topic, instruction: instruction || 'Analisis peluang dan berikan rekomendasi.' };
         return executeAgentWithRetrySequential(agentName, context, uploadedData || null, 0);
-    }
+    },
+
+    // Exposed for test.js (Fase 0 roadmap: unit test scoring engine) — pure
+    // function, no DOM/network access, so it's safe to call directly outside
+    // a real workflow run.
+    aggregateResults: aggregateResults
 };
 
 KESEMPATAN.WorkflowEngine = WorkflowEngine;
