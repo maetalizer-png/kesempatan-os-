@@ -4,6 +4,7 @@ import { LLMTrainer } from './llm-trainer.js';
 import { LLMTokenizer } from './llm-tokenizer.js';
 import { LLMVocabulary } from './llm-vocabulary.js';
 import { LLMWeights } from './llm-weights.js';
+import { LLMGpu } from './llm-gpu.js';
 
 const Logger = window.Utils?.Logger || {
     info: function () { /* silent */ },
@@ -19,6 +20,36 @@ function requireDeps() {
     };
 }
 let activeModel = null;
+
+// ============================================================
+// GPU WARM-UP (Fase 1 roadmap: llm-gpu.js sudah punya kernel WebGPU +
+// self-verifikasi kebenaran/kecepatan sejak lama, tapi initGPU() tidak
+// pernah dipanggil siapa pun — kapabilitasnya menganggur total. Ini
+// HANYA menjalankan verifikasi itu sekali per lifetime Worker dan
+// mencatat hasilnya lewat getStats(); TIDAK mengubah forward pass
+// inference/training yang sudah ada (llm-attention.js/llm-transformer.js
+// tetap 100% CPU seperti sebelumnya). Menyambungkan matmul asli ke GPU
+// butuh membuat seluruh rantai forward pass (dipakai bersama training)
+// jadi async, dan tidak bisa diverifikasi di sandbox ini sama sekali
+// (navigator.gpu tidak ada) — jadi TIDAK dilakukan di sini. Langkah ini
+// membuat verdict self-test-nya kelihatan (aktif & lebih cepat, atau
+// dinonaktifkan otomatis + alasannya) sebagai dasar keputusan berbasis
+// data untuk penyambungan penuh nanti, bukan tebakan.
+// ============================================================
+let gpuAttempted = false;
+let gpuStatus = { attempted: false, active: false };
+
+function warmupGpu(model) {
+    if (gpuAttempted) return;
+    gpuAttempted = true;
+    const dModel = model && model.config && model.config.model ? model.config.model.dModel : 128;
+    LLMGpu.initGPU(dModel).then(function (active) {
+        gpuStatus = { attempted: true, active: active, dModel: dModel };
+    }).catch(function (e) {
+        gpuStatus = { attempted: true, active: false, error: e.message, dModel: dModel };
+    });
+}
+
 // ============================================================
 // INISIALISASI
 // ============================================================
@@ -30,6 +61,7 @@ async function initialize(options) {
         if (saved) {
             activeModel = Checkpoint.restoreModelFromCheckpoint(saved);
             Logger.info('LLMCore', 'Model dipulihkan dari checkpoint "' + options.fromCheckpoint + '"');
+            warmupGpu(activeModel);
             return activeModel;
         }
         Logger.warn('LLMCore', 'Checkpoint "' + options.fromCheckpoint + '" tidak ditemukan, bikin model baru');
@@ -39,6 +71,7 @@ async function initialize(options) {
     }
     activeModel = await Runtime.createModel({ corpus: options.corpus, configOptions: options.configOptions });
     Logger.info('LLMCore', 'Model baru dibuat (vocab size: ' + activeModel.vocab.size + ')');
+    warmupGpu(activeModel);
     if (!options.skipAutoTrain) {
         try {
             const maxSequences = Number.isInteger(options.autoTrainMaxSequences) ? options.autoTrainMaxSequences : 30;
@@ -142,6 +175,7 @@ function buildCheckpointObject(metadata) {
 function restoreFromCheckpointObject(checkpointObj) {
     const { Checkpoint } = requireDeps();
     activeModel = Checkpoint.restoreModelFromCheckpoint(checkpointObj);
+    warmupGpu(activeModel);
     return activeModel;
 }
 function getStats() {
@@ -154,7 +188,8 @@ function getStats() {
         nLayers: model.config.model.nLayers,
         nHeads: model.config.model.nHeads,
         maxContextLength: model.config.model.maxContextLength,
-        parameterCount: W ? W.countParameters(model) : null
+        parameterCount: W ? W.countParameters(model) : null,
+        gpu: gpuStatus
     };
 }
 export const LLMCore = {

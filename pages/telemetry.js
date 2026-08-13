@@ -176,6 +176,44 @@ function renderEngineHealth(container, summary) {
         '</span></div>';
 }
 
+// ========== GPU ACCELERATION STATUS (Fase 1 roadmap) ==========
+// llm-gpu.js's initGPU() is now triggered once per Worker lifetime
+// (llm-core.js) whenever a local model becomes active — it self-verifies
+// correctness AND speed against CPU before ever activating, and disables
+// itself if either check fails. This just surfaces that verdict; it does
+// not mean the hot forward pass is actually using GPU yet (see the
+// comment in llm-core.js's warmupGpu() for why that's a separate,
+// bigger step).
+async function renderGpuStatus(container) {
+    if (!container) return;
+    const K = window.KesempatanLLM;
+    if (!K || typeof K.isReady !== 'function' || !K.isReady()) {
+        container.innerHTML = '<div class="tl-b"><span class="tl-in"><h4>Akselerasi GPU (WebGPU)</h4>' +
+            '<div style="text-align:center;color:#5a6a7a;font-size:11px;padding:8px;">Core Engine v1 belum aktif di sesi ini — verifikasi GPU baru berjalan begitu model lokal dipakai.</div>' +
+            '</span></div>';
+        return;
+    }
+    let stats;
+    try {
+        stats = await K.core.getStats();
+    } catch (e) {
+        return; // model belum siap sepenuhnya — biarkan render berikutnya coba lagi
+    }
+    const gpu = stats && stats.gpu;
+    let statusHtml;
+    if (!gpu || !gpu.attempted) {
+        statusHtml = '<span style="color:#7c8a99;">Memverifikasi kebenaran &amp; kecepatan GPU vs CPU...</span>';
+    } else if (gpu.error) {
+        statusHtml = '<span style="color:#FF6B6B;">Gagal diinisialisasi: ' + escapeHtml(gpu.error) + ' — pakai CPU</span>';
+    } else if (gpu.active) {
+        statusHtml = '<span style="color:#00FFA3;">Aktif untuk model dModel=' + gpu.dModel + ' — terverifikasi benar &amp; lebih cepat dari CPU</span>';
+    } else {
+        statusHtml = '<span style="color:#FFD700;">Nonaktif (CPU dipakai) — GPU tidak tersedia, atau tidak lebih cepat dari CPU untuk model dModel=' + gpu.dModel + '</span>';
+    }
+    container.innerHTML = '<div class="tl-b"><span class="tl-in"><h4>Akselerasi GPU (WebGPU)</h4>' +
+        '<div style="font-size:11px;padding:4px 0;">' + statusHtml + '</div></span></div>';
+}
+
 // ========== METRICS STRIP ==========
 function renderMetrics(container, records, avgLatency, agentsActive) {
     if (!container) return;
@@ -210,6 +248,7 @@ function render() {
         '<button id="resetTelemetryBtn" class="tl-ba danger">Reset</button></div></div>' +
         '<div id="telemetryMetricsContainer"></div>' +
         '<div id="telemetryEngineHealthContainer"></div>' +
+        '<div id="telemetryGpuStatusContainer"></div>' +
         '<div class="tl-b"><span class="tl-in"><h4>Latency per Agent</h4>' +
         '<div style="position:relative;width:100%;height:200px;"><canvas id="telemetryDetailChart" style="width:100%;height:100%;"></canvas></div></span></div>' +
         '<div class="tl-b"><span class="tl-in"><h4>Performance Heatmap</h4><div id="telemetryHeatmap"></div></span></div>' +
@@ -218,6 +257,7 @@ function render() {
 
     renderMetrics(document.getElementById('telemetryMetricsContainer'), records, avgLatency, heatmapData.length);
     renderEngineHealth(document.getElementById('telemetryEngineHealthContainer'), WorkflowLLMBridge.getTelemetrySummary());
+    renderGpuStatus(document.getElementById('telemetryGpuStatusContainer'));
     renderHeatmap(document.getElementById('telemetryHeatmap'), heatmapData);
     setTimeout(function() { renderChart(document.getElementById('telemetryDetailChart'), latByAgent); }, 50);
 
