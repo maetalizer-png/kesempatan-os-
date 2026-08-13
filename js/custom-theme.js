@@ -416,7 +416,14 @@ class CustomTheme {
         document.documentElement.style.setProperty('--theme-gradient', theme.gradient || 'none');
         document.body.style.fontFamily = theme.fontFamily || 'Inter, sans-serif';
         const self = this;
-        document.querySelectorAll('.execute-btn').forEach(function(btn) {
+        // .btn-workflow-mode (js/workflow-parallel.js) is excluded: it renders
+        // as a dark chamfered "glass" pill via its own ::before overlay, not a
+        // solid gradient fill, and each mode (Auto/Sequential/Parallel) keeps a
+        // fixed distinct accent color on purpose regardless of the chosen
+        // theme. Forcing this loop's high-contrast-on-solid-gradient inline
+        // style onto it put near-black text on top of that dark ::before
+        // overlay — unreadable ("burem") — instead of the intended glow text.
+        document.querySelectorAll('.execute-btn:not(.btn-workflow-mode)').forEach(function(btn) {
             if (btn.classList.contains('secondary')) {
                 btn.style.borderColor = theme.primary;
                 btn.style.background = 'rgba(' + self.hexToRgb(theme.primary) + ', 0.1)';
