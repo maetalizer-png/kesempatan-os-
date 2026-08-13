@@ -357,7 +357,7 @@ function testLLMSampler(results) {
     assertEqual(results, 'argmax() tie-break ke indeks pertama', S.argmax([5, 5, 1]), 0);
 }
 
-// --- Utils (js/utils.js) ---
+// --- Utils (js/core/utils.js) ---
 function testUtils(results) {
     const U = window.Utils;
     if (!U) { assertTrue(results, 'Utils tersedia', false, 'window.Utils tidak ditemukan'); return; }
@@ -373,11 +373,11 @@ function testUtils(results) {
     }
 }
 
-// --- WorkflowEngine.aggregateResults (js/workflow.js): 10-dimension scoring engine ---
+// --- WorkflowEngine.aggregateResults (js/workflow/workflow.js): 10-dimension scoring engine ---
 function testAggregateResults(results) {
     const WE = window.KESEMPATAN && window.KESEMPATAN.WorkflowEngine;
     if (!WE || typeof WE.aggregateResults !== 'function') {
-        assertTrue(results, 'WorkflowEngine.aggregateResults tersedia', false, 'halaman ini tidak memuat js/workflow.js');
+        assertTrue(results, 'WorkflowEngine.aggregateResults tersedia', false, 'halaman ini tidak memuat js/workflow/workflow.js');
         return;
     }
     const fullMetrics = { demand: 100, competition: 100, monetization: 100, virality: 100, sustainability: 100, scalability: 100, timing: 100, attention: 100, execution: 100, longterm: 100 };

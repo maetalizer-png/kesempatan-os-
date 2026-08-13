@@ -1,6 +1,6 @@
 /* ============================================================
    ai-agent/approval-manager.js
-   Wraps the existing HITL panel (js/hitl.js) and the existing
+   Wraps the existing HITL panel (js/dashboard/hitl.js) and the existing
    Auto-Learning adaptive threshold (js/threshold-learning.js,
    exposed as window.AutoLearning) for the WAITING_APPROVAL
    lifecycle state. No new approval UI is created — this reuses
@@ -37,7 +37,7 @@ function autoApproveIfEligible(results) {
 }
 
 // Renders the existing HITL panel and resolves once the human clicks the
-// existing confirm button (js/hitl.js's #confirmAggregationBtn) — reuses
+// existing confirm button (js/dashboard/hitl.js's #confirmAggregationBtn) — reuses
 // the dashboard's own approval UI rather than creating a new one.
 function requestManualApproval(results) {
     const hitl = getHITL();

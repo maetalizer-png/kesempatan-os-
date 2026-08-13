@@ -1,4 +1,4 @@
-import { METRIC_KEYS } from './utils.js';
+import { METRIC_KEYS } from '../core/utils.js';
 
 const KESEMPATAN = window.KESEMPATAN || {};
 window.KESEMPATAN = KESEMPATAN;

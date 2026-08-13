@@ -1,10 +1,10 @@
-import { CONFIG } from './config.js';
-import { Utils } from './utils.js';
+import { CONFIG } from '../core/config.js';
+import { Utils } from '../core/utils.js';
 import { WorkflowState } from './workflow-state.js';
 import { WorkflowLLMBridge } from './workflow-llm-bridge.js';
-import { ChartManager } from './chart.js';
-import { HITL } from './hitl.js';
-import { ExportManager } from './export.js';
+import { ChartManager } from '../dashboard/chart.js';
+import { HITL } from '../dashboard/hitl.js';
+import { ExportManager } from '../dashboard/export.js';
 
 const KESEMPATAN = window.KESEMPATAN || {};
 window.KESEMPATAN = KESEMPATAN;

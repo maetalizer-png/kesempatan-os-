@@ -1,7 +1,7 @@
 /* ============================================================
    ai-agent/provider-router.js
    Thin adapter over the existing local-first LLM/provider bridge
-   (js/workflow-llm-bridge.js). No provider client is implemented
+   (js/workflow/workflow-llm-bridge.js). No provider client is implemented
    here — this only routes to what already exists so a future
    provider never requires changing the Orchestrator/Planner.
    ============================================================ */

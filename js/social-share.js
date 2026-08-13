@@ -1,6 +1,6 @@
-import { Utils } from './utils.js';
-import { ExportManager } from './export.js';
-import { WorkflowEngine } from './workflow.js';
+import { Utils } from './core/utils.js';
+import { ExportManager } from './dashboard/export.js';
+import { WorkflowEngine } from './workflow/workflow.js';
 
 const KESEMPATAN = window.KESEMPATAN || {};
 window.KESEMPATAN = KESEMPATAN;

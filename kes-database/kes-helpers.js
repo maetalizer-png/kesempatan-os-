@@ -359,7 +359,7 @@ KESEMPATAN.KesDatabase._dbUtils = Object.freeze({
 });
 
 // Bare (not KESEMPATAN.InternalLogger, which is a separate logger owned by
-// js/utils.js): dozens of unrelated files (country/data loaders, hitl.js,
+// js/core/utils.js): dozens of unrelated files (country/data loaders, hitl.js,
 // response-cache.js, etc.) read window.InternalLogger directly as a shared
 // cross-cutting logger.
 window.InternalLogger = InternalLogger;

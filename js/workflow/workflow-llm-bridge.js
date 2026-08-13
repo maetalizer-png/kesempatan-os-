@@ -1,4 +1,4 @@
-import { Utils } from './utils.js';
+import { Utils } from '../core/utils.js';
 // dataset/ (~165 entri, ~77KB) diimpor DINAMIS di dalam buildBootstrapCorpus(),
 // bukan statis di sini — file ini eager-loaded lewat index.html, jadi import
 // statis akan memaksa dataset/ ikut ter-parse di SETIAP boot aplikasi padahal
@@ -231,7 +231,7 @@ async function buildBootstrapCorpus() {
         });
     }
     try {
-        const { getDatasetTexts } = await import('../dataset/index.js');
+        const { getDatasetTexts } = await import('../../dataset/index.js');
         const datasetTexts = getDatasetTexts(MAX_DATASET_ENTRIES, MAX_DATASET_TEXT_LENGTH);
         texts.push.apply(texts, datasetTexts);
     } catch (e) {

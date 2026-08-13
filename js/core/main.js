@@ -1,13 +1,13 @@
 import { CONFIG } from './config.js';
 import { Utils } from './utils.js';
-import { AIClients } from './ai-clients.js';
-import { ResponseCacheManager } from './response-cache.js';
-import { ChartManager } from './chart.js';
-import { HITL } from './hitl.js';
-import { ExportManager } from './export.js';
-import { WorkflowLLMBridge } from './workflow-llm-bridge.js';
-import { WorkflowEngine } from './workflow.js';
-import { AgentRenderer } from './agent-renderer.js';
+import { AIClients } from '../ai-io/ai-clients.js';
+import { ResponseCacheManager } from '../ai-io/response-cache.js';
+import { ChartManager } from '../dashboard/chart.js';
+import { HITL } from '../dashboard/hitl.js';
+import { ExportManager } from '../dashboard/export.js';
+import { WorkflowLLMBridge } from '../workflow/workflow-llm-bridge.js';
+import { WorkflowEngine } from '../workflow/workflow.js';
+import { AgentRenderer } from '../agent-runtime/agent-renderer.js';
 
 const KESEMPATAN = window.KESEMPATAN || {};
 window.KESEMPATAN = KESEMPATAN;

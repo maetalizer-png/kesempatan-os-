@@ -1,9 +1,9 @@
 import { CustomAIState as state } from './custom-state.js';
 import { CustomAIConfig as config } from './custom-config.js';
-import { Utils } from '../js/utils.js';
-import { CONFIG } from '../js/config.js';
+import { Utils } from '../js/core/utils.js';
+import { CONFIG } from '../js/core/config.js';
 import { AGENTS_CONFIG } from '../agents/agents-config.js';
-import { WorkflowEngine } from '../js/workflow.js';
+import { WorkflowEngine } from '../js/workflow/workflow.js';
 
 const KESEMPATAN = window.KESEMPATAN || {};
 window.KESEMPATAN = KESEMPATAN;

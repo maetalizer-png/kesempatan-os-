@@ -1,7 +1,7 @@
 import { CustomAIState as state } from './custom-state.js';
 import { CustomAICore as core } from './custom-core.js';
 import { CustomAIUIRenderer as renderer } from './custom-renderer.js';
-import { Utils } from '../js/utils.js';
+import { Utils } from '../js/core/utils.js';
 
 const KESEMPATAN = window.KESEMPATAN || {};
 window.KESEMPATAN = KESEMPATAN;

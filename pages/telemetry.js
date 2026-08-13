@@ -4,8 +4,8 @@ Gaya Observasion: transparan menyatu ke latar, bordir chamfer
 BENTUK A/B TERSAMBUNG (teknik rim: outer warna garis + 1px,
 inner ::before gelap opaque).
 */
-import { Utils } from '../js/utils.js';
-import { WorkflowLLMBridge } from '../js/workflow-llm-bridge.js';
+import { Utils } from '../js/core/utils.js';
+import { WorkflowLLMBridge } from '../js/workflow/workflow-llm-bridge.js';
 
 const KESEMPATAN = window.KESEMPATAN || {};
 window.KESEMPATAN = KESEMPATAN;

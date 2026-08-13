@@ -1,4 +1,4 @@
-import { CONFIG } from '../js/config.js';
+import { CONFIG } from '../js/core/config.js';
 import { loadPrompt as loadPromptShared } from './prompt-loader.js';
 
 export const AGENTS_CONFIG = {};

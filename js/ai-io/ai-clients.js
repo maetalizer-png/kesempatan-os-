@@ -1,5 +1,5 @@
-import { CONFIG } from './config.js';
-import { Utils } from './utils.js';
+import { CONFIG } from '../core/config.js';
+import { Utils } from '../core/utils.js';
 
 const Logger = Utils.Logger;
 

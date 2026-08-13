@@ -1,5 +1,5 @@
-import { Utils } from './utils.js';
-import { CONFIG } from './config.js';
+import { Utils } from './core/utils.js';
+import { CONFIG } from './core/config.js';
 
 const KESEMPATAN = window.KESEMPATAN || {};
 window.KESEMPATAN = KESEMPATAN;
@@ -416,7 +416,7 @@ class CustomTheme {
         document.documentElement.style.setProperty('--theme-gradient', theme.gradient || 'none');
         document.body.style.fontFamily = theme.fontFamily || 'Inter, sans-serif';
         const self = this;
-        // .btn-workflow-mode (js/workflow-parallel.js) is excluded: it renders
+        // .btn-workflow-mode (js/workflow/workflow-parallel.js) is excluded: it renders
         // as a dark chamfered "glass" pill via its own ::before overlay, not a
         // solid gradient fill, and each mode (Auto/Sequential/Parallel) keeps a
         // fixed distinct accent color on purpose regardless of the chosen

@@ -1,7 +1,7 @@
 /* ============================================================
    ai-agent/workflow-engine.js
    Adapter between the Orchestrator and the existing analysis
-   pipeline in js/workflow.js. Not a second workflow engine —
+   pipeline in js/workflow/workflow.js. Not a second workflow engine —
    WorkflowEngine.start() itself stays untouched (still reads the
    dashboard's checked checkboxes); this only drives the same
    per-agent path (WorkflowEngine.runSingleAgent, added alongside
@@ -11,8 +11,8 @@
    runs instead of reimplementing one.
    ============================================================ */
 
-import { WorkflowEngine } from '../js/workflow.js';
-import { WorkflowParallel } from '../js/workflow-parallel.js';
+import { WorkflowEngine } from '../js/workflow/workflow.js';
+import { WorkflowParallel } from '../js/workflow/workflow-parallel.js';
 
 const KESEMPATAN = window.KESEMPATAN || {};
 window.KESEMPATAN = KESEMPATAN;

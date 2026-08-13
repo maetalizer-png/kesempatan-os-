@@ -1,4 +1,4 @@
-import { Utils } from './utils.js';
+import { Utils } from './core/utils.js';
 
 const showToastFn = Utils.showToast || null;
 

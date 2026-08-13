@@ -2,7 +2,7 @@
 // Menggabungkan 5 file kategori (bisnis, general, politik, global, sains —
 // masing-masing selaras 1:1 dengan salah satu dari 5 file agents/agents-*.js)
 // jadi satu korpus datar. Dipakai sebagai bahan konteks tambahan untuk LLM
-// lokal lewat buildBootstrapCorpus() di js/workflow-llm-bridge.js — BUKAN
+// lokal lewat buildBootstrapCorpus() di js/workflow/workflow-llm-bridge.js — BUKAN
 // untuk RAG/world-knowledge (itu tugas dataries/world.js, jalur terpisah).
 //
 // Setiap entri: { text: string, metadata: { category:'dataset', domain,

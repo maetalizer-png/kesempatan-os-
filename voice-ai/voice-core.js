@@ -1,6 +1,6 @@
 import { VoiceState as state } from './voice-state.js';
 import { VoiceConfig } from './voice-config.js';
-import { Utils } from '../js/utils.js';
+import { Utils } from '../js/core/utils.js';
 
 const KESEMPATAN = window.KESEMPATAN || {};
 window.KESEMPATAN = KESEMPATAN;

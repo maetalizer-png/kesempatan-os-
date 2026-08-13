@@ -1,4 +1,4 @@
-import { CONFIG } from '../js/config.js';
+import { CONFIG } from '../js/core/config.js';
 import { AGENTS_CONFIG } from './agents-config.js';
 import { loadPrompt } from './prompt-loader.js';
 

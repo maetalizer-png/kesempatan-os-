@@ -16,7 +16,7 @@ function evaluateStep(stepResult) {
         return { passed: false, reason: 'capability belum tersedia: ' + (output.reason || '') };
     }
     // Analysis-agent output shape (agent/score/confidence) — same fields
-    // js/hitl.js already scores against.
+    // js/dashboard/hitl.js already scores against.
     if (output && typeof output.confidence === 'number') {
         const threshold = (window.AutoLearning && typeof window.AutoLearning.getRecommendedThreshold === 'function')
             ? window.AutoLearning.getRecommendedThreshold(output.agent)

@@ -3,7 +3,7 @@
 // agents/agents-config.js. Bukan RAG/world-knowledge (itu tugas dataries/) —
 // folder dataset/ ini khusus jadi bahan bacaan tambahan (di luar system
 // prompt) untuk melatih & memberi konteks LLM lokal lewat
-// buildBootstrapCorpus() di js/workflow-llm-bridge.js.
+// buildBootstrapCorpus() di js/workflow/workflow-llm-bridge.js.
 const data = [
     // ================= RAHMAD RAHARJO (Senior Business Strategist) =================
     {

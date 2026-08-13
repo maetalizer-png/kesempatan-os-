@@ -2,7 +2,7 @@ import { VisualState as state } from './visual-state.js';
 import { VisualCore as core } from './visual-core.js';
 import { VisualRenderer as renderer } from './visual-renderer.js';
 import { VisualEngineModule } from './visual-engine.js';
-import { Utils } from '../js/utils.js';
+import { Utils } from '../js/core/utils.js';
 
 const KESEMPATAN = window.KESEMPATAN || {};
 window.KESEMPATAN = KESEMPATAN;

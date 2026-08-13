@@ -14,7 +14,7 @@ import './m-tuner.js';
 import './m-core.js';
 import './m-index.js';
 import './m-governance.js';
-import { Utils } from '../js/utils.js';
+import { Utils } from '../js/core/utils.js';
 
 const KESEMPATAN = window.KESEMPATAN || {};
 window.KESEMPATAN = KESEMPATAN;

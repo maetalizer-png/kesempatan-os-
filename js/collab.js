@@ -1,4 +1,4 @@
-import { Main } from './main.js';
+import { Main } from './core/main.js';
 
 function renderUI(container) {
 if (!container) {

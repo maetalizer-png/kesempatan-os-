@@ -9,7 +9,7 @@
 // (schema-level constraints), and out of scope for what "constrained
 // JSON output" needs to solve here: today, agents can freely emit
 // text that ISN'T even parseable JSON (safeParseResponse() in
-// js/utils.js is a best-effort REPAIR of that after the fact); this
+// js/core/utils.js is a best-effort REPAIR of that after the fact); this
 // module prevents the malformed case from being generated at all.
 //
 // Zero dependencies, pure functions, fully unit-testable in isolation

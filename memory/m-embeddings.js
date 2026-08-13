@@ -1,4 +1,4 @@
-import { Utils } from '../js/utils.js';
+import { Utils } from '../js/core/utils.js';
 import { MemoryConfig } from './m-config.js';
 import { MemoryUtils } from './m-utilities.js';
 

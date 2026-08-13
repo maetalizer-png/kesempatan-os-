@@ -19,21 +19,21 @@
     -->
     <meta name="google-site-verification" content="CZmjzU3vSZSTuG8KCBY-Mus6VvcgMWMqRY70ClQnCiE" />
     <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="css/global.css">
-    <link rel="stylesheet" href="css/components/toast.css">
-    <link rel="stylesheet" href="css/components/card-headings.css">
-    <link rel="stylesheet" href="css/responsive.css">
-    <link rel="stylesheet" href="css/brand.css">
-    <link rel="stylesheet" href="css/layout.css">
-    <link rel="stylesheet" href="css/sidebar.css">
-    <link rel="stylesheet" href="css/agent-grid.css">
-    <link rel="stylesheet" href="css/components/forms.css">
-    <link rel="stylesheet" href="css/components/metrics.css">
-    <link rel="stylesheet" href="css/components/charts.css">
-    <link rel="stylesheet" href="css/components/export-social.css">
-    <link rel="stylesheet" href="css/components/log.css">
-    <link rel="stylesheet" href="css/components/hitl.css">
-    <link rel="stylesheet" href="css/checkbox.css">
+    <link rel="stylesheet" href="./css/core/global.css">
+    <link rel="stylesheet" href="./css/dashboard/toast.css">
+    <link rel="stylesheet" href="./css/dashboard/card-headings.css">
+    <link rel="stylesheet" href="./css/core/responsive.css">
+    <link rel="stylesheet" href="./css/core/brand.css">
+    <link rel="stylesheet" href="./css/core/layout.css">
+    <link rel="stylesheet" href="./css/core/sidebar.css">
+    <link rel="stylesheet" href="./css/agent-runtime/agent-grid.css">
+    <link rel="stylesheet" href="./css/dashboard/forms.css">
+    <link rel="stylesheet" href="./css/dashboard/metrics.css">
+    <link rel="stylesheet" href="./css/dashboard/charts.css">
+    <link rel="stylesheet" href="./css/dashboard/export-social.css">
+    <link rel="stylesheet" href="./css/dashboard/log.css">
+    <link rel="stylesheet" href="./css/dashboard/hitl.css">
+    <link rel="stylesheet" href="./css/core/checkbox.css">
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#00FFA3">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -202,12 +202,12 @@
     <script type="module" src="agents/agents-general.js"></script>
     <script type="module" src="agents/agents-politics.js"></script>
     <script type="module" src="agents/agents-global.js"></script>
-    <script type="module" src="js/agent-renderer.js"></script>
-    <script type="module" src="js/config.js"></script>
-    <script type="module" src="js/utils.js"></script>
-    <script type="module" src="js/ai-clients.js"></script>
-    <script type="module" src="js/response-cache.js"></script>
-    <script type="module" src="js/cache-db-bridge.js"></script>
+    <script type="module" src="./js/agent-runtime/agent-renderer.js"></script>
+    <script type="module" src="./js/core/config.js"></script>
+    <script type="module" src="./js/core/utils.js"></script>
+    <script type="module" src="./js/ai-io/ai-clients.js"></script>
+    <script type="module" src="./js/ai-io/response-cache.js"></script>
+    <script type="module" src="./js/ai-io/cache-db-bridge.js"></script>
     <script type="module" src="memory/m-memory.js"></script>
     <script type="module">
         // dataries/world.js (~1.6MB, ~33% of total JS payload) hanya berisi
@@ -221,28 +221,28 @@
         else setTimeout(loadWorldData, 500);
     </script>
     <script type="module" src="js/threshold-learning.js"></script>
-    <script type="module" src="js/conten-dasboard.js"></script>
-    <script type="module" src="js/agent-control.js"></script>
-    <script type="module" src="js/agent-pool.js"></script>
-    <script type="module" src="js/metrics-panel.js"></script>
-    <script type="module" src="js/threshold.js"></script>
-    <script type="module" src="js/log-panel.js"></script>
-    <script type="module" src="js/time-analytics-panel.js"></script>
-    <script type="module" src="js/execute-panel.js"></script>
-    <script type="module" src="js/report-panel.js"></script>
-    <script type="module" src="js/chart.js"></script>
-    <script type="module" src="js/hitl.js"></script>
-    <script type="module" src="js/export.js"></script>
+    <script type="module" src="./js/dashboard/conten-dasboard.js"></script>
+    <script type="module" src="./js/agent-runtime/agent-control.js"></script>
+    <script type="module" src="./js/agent-runtime/agent-pool.js"></script>
+    <script type="module" src="./js/dashboard/metrics-panel.js"></script>
+    <script type="module" src="./js/dashboard/threshold.js"></script>
+    <script type="module" src="./js/dashboard/log-panel.js"></script>
+    <script type="module" src="./js/dashboard/time-analytics-panel.js"></script>
+    <script type="module" src="./js/dashboard/execute-panel.js"></script>
+    <script type="module" src="./js/dashboard/report-panel.js"></script>
+    <script type="module" src="./js/dashboard/chart.js"></script>
+    <script type="module" src="./js/dashboard/hitl.js"></script>
+    <script type="module" src="./js/dashboard/export.js"></script>
     <script type="module" src="kesem-llm/kesem-llm.js"></script>
     <script type="module" src="kesem-llm/llm-transformers-bridge.js"></script>
     <script type="module" src="kesem-llm/llm-download-progress-ui.js"></script>
-    <script type="module" src="js/workflow-llm-bridge.js"></script>
-    <script type="module" src="js/workflow-state.js"></script>
-    <script type="module" src="js/workflow.js"></script>
-    <script type="module" src="js/workflow-parallel.js"></script>
-    <script type="module" src="js/main.js"></script>
-    <script type="module" src="js/report-dock.js"></script>
-    <script type="module" src="js/three-viz.js"></script>
+    <script type="module" src="./js/workflow/workflow-llm-bridge.js"></script>
+    <script type="module" src="./js/workflow/workflow-state.js"></script>
+    <script type="module" src="./js/workflow/workflow.js"></script>
+    <script type="module" src="./js/workflow/workflow-parallel.js"></script>
+    <script type="module" src="./js/core/main.js"></script>
+    <script type="module" src="./js/dashboard/report-dock.js"></script>
+    <script type="module" src="./js/dashboard/three-viz.js"></script>
     <script type="module" src="interactive/interactive-shell.js"></script>
     <script type="module" src="interactive/chat-ai/cai-chat-ai.js"></script>
     <script type="module" src="interactive/chat-agent/cag-chat-agent.js"></script>
@@ -271,9 +271,9 @@
          SEKALI di load awal (tanpa retry) — kalau dua modul itu dimuat
          belakangan, hook offline-fallback-nya tidak akan pernah terpasang. -->
     <script type="module" src="pages/pages.js"></script>
-    <script type="module" src="js/ui-handlers.js"></script>
+    <script type="module" src="./js/core/ui-handlers.js"></script>
     <script type="module" src="js/collab.js"></script>
-    <script type="module" src="js/router.js"></script>
+    <script type="module" src="./js/core/router.js"></script>
     <script type="module" src="ai-agent/agent-runtime.js"></script>
     <script type="module" src="background.js"></script>
     <script>

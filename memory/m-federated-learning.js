@@ -1,4 +1,4 @@
-import { Utils } from '../js/utils.js';
+import { Utils } from '../js/core/utils.js';
 import { MemoryConfig } from './m-config.js';
 
 const KESEMPATAN = window.KESEMPATAN || {};

@@ -35,7 +35,7 @@ async function refreshSignals() {
 }
 
 // Convenience for Planner/Orchestrator: recent signals relevant to a topic,
-// used as context the same way js/workflow.js already folds Observation
+// used as context the same way js/workflow/workflow.js already folds Observation
 // data into agent prompts (via world/history sections).
 function getContextForTopic(topic, limit) {
     const signals = getSignals();

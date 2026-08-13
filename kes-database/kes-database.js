@@ -10,7 +10,7 @@ import './kes-monitor.js';
 import './kes-sync.js';
 import { getDatabase } from './kes-api.js';
 import './kes-api-playground.js';
-import { Utils } from '../js/utils.js';
+import { Utils } from '../js/core/utils.js';
 
 const KESEMPATAN = window.KESEMPATAN || {};
 window.KESEMPATAN = KESEMPATAN;
