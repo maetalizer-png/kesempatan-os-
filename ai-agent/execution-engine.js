@@ -17,9 +17,21 @@
 
 import { ToolRegistry } from './tool-registry.js';
 import { WorkflowEngineAdapter } from './workflow-engine.js';
+import { AgentRegistry } from './agent-registry.js';
 
 const KESEMPATAN = window.KESEMPATAN || {};
 window.KESEMPATAN = KESEMPATAN;
+
+// Planner picks agent names by role (spec 4/15: kapabilitas, bukan id
+// hardcoded) — kalau nama persis tidak ada di roster ~200 agen, cari lewat
+// findAgent() (cocokan role/kata kunci) sebelum menyerah, supaya rencana
+// dinamis tidak gagal cuma karena LLM menyebut nama yang mirip tapi
+// bukan exact match (mis. "DataAnalyst" vs id asli "Analyst").
+function resolveAgentName(name) {
+    if (AgentRegistry.getAnalysisAgent(name)) return name;
+    const hits = AgentRegistry.findAgent(name).filter(function(hit) { return hit.pool === 'analysis-agent'; });
+    return hits.length ? hits[0].id : name;
+}
 
 async function executeStep(step, taskContext) {
     taskContext = taskContext || {};
@@ -30,7 +42,7 @@ async function executeStep(step, taskContext) {
         } else if (step.kind === 'agent') {
             const args = step.args || {};
             output = await WorkflowEngineAdapter.runOneAgent(
-                step.name,
+                resolveAgentName(step.name),
                 args.topic || taskContext.topic,
                 args.instruction || taskContext.instruction,
                 args.uploadedData

@@ -121,7 +121,7 @@ function init() {
         
         // 🔥 Update status integrasi di UI
         if (KESEMPATAN.Podcast.uiRenderer && KESEMPATAN.Podcast.uiRenderer.showToast) {
-            const status = getIntegrationStatus();
+            const status = PodcastGenerator.getIntegrationStatus();
             const ready = [];
             if (status.memory) ready.push('Memory');
             if (status.database) ready.push('Database');
@@ -143,6 +143,7 @@ function init() {
         }
         
     } catch (e) {
+        console.error('[PodcastMain] init() gagal:', e);
         if (ui.showToast) {
             ui.showToast('⚠️ Gagal inisialisasi Podcast Generator', 'error');
         }

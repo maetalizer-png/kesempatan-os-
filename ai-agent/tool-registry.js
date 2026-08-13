@@ -112,6 +112,48 @@ register('editor.renderEditVideo', {
     }
 });
 
+// --- crypto.* (js/live-crypto.js's real LiveCrypto) ---
+register('crypto.getPrices', {
+    run: async function() {
+        if (!window.LiveCrypto || typeof window.LiveCrypto.fetchCryptoPrices !== 'function') {
+            throw new Error('ToolRegistry: window.LiveCrypto belum siap');
+        }
+        return window.LiveCrypto.fetchCryptoPrices();
+    }
+});
+register('crypto.marketSummary', {
+    run: function() {
+        if (!window.LiveCrypto || typeof window.LiveCrypto.marketSummary !== 'function') {
+            throw new Error('ToolRegistry: window.LiveCrypto belum siap');
+        }
+        return window.LiveCrypto.marketSummary();
+    }
+});
+
+// --- news.fetch (js/news-aggregator.js's real NewsAggregator instance —
+//     fetchNews/fetchLokalNews, BUKAN getNews: getNews dipanggil secara
+//     guarded di noise/noise-core.js tapi tidak pernah didefinisikan di
+//     manapun, jadi itu no-op laten yang sudah ada sebelum AI Agent ini
+//     dibangun; adapter ini sengaja memanggil method yang benar-benar ada) ---
+register('news.fetch', {
+    run: async function(args) {
+        if (!window.NewsAggregator || typeof window.NewsAggregator.fetchNews !== 'function') {
+            throw new Error('ToolRegistry: window.NewsAggregator belum siap');
+        }
+        return window.NewsAggregator.fetchNews((args && args.category) || 'teknologi');
+    }
+});
+
+// --- podcast.generateScript (podcast/podcast-main.js's real PodcastGenerator) ---
+register('podcast.generateScript', {
+    run: function(args) {
+        if (!KESEMPATAN.PodcastGenerator || typeof KESEMPATAN.PodcastGenerator.generate !== 'function') {
+            throw new Error('ToolRegistry: PodcastGenerator belum siap');
+        }
+        return KESEMPATAN.PodcastGenerator.generate(args);
+    }
+});
+
 // --- Confirmed-unavailable capabilities (repo audit, see file header) ---
 register('supabase.read', notImplementedTool('Tidak ada Supabase client nyata di codebase ini (initSupabase() tidak pernah didefinisikan; panel Settings adalah demo UI).'));
 register('supabase.query', notImplementedTool('Sama seperti supabase.read.'));

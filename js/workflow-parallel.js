@@ -186,7 +186,8 @@ function injectWorkflowBadgeStyle() {
             'cursor: pointer; overflow: hidden;' +
             '-webkit-appearance: none; appearance: none;' +
             '-webkit-tap-highlight-color: transparent; outline: none;' +
-            'background: rgba(0,255,163,0.35); color: #A0B3C9;' +
+            'background: rgba(0,255,163,0.35); color: #00FFA3;' +
+            'text-shadow: 0 0 6px rgba(0,255,163,0.25);' +
             'transition: transform .15s ease, filter .25s ease, background .25s ease, color .2s ease;' +
         '}' +
         '#workflowModeContainer .btn-workflow-mode::before {' +
