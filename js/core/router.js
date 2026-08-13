@@ -101,7 +101,7 @@ const PAGE_HANDLERS = {
             if (rapModule && typeof rapModule.render === 'function') {
                 rapModule.render();
             } else {
-                ensureModuleThenRun(['../../rap/rap-battle.js'], function() {
+                ensureModuleThenRun(['../../features/kespremai/rap/rap-battle.js'], function() {
                     const loaded = getModule('RapBattle');
                     if (loaded && typeof loaded.render === 'function') loaded.render();
                 });
@@ -116,7 +116,7 @@ const PAGE_HANDLERS = {
             if (voiceModule && typeof voiceModule.render === 'function') {
                 voiceModule.render();
             } else {
-                ensureModuleThenRun(['../../voice-ai/voice-clone.js'], function() {
+                ensureModuleThenRun(['../../features/kespremai/voice/voice-clone.js'], function() {
                     const loaded = getModule('VoiceClone');
                     if (loaded && typeof loaded.render === 'function') loaded.render();
                 });
@@ -142,7 +142,7 @@ const PAGE_HANDLERS = {
             if (typeof window.renderEditFoto === 'function' || window.initEditFoto) {
                 setTimeout(run, 100);
             } else {
-                ensureModuleThenRun(['../ai-editor-ultimate.js'], function() { setTimeout(run, 100); });
+                ensureModuleThenRun(['../../features/kesmedia/editor/ai-editor-ultimate.js'], function() { setTimeout(run, 100); });
             }
         }
     },
@@ -179,7 +179,7 @@ const PAGE_HANDLERS = {
             if (apiContainer && apiModule && typeof apiModule.renderUI === 'function') {
                 apiModule.renderUI(apiContainer);
             } else {
-                ensureModuleThenRun(['../api-public.js'], function() {
+                ensureModuleThenRun(['../../features/publicapi/api-public.js'], function() {
                     const loaded = getModule('PublicAPI');
                     if (apiContainer && loaded && typeof loaded.renderUI === 'function') loaded.renderUI(apiContainer);
                 });
@@ -194,7 +194,7 @@ const PAGE_HANDLERS = {
             if (podcastModule && podcastModule.render) {
                 podcastModule.render();
             } else {
-                ensureModuleThenRun(['../../podcast/podcast-generator.js'], function() {
+                ensureModuleThenRun(['../../features/kespremai/podcast/podcast-generator.js'], function() {
                     setTimeout(function() {
                         const panel = document.getElementById('podcastGeneratorPanel');
                         const loaded = getModule('PodcastGenerator');
@@ -212,7 +212,7 @@ const PAGE_HANDLERS = {
             if (newsModule && newsModule.render) {
                 newsModule.render();
             } else {
-                ensureModuleThenRun(['../news-aggregator.js'], function() {
+                ensureModuleThenRun(['../../features/kesmarket/news/news-aggregator.js'], function() {
                     setTimeout(function() {
                         const panel = document.getElementById('newsAggregatorPanel');
                         const loaded = getModule('NewsAggregator');
@@ -246,7 +246,7 @@ const PAGE_HANDLERS = {
             if (visualModule && typeof visualModule.render === 'function') {
                 visualModule.render();
             } else {
-                ensureModuleThenRun(['../../visual-ai/visualisation-ai.js'], function() {
+                ensureModuleThenRun(['../../features/kespremai/visual/visualisation-ai.js'], function() {
                     const loaded = getModule('VisualisationAI');
                     if (loaded && typeof loaded.render === 'function') loaded.render();
                 });
@@ -275,7 +275,7 @@ const PAGE_HANDLERS = {
             if (observationModule && typeof observationModule.render === 'function') {
                 runObservation();
             } else {
-                ensureModuleThenRun(['../../observ/Observation.js'], runObservation);
+                ensureModuleThenRun(['../../features/observation/Observation.js'], runObservation);
             }
         }
     },
@@ -288,11 +288,11 @@ const PAGE_HANDLERS = {
                 noiseModule.render();
             } else {
                 // Fallback for the rare case this page is reached before index.html's
-                // own <script type="module" src="../noise/noise-filtering.js"> has
+                // own <script type="module" src="../../features/noise/noise-filtering.js"> has
                 // finished evaluating — a classic (non-module) script tag can't load
                 // a file containing import/export, so this must use a real dynamic
                 // import() instead.
-                import('../../noise/noise-filtering.js').then(function() {
+                import('../../features/noise/noise-filtering.js').then(function() {
                     const loadedNoiseModule = getModule('NoisePage');
                     if (loadedNoiseModule && typeof loadedNoiseModule.render === 'function') loadedNoiseModule.render();
                 });

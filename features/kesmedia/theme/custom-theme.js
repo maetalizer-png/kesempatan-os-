@@ -1,5 +1,5 @@
-import { Utils } from './core/utils.js';
-import { CONFIG } from './core/config.js';
+import { Utils } from '../../../js/core/utils.js';
+import { CONFIG } from '../../../js/core/config.js';
 
 const KESEMPATAN = window.KESEMPATAN || {};
 window.KESEMPATAN = KESEMPATAN;

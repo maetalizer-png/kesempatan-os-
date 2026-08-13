@@ -69,6 +69,6 @@ export function getAgentConfig(agentName) {
 window.KESEMPATAN = window.KESEMPATAN || {};
 window.KESEMPATAN.getAgentConfig = getAgentConfig;
 
-// Bridge for consumers not yet migrated to import { AGENTS_CONFIG, getAgentConfig } from '../agents/agents-config.js'.
+// Bridge for consumers not yet migrated to import { AGENTS_CONFIG, getAgentConfig } from './agents-config.js'.
 window.AGENTS_CONFIG = AGENTS_CONFIG;
 window.getAgentConfig = getAgentConfig;

@@ -3,7 +3,7 @@ import { VoiceCore as core } from './voice-core.js';
 import { VoiceRenderer as renderer } from './voice-renderer.js';
 import { VoiceVisualizer as visualizer } from './voice-visualizer.js';
 import { VoiceConfig } from './voice-config.js';
-import { Utils } from '../js/core/utils.js';
+import { Utils } from '../../../js/core/utils.js';
 
 const KESEMPATAN = window.KESEMPATAN || {};
 window.KESEMPATAN = KESEMPATAN;

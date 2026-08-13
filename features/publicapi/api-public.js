@@ -1,4 +1,4 @@
-import { escapeHtml } from './core/utils.js';
+import { escapeHtml } from '../../js/core/utils.js';
 
 const KESEMPATAN = window.KESEMPATAN || {};
 window.KESEMPATAN = KESEMPATAN;

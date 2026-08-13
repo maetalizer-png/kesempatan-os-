@@ -1,6 +1,6 @@
 import { WorkersState } from './workers-state.js';
 import { WorkersConfig } from './workers-config.js';
-import { Utils } from '../js/core/utils.js';
+import { Utils } from '../../js/core/utils.js';
 
 const KESEMPATAN = window.KESEMPATAN || {};
 window.KESEMPATAN = KESEMPATAN;

@@ -14,7 +14,7 @@
    ============================================================ */
 
 import { AGENTS_CONFIG, getAgentConfig } from '../agents/agents-config.js';
-import { WorkersConfig } from '../workers/workers-config.js';
+import { WorkersConfig } from '../features/kesworker/workers-config.js';
 
 const KESEMPATAN = window.KESEMPATAN || {};
 window.KESEMPATAN = KESEMPATAN;

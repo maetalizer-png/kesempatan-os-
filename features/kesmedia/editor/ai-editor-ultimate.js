@@ -1,4 +1,4 @@
-import { Utils } from './core/utils.js';
+import { Utils } from '../../../js/core/utils.js';
 
 const showToastFn = Utils.showToast || null;
 
@@ -147,7 +147,7 @@ function enhance2x() {
     // responsive while it runs.
     try {
         const d = ctx.getImageData(0, 0, w, h);
-        const worker = new Worker('js/ai-editor-worker.js');
+        const worker = new Worker('features/kesmedia/editor/ai-editor-worker.js');
         const srcBuffer = new Uint8ClampedArray(d.data).buffer;
         worker.onmessage = function(e) {
             const out = new Uint8ClampedArray(e.data.buffer);
