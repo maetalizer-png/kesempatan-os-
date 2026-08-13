@@ -23,16 +23,24 @@ index.html dimuat
   │     js/ai-io/{ai-clients,response-cache,cache-db-bridge}.js →
   │     memory/m-memory.js → js/dashboard/*.js (panel dashboard) →
   │     kesem-llm/*.js → js/workflow/*.js → js/core/main.js →
-  │     interactive/*.js (shell chat/forum/debat/turnamen) →
-  │     custom-ai/, workers/ai-worker.js → pages/pages.js →
-  │     js/core/{ui-handlers,router}.js → ai-agent/agent-runtime.js →
-  │     background.js (partikel 3D dekoratif)
+  │     features/kestraktive/*.js (shell chat/forum/debat/turnamen) →
+  │     features/kespremai/custom-auto/, features/kesworker/ai-worker.js →
+  │     pages/pages.js → js/core/{ui-handlers,router}.js →
+  │     ai-agent/agent-runtime.js → background.js (partikel 3D dekoratif)
   │
-  └─► js/core/router.js aktif — sisanya (rap/, voice-ai/, visual-ai/,
-        podcast/, observ/, noise/, dataries/world.js, js/news-aggregator.js,
-        js/api-public.js, js/ai-editor-ultimate.js) di-import() ON-DEMAND
-        cuma saat halaman sidebar terkait dibuka — bukan di boot.
+  └─► js/core/router.js aktif — sisanya (features/kespremai/{rap,voice,
+        visual,podcast}, features/observation/, features/noise/,
+        dataries/world.js, features/kesmarket/news/, features/publicapi/,
+        features/kesmedia/editor/) di-import() ON-DEMAND cuma saat halaman
+        sidebar terkait dibuka — bukan di boot.
 ```
+
+**Container dashboard yang dipopulasi async tidak lagi tampak "kosong/
+tumpang tindih" sesaat setelah first paint:** empat container utama
+(`contenDasboardContainer`, `workflowModeContainer`, `agentControlContainer`,
+`agentPoolContainer`) sekarang punya skeleton shimmer berbasis CSS `:empty`
+selector — otomatis hilang begitu `renderUI()` mengisi kontennya, tanpa
+perlu menyentuh 4 file render terpisah (`css/core/global.css`).
 
 **Kenapa first paint sekarang cepat (~130ms, dulu ~13 detik):** akar masalahnya
 BUKAN jumlah file JS, tapi satu `<link rel="stylesheet">` ke
@@ -75,29 +83,63 @@ kesempatan-os-/
 ├── ai-agent/                      — orkestrasi agent-to-agent (planner, orchestrator, tool-registry,
 │                                    result-evaluator, provider-router, dst.)
 ├── pages/                         — Telemetry, Settings, Report, Auto-Learning, Memory Manager
-├── (folder fitur sidebar, tidak disentuh reorganisasi ini):
-│    rap/, voice-ai/, visual-ai/, custom-ai/, interactive/, workers/, podcast/,
-│    observ/, noise/
+├── features/                      — SEMUA fitur sidebar, dikelompokkan PERSIS
+│   │                                mengikuti struktur menu sidebar (lihat A.3)
+│   ├── kestraktive/                — Chat AI, Chat Agent, Forum, Debat, Turnamen (34 file)
+│   ├── kespremai/
+│   │   ├── podcast/, voice/, rap/, visual/, custom-auto/, offline/
+│   ├── kesmarket/
+│   │   ├── live-crypto/, news/
+│   ├── kesmedia/
+│   │   ├── social-share/, theme/, editor/
+│   ├── kesworker/                  — 55 AI Worker otonom (ai-worker.js dkk)
+│   ├── observation/, noise/, websocket/, publicapi/
+│   │                                — tanpa submenu, langsung di features/
+│   └── (2 file SENGAJA tidak dipindah — lihat A.3)
 └── dev-simulator/                 — tool live-preview lokal (bukan bagian app produksi)
 ```
 
-### A.3 File fitur sidebar di `js/` (sengaja TIDAK dipindah)
+### A.3 `features/` — struktur, alasan, dan status self-containment
 
-12 file berikut tetap di `js/` root karena masing-masing = satu fitur di
-sidebar, bukan infrastruktur backend/dashboard:
+**Pemetaan folder ↔ menu sidebar** persis 1:1 — grup dengan submenu (▼)
+jadi sub-folder `features/<grup>/<item>/`, item tanpa submenu langsung di
+`features/<item>/`. `threshold-learning.js` dan `reaction-learning.js`
+(halaman Auto-Learning) SENGAJA masih di `js/` root, bukan `features/` —
+keduanya monkey-patch `WorkflowEngine.start`/`recordFeedback` secara
+global saat modul dievaluasi, jadi bukan fitur yang benar-benar mandiri
+(memindahkannya tanpa mengaudit dampak monkey-patch itu berisiko, di luar
+scope reorganisasi folder murni).
 
-| File | Halaman sidebar |
-|---|---|
-| `social-share.js` | Share Sosmed |
-| `live-crypto.js` | Live Crypto |
-| `custom-theme.js` | Custom Theme |
-| `offline-mode.js` | Mode Offline |
-| `ai-voice-agents.js` | Voice & Clone |
-| `reaction-learning.js`, `threshold-learning.js` | Auto-Learning |
-| `news-aggregator.js` | News Aggregator |
-| `api-public.js` | Public API |
-| `ai-editor-ultimate.js`, `ai-editor-worker.js` | Edit Foto |
-| `collab.js` | Kolaborasi (WebSocket) |
+**Analisis: apakah setiap fitur bisa punya CSS & HTML sendiri?**
+
+Diperiksa langsung ke isi `kestraktive/`, `kespremai/`, `kesmarket/`,
+`kesmedia/` sebelum menjawab:
+
+- **CSS — sudah PADA DASARNYA self-contained, tanpa perlu dikerjakan lagi.**
+  Fitur-fitur ini nyaris tidak memakai class dari `css/` bersama — mereka
+  men-generate tampilannya sendiri lewat `element.style.cssText = '...'`
+  langsung di JS (diverifikasi: nol match untuk nama fitur di seluruh
+  `css/`, ratusan match untuk `.style.cssText` di file fitur). Artinya
+  gaya visual tiap fitur SUDAH terikat erat ke kode fiturnya sendiri, bukan
+  bergantung ke stylesheet global yang dipakai fitur lain. Membuat file
+  `.css` terpisah per fitur di titik ini berarti MENGEKSTRAK ratusan
+  `style.cssText` inline itu jadi class — refactor besar dengan risiko
+  regresi visual nyata di banyak halaman, untuk manfaat yang murni
+  organisasi (bukan kebutuhan fungsional), jadi TIDAK dikerjakan sesi ini.
+- **HTML terpisah — tidak direkomendasikan tanpa perombakan arsitektur
+  render yang jauh lebih besar.** Seluruh codebase (bukan cuma 4 fitur ini)
+  merender UI lewat `container.innerHTML = '...template string...'` di
+  JS, bukan file `.html` terpisah yang di-fetch. Memberi HANYA 4 fitur
+  file `.html` sendiri akan jadi pengecualian yang tidak konsisten dengan
+  55+ modul lain yang memakai pola sama — kalau pola ini mau diubah,
+  seharusnya jadi keputusan arsitektur untuk SELURUH aplikasi, bukan
+  4 fitur saja, dan itu di luar scope yang aman dikerjakan sekali jalan.
+
+**Kesimpulan:** folder co-location (JS satu fitur = satu folder) — selesai
+dan diverifikasi. Self-containment gaya CSS — sudah tercapai secara
+alami lewat pola inline styling yang sudah ada, tidak perlu file `.css`
+tambahan. HTML terpisah — bukan pekerjaan mekanis, butuh keputusan
+arsitektur terpisah dan sengaja tidak diambil di sesi ini.
 
 ---
 
