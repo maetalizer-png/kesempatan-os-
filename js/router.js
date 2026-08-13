@@ -5,6 +5,24 @@ function getModule(moduleName) {
     return KESEMPATAN[moduleName] || window[moduleName];
 }
 
+// Fallback for pages whose feature module is no longer an eager
+// <script type="module"> in index.html (deferred for initial-load
+// performance — see index.html) — dynamic import() is the only way to
+// load an ES module (with import/export) at runtime; a classic <script>
+// tag can't. Each path is only ever import()-ed once per session, so
+// revisiting a page after its module has loaded just re-runs thenFn().
+const loadedModules = new Set();
+function ensureModuleThenRun(paths, thenFn) {
+    const toLoad = paths.filter(function(p) { return !loadedModules.has(p); });
+    if (toLoad.length === 0) { thenFn(); return; }
+    Promise.all(toLoad.map(function(p) {
+        loadedModules.add(p);
+        return import(p);
+    })).then(thenFn).catch(function(err) {
+        console.error('[Router] gagal memuat modul', paths, err);
+    });
+}
+
 // Pages whose module exposes a destroy() that tears down intervals/listeners
 // set up by its render(). The router has no generic "page exit" hook, so
 // nothing called these outside of window 'beforeunload' (tab close) — which
@@ -80,7 +98,14 @@ const PAGE_HANDLERS = {
         if (element) {
             element.style.display = 'block';
             const rapModule = getModule('RapBattle');
-            if (rapModule && typeof rapModule.render === 'function') rapModule.render();
+            if (rapModule && typeof rapModule.render === 'function') {
+                rapModule.render();
+            } else {
+                ensureModuleThenRun(['../rap/rap-battle.js'], function() {
+                    const loaded = getModule('RapBattle');
+                    if (loaded && typeof loaded.render === 'function') loaded.render();
+                });
+            }
         }
     },
     voicechatsuara: function() {
@@ -88,7 +113,14 @@ const PAGE_HANDLERS = {
         if (element) {
             element.style.display = 'block';
             const voiceModule = getModule('VoiceClone');
-            if (voiceModule && typeof voiceModule.render === 'function') voiceModule.render();
+            if (voiceModule && typeof voiceModule.render === 'function') {
+                voiceModule.render();
+            } else {
+                ensureModuleThenRun(['../voice-ai/voice-clone.js'], function() {
+                    const loaded = getModule('VoiceClone');
+                    if (loaded && typeof loaded.render === 'function') loaded.render();
+                });
+            }
         }
     },
     livecrypto: function() {
@@ -103,10 +135,15 @@ const PAGE_HANDLERS = {
         const element = document.getElementById('editfotoPage');
         if (element) {
             element.style.display = 'block';
-            setTimeout(function() {
+            const run = function() {
                 if (typeof window.renderEditFoto === 'function') window.renderEditFoto();
                 else if (window.initEditFoto) window.initEditFoto();
-            }, 100);
+            };
+            if (typeof window.renderEditFoto === 'function' || window.initEditFoto) {
+                setTimeout(run, 100);
+            } else {
+                ensureModuleThenRun(['../js/ai-editor-ultimate.js'], function() { setTimeout(run, 100); });
+            }
         }
     },
     sharesosmed: function() {
@@ -139,7 +176,14 @@ const PAGE_HANDLERS = {
             element.style.display = 'block';
             const apiContainer = document.getElementById('publicApiContainer');
             const apiModule = getModule('PublicAPI');
-            if (apiContainer && apiModule && typeof apiModule.renderUI === 'function') apiModule.renderUI(apiContainer);
+            if (apiContainer && apiModule && typeof apiModule.renderUI === 'function') {
+                apiModule.renderUI(apiContainer);
+            } else {
+                ensureModuleThenRun(['../js/api-public.js'], function() {
+                    const loaded = getModule('PublicAPI');
+                    if (apiContainer && loaded && typeof loaded.renderUI === 'function') loaded.renderUI(apiContainer);
+                });
+            }
         }
     },
     podcast: function() {
@@ -150,10 +194,13 @@ const PAGE_HANDLERS = {
             if (podcastModule && podcastModule.render) {
                 podcastModule.render();
             } else {
-                setTimeout(function() {
-                    const panel = document.getElementById('podcastGeneratorPanel');
-                    if (panel && podcastModule && podcastModule.render) podcastModule.render();
-                }, 100);
+                ensureModuleThenRun(['../podcast/podcast-generator.js'], function() {
+                    setTimeout(function() {
+                        const panel = document.getElementById('podcastGeneratorPanel');
+                        const loaded = getModule('PodcastGenerator');
+                        if (panel && loaded && loaded.render) loaded.render();
+                    }, 100);
+                });
             }
         }
     },
@@ -165,10 +212,13 @@ const PAGE_HANDLERS = {
             if (newsModule && newsModule.render) {
                 newsModule.render();
             } else {
-                setTimeout(function() {
-                    const panel = document.getElementById('newsAggregatorPanel');
-                    if (panel && newsModule && newsModule.render) newsModule.render();
-                }, 100);
+                ensureModuleThenRun(['../js/news-aggregator.js'], function() {
+                    setTimeout(function() {
+                        const panel = document.getElementById('newsAggregatorPanel');
+                        const loaded = getModule('NewsAggregator');
+                        if (panel && loaded && loaded.render) loaded.render();
+                    }, 100);
+                });
             }
         }
     },
@@ -193,7 +243,14 @@ const PAGE_HANDLERS = {
         if (element) {
             element.style.display = 'block';
             const visualModule = getModule('VisualisationAI');
-            if (visualModule && typeof visualModule.render === 'function') visualModule.render();
+            if (visualModule && typeof visualModule.render === 'function') {
+                visualModule.render();
+            } else {
+                ensureModuleThenRun(['../visual-ai/visualisation-ai.js'], function() {
+                    const loaded = getModule('VisualisationAI');
+                    if (loaded && typeof loaded.render === 'function') loaded.render();
+                });
+            }
         }
     },
     keschat: function() {
@@ -212,9 +269,17 @@ const PAGE_HANDLERS = {
         if (pageInner) pageInner.style.display = 'none';
         if (observationEngine) {
             observationEngine.style.display = 'block';
+            const runObservation = function() {
+                const observationModule = getModule('ObservationPage');
+                if (observationModule && typeof observationModule.render === 'function') observationModule.render();
+                if (observationModule && typeof observationModule.start === 'function') observationModule.start();
+            };
             const observationModule = getModule('ObservationPage');
-            if (observationModule && typeof observationModule.render === 'function') observationModule.render();
-            if (observationModule && typeof observationModule.start === 'function') observationModule.start();
+            if (observationModule && typeof observationModule.render === 'function') {
+                runObservation();
+            } else {
+                ensureModuleThenRun(['../observ/Observation.js'], runObservation);
+            }
         }
     },
     noise: function() {

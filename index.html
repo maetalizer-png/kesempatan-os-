@@ -244,23 +244,26 @@
     <script type="module" src="interactive/debate/deb-debate.js"></script>
     <script type="module" src="interactive/tournament/tor-tournament.js"></script>
     <script type="module" src="custom-ai/custom-auto-agent.js"></script>
-    <script type="module" src="rap/rap-battle.js"></script>
     <script type="module" src="js/social-share.js"></script>
     <script type="module" src="js/live-crypto.js"></script>
-    <script type="module" src="voice-ai/voice-clone.js"></script>
     <script type="module" src="js/custom-theme.js"></script>
     <script type="module" src="workers/ai-worker.js"></script>
     <script type="module" src="js/offline-mode.js"></script>
-    <script type="module" src="visual-ai/visualisation-ai.js"></script>
-    <script type="module" src="podcast/podcast-generator.js"></script>
-    <script type="module" src="js/news-aggregator.js"></script>
-    <script type="module" src="js/ai-editor-ultimate.js"></script>
     <script type="module" src="js/ai-voice-agents.js"></script>
     <script type="module" src="js/reaction-learning.js"></script>
-    <script type="module" src="js/api-public.js"></script>
-    <script type="module" src="observ/Observation.js"></script>
-    <!-- noise/noise-filtering.js: dimuat on-demand oleh js/router.js saat
-         halaman Noise dibuka (lihat fallback import() di PAGE_HANDLERS.noise) -->
+    <!-- Halaman berikut dimuat on-demand oleh js/router.js (ensureModuleThenRun)
+         saat pertama dibuka, bukan lagi eager di sini — masing-masing sudah
+         diverifikasi self-contained (import dependensinya sendiri + panggil
+         render/init miliknya sendiri) dan TIDAK melakukan monkey-patch lintas
+         modul saat load (beda dgn custom-ai/social-share yang tetap eager di
+         atas karena keduanya menimpa WorkflowEngine.start secara global):
+         rap/rap-battle.js, voice-ai/voice-clone.js, visual-ai/visualisation-ai.js,
+         podcast/podcast-generator.js, js/news-aggregator.js,
+         js/ai-editor-ultimate.js, js/api-public.js, observ/Observation.js,
+         noise/noise-filtering.js. workers/ai-worker.js & js/live-crypto.js
+         TETAP eager: js/offline-mode.js meng-hook window.AIWorkers/LiveCrypto
+         SEKALI di load awal (tanpa retry) — kalau dua modul itu dimuat
+         belakangan, hook offline-fallback-nya tidak akan pernah terpasang. -->
     <script type="module" src="pages/pages.js"></script>
     <script type="module" src="js/ui-handlers.js"></script>
     <script type="module" src="js/collab.js"></script>
