@@ -409,6 +409,108 @@ function testAggregateResults(results) {
     assertEqual(results, 'aggregateResults() tanpa agen valid -> fallback score 0', empty.score, 0);
 }
 
+// --- LLMJSONGrammar (kesem-llm/llm-json-grammar.js): character-level JSON structural grammar ---
+function testJSONGrammar(results) {
+    const G = window.LLMJSONGrammar;
+    if (!G) { assertTrue(results, 'LLMJSONGrammar tersedia', false, 'window.LLMJSONGrammar tidak ditemukan'); return; }
+    function fullyValid(text) {
+        const s = G.stepText(G.createState(), text);
+        return !!s && G.isComplete(s);
+    }
+    function rejectedSomewhere(text) {
+        let s = G.createState();
+        for (const ch of text) {
+            s = G.stepChar(s, ch);
+            if (!s) return true;
+        }
+        return false;
+    }
+    ['{"score":85,"summary":"ok","insight":["a","b"],"metrics":{"demand":80}}', '[1,2,3]', 'true', '-3.14e10', '{}'].forEach(function (t) {
+        assertTrue(results, 'JSONGrammar valid+complete: ' + t.slice(0, 30), fullyValid(t));
+    });
+    ['{"a":}', '{a:1}', '[1,2,]', '01', '{]'].forEach(function (t) {
+        assertTrue(results, 'JSONGrammar rejects: ' + t, rejectedSomewhere(t));
+    });
+    assertTrue(results, 'JSONGrammar treats incomplete-but-valid-so-far as not-yet-rejected', !rejectedSomewhere('{"a":1') && !fullyValid('{"a":1'));
+}
+
+// --- LLMSampler.constrainLogitsToJSON (kesem-llm/llm-sampler.js): token-level masking on a tiny mock vocab ---
+function testConstrainedSampling(results) {
+    const S = window.LLMSampler;
+    const G = window.LLMJSONGrammar;
+    if (!S || !G || typeof S.constrainLogitsToJSON !== 'function') {
+        assertTrue(results, 'LLMSampler.constrainLogitsToJSON tersedia', false, 'modul belum termuat di halaman ini');
+        return;
+    }
+    // Vocab kecil buatan sendiri — TIDAK menyentuh model/vocab asli, cuma
+    // untuk menguji constrainLogitsToJSON() secara terisolasi.
+    const tokens = ['{', '}', '"', 'a', ':', ',', '1', 'true', 'EOS'];
+    const idToToken = new Map();
+    tokens.forEach(function (t, i) { idToToken.set(i, t); });
+    const eosId = tokens.indexOf('EOS');
+    const vocab = { idToToken: idToToken };
+    const flatLogits = tokens.map(function () { return 1.0; });
+
+    // Dari state awal (harap sebuah VALUE): '{', '"', '1', 'true' valid; '}', ':', ',' TIDAK; EOS TIDAK (JSON belum lengkap).
+    const start = G.createState();
+    const r1 = S.constrainLogitsToJSON(flatLogits, vocab, start, eosId);
+    assertTrue(results, 'constrainLogitsToJSON: "{" valid dari state awal', r1.logits[tokens.indexOf('{')] !== -Infinity);
+    assertTrue(results, 'constrainLogitsToJSON: "}" TIDAK valid dari state awal', r1.logits[tokens.indexOf('}')] === -Infinity);
+    assertTrue(results, 'constrainLogitsToJSON: ":" TIDAK valid dari state awal', r1.logits[tokens.indexOf(':')] === -Infinity);
+    assertTrue(results, 'constrainLogitsToJSON: EOS TIDAK valid sebelum JSON lengkap', r1.logits[eosId] === -Infinity);
+
+    // Majukan state lewat "{" -> sekarang harap key-string-start atau "}" (objek kosong).
+    const afterBrace = G.stepText(G.createState(), '{');
+    const r2 = S.constrainLogitsToJSON(flatLogits, vocab, afterBrace, eosId);
+    assertTrue(results, 'constrainLogitsToJSON: "\\"" valid setelah "{"', r2.logits[tokens.indexOf('"')] !== -Infinity);
+    assertTrue(results, 'constrainLogitsToJSON: "}" valid setelah "{" (objek kosong diizinkan)', r2.logits[tokens.indexOf('}')] !== -Infinity);
+    assertTrue(results, 'constrainLogitsToJSON: "1" TIDAK valid setelah "{" (key wajib string)', r2.logits[tokens.indexOf('1')] === -Infinity);
+
+    // State JSON lengkap ("{}") -> EOS sekarang valid.
+    const complete = G.stepText(G.createState(), '{}');
+    const r3 = S.constrainLogitsToJSON(flatLogits, vocab, complete, eosId);
+    assertTrue(results, 'constrainLogitsToJSON: EOS valid setelah JSON lengkap', r3.logits[eosId] !== -Infinity);
+
+    // Fail-open: kalau TIDAK ADA token valid sama sekali dari vocab, harus
+    // kembalikan logits ASLI (bukan semua -Infinity yang bikin sampling macet).
+    const tinyVocab = { idToToken: new Map([[0, 'zzz_never_valid_here']]) };
+    const r4 = S.constrainLogitsToJSON([1.0], tinyVocab, start, 99 /* no real eos in this vocab */);
+    assertTrue(results, 'constrainLogitsToJSON: fail-open kalau tidak ada token valid', r4.anyValid === false && r4.logits[0] === 1.0);
+
+    // REGRESI (bug nyata yang sempat lolos, ditemukan lewat generate()
+    // end-to-end sebelum fix ini — model menghasilkan "fal se" alih-alih
+    // "false"): kalau token PERTAMA yang dipilih adalah piece yang MENUTUP
+    // sebuah kata ("fal</w>"), detokenize() (llm-tokenizer.js) akan
+    // menyisipkan spasi sebelum kata BERIKUTNYA. Di tengah literal/angka,
+    // spasi itu SELALU merusak (tidak ada penyambung yang valid) — jadi
+    // perilaku yang benar adalah gagal-terbuka (fail-open, anyValid=false)
+    // alih-alih diam-diam menerima "se" dan menghasilkan "fal se".
+    const eow = '</w>';
+    const boundaryVocab = { idToToken: new Map([[0, 'fal' + eow], [1, 'se'], [2, ' se']]) };
+    const r5a = S.constrainLogitsToJSON([1.0, 1.0, 1.0], boundaryVocab, start, 99, false);
+    assertTrue(results, 'constrainLogitsToJSON: "fal</w>" valid sbg awal literal "false"', r5a.logits[0] !== -Infinity);
+    const advanced = S.advanceJSONGrammar(start, 0, boundaryVocab, 99, false);
+    assertTrue(results, 'advanceJSONGrammar: wordBoundaryPending jadi true setelah piece "fal</w>"', advanced.wordBoundaryPending === true);
+    const r5b = S.constrainLogitsToJSON([1.0, 1.0, 1.0], boundaryVocab, advanced.state, 99, advanced.wordBoundaryPending);
+    assertTrue(results, 'constrainLogitsToJSON: gagal-terbuka saat literal tak bisa disambung tanpa lewat batas-kata (cegah "fal se")', r5b.anyValid === false);
+
+    // Sebaliknya, TANPA batas kata (mis. "fal" dan "se" datang dari BPE
+    // piece yang sama tanpa penanda EOW di antaranya) — "se" tetap valid
+    // menyambung literal "false", karena detokenize() TIDAK menyisipkan
+    // spasi di situ. Ini membuktikan fix TIDAK jadi terlalu konservatif
+    // untuk kasus yang sebenarnya aman.
+    const noBoundaryState = G.stepText(G.createState(), 'fal');
+    const r6 = S.constrainLogitsToJSON([1.0, 1.0, 1.0], boundaryVocab, noBoundaryState, 99, false);
+    assertTrue(results, 'constrainLogitsToJSON: token TANPA batas-kata tetap valid menyambung literal', r6.logits[1] !== -Infinity);
+
+    // Sanity check satu lagi: batas-kata di posisi yang MEMANG mentolerir
+    // whitespace (mis. sebelum sebuah value baru) harus TETAP diterima —
+    // fix ini tidak boleh menolak spasi di tempat yang sah.
+    const openBraceVocab = { idToToken: new Map([[0, '{']]) };
+    const r7 = S.constrainLogitsToJSON([1.0], openBraceVocab, start, 99, true);
+    assertTrue(results, 'constrainLogitsToJSON: spasi tersirat dari batas-kata TETAP diterima di posisi yang mentolerir whitespace', r7.logits[0] !== -Infinity);
+}
+
 // --- AGENTS_CONFIG (agents/agents-config.js + kategori) structural integrity ---
 function testAgentsConfig(results) {
     const AC = window.AGENTS_CONFIG;
@@ -435,6 +537,8 @@ const runRealAssertions = async function() {
     testUtils(results);
     testAggregateResults(results);
     testAgentsConfig(results);
+    testJSONGrammar(results);
+    testConstrainedSampling(results);
     const pass = results.filter(function(r) { return r.pass; }).length;
     const fail = results.length - pass;
     InternalLogger.info('TestRunner', 'REAL ASSERTIONS: ' + pass + '/' + results.length + ' pass' + (fail ? ', ' + fail + ' FAILED' : ''));

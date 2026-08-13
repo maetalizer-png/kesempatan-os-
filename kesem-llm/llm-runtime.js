@@ -107,7 +107,11 @@ function sampleNextToken(logits, temperature, greedy, samplingOptions) {
         // Repetition penalty tetap berlaku di mode greedy juga — tanpa itu
         // greedy decoding gampang terjebak loop "kata yang sama berulang".
         if (window.LLMSampler) {
-            return window.LLMSampler.argmax(window.LLMSampler.applyRepetitionPenalty(logits, samplingOptions.recentTokenIds, samplingOptions.repetitionPenalty));
+            let penalized = window.LLMSampler.applyRepetitionPenalty(logits, samplingOptions.recentTokenIds, samplingOptions.repetitionPenalty);
+            if (samplingOptions.jsonGrammarState && samplingOptions.vocab) {
+                penalized = window.LLMSampler.constrainLogitsToJSON(penalized, samplingOptions.vocab, samplingOptions.jsonGrammarState, samplingOptions.eosId, samplingOptions.wordBoundaryPending).logits;
+            }
+            return window.LLMSampler.argmax(penalized);
         }
         return argmax(logits);
     }
@@ -117,7 +121,11 @@ function sampleNextToken(logits, temperature, greedy, samplingOptions) {
             p: typeof samplingOptions.topP === 'number' ? samplingOptions.topP : 0.9,
             temperature: temperature,
             repetitionPenalty: samplingOptions.repetitionPenalty,
-            recentTokenIds: samplingOptions.recentTokenIds
+            recentTokenIds: samplingOptions.recentTokenIds,
+            jsonGrammarState: samplingOptions.jsonGrammarState,
+            vocab: samplingOptions.vocab,
+            eosId: samplingOptions.eosId,
+            wordBoundaryPending: samplingOptions.wordBoundaryPending
         });
     }
     const T = Math.max(1e-6, temperature);
@@ -226,6 +234,17 @@ async function generateCached(model, promptText, options) {
     const topP = typeof options.topP === 'number' ? options.topP : model.config.runtime.topP;
     const repetitionPenalty = typeof options.repetitionPenalty === 'number' ? options.repetitionPenalty : model.config.runtime.repetitionPenalty;
     const yieldEvery = Number.isInteger(options.yieldEvery) && options.yieldEvery > 0 ? options.yieldEvery : 1;
+    // Opt-in only (Fase 0 roadmap: constrained JSON output) — default
+    // behavior for every existing caller is completely unchanged unless
+    // they explicitly pass constrainJSON:true. window.LLMJSONGrammar comes
+    // from llm-json-grammar.js (imported transitively via llm-sampler.js).
+    const constrainJSON = options.constrainJSON === true && !!window.LLMJSONGrammar;
+    let jsonGrammarState = constrainJSON ? window.LLMJSONGrammar.createState() : null;
+    // Tracks whether detokenize() would insert a space before the NEXT
+    // token's text (true right after a token that completed a "word") —
+    // needed because JSON literals/numbers can't tolerate an inserted
+    // space, unlike string content (see llm-sampler.js's impliedText()).
+    let jsonWordBoundaryPending = false;
     const pieces = Tokenizer.tokenize(promptText, model.merges);
     const promptIds = Vocabulary.encode(pieces, model.vocab);
     let ids = [model.vocab.bosId].concat(promptIds);
@@ -282,11 +301,20 @@ async function generateCached(model, promptText, options) {
         const nextId = sampleNextToken(maskSpecialTokens(logits, model.vocab), temperature, greedy, {
             topP: topP,
             repetitionPenalty: repetitionPenalty,
-            recentTokenIds: generatedIds.slice(-64)
+            recentTokenIds: generatedIds.slice(-64),
+            jsonGrammarState: jsonGrammarState,
+            vocab: model.vocab,
+            eosId: model.vocab.eosId,
+            wordBoundaryPending: jsonWordBoundaryPending
         });
         if (nextId === model.vocab.eosId) {
             stoppedAtEos = true;
             break;
+        }
+        if (constrainJSON && window.LLMSampler) {
+            const advanced = window.LLMSampler.advanceJSONGrammar(jsonGrammarState, nextId, model.vocab, model.vocab.eosId, jsonWordBoundaryPending);
+            jsonGrammarState = advanced.state;
+            jsonWordBoundaryPending = advanced.wordBoundaryPending;
         }
         generatedIds.push(nextId);
         if ((step + 1) % yieldEvery === 0) {

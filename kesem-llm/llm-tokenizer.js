@@ -6,6 +6,13 @@ const Logger = window.Utils?.Logger || {
 
 const END_OF_WORD = '</w>';
 
+// Dipakai detokenize() di bawah, dan (di-export) oleh llm-sampler.js untuk
+// mensimulasikan persis kapan detokenize() akan menyisipkan spasi antar-kata
+// saat constrained JSON decoding menilai kandidat token — literal/angka JSON
+// TIDAK tahan spasi di tengahnya, beda dengan isi string yang tahan spasi
+// di mana pun.
+const NO_SPACE_BEFORE = new Set(['.', ',', '!', '?', ':', ';', ')', ']', '}', "'", '"']);
+
 // ============================================================
 // PRE-TOKENISASI
 // ============================================================
@@ -193,7 +200,6 @@ function tokenize(text, merges) {
 function detokenize(pieces) {
     let text = '';
     let word = '';
-    const NO_SPACE_BEFORE = new Set(['.', ',', '!', '?', ':', ';', ')', ']', '}', "'", '"']);
 
     pieces.forEach(function (piece) {
         if (piece.endsWith(END_OF_WORD)) {
@@ -223,7 +229,8 @@ export const LLMTokenizer = {
     trainBPE: trainBPE,
     tokenize: tokenize,
     detokenize: detokenize,
-    END_OF_WORD: END_OF_WORD
+    END_OF_WORD: END_OF_WORD,
+    NO_SPACE_BEFORE: NO_SPACE_BEFORE
 };
 
 window.LLMTokenizer = LLMTokenizer;

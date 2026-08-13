@@ -1,3 +1,6 @@
+import { LLMTokenizer } from './llm-tokenizer.js';
+import { LLMJSONGrammar } from './llm-json-grammar.js';
+
 const Logger = window.Utils?.Logger || {
     info: function () { /* silent */ },
     warn: function () { /* silent */ },
@@ -128,16 +131,102 @@ function applyRepetitionPenalty(logits, recentTokenIds, penalty) {
 }
 
 // ============================================================
+// CONSTRAINED JSON OUTPUT (Fase 0 roadmap) — mask logits so only
+// tokens that keep the output on track to be valid JSON can be
+// sampled. Guarantees JSON.parse()-validity of the STRUCTURE only
+// (brackets/quotes/commas/number syntax) — it says nothing about
+// whether field values are semantically correct, which is a separate,
+// much harder problem this deliberately does not attempt.
+// ============================================================
+
+// A BPE piece's raw text carries a word-boundary suffix (llm-tokenizer.js's
+// END_OF_WORD) that isn't part of the actual output characters.
+function pieceInfo(id, vocab) {
+    const raw = vocab.idToToken.get(id);
+    if (raw === undefined) return null;
+    const eow = LLMTokenizer.END_OF_WORD;
+    const endsWord = raw.endsWith(eow);
+    const core = endsWord ? raw.slice(0, -eow.length) : raw;
+    return { core: core, endsWord: endsWord };
+}
+
+// detokenize() (llm-tokenizer.js) inserts a space BEFORE a new word starts,
+// UNLESS that whole word turns out to be a single NO_SPACE_BEFORE
+// punctuation character — and JSON's true/false/null literals and numbers
+// are NEVER valid with a space in the middle (unlike string CONTENT, which
+// tolerates a space anywhere). Evaluated one candidate token at a time
+// (no multi-token lookahead into what the rest of an eventual word will
+// be), so this conservatively assumes a space WILL land whenever it can't
+// yet prove the single-char-punctuation exception applies — it can only
+// reject a few technically-fine continuations this way, never accept one
+// that would actually come out corrupted by an inserted space.
+function impliedText(wordBoundaryPending, piece) {
+    if (!wordBoundaryPending) return piece.core;
+    const isSinglePunctWord = piece.endsWord && piece.core.length === 1 && LLMTokenizer.NO_SPACE_BEFORE.has(piece.core);
+    return isSinglePunctWord ? piece.core : ' ' + piece.core;
+}
+
+// Returns { logits, anyValid }. anyValid=false means EVERY vocab token
+// would break JSON structure from this grammar state (should be rare —
+// base ASCII punctuation is normally present in any BPE vocab trained on
+// real text — but a fixed, finite vocab can never be proven exhaustive).
+// Callers MUST use the returned (unmasked) logits in that case rather
+// than sample from an all -Infinity row, which would break generation
+// outright — fail open, never fail closed into a stuck/broken generator.
+function constrainLogitsToJSON(logits, vocab, grammarState, eosId, wordBoundaryPending) {
+    const masked = logits.slice();
+    let anyValid = false;
+    for (let id = 0; id < masked.length; id++) {
+        if (masked[id] === -Infinity) continue; // already excluded upstream (PAD/UNK/BOS/invalid ids)
+        if (id === eosId) {
+            if (LLMJSONGrammar.isComplete(grammarState)) anyValid = true;
+            else masked[id] = -Infinity;
+            continue;
+        }
+        const piece = pieceInfo(id, vocab);
+        if (!piece || piece.core.length === 0) { masked[id] = -Infinity; continue; }
+        const text = impliedText(wordBoundaryPending, piece);
+        if (!LLMJSONGrammar.stepText(grammarState, text)) { masked[id] = -Infinity; continue; }
+        anyValid = true;
+    }
+    if (!anyValid) {
+        Logger.warn('LLMSampler', 'constrainLogitsToJSON: tidak ada token valid dari vocab pada state ini — fail-open, lanjut tanpa constraint di langkah ini');
+        return { logits: logits, anyValid: false };
+    }
+    return { logits: masked, anyValid: true };
+}
+
+// Dipanggil setelah sample() mengembalikan sebuah token id sungguhan —
+// majukan grammar state DAN status word-boundary dengan teks token itu,
+// supaya langkah berikutnya tahu persis posisi struktur JSON saat ini
+// (termasuk apakah token berikutnya akan mendapat spasi tersisip di
+// depannya oleh detokenize()).
+function advanceJSONGrammar(grammarState, tokenId, vocab, eosId, wordBoundaryPending) {
+    if (tokenId === eosId) return { state: grammarState, wordBoundaryPending: wordBoundaryPending };
+    const piece = pieceInfo(tokenId, vocab);
+    if (!piece) return { state: grammarState, wordBoundaryPending: wordBoundaryPending };
+    const text = impliedText(wordBoundaryPending, piece);
+    const next = LLMJSONGrammar.stepText(grammarState, text) || grammarState;
+    return { state: next, wordBoundaryPending: piece.endsWord };
+}
+
+// ============================================================
 // DISPATCHER
 // ============================================================
 // options.strategy: 'greedy' | 'temperature' | 'topK' | 'topP' (default 'temperature')
 // options.repetitionPenalty + options.recentTokenIds: opsional, diterapkan
 // ke logits SEBELUM strategi pemilihan token manapun (termasuk greedy).
+// options.jsonGrammarState + options.vocab + options.eosId: opsional —
+// kalau ketiganya diisi, constrainLogitsToJSON() diterapkan sebelum
+// strategi manapun (jadi berlaku sama untuk greedy/temperature/topK/topP).
 function sample(logits, options) {
     options = options || {};
     const strategy = options.strategy || 'temperature';
     const temperature = typeof options.temperature === 'number' ? options.temperature : 0.8;
-    const penalizedLogits = applyRepetitionPenalty(logits, options.recentTokenIds, options.repetitionPenalty);
+    let penalizedLogits = applyRepetitionPenalty(logits, options.recentTokenIds, options.repetitionPenalty);
+    if (options.jsonGrammarState && options.vocab) {
+        penalizedLogits = constrainLogitsToJSON(penalizedLogits, options.vocab, options.jsonGrammarState, options.eosId, options.wordBoundaryPending).logits;
+    }
 
     switch (strategy) {
         case 'greedy':
@@ -161,6 +250,8 @@ export const LLMSampler = {
     topKSample: topKSample,
     topPSample: topPSample,
     applyRepetitionPenalty: applyRepetitionPenalty,
+    constrainLogitsToJSON: constrainLogitsToJSON,
+    advanceJSONGrammar: advanceJSONGrammar,
     sample: sample
 };
 

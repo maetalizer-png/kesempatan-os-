@@ -30,6 +30,7 @@ import './llm-transformer.js';
 import './llm-encoder.js';
 import './llm-decoder.js';
 import './llm-inference.js';
+import './llm-json-grammar.js';
 import './llm-sampler.js';
 import './llm-runtime.js';
 import './llm-knowledge-graph.js';
