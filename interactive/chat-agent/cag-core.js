@@ -15,6 +15,44 @@ import {
     CAG_speakText, CAG_streamTextToElement
 } from './cag-ui-render.js';
 
+// Jalur eksekusi tugas otonom (spec 18: entry point AI Agent lewat chat,
+// bukan halaman baru) — dipicu HANYA saat #chatAgentAutoModeToggle
+// dicentang user, jadi jalur tanya-jawab satu putaran yang sudah ada di
+// CAG_sendChatToAgent() di bawah tetap berjalan persis seperti sebelumnya
+// saat toggle mati (default).
+async function CAG_runAutonomousAgentTask(message, container, displayName) {
+    const runtime = window.KESEMPATAN && window.KESEMPATAN.AIAgent;
+    if (!runtime || typeof runtime.runAgentTask !== 'function') {
+        CAG_addMessage(container, displayName, 'Mode Agent Otonom belum siap (ai-agent/agent-runtime.js belum termuat). Coba lagi sebentar.', false);
+        return;
+    }
+    const typing = CAG_showTypingIndicator(container);
+    try {
+        const task = await runtime.runAgentTask(message, { topic: message, instruction: message }, { executionMode: 'AUTO' });
+        typing.remove();
+
+        const lines = [];
+        lines.push('**Status tugas:** ' + task.status + (task.replanCount ? ' (replanning ' + task.replanCount + 'x)' : ''));
+        (task.stepResults || []).forEach(function(step, i) {
+            const mark = step.success ? '✅' : '❌';
+            const label = (step.description || step.stepId || ('Langkah ' + (i + 1)));
+            lines.push(mark + ' ' + label + (step.error ? ' — ' + step.error : ''));
+        });
+        if (task.evaluation) {
+            lines.push('');
+            lines.push('Ringkasan: ' + task.evaluation.passedCount + '/' + task.evaluation.evaluations.length + ' langkah berhasil.');
+        }
+        const response = lines.join('\n');
+
+        CAG_addMessage(container, displayName, response, false);
+        CAG_saveMessageToHistory(container.id, displayName, response, false);
+        CAG_saveMessageToMemory(message, response, displayName);
+    } catch (error) {
+        typing.remove();
+        CAG_addMessage(container, displayName, 'Agent Otonom gagal: ' + error.message, false);
+    }
+}
+
 async function CAG_sendChatToAgent() {
         // FIX: penjaga anti-panggil-ganda yang sama seperti sendChatToAI().
         if (CAG_State.isSendingToAgent) {
@@ -64,6 +102,12 @@ async function CAG_sendChatToAgent() {
             const hasFallbackProvider = typeof window.getActiveProviders === 'function' && window.getActiveProviders().length > 0;
             if (!apiKey && !hasFallbackProvider) {
                 CAG_addMessage(container, displayName, 'Masukkan API Key.', false);
+                return;
+            }
+
+            const autoModeToggle = document.getElementById('chatAgentAutoModeToggle');
+            if (autoModeToggle && autoModeToggle.checked) {
+                await CAG_runAutonomousAgentTask(message, container, displayName);
                 return;
             }
 
@@ -156,7 +200,7 @@ function CAG_renderChatAgentPanel() {
             return;
         }
         container.dataset.rendered = 'true';
-        container.innerHTML = "<select id=\"chatAgentSelect\" style=\"width:100%; margin-bottom:12px;\"></select><div id=\"chatAgentMessages\" class=\"chat-messages\" style=\"height:300px; background:rgba(0,0,0,0.3); border-radius:16px; padding:12px; overflow-y:auto;\"></div><div style=\"display:flex; gap:10px; margin-top:12px;\"><input type=\"text\" id=\"chatAgentInput\" placeholder=\"Ketik pesan untuk agen...\" style=\"flex:1;\"><button id=\"chatAgentSendBtn\" class=\"execute-btn secondary\">Kirim</button></div>";
+        container.innerHTML = "<select id=\"chatAgentSelect\" style=\"width:100%; margin-bottom:12px;\"></select><div id=\"chatAgentMessages\" class=\"chat-messages\" style=\"height:300px; background:rgba(0,0,0,0.3); border-radius:16px; padding:12px; overflow-y:auto;\"></div><label style=\"display:flex; align-items:center; gap:8px; margin-top:10px; font-size:13px; color:#A0B3C9; cursor:pointer;\"><input type=\"checkbox\" id=\"chatAgentAutoModeToggle\"> Mode Agent Otonom (rencana &amp; eksekusi multi-langkah otomatis, pakai kapabilitas AI Agent)</label><div style=\"display:flex; gap:10px; margin-top:12px;\"><input type=\"text\" id=\"chatAgentInput\" placeholder=\"Ketik pesan untuk agen...\" style=\"flex:1;\"><button id=\"chatAgentSendBtn\" class=\"execute-btn secondary\">Kirim</button></div>";
         CAG_populateAgentSelect(document.getElementById('chatAgentSelect'));
 
         // Roster agen dashboard bisa selesai dirender SETELAH panel ini
