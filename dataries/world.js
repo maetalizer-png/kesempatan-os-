@@ -1,13 +1,13 @@
-// KESEMPATAN OS - WORLD LOADER
-// Menggabungkan seluruh data statis (country, city, lingo, marplace,
-// paluang, sapaan) lewat static import, lalu memilah tiap item ke
-// __STATIC_DATA (memori langsung) atau VectorMemory (dinamis) sesuai
-// tipenya. Sumber berita (src/global.js, src/international.js,
-// src/regional.js) diimpor untuk EFEK SAMPING saja — file-file itu
-// mengambil data lewat fetch RSS async dan mendaftarkan hasilnya ke
-// window.__DATA_REGISTER sendiri begitu selesai, karena isinya belum
-// ada sama sekali pada saat modul dievaluasi (beda dari 38 sumber data
-// statis di atas yang isinya sudah pasti ada begitu file diimpor).
+
+
+
+
+
+
+
+
+
+
 
 import { DATA as SAPAAN_GREETINGS } from './sapaan/greetings.js';
 import { DATA as SAPAAN_INTERAKTIF } from './sapaan/interaktif.js';
@@ -55,18 +55,18 @@ import './src/international.js';
 const KESEMPATAN = window.KESEMPATAN || {};
 window.KESEMPATAN = KESEMPATAN;
 
-// ============================================================
-// FALLBACK LOGGER
-// Menulis ke console HANYA jika logger terpusat (InternalLogger
-// dari helpers.js) belum ada saat file ini jalan. Karena world.js
-// biasanya di-load SEBELUM helpers.js, fallback inilah yang
-// menampilkan progres load di console. JANGAN di-senyap-kan
-// (jangan dijadikan function kosong), karena itu akan menghilangkan
-// SELURUH log world.js dari console (ini penyebab log "hilang"
-// pada versi sebelumnya). Pada boot normal di mana InternalLogger
-// sudah tersedia, objek ini tidak dipakai dan log mengalir ke
-// logger terpusat.
-// ============================================================
+
+
+
+
+
+
+
+
+
+
+
+
 const InternalLogger = window.InternalLogger || {
     _logs: [],
     _maxLogs: 1000,
@@ -87,9 +87,9 @@ const InternalLogger = window.InternalLogger || {
     error: function (module, message) { this.log(this._levels.ERROR, module, message); }
 };
 
-// ============================================================
-// KONFIGURASI
-// ============================================================
+
+
+
 const CONFIG = Object.freeze({
     BATCH_SIZE: 10,
     DELAY_BETWEEN_BATCH: 100,
@@ -100,15 +100,15 @@ const CONFIG = Object.freeze({
     MAX_DYNAMIC_VECTORS: 300
 });
 
-// ============================================================
-// GABUNGKAN 38 SUMBER DATA STATIS KE __DATA_REGISTER
-// Dulu tiap file men-daftarkan dirinya sendiri ke window.__DATA_REGISTER
-// sebagai efek samping saat <script> dieksekusi (dynamic loader). Sekarang
-// tiap file mengekspor array datanya langsung — penggabungan dilakukan
-// di SATU tempat ini. window.__DATA_REGISTER tetap dipertahankan sebagai
-// bridge karena masih dibaca konsumen luar (interactive/chat-ai/cai-data-engine.js)
-// dan oleh src/global.js dkk. yang menambahkan hasil fetch RSS-nya belakangan.
-// ============================================================
+
+
+
+
+
+
+
+
+
 window.__DATA_REGISTER = window.__DATA_REGISTER || [];
 window.__DATA_REGISTER.push(
     ...SAPAAN_GREETINGS, ...SAPAAN_INTERAKTIF,
@@ -131,9 +131,9 @@ window.__DATA_REGISTER.push(
 );
 const STATIC_SOURCE_COUNT = 38;
 
-// ============================================================
-// STATE
-// ============================================================
+
+
+
 let isProcessing = false;
 let isPaused = false;
 let totalDataItems = 0;
@@ -145,24 +145,24 @@ let startTime = 0;
 let staticCount = 0;
 let dynamicCount = 0;
 
-// ============================================================
-// SLEEP
-// ============================================================
+
+
+
 const sleep = function (ms) {
     return new Promise(function (resolve) {
         setTimeout(resolve, ms);
     });
 };
 
-// ============================================================
-// CEK TIPE DATA (STATIS ATAU DINAMIS)
-// ============================================================
+
+
+
 const isStaticData = function (item) {
     const type = item.metadata?.type || '';
     const category = item.metadata?.category || '';
     const subcategory = item.metadata?.subcategory || '';
 
-    // Data statis tidak masuk VectorMemory.
+    
     const STATIC_TYPES = ['country', 'language', 'city', 'source', 'marplace', 'paluang', 'sapaan'];
     const STATIC_CATEGORIES = ['country', 'language', 'city', 'source', 'marplace', 'paluang', 'sapaan'];
     const STATIC_SUBCATEGORIES = ['regional', 'international', 'global'];
@@ -182,9 +182,9 @@ const isStaticData = function (item) {
     return false;
 };
 
-// ============================================================
-// SAVE BATCH KE TEMPAT YANG TEPAT
-// ============================================================
+
+
+
 const saveBatchWithRetry = async function (batch, batchIndex, retryCount) {
     retryCount = retryCount || 0;
 
@@ -192,9 +192,9 @@ const saveBatchWithRetry = async function (batch, batchIndex, retryCount) {
         for (let i = 0; i < batch.length; i++) {
             const item = batch[i];
 
-            // Pilah data statis vs dinamis.
+            
             if (isStaticData(item)) {
-                // Statis -> __STATIC_DATA (memori langsung).
+                
                 if (typeof window.__STATIC_DATA === 'undefined') {
                     window.__STATIC_DATA = [];
                 }
@@ -202,12 +202,12 @@ const saveBatchWithRetry = async function (batch, batchIndex, retryCount) {
                 window.__STATIC_DATA.push(item);
                 staticCount++;
             } else {
-                // Dinamis -> VectorMemory.
+                
                 if (dynamicCount < CONFIG.MAX_DYNAMIC_VECTORS) {
                     await window.VectorMemory.save(item.text, item.metadata);
                     dynamicCount++;
                 } else {
-                    // Lewat batas dinamis -> jatuh ke statis.
+                    
                     if (typeof window.__STATIC_DATA === 'undefined') {
                         window.__STATIC_DATA = [];
                     }
@@ -245,9 +245,9 @@ const saveBatchWithRetry = async function (batch, batchIndex, retryCount) {
     }
 };
 
-// ============================================================
-// PROSES DATA DENGAN QUEUE
-// ============================================================
+
+
+
 const processDataWithQueue = async function (dataItems) {
     if (typeof dataItems === 'undefined' || dataItems.length === 0) {
         return {
@@ -260,7 +260,7 @@ const processDataWithQueue = async function (dataItems) {
     if (typeof window.VectorMemory === 'undefined') {
         InternalLogger.warn('WorldLoader', 'VectorMemory not available, saving all to static memory');
 
-        // Fallback: semua jadi statis.
+        
         if (typeof window.__STATIC_DATA === 'undefined') {
             window.__STATIC_DATA = [];
         }
@@ -330,9 +330,9 @@ const processDataWithQueue = async function (dataItems) {
     };
 };
 
-// ============================================================
-// PROSES SEMUA DATA
-// ============================================================
+
+
+
 const processAllData = async function () {
     if (isProcessing) {
         return;
@@ -391,18 +391,18 @@ const processAllData = async function () {
             elapsed: elapsed
         }));
     } catch (e) {
-        // silent
+        
     }
 
     isProcessing = false;
 };
 
-// ============================================================
-// JALANKAN
-// Sumber statis sudah pasti tersedia begitu modul ini dievaluasi (static
-// import), jadi tidak perlu lagi menunggu N file dimuat satu per satu
-// lewat <script> tag — cukup proses __DATA_REGISTER langsung.
-// ============================================================
+
+
+
+
+
+
 const runWorldLoader = async function () {
     InternalLogger.info('WorldLoader', 'Sources: ' + STATIC_SOURCE_COUNT + ' static (country/city/lingo/marplace/paluang/sapaan) + 3 dynamic (src/*)');
     InternalLogger.info('WorldLoader', window.__DATA_REGISTER.length + ' static items registered');
@@ -421,9 +421,9 @@ const runWorldLoader = async function () {
     }
 };
 
-// ============================================================
-// PUBLIC API
-// ============================================================
+
+
+
 const WorldLoader = Object.freeze({
     load: runWorldLoader,
     pause: function () {
@@ -470,7 +470,7 @@ const WorldLoader = Object.freeze({
             localStorage.removeItem(CONFIG.STORAGE_KEY);
             window.__STATIC_DATA = [];
         } catch (e) {
-            // silent
+            
         }
 
         staticCount = 0;
@@ -481,7 +481,7 @@ const WorldLoader = Object.freeze({
 
 KESEMPATAN.WorldLoader = WorldLoader;
 
-// Inisialisasi __STATIC_DATA
+
 if (typeof window.__STATIC_DATA === 'undefined') {
     window.__STATIC_DATA = [];
 }

@@ -87,7 +87,7 @@ class SuperSocialShare {
     }
     saveHistory() {
         localStorage.setItem('kes_super_share_history', JSON.stringify(this.shareHistory));
-        // Durable backup of the latest entry — localStorage stays the source of truth.
+        
         if (window.KESEMPATAN?.KesDatabase?.mirrorHistoryItem && this.shareHistory[0]) {
             window.KESEMPATAN.KesDatabase.mirrorHistoryItem('super_share_history', this.shareHistory[0]);
         }
@@ -461,10 +461,10 @@ class SuperSocialShare {
 }
 
 function initSuperSocialShare() {
-    // ExportManager is frozen by export.js — its own setData method can't be
-    // overridden in place. Build a NEW object with spread and reassign
-    // window.ExportManager instead; the window PROPERTY can be reassigned
-    // even though the object it currently points to is frozen.
+    
+    
+    
+    
     const original = ExportManager.setData;
     window.ExportManager = Object.assign({}, ExportManager, {
         setData: function(aggregated, note) {

@@ -108,8 +108,8 @@ window.KESEMPATAN.getProviderPrice = getProviderPrice;
 window.KESEMPATAN.updateApiKey = updateApiKey;
 window.KESEMPATAN.setActiveProvider = setActiveProvider;
 
-// Bridge for consumers not yet migrated to `import { CONFIG } from './config.js'`.
-// Remove once every consumer reads window.KESEMPATAN.Config instead of this bare global.
+
+
 window.CONFIG = CONFIG;
 window.getActiveProviders = getActiveProviders;
 window.isProviderFree = isProviderFree;

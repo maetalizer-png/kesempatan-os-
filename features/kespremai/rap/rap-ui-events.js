@@ -1,14 +1,4 @@
-/* ============================================================
-   📁 rap/ui-events.js
-   🔥 EVENT & INTERAKSI - addMessage, showResult, stats, history
-   🔥 PANGGIL RENDERER UNTUK UPDATE DOM
-   🔥 ✅ ASTERISK (*) DIHAPUS DARI RAP!
-   🔥 ✅ SCORE UPDATE DITAMBAHKAN!
-   🔥 ✅ BREAKDOWN JURI DITAMBAHKAN!
-   🔥 ✅ HAPUS CONFIG (TIDAK TERPAKAI)
-   🔥 ✅ VISUALIZER ENGINE
-   🔥 ✅ BEAT PATTERN SYNC
-   ============================================================ */
+
 
 import { RapUIRenderer as renderer } from './rap-ui-renderer.js';
 import { logic } from './rap-logic.js';
@@ -33,9 +23,9 @@ const getLeaderboard = logic.getLeaderboard;
 
 const showToast = renderer.showToast;
 
-// ============================================================
-// 🔥 CLEAN TEXT — HAPUS ASTERISK
-// ============================================================
+
+
+
 function cleanRapText(text) {
     if (typeof text !== 'string') {
         return text;
@@ -43,9 +33,9 @@ function cleanRapText(text) {
     return text.replace(/\*/g, '');
 }
 
-// ============================================================
-// 🔥 ADD MESSAGE
-// ============================================================
+
+
+
 function addMessage(sender, message, container) {
     container = container || document.getElementById('rapBattleContainer');
     if (!container) {
@@ -86,9 +76,9 @@ function addMessage(sender, message, container) {
     });
 }
 
-// ============================================================
-// 🔥 SHOW RESULT (DENGAN BREAKDOWN)
-// ============================================================
+
+
+
 function showResult(winner, displayA, displayB) {
     const container = document.getElementById('rapBattleResult');
     if (!container) {
@@ -100,7 +90,7 @@ function showResult(winner, displayA, displayB) {
     const cleanDisplayA = cleanRapText(displayA || '');
     const cleanDisplayB = cleanRapText(displayB || '');
 
-    // 🔥 BREAKDOWN HTML (jika ada)
+    
     let breakdownHtml = '';
     if (winner.breakdown) {
         const b = winner.breakdown;

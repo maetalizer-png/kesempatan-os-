@@ -1,17 +1,4 @@
-/* ============================================================
-   ai-agent/agent-registry.js
-   Adapter over the app's TWO existing agent pools — no new agents
-   are created here:
-     1. The ~200-entry analysis-agent roster (agents/agents-config.js
-        + the category files that mutate the same AGENTS_CONFIG
-        object: agents-general.js, agents-global.js,
-        agents-politics.js, agent-science.js). Used for opportunity
-        analysis (Workflow, Debate, Tournament, Chat AI/Agent).
-     2. The 55 KESWORKER automation tasks (workers/workers-config.js
-        AI_WORKERS_LIST, executed via window.AIWorkers).
-   Every lookup result is tagged with `pool` so callers never
-   confuse the two.
-   ============================================================ */
+
 
 import { AGENTS_CONFIG, getAgentConfig } from '../agents/agents-config.js';
 import { WorkersConfig } from '../features/kesworker/workers-config.js';
@@ -51,11 +38,11 @@ function listWorkerCategories() {
     return Object.keys(seen);
 }
 
-// Free-text capability search across BOTH pools — matches against role/
-// name for analysis agents, and name/category for KESWORKER. Used by the
-// Planner when a plan step names a capability rather than an exact id
-// (spec section 4/15: agents chosen by role/capability/category/objective/
-// task type, not hardcoded).
+
+
+
+
+
 function findAgent(query) {
     const q = (query || '').toLowerCase().trim();
     if (!q) return [];

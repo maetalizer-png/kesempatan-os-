@@ -1,9 +1,4 @@
-/**
-TELEMETRY ANALYTICS
-Gaya Observasion: transparan menyatu ke latar, bordir chamfer
-BENTUK A/B TERSAMBUNG (teknik rim: outer warna garis + 1px,
-inner ::before gelap opaque).
-*/
+
 import { Utils } from '../../../js/core/utils.js';
 import { WorkflowLLMBridge } from '../../../js/workflow/workflow-llm-bridge.js';
 
@@ -21,7 +16,7 @@ const escapeHtml = window.escapeHtml || function(str) {
     });
 };
 
-// ========== CSS (rim chamfer TERSAMBUNG) ==========
+
 function injectCSS() {
     if (document.getElementById('telemetryStyle')) return;
     const s = document.createElement('style');
@@ -36,7 +31,7 @@ function injectCSS() {
         '.tl-sub{font-size:11px;color:#8fa3b8;margin-top:2px;}' +
         '.tl-actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap;}' +
         '.tl-time{font-family:ui-monospace,monospace;font-size:9px;color:#5a6a7a;}' +
-        /* RIM: luar = warna garis + 1px, dalam = gelap opaque => TERSAMBUNG */
+        
         '.tl-b,.tl-ba{position:relative;isolation:isolate;}' +
         '.tl-b{clip-path:var(--tl-clip);background:rgba(26,255,156,.35);padding:1px;margin-bottom:14px;}' +
         '.tl-b::before{content:"";position:absolute;inset:1px;clip-path:var(--tl-clip);background:#0b1119;z-index:-1;}' +
@@ -69,7 +64,7 @@ let chartInstance = null;
 let refreshInterval = null;
 const REFRESH_INTERVAL_MS = 30000;
 
-// ========== CONFIRM DIALOG ==========
+
 function showConfirmDialog(title, message, onConfirm) {
     const overlay = document.createElement('div');
     overlay.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.7);backdrop-filter:blur(4px);z-index:99999;display:flex;align-items:center;justify-content:center;';
@@ -88,7 +83,7 @@ function showConfirmDialog(title, message, onConfirm) {
     overlay.addEventListener('click', function(e) { if (e.target === overlay) close(); });
 }
 
-// ========== CHART ==========
+
 function renderChart(canvas, data) {
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
@@ -121,7 +116,7 @@ function renderChart(canvas, data) {
     });
 }
 
-// ========== HEATMAP (dot-matrix) ==========
+
 function renderHeatmap(container, heatmapData) {
     if (!container) return;
     if (!heatmapData || heatmapData.length === 0) {
@@ -147,7 +142,7 @@ function renderHeatmap(container, heatmapData) {
     }).join('');
 }
 
-// ========== LLM ENGINE HEALTH (Fase 0 observability: local vs fallback) ==========
+
 function renderEngineHealth(container, summary) {
     if (!container) return;
     const fallbackColor = summary.fallbackRate < 20 ? '#00FFA3' : summary.fallbackRate < 50 ? '#FFD700' : '#FF6B6B';
@@ -176,14 +171,14 @@ function renderEngineHealth(container, summary) {
         '</span></div>';
 }
 
-// ========== GPU ACCELERATION STATUS (Fase 1 roadmap) ==========
-// llm-gpu.js's initGPU() is now triggered once per Worker lifetime
-// (llm-core.js) whenever a local model becomes active — it self-verifies
-// correctness AND speed against CPU before ever activating, and disables
-// itself if either check fails. This just surfaces that verdict; it does
-// not mean the hot forward pass is actually using GPU yet (see the
-// comment in llm-core.js's warmupGpu() for why that's a separate,
-// bigger step).
+
+
+
+
+
+
+
+
 async function renderGpuStatus(container) {
     if (!container) return;
     const K = window.KesempatanLLM;
@@ -197,7 +192,7 @@ async function renderGpuStatus(container) {
     try {
         stats = await K.core.getStats();
     } catch (e) {
-        return; // model belum siap sepenuhnya — biarkan render berikutnya coba lagi
+        return; 
     }
     const gpu = stats && stats.gpu;
     let statusHtml;
@@ -214,7 +209,7 @@ async function renderGpuStatus(container) {
         '<div style="font-size:11px;padding:4px 0;">' + statusHtml + '</div></span></div>';
 }
 
-// ========== METRICS STRIP ==========
+
 function renderMetrics(container, records, avgLatency, agentsActive) {
     if (!container) return;
     const status = avgLatency < 100 ? 'SEHAT' : avgLatency < 300 ? 'WASPADA' : 'KRITIS';
@@ -227,7 +222,7 @@ function renderMetrics(container, records, avgLatency, agentsActive) {
         '</div></div>';
 }
 
-// ========== MAIN RENDER ==========
+
 function render() {
     injectCSS();
     const inner = document.getElementById('pageInner');
@@ -282,7 +277,7 @@ function render() {
     }
 }
 
-// ========== AUTO-REFRESH & CLEANUP ==========
+
 function startAutoRefresh() {
     if (refreshInterval) clearInterval(refreshInterval);
     refreshInterval = setInterval(function() {

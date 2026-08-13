@@ -147,9 +147,9 @@ export class AutoTuner {
             return 0;
         }
 
-        // Hormati config.dimension yang sedang diuji — potong ke N dimensi
-        // pertama supaya parameter ini benar-benar memengaruhi hasil
-        // evaluasi (sebelumnya cuma duduk di objek config, tak terpakai).
+        
+        
+        
         const truncate = function (embedding) {
             return Array.isArray(embedding) && config.dimension
                 ? embedding.slice(0, config.dimension)

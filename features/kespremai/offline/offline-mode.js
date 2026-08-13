@@ -1176,8 +1176,8 @@ getActiveTab: function () { return state.activeTab; }
 
 KESEMPATAN.OfflineMode = OfflineMode;
 
-// Kept as a real global (not KESEMPATAN-only): voice-core.js and
-// visual-core.js read window.OfflineMode.isOnline() directly.
+
+
 window.OfflineMode = OfflineMode;
 
 if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else setTimeout(init, 100);

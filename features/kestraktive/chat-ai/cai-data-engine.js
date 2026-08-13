@@ -1,13 +1,8 @@
-/* ============================================================
-   interactive/chat-ai/cai-data-engine.js
-   OTAK CHAT AI — cache, integrasi World/Memory/Database,
-   smart search, deteksi sapaan & kabar, penyusun prompt.
-   Butuh config.js & state.js sudah dimuat lebih dulu.
-   ============================================================ */
+
 import { CAI_CONFIG, CAI_PROMPT_SAPAN, CAI_GREETING_PATTERNS, CAI_KABAR_PATTERNS, CAI_detectSpeakingStyle } from './cai-config.js';
 import { CAI_State } from './cai-state.js';
 
-// ---------- CACHE SYSTEM ----------
+
 export function CAI_getCached(key) {
         const entry = CAI_State.queryCache.get(key);
         if (!entry) {
@@ -43,7 +38,7 @@ export function CAI_getCacheStats() {
         };
     }
 
-// ---------- INTEGRASI DATA (World / Memory / Database) ----------
+
 export function CAI_getStaticData() {
         return window.__STATIC_DATA || [];
     }
@@ -71,7 +66,7 @@ export function CAI_smartSearch(query, data, threshold) {
             let score = 0;
             let matchCount = 0;
             
-            // FAKTOR 1: Keyword match (weighted)
+            
             for (const kw of keywords) {
                 if (text.includes(kw)) {
                     matchCount++;
@@ -79,7 +74,7 @@ export function CAI_smartSearch(query, data, threshold) {
                 }
             }
             
-            // FAKTOR 2: Semantic similarity (kalau ada embedding)
+            
             if (item.embedding) {
                 const queryEmbedding = window.KESEMPATAN?.Memory?.MemoryUtils?.simpleEmbed ? 
                     window.KESEMPATAN.Memory.MemoryUtils.simpleEmbed(query) : null;
@@ -89,7 +84,7 @@ export function CAI_smartSearch(query, data, threshold) {
                 }
             }
             
-            // FAKTOR 3: Metadata boost
+            
             if (item.metadata) {
                 if (item.metadata.type === 'country' || item.metadata.type === 'language') {
                     score += 5;
@@ -108,7 +103,7 @@ export function CAI_smartSearch(query, data, threshold) {
                 }
             }
             
-            // FAKTOR 4: Recency boost
+            
             if (item.timestamp) {
                 const age = Date.now() - item.timestamp;
                 const days = age / (1000 * 60 * 60 * 24);
@@ -121,7 +116,7 @@ export function CAI_smartSearch(query, data, threshold) {
                 }
             }
             
-            // FAKTOR 5: Length boost (data lebih panjang = lebih informatif)
+            
             if (text.length > 100) {
                 score += 2;
             }
@@ -129,7 +124,7 @@ export function CAI_smartSearch(query, data, threshold) {
                 score += 3;
             }
             
-            // FAKTOR 6: Keyword density
+            
             const wordCount = text.split(' ').length || 1;
             const density = matchCount / wordCount;
             score += density * 10;
@@ -187,7 +182,7 @@ export function CAI_fetchStaticData(query) {
         return results;
     }
 
-// ---------- SAPAAN & KABAR (dataries/sapaan) ----------
+
 export function CAI_getGreetingData() {
         const fromStatic = CAI_getStaticData().filter(function(item) {
             return item.metadata && item.metadata.category === 'sapaan';
@@ -204,7 +199,7 @@ export function CAI_getGreetingData() {
 export function CAI_detectGreetingIntent(message) {
         if (!message) return false;
         const trimmed = message.trim();
-        if (trimmed.split(/\s+/).length > 4) return false; // terlalu panjang untuk sapaan murni
+        if (trimmed.split(/\s+/).length > 4) return false; 
         return CAI_GREETING_PATTERNS.test(trimmed);
     }
 
@@ -213,7 +208,7 @@ export function CAI_extractGreetingWord(message) {
         const match = CAI_GREETING_PATTERNS.exec(message.trim());
         if (!match) return null;
         const word = (match[2] || match[3] || '').toLowerCase();
-        return word || null; // '' kalau cuma "halo"/"hai" tanpa kata waktu
+        return word || null; 
     }
 
 export function CAI_getGreetingByWord(word) {
@@ -261,12 +256,12 @@ export function CAI_getTimeBasedGreeting(now) {
             const end = item.metadata.jamSelesai;
             const inRange = start <= end
                 ? (hour >= start && hour < end)
-                : (hour >= start || hour < end); // rentang melewati tengah malam
+                : (hour >= start || hour < end); 
             if (inRange) {
                 return item;
             }
         }
-        // Fallback: sapaan umum kalau tidak ada rentang jam yang cocok
+        
         return CAI_getGreetingData().find(function(item) {
             return item.metadata && item.metadata.code === 'UMUM';
         }) || null;
@@ -304,7 +299,7 @@ export function CAI_getRegionalOrHolidayGreeting(message) {
 export function CAI_detectKabarIntent(message) {
         if (!message) return false;
         const trimmed = message.trim();
-        if (trimmed.split(/\s+/).length > 8) return false; // terlalu panjang untuk basa-basi kabar murni
+        if (trimmed.split(/\s+/).length > 8) return false; 
         return CAI_KABAR_PATTERNS.test(trimmed);
     }
 
@@ -331,7 +326,7 @@ export function CAI_getKabarReplyByMood(mood) {
         return pool[Math.floor(Math.random() * pool.length)];
     }
 
-// ---------- FETCH KONTEKS (3 SUMBER) ----------
+
 export async function CAI_fetchFromVectorMemory(query, topK) {
         const memory = CAI_getMemoryInstance();
         if (!memory || typeof memory.search !== 'function') {
@@ -356,10 +351,10 @@ export async function CAI_fetchFromVectorMemory(query, topK) {
         }
     }
 
-    // BARU: dulu Chat AI cuma MEMBACA dari Vector Memory, tidak pernah
-    // menyimpan hasil percakapan kembali — jadi obrolan tidak pernah
-    // "diingat" untuk sesi berikutnya. Meniru pola yang sudah terbukti
-    // di Debate (DEB_saveDebateToMemory).
+    
+    
+    
+    
     export async function CAI_saveMessageToMemory(userMessage, aiResponse) {
         const memory = CAI_getMemoryInstance();
         if (!memory) return;
@@ -379,8 +374,8 @@ export async function CAI_fetchFromVectorMemory(query, topK) {
                 await memory.add(metadata);
             }
         } catch (_) {
-            // Diam saja — kegagalan simpan memori tidak boleh mengganggu
-            // percakapan yang sedang berlangsung.
+            
+            
         }
     }
 
@@ -391,12 +386,12 @@ export async function CAI_fetchFromDatabase(query, limit) {
         }
         const maxResults = limit || CAI_CONFIG.DB_LIMIT;
 
-        // KESDatabase (kes-database.js) mengekspos API generik: query/get/
-        // find/add/insert/save — bukan queryParser.parseAndExecute atau
-        // executeQuery (API itu tidak pernah ada di implementasi sungguhan,
-        // jadi lapisan Database selama ini selalu kosong). database/search.js
-        // kemungkinan menambah method .search() — dicoba lebih dulu, lalu
-        // fallback ke find/query yang memang ada di instance KESDatabase.
+        
+        
+        
+        
+        
+        
         const attempts = [
             function() { return db.search ? db.search(query, { limit: maxResults }) : null; },
             function() { return db.find ? db.find({ text: query, limit: maxResults }) : null; },
@@ -416,7 +411,7 @@ export async function CAI_fetchFromDatabase(query, limit) {
                     return result.slice(0, maxResults);
                 }
             } catch (_) {
-                // Coba strategi API berikutnya
+                
             }
         }
         return [];
@@ -448,7 +443,7 @@ export async function CAI_getAllContext(query, options) {
         const combined = [];
         const seenIds = new Set();
         
-        // PRIORITAS 1: STATIC DATA (World) — paling valid
+        
         for (const item of staticData) {
             const id = item.id || item.text?.substring(0, 50);
             if (!seenIds.has(id)) {
@@ -457,7 +452,7 @@ export async function CAI_getAllContext(query, options) {
             }
         }
         
-        // PRIORITAS 2: MEMORY DATA
+        
         for (const item of memoryData) {
             const id = item.id || item.text?.substring(0, 50);
             if (!seenIds.has(id)) {
@@ -466,7 +461,7 @@ export async function CAI_getAllContext(query, options) {
             }
         }
         
-        // PRIORITAS 3: DATABASE
+        
         for (const item of dbData) {
             const id = item.id || item.text?.substring(0, 50);
             if (!seenIds.has(id)) {
@@ -475,7 +470,7 @@ export async function CAI_getAllContext(query, options) {
             }
         }
         
-        // SORT BY PRIORITY + SCORE
+        
         combined.sort(function(a, b) {
             if (a._priority !== b._priority) {
                 return a._priority - b._priority;
@@ -483,11 +478,11 @@ export async function CAI_getAllContext(query, options) {
             return (b._score || 0) - (a._score || 0);
         });
         
-        // BARU: OBSERVATION ENGINE + NOISE FILTERING — sentimen pasar/
-        // berita real-time & cek kredibilitas dasar query, ditambahkan
-        // sebagai field terpisah (bukan digabung ke combined[]) karena
-        // bentuk datanya beda (ringkasan teks, bukan potongan pengetahuan
-        // ber-id/skor seperti static/memory/database).
+        
+        
+        
+        
+        
         let obsContext = { marketInsight: '', credibilityNote: '' };
         try {
             if (window.KESEMPATAN?.Observation && typeof window.KESEMPATAN?.Observation.getSignals === 'function' && typeof window.KESEMPATAN?.Observation.generateAIInsight === 'function') {
@@ -528,7 +523,7 @@ export async function CAI_getAllContext(query, options) {
         return result;
     }
 
-// ---------- BUILD PROMPT ----------
+
 export function CAI_buildChatPrompt(userMessage, context) {
         let prompt = CAI_PROMPT_SAPAN;
         
@@ -586,7 +581,7 @@ export function CAI_buildChatPrompt(userMessage, context) {
         return prompt;
     }
 
-// ---------- PANGGILAN AI ----------
+
 export async function CAI_callAI(prompt, apiKey) {
         if (CAI_State.currentAbortController) {
             CAI_State.currentAbortController.abort();
@@ -604,9 +599,9 @@ export async function CAI_callAI(prompt, apiKey) {
                     body: JSON.stringify({
                         model: 'deepseek/deepseek-chat',
                         messages: [{ role: 'user', content: prompt }],
-                        // DISAMAKAN dengan Debate/Tournament (800/0.7) atas
-                        // permintaan user — dulu 500/0.3 membuat respons Chat AI
-                        // terasa lebih datar dibanding Debate.
+                        
+                        
+                        
                         max_tokens: 1200,
                         temperature: 0.7
                     }),
@@ -619,10 +614,10 @@ export async function CAI_callAI(prompt, apiKey) {
                 throw new Error(data.error?.message || 'Gagal');
             } catch (error) {
                 if (error.name === 'AbortError') throw error;
-                // OpenRouter specifically failed (missing/invalid key, rate limit,
-                // network) — fall through to the multi-provider fallback below
-                // instead of failing outright, so Chat AI still works when the
-                // user has a different provider (Groq/Gemini/Claude/etc) configured.
+                
+                
+                
+                
             }
         }
 

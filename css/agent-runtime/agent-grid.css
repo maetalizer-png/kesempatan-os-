@@ -1,7 +1,7 @@
-/* AGENT-GRID.CSS — EKOSISTEM MULTI-AGEN (komentar bersih, tertutup benar) */
-/* SELECT AGENT = segmen pill, teks PUTIH + glow putih halus.              */
-/* total agents = KAPITAL (via text-transform), warna abu tetap.           */
-/* Tombol B + tab/badge B. Hover dibungkus media-query (HP tidak lengket). */
+
+
+
+
 
 :root {
     --ag-clip-asym: polygon(
@@ -11,13 +11,13 @@
     );
 }
 
-/* napas panel */
+
 #agentPoolContainer {
     box-sizing: border-box !important;
     padding: 4px 12px !important;
 }
 
-/* controls tanpa pembungkus (2 baris: tombol + pill stats) */
+
 .agent-controls {
     display: flex;
     flex-direction: column;
@@ -37,7 +37,7 @@
     width: 100%;
 }
 
-/* tombol bentuk B + reset fokus/tap */
+
 .btn-agent-select,
 .btn-agent-deselect {
     position: relative;
@@ -65,7 +65,7 @@
 .btn-agent-deselect:focus-visible { outline: none; }
 .ac-btn-label { position: relative; z-index: 3; }
 
-/* primary */
+
 .btn-agent-select {
     background: linear-gradient(135deg, var(--primary), var(--primary-dark));
     color: #03130b;
@@ -84,7 +84,7 @@
 }
 .btn-agent-select:active { transform: scale(.97); }
 
-/* secondary */
+
 .btn-agent-deselect {
     background: rgba(255, 86, 98, .40);
     color: #ff8a93;
@@ -110,7 +110,7 @@
 }
 .btn-agent-deselect:active { transform: scale(.97); }
 
-/* pill stats — memuat SELECT AGENT + hitungan, center, wrap rapi */
+
 .agent-stats {
     display: inline-flex;
     align-items: center;
@@ -131,7 +131,7 @@
     to   { opacity: 1; transform: none; }
 }
 
-/* segmen SELECT AGENT (parent: hijau jadi acuan ikon/struktur) */
+
 .ac-stat-head {
     display: inline-flex;
     align-items: center;
@@ -143,16 +143,16 @@
     font-size: 11px;
     text-shadow: 0 0 8px var(--primary-glow);
 }
-/* TEKS SELECT AGENT = PUTIH + glow putih halus (bukan putih mati) */
+
 .ac-stat-head-text {
     color: #fff;
     text-shadow: 0 0 8px rgba(255, 255, 255, .22);
     transition: text-shadow .25s ease;
 }
 
-/* angka + label */
+
 .ac-stat-num { color: var(--primary); font-weight: 800; }
-/* total agents = KAPITAL, abu tetap, jarak huruf biar rapi */
+
 .ac-stat-lbl {
     color: var(--text-dim);
     text-transform: uppercase;
@@ -166,7 +166,7 @@
     transition: background .25s ease;
 }
 
-/* hover hanya perangkat berkursor */
+
 @media (hover: hover) and (pointer: fine) {
     .btn-agent-select:hover {
         transform: translateY(-2px);
@@ -193,14 +193,14 @@
         filter: drop-shadow(0 0 10px rgba(0, 255, 163, 0.3));
     }
     .agent-badge:hover::before { background: #0a1a12; }
-    /* teks putih merespons: glow putih menebal saat kursor di blok */
+    
     .agent-controls:hover .ac-stat-head-text {
         text-shadow: 0 0 13px rgba(255, 255, 255, .45);
     }
     .agent-controls:hover .ac-stat-div { background: rgba(26, 255, 156, .45); }
 }
 
-/* tabs bentuk B */
+
 .agents-tabs {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
@@ -271,7 +271,7 @@
     to   { opacity: 1; transform: translateY(0); }
 }
 
-/* grid */
+
 .agents-grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
@@ -280,7 +280,7 @@
     margin-bottom: 20px;
 }
 
-/* badge bentuk B */
+
 .agent-badge {
     position: relative !important;
     isolation: isolate !important;
@@ -290,12 +290,7 @@
     filter: none;
     -webkit-tap-highlight-color: transparent;
     transition: background .25s ease, filter .3s ease, transform .2s ease, color .2s ease !important;
-    /* FIX (laptop/desktop): sebelumnya kolom grid 1fr melar tanpa
-       batas di layar lebar (card dashboard sekarang full-width),
-       bikin tiap kotak agen jadi persegi panjang aneh & checkbox
-       ketarik jauh dari labelnya. Dibatasi max-width + rata tengah
-       dalam kolomnya sendiri — sisa ruang kosong di kolom jadi
-       jarak antar kotak yang wajar, bukan kotaknya yang melar. */
+    
     max-width: 260px;
     width: 100%;
     justify-self: center;
@@ -315,7 +310,7 @@
 }
 .agent-badge.active::before { background: #0c2016; }
 
-/* responsive */
+
 @media (max-width: 1024px) {
     .agents-grid { grid-template-columns: repeat(3, 1fr); }
 }
@@ -344,9 +339,7 @@
 @media (min-width: 769px) {
     .agent-badge { padding: 8px 12px !important; font-size: 11px !important; }
 }
-/* FIX (laptop/desktop lebar, >=1400px): tambah kolom supaya ruang
-   layar dipakai lebih efisien (makin banyak kotak sejajar), BUKAN
-   makin lebar tiap kotak — max-width di .agent-badge tetap berlaku. */
+
 @media (min-width: 1400px) {
     .agents-grid { grid-template-columns: repeat(6, 1fr); }
 }

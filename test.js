@@ -1,26 +1,15 @@
-/* ============================================================
-KESEMPATAN OS - FULL TEST SUITE
-Internal Logger (Zero console.log)
-Zero alert
-100% const
-6 Test Categories + Coverage Report
-Snapshot Testing
-Mock Support
-Performance Baseline
-Watch Mode
-Browser/Node.js detection
-============================================================ */
+
 (function() {
 'use strict';
-// ============================================================
-// ENVIRONMENT DETECTION
-// ============================================================
+
+
+
 const TestEnvironment = {
     isBrowser: (typeof window !== 'undefined') && (typeof document !== 'undefined')
 };
-// ============================================================
-// INTERNAL LOGGER (Zero console.log)
-// ============================================================
+
+
+
 const InternalLogger = (function() {
     const entries = [];
     const push = function(level, module, message) {
@@ -31,7 +20,7 @@ const InternalLogger = (function() {
                 document.dispatchEvent(new CustomEvent('system-log', {
                     detail: { type: 'TEST', message: '[' + level.toUpperCase() + '] ' + module + ' - ' + message }
                 }));
-            } catch (e) { /* silent */ }
+            } catch (e) {  }
         }
     };
     return {
@@ -42,9 +31,9 @@ const InternalLogger = (function() {
         getEntries: function() { return entries; }
     };
 })();
-// ============================================================
-// COVERAGE REPORT
-// ============================================================
+
+
+
 const CoverageReport = class {
     constructor() {
         this._coverage = new Map();
@@ -102,9 +91,9 @@ const CoverageReport = class {
         return report;
     }
 };
-// ============================================================
-// SNAPSHOT TESTING
-// ============================================================
+
+
+
 const SnapshotManager = class {
     constructor() {
         this._snapshots = new Map();
@@ -118,14 +107,14 @@ const SnapshotManager = class {
                     this._snapshots = new Map(JSON.parse(data));
                 }
             }
-        } catch (e) { /* silent */ }
+        } catch (e) {  }
     }
     async save() {
         try {
             if (TestEnvironment.isBrowser) {
                 localStorage.setItem(this._snapshotFile, JSON.stringify(Array.from(this._snapshots.entries())));
             }
-        } catch (e) { /* silent */ }
+        } catch (e) {  }
     }
     set(name, value) {
         this._snapshots.set(name, value);
@@ -157,9 +146,9 @@ const SnapshotManager = class {
         return true;
     }
 };
-// ============================================================
-// PERFORMANCE BASELINE
-// ============================================================
+
+
+
 const PerformanceBaseline = class {
     constructor() {
         this._baseline = null;
@@ -167,7 +156,7 @@ const PerformanceBaseline = class {
     }
     setBaseline(data) {
         this._baseline = data;
-        try { localStorage.setItem('performance-baseline', JSON.stringify(data)); } catch (e) { /* silent */ }
+        try { localStorage.setItem('performance-baseline', JSON.stringify(data)); } catch (e) {  }
     }
     loadBaseline() {
         try {
@@ -175,7 +164,7 @@ const PerformanceBaseline = class {
             if (data) {
                 this._baseline = JSON.parse(data);
             }
-        } catch (e) { /* silent */ }
+        } catch (e) {  }
     }
     measure(name, fn) {
         const self = this;
@@ -227,9 +216,9 @@ const PerformanceBaseline = class {
         return comparison;
     }
 };
-// ============================================================
-// WATCH MODE
-// ============================================================
+
+
+
 const WatchMode = class {
     constructor() {
         this._isWatching = false;
@@ -266,9 +255,9 @@ const WatchMode = class {
         return this._isWatching;
     }
 };
-// ============================================================
-// EXISTENCE CHECK HELPER
-// ============================================================
+
+
+
 const exists = function(module, fn) {
     try {
         const root = TestEnvironment.isBrowser ? window : globalThis;
@@ -286,9 +275,9 @@ const TEST_PLAN = [
     ['AIClients', ['generateWithFallback', 'validateApiKey', 'CostTracker']],
     ['WorkflowEngine', ['start', 'executeAgent', 'aggregate']]
 ];
-// ============================================================
-// FULL TEST SUITE
-// ============================================================
+
+
+
 const runFullTests = async function(options) {
     options = options || {};
     const withCoverage = options.withCoverage !== false;
@@ -327,13 +316,13 @@ const runFullTests = async function(options) {
         watchMode: watchMode.isWatching()
     };
 };
-// ============================================================
-// REAL ASSERTION TESTS (Fase 0 roadmap: unit test scoring engine +
-// snapshot test agent output — the checks above only confirm a function
-// EXISTS, never that it computes the right thing. These call the real,
-// unmodified production functions with known inputs and assert on the
-// actual output.)
-// ============================================================
+
+
+
+
+
+
+
 const assertEqual = function(results, name, actual, expected) {
     const ok = JSON.stringify(actual) === JSON.stringify(expected);
     results.push({ name: name, pass: ok, actual: actual, expected: expected });
@@ -345,7 +334,7 @@ const assertTrue = function(results, name, condition, detail) {
     InternalLogger[condition ? 'info' : 'error']('Assert', (condition ? '[OK] ' : '[ERR] ') + name + (detail ? ' — ' + detail : ''));
 };
 
-// --- LLMSampler (kesem-llm/llm-sampler.js): pure math, zero dependencies ---
+
 function testLLMSampler(results) {
     const S = window.LLMSampler;
     if (!S) { assertTrue(results, 'LLMSampler tersedia', false, 'window.LLMSampler tidak ditemukan — halaman ini tidak memuat kesem-llm/llm-sampler.js'); return; }
@@ -357,7 +346,7 @@ function testLLMSampler(results) {
     assertEqual(results, 'argmax() tie-break ke indeks pertama', S.argmax([5, 5, 1]), 0);
 }
 
-// --- Utils (js/core/utils.js) ---
+
 function testUtils(results) {
     const U = window.Utils;
     if (!U) { assertTrue(results, 'Utils tersedia', false, 'window.Utils tidak ditemukan'); return; }
@@ -373,7 +362,7 @@ function testUtils(results) {
     }
 }
 
-// --- WorkflowEngine.aggregateResults (js/workflow/workflow.js): 10-dimension scoring engine ---
+
 function testAggregateResults(results) {
     const WE = window.KESEMPATAN && window.KESEMPATAN.WorkflowEngine;
     if (!WE || typeof WE.aggregateResults !== 'function') {
@@ -386,11 +375,11 @@ function testAggregateResults(results) {
     const single = WE.aggregateResults([{ agent: 'A', confidence: 100, metrics: fullMetrics, insight: ['x'], strategy: [], risk: [], recommendation: 'r' }], 'topic');
     assertEqual(results, 'aggregateResults() 1 agen skor penuh -> score 100', single.score, 100);
 
-    // Dua agen dengan metrik BEDA NILAI (bukan salah satunya nol) dan
-    // confidence beda -> ini membedakan rata-rata TERTIMBANG confidence
-    // dari rata-rata polos. A=100@conf100, B=50@conf50:
-    //   tertimbang: (100*1.0 + 50*0.5) / 1.5 = 83.33 -> round 83
-    //   polos (bug lama-nya): (100 + 50) / 1.5 = 100  <- beda, jadi test ini akan gagal kalau bobot hilang
+    
+    
+    
+    
+    
     const weighted = WE.aggregateResults([
         { agent: 'A', confidence: 100, metrics: fullMetrics, insight: [], strategy: [], risk: [], recommendation: '' },
         { agent: 'B', confidence: 50, metrics: halfMetrics, insight: [], strategy: [], risk: [], recommendation: '' }
@@ -409,7 +398,7 @@ function testAggregateResults(results) {
     assertEqual(results, 'aggregateResults() tanpa agen valid -> fallback score 0', empty.score, 0);
 }
 
-// --- LLMJSONGrammar (kesem-llm/llm-json-grammar.js): character-level JSON structural grammar ---
+
 function testJSONGrammar(results) {
     const G = window.LLMJSONGrammar;
     if (!G) { assertTrue(results, 'LLMJSONGrammar tersedia', false, 'window.LLMJSONGrammar tidak ditemukan'); return; }
@@ -434,7 +423,7 @@ function testJSONGrammar(results) {
     assertTrue(results, 'JSONGrammar treats incomplete-but-valid-so-far as not-yet-rejected', !rejectedSomewhere('{"a":1') && !fullyValid('{"a":1'));
 }
 
-// --- LLMSampler.constrainLogitsToJSON (kesem-llm/llm-sampler.js): token-level masking on a tiny mock vocab ---
+
 function testConstrainedSampling(results) {
     const S = window.LLMSampler;
     const G = window.LLMJSONGrammar;
@@ -442,8 +431,8 @@ function testConstrainedSampling(results) {
         assertTrue(results, 'LLMSampler.constrainLogitsToJSON tersedia', false, 'modul belum termuat di halaman ini');
         return;
     }
-    // Vocab kecil buatan sendiri — TIDAK menyentuh model/vocab asli, cuma
-    // untuk menguji constrainLogitsToJSON() secara terisolasi.
+    
+    
     const tokens = ['{', '}', '"', 'a', ':', ',', '1', 'true', 'EOS'];
     const idToToken = new Map();
     tokens.forEach(function (t, i) { idToToken.set(i, t); });
@@ -451,7 +440,7 @@ function testConstrainedSampling(results) {
     const vocab = { idToToken: idToToken };
     const flatLogits = tokens.map(function () { return 1.0; });
 
-    // Dari state awal (harap sebuah VALUE): '{', '"', '1', 'true' valid; '}', ':', ',' TIDAK; EOS TIDAK (JSON belum lengkap).
+    
     const start = G.createState();
     const r1 = S.constrainLogitsToJSON(flatLogits, vocab, start, eosId);
     assertTrue(results, 'constrainLogitsToJSON: "{" valid dari state awal', r1.logits[tokens.indexOf('{')] !== -Infinity);
@@ -459,32 +448,32 @@ function testConstrainedSampling(results) {
     assertTrue(results, 'constrainLogitsToJSON: ":" TIDAK valid dari state awal', r1.logits[tokens.indexOf(':')] === -Infinity);
     assertTrue(results, 'constrainLogitsToJSON: EOS TIDAK valid sebelum JSON lengkap', r1.logits[eosId] === -Infinity);
 
-    // Majukan state lewat "{" -> sekarang harap key-string-start atau "}" (objek kosong).
+    
     const afterBrace = G.stepText(G.createState(), '{');
     const r2 = S.constrainLogitsToJSON(flatLogits, vocab, afterBrace, eosId);
     assertTrue(results, 'constrainLogitsToJSON: "\\"" valid setelah "{"', r2.logits[tokens.indexOf('"')] !== -Infinity);
     assertTrue(results, 'constrainLogitsToJSON: "}" valid setelah "{" (objek kosong diizinkan)', r2.logits[tokens.indexOf('}')] !== -Infinity);
     assertTrue(results, 'constrainLogitsToJSON: "1" TIDAK valid setelah "{" (key wajib string)', r2.logits[tokens.indexOf('1')] === -Infinity);
 
-    // State JSON lengkap ("{}") -> EOS sekarang valid.
+    
     const complete = G.stepText(G.createState(), '{}');
     const r3 = S.constrainLogitsToJSON(flatLogits, vocab, complete, eosId);
     assertTrue(results, 'constrainLogitsToJSON: EOS valid setelah JSON lengkap', r3.logits[eosId] !== -Infinity);
 
-    // Fail-open: kalau TIDAK ADA token valid sama sekali dari vocab, harus
-    // kembalikan logits ASLI (bukan semua -Infinity yang bikin sampling macet).
+    
+    
     const tinyVocab = { idToToken: new Map([[0, 'zzz_never_valid_here']]) };
-    const r4 = S.constrainLogitsToJSON([1.0], tinyVocab, start, 99 /* no real eos in this vocab */);
+    const r4 = S.constrainLogitsToJSON([1.0], tinyVocab, start, 99 );
     assertTrue(results, 'constrainLogitsToJSON: fail-open kalau tidak ada token valid', r4.anyValid === false && r4.logits[0] === 1.0);
 
-    // REGRESI (bug nyata yang sempat lolos, ditemukan lewat generate()
-    // end-to-end sebelum fix ini — model menghasilkan "fal se" alih-alih
-    // "false"): kalau token PERTAMA yang dipilih adalah piece yang MENUTUP
-    // sebuah kata ("fal</w>"), detokenize() (llm-tokenizer.js) akan
-    // menyisipkan spasi sebelum kata BERIKUTNYA. Di tengah literal/angka,
-    // spasi itu SELALU merusak (tidak ada penyambung yang valid) — jadi
-    // perilaku yang benar adalah gagal-terbuka (fail-open, anyValid=false)
-    // alih-alih diam-diam menerima "se" dan menghasilkan "fal se".
+    
+    
+    
+    
+    
+    
+    
+    
     const eow = '</w>';
     const boundaryVocab = { idToToken: new Map([[0, 'fal' + eow], [1, 'se'], [2, ' se']]) };
     const r5a = S.constrainLogitsToJSON([1.0, 1.0, 1.0], boundaryVocab, start, 99, false);
@@ -494,24 +483,24 @@ function testConstrainedSampling(results) {
     const r5b = S.constrainLogitsToJSON([1.0, 1.0, 1.0], boundaryVocab, advanced.state, 99, advanced.wordBoundaryPending);
     assertTrue(results, 'constrainLogitsToJSON: gagal-terbuka saat literal tak bisa disambung tanpa lewat batas-kata (cegah "fal se")', r5b.anyValid === false);
 
-    // Sebaliknya, TANPA batas kata (mis. "fal" dan "se" datang dari BPE
-    // piece yang sama tanpa penanda EOW di antaranya) — "se" tetap valid
-    // menyambung literal "false", karena detokenize() TIDAK menyisipkan
-    // spasi di situ. Ini membuktikan fix TIDAK jadi terlalu konservatif
-    // untuk kasus yang sebenarnya aman.
+    
+    
+    
+    
+    
     const noBoundaryState = G.stepText(G.createState(), 'fal');
     const r6 = S.constrainLogitsToJSON([1.0, 1.0, 1.0], boundaryVocab, noBoundaryState, 99, false);
     assertTrue(results, 'constrainLogitsToJSON: token TANPA batas-kata tetap valid menyambung literal', r6.logits[1] !== -Infinity);
 
-    // Sanity check satu lagi: batas-kata di posisi yang MEMANG mentolerir
-    // whitespace (mis. sebelum sebuah value baru) harus TETAP diterima —
-    // fix ini tidak boleh menolak spasi di tempat yang sah.
+    
+    
+    
     const openBraceVocab = { idToToken: new Map([[0, '{']]) };
     const r7 = S.constrainLogitsToJSON([1.0], openBraceVocab, start, 99, true);
     assertTrue(results, 'constrainLogitsToJSON: spasi tersirat dari batas-kata TETAP diterima di posisi yang mentolerir whitespace', r7.logits[0] !== -Infinity);
 }
 
-// --- AGENTS_CONFIG (agents/agents-config.js + kategori) structural integrity ---
+
 function testAgentsConfig(results) {
     const AC = window.AGENTS_CONFIG;
     if (!AC) { assertTrue(results, 'AGENTS_CONFIG tersedia', false, 'window.AGENTS_CONFIG tidak ditemukan'); return; }
@@ -545,9 +534,9 @@ const runRealAssertions = async function() {
     return { total: results.length, pass: pass, fail: fail, results: results };
 };
 
-// ============================================================
-// QUICK TEST
-// ============================================================
+
+
+
 const quickTest = async function() {
     InternalLogger.info('TestRunner', 'Running QUICK TEST (Smoke + Unit)');
     const modules = ['CONFIG', 'Utils', 'AIClients', 'WorkflowEngine'];
@@ -559,9 +548,9 @@ const quickTest = async function() {
     });
     return { total: modules.length, pass: pass };
 };
-// ============================================================
-// EXPORT
-// ============================================================
+
+
+
 window.runFullTests = runFullTests;
 window.quickTest = quickTest;
 window.runRealAssertions = runRealAssertions;

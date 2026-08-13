@@ -4,9 +4,9 @@ const KESEMPATAN = window.KESEMPATAN || {};
 window.KESEMPATAN = KESEMPATAN;
 KESEMPATAN.Podcast = KESEMPATAN.Podcast || {};
 
-// ============================================================
-// VOICE ACTIVE PANEL + LIBRARY WORKFLOW
-// ============================================================
+
+
+
 const RECENT_KEY = 'kesempatan_voice_recent';
 const FAV_KEY = 'kesempatan_voice_favorites';
 
@@ -17,9 +17,9 @@ function safeLSSet(key, arr) {
     try { localStorage.setItem(key, JSON.stringify(arr)); } catch (_) { console.warn('[Podcast] Non-fatal error:', _.message); }
 }
 
-// Dicatat sebagai efek samping ringan saat render (BUKAN di ui-handlers.js,
-// yang tidak boleh disentuh) - satu-satunya cara aman melacak "baru dipakai"
-// tanpa mengubah applyVoice() yang sudah frozen.
+
+
+
 function recordRecentVoice(voiceKey) {
     if (!voiceKey) return;
     let recent = safeLSGet(RECENT_KEY);
@@ -28,7 +28,7 @@ function recordRecentVoice(voiceKey) {
     safeLSSet(RECENT_KEY, recent.slice(0, 5));
 }
 
-// Panel Voice Aktif — permanen, selalu terlihat, TERPISAH dari Library
+
 function buildActiveVoicePanel(state, theme) {
     let voiceData, name, emoji, desc;
     if (state.useAgentVoice && state.currentAgentVoice && AGENT_VOICES[state.currentAgentVoice]) {
@@ -248,77 +248,13 @@ function buildPodcastLayout(state) {
 
     return `
         <style>
-            /* ================================================================
-               KESEMPATAN OS DESIGN SYSTEM — BASELINE (dibekukan di Tahap Final)
-               ================================================================
-               Semua fitur baru WAJIB mengikuti bahasa desain di bawah ini,
-               bukan membuat gaya baru. Referensi cepat:
-
-               PANEL
-                 desk-console  → chassis utama (Meja Mixing), radius 18px
-                 desk-unit     → seam-divided section di dalam desk-console
-                 desk-screen   → layar tertanam gelap (waveform, topic input)
-                 desk-monitor  → panel monitoring, radius 12px, material sama
-                                  dengan desk-screen
-                 desk-channel  → baris channel (Voice Engine, Project rows)
-                 studio-secondary-panel → panel sekunder redup (Settings,
-                                  Voice Library, Gallery), radius 12px
-                 dashboard-continuous  → chassis gabungan Settings s/d
-                                  Projects, satu chassis bukan kartu terpisah
-
-               TYPOGRAPHY (4 level, jangan campur)
-                 desk-title    → L1, nama/nilai utama
-                 desk-label    → L2, header seksi gaya silkscreen (uppercase,
-                                  letter-spacing 2px, monospace)
-                 desk-readout  → L3, nilai/angka mesin (monospace)
-                 desk-metadata → L4, teks pendukung paling kecil/redup
-
-               STATUS
-                 desk-status (+ .on/.warn/.error/.off) → satu komponen untuk
-                 SEMUA status (ACTIVE/READY/ONLINE/PLAYING/STANDBY/dst).
-                 Warna: hijau=on, kuning=warn, merah=error, abu=off. Tidak
-                 ada warna status lain di luar 4 ini.
-                 desk-indicator → dot LED (dipasangkan dengan desk-status)
-
-               MOTION
-                 --motion-fast (120ms) / --motion-normal (240ms) /
-                 --motion-slow (1000ms), semua pakai --motion-ease yang sama.
-                 Hover = brightness/border-glow saja, tidak ada scale.
-                 Selected/active = opacity atau glow pelan, tidak ada blink.
-
-               SPACING & RADIUS
-                 Radius keluarga: 18px (console/outer), 12px (screen/monitor/
-                 secondary-panel), 8-10px (chip/tombol kecil). Jangan buat
-                 angka radius baru di luar skala ini.
-                 Antar section dalam satu chassis: separator 1px opacity
-                 rendah, bukan gap/margin besar.
-
-               SHADOW
-                 Console: inset + outer glow tipis dari theme.primary.
-                 Screen/monitor: inset shadow gelap + edge-highlight 1px.
-                 Jangan ada glow yang lebih besar dari milik desk-console.
-
-               COLOR
-                 Hijau (theme.primary) adalah SATU-SATUNYA sumber cahaya/
-                 aksen. Semua panel dapat wash hijau sangat tipis (3-5%)
-                 sebagai "signature power state", bukan neon acak.
-               ================================================================ */
-            /* ============================================================
-               STUDIO ENVIRONMENT — TAHAP 1.5
-               Prinsip dari referensi ruang: cahaya menjiplak BATAS
-               struktur (bukan mengisi semua ruang), depth lewat
-               gelap-terang berlapis, satu pusat gravitasi visual.
-               ============================================================ */
+            
+            
             @keyframes studioLedPulse { 0%,100% { opacity:0.45; } 50% { opacity:0.9; } }
             @keyframes ringGlowPulse { 0%,100% { opacity:0.5; transform:scale(1); } 50% { opacity:0.85; transform:scale(1.03); } }
 
-            /* ============================================================
-               🎬 TAHAP 6 — MOTION VOCABULARY
-               Satu sistem durasi/easing untuk SELURUH aplikasi. Tidak ada
-               animasi "melompat" - semua transisi pakai token yang sama.
-               ============================================================ */
-            /* Vignette full-halaman: gelap di tepi, konsentrasi cahaya
-               di area Meja Mixing - meniru "titik hilang" perspektif ruang */
+            
+            
             .studio-atmosphere {
                 --motion-fast: 120ms;
                 --motion-normal: 240ms;
@@ -340,17 +276,14 @@ function buildPodcastLayout(state) {
                 z-index: 1; pointer-events: none;
             }
 
-            /* Watermark identitas - bukan lagi blok warna, cuma jejak
-               cahaya samar di balik Meja Mixing (echo dari layar
-               KESEMPATAN OS di referensi, bukan banner UI) */
+            
             .studio-watermark {
                 text-align: center; padding: 6px 0 2px;
                 font-size: 10px; letter-spacing: 3px; text-transform: uppercase;
                 color: ${theme.primary}; opacity: 0.35; font-weight: 700;
             }
 
-            /* Ring glow di balik Meja Mixing - echo dari ring lantai
-               neon di referensi ruang, sumber cahaya utama halaman */
+            
             .desk-console-ring {
                 position: absolute; left: 50%; top: 50%;
                 width: 130%; height: 85%;
@@ -361,7 +294,7 @@ function buildPodcastLayout(state) {
                 pointer-events: none; z-index: 0;
             }
 
-            /* ===== MEJA MIXING — satu-satunya pusat gravitasi visual ===== */
+            
             .desk-console {
                 position: relative; overflow: visible;
                 background: linear-gradient(180deg, rgba(255,255,255,0.055), rgba(255,255,255,0.018)),
@@ -374,66 +307,54 @@ function buildPodcastLayout(state) {
                 box-shadow: 0 0 0 1px ${theme.primary}1a, 0 16px 50px rgba(0,0,0,0.45), 0 0 90px -15px ${theme.primary}55;
             }
 
-            /* ============================================================
-               🔠 TAHAP 5.2 — TYPOGRAPHY HIERARCHY (satu sistem, 4 level)
-               ============================================================ */
-            /* LEVEL 1 — Console Title (identitas utama halaman) */
+            
+            
             .desk-title {
                 font-size: 13px; font-weight: 700; letter-spacing: 0.3px;
                 color: ${theme.text};
             }
-            /* LEVEL 2 — Channel/Section label, gaya silkscreen dicetak di panel */
+            
             .desk-label {
                 font-size: 8px; letter-spacing: 2px; text-transform: uppercase;
                 color: ${theme.primary}; opacity: 0.6; text-align: center;
                 font-family: 'Courier New', monospace;
                 position: relative; z-index: 1;
             }
-            /* LEVEL 3 — Readout (angka/nilai mesin: latency, memory, plays, dst) */
+            
             .desk-readout {
                 font-family: 'Courier New', monospace;
                 font-size: 9px; letter-spacing: 0.5px;
             }
-            /* LEVEL 4 — Metadata (teks pendukung paling kecil/redup) */
+            
             .desk-metadata {
                 font-size: 8px; color: ${theme.text}; opacity: 0.35;
             }
 
             .desk-console > *:not(.desk-console-ring) { position: relative; z-index: 1; }
-            /* Satu "unit" chassis dalam meja mixing - seam/groove sebagai
-               pemisah antar komponen, BUKAN gap/margin seperti kartu terpisah */
+            
             .desk-unit {
                 padding: 12px 14px;
                 border-top: 1px solid rgba(255,255,255,0.05);
             }
             .desk-unit:first-child { border-top: none; }
-            /* ============================================================
-               🎚️ TAHAP 8 — PANEL DEPTH SYSTEM
-               4 level kedalaman, satu bahasa shadow: makin dalam level,
-               makin gelap inset-nya, tapi resep (inset + edge-highlight)
-               sama untuk semua supaya terasa satu keluarga material.
-               ============================================================ */
-            /* LEVEL 2 — Desk Screen/Monitor: kaca monitor hardware.
-               Edge-highlight tipis di atas (reflection), inset shadow
-               dalam, TANPA blur berlebihan. */
+            
+            
             .desk-screen, .desk-monitor {
                 background: linear-gradient(180deg, ${theme.primary}04, rgba(0,0,0,0.4) 40%);
                 border-radius: 12px;
                 position: relative;
                 box-shadow: inset 0 0 22px rgba(0,0,0,0.5), inset 0 0 0 1px rgba(255,255,255,0.04), inset 0 1px 0 rgba(255,255,255,0.05);
             }
-            /* Glass reflection sangat tipis - garis cahaya diagonal halus
-               menyeberang layar, seperti pantulan kaca monitor asli */
+            
             .desk-screen::before, .desk-monitor::before {
                 content: ''; position: absolute; inset: 0; border-radius: inherit;
                 background: linear-gradient(115deg, rgba(255,255,255,0.025) 0%, transparent 18%);
                 pointer-events: none;
             }
-            /* LEVEL 3 — Monitoring: sedikit lebih dangkal dari layar utama */
+            
             .desk-monitor { box-shadow: inset 0 0 14px rgba(0,0,0,0.4), inset 0 0 0 1px rgba(255,255,255,0.04), inset 0 1px 0 rgba(255,255,255,0.04); }
 
-            /* INDUSTRIAL LIGHTING — seolah ada lampu studio dari kiri-atas,
-               sangat halus, nyaris tidak terasa (bukan gradient besar) */
+            
             .desk-console::after {
                 content: ''; position: absolute; inset: 0; border-radius: inherit;
                 background: linear-gradient(135deg, rgba(255,255,255,0.03) 0%, transparent 30%);
@@ -448,9 +369,7 @@ function buildPodcastLayout(state) {
                             box-shadow var(--motion-normal, 240ms) var(--motion-ease, ease);
             }
             .desk-btn:active { transform: scale(0.97); }
-            /* HOVER SYSTEM — satu bahasa untuk semua kontrol: brightness naik
-               sedikit + border-glow tipis + shadow bertambah. TIDAK membesar
-               (bukan gaya website modern), terasa seperti panel mesin. */
+            
             .desk-btn, .voice-preset-btn, .voice-category-chip, .desk-channel {
                 transition: filter var(--motion-normal, 240ms) var(--motion-ease, ease),
                             box-shadow var(--motion-normal, 240ms) var(--motion-ease, ease),
@@ -460,24 +379,14 @@ function buildPodcastLayout(state) {
                 filter: brightness(1.12);
                 box-shadow: 0 0 0 1px ${theme.primary}33, 0 0 10px -2px ${theme.primary}44;
             }
-            /* 🔥 BARU: dulu voice-preset-btn cuma punya transisi untuk
-               :hover — pseudo-class ini TIDAK reliable di layar sentuh
-               (HP), beda dari mouse di desktop. Rap Battle terasa lebih
-               responsif karena pakai class seleksi yang persisten.
-               Karena di sini item langsung hilang dari daftar begitu
-               dipilih (render ulang penuh), :active memberi feedback
-               sentuhan INSTAN yang reliable di HP — sebelum item itu
-               menghilang saat render ulang. */
+            
             .voice-preset-btn:active {
                 background: ${theme.primary}18 !important;
                 filter: brightness(1.2);
                 transition: background 0.08s ease, filter 0.08s ease;
             }
 
-            /* ============================================================
-               🖥️ VOCABULARY (Production Workstation) — satu keluarga
-               radius/border/shadow, kontras berbeda cuma lewat opacity.
-               ============================================================ */
+            
             .desk-monitor {
                 padding: 10px 12px;
             }
@@ -490,9 +399,7 @@ function buildPodcastLayout(state) {
             }
             .desk-channel + .desk-channel { border-top: 1px solid rgba(255,255,255,0.04); }
 
-            /* STATUS CHIP SERAGAM — satu komponen untuk semua status.
-               Hijau = ACTIVE/ONLINE/READY. Merah = ERROR. Kuning = WARNING.
-               Abu = OFFLINE/STANDBY. Tidak ada warna lain di luar ini. */
+            
             .desk-status {
                 font-family: 'Courier New', monospace; font-size: 8px;
                 letter-spacing: 0.5px; padding: 1px 0;
@@ -513,47 +420,34 @@ function buildPodcastLayout(state) {
             }
             .desk-indicator.on { animation: deskLedGlow 3.2s var(--motion-ease, ease-in-out) infinite; }
 
-            /* ACTIVE STATE — hidup lewat glow/opacity halus, TIDAK scale,
-               TIDAK blink cepat (bukan lampu darurat, lampu indikator mesin) */
+            
             @keyframes deskStatusLive {
                 0%, 100% { opacity: 0.85; text-shadow: 0 0 2px currentColor; }
                 50% { opacity: 1; text-shadow: 0 0 6px currentColor; }
             }
             .desk-status.on { animation: deskStatusLive 3.2s var(--motion-ease, ease-in-out) infinite; }
 
-            /* Konsol bernapas pelan saat idle - brightness bergeser 2-3%,
-               bukan efek loading, terasa "mesin hidup" */
+            
             @keyframes consolePowerBreathe {
                 0%, 100% { filter: brightness(1); }
                 50% { filter: brightness(1.025); }
             }
             .desk-console { animation: consolePowerBreathe 6s var(--motion-ease, ease-in-out) infinite; }
 
-            /* Ambience waveform - glow lembut memantul ke chassis, bukan neon besar */
+            
             .waveform-container { box-shadow: inset 0 0 24px rgba(0,0,0,0.55), 0 0 16px -6px ${theme.primary}33 !important; }
 
-            /* AI Producer monitor - flicker sangat lambat & halus */
+            
             @keyframes monitorFlicker { 0%, 96%, 100% { opacity: 0.5; } 98% { opacity: 0.35; } }
             .ai-producer-monitor::after { animation: monitorFlicker 9s linear infinite; }
 
-            /* Details (Voice Library / Detail Analysis / More Tools) - transisi
-               halus saat dibuka, tidak snap. CSS-only, animasi replay tiap kali
-               [open] muncul di render tree. */
+            
             @keyframes detailsReveal { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: translateY(0); } }
             details[open] > *:not(summary) { animation: detailsReveal var(--motion-normal, 240ms) var(--motion-ease, ease) both; }
-            /* 🔥 FIX: dulu animasi reveal di atas replay tiap render()
-               membongkar ulang DOM — termasuk saat panel yang SUDAH
-               terbuka cuma dipulihkan lagi statusnya (bukan genuinely
-               baru dibuka user). Ini yang terlihat sebagai flash/kedip
-               setiap pilih karakter suara/Tema/tab. Kelas ini dipasang
-               HANYA saat pemulihan otomatis (lihat ui-renderer.js),
-               animasi asli tetap jalan normal untuk buka-tutup manual. */
+            
             details[open].no-reveal-anim > *:not(summary) { animation: none !important; }
 
-            /* 🔥 BARU: highlight sesaat saat suara BENAR-BENAR berpindah
-               (dipicu manual lewat JS di applyVoice(), bukan otomatis di
-               setiap render — supaya tidak replay terus seperti bug
-               animasi <details> yang sudah diperbaiki). */
+            
             @keyframes voiceSwitchGlow {
                 0% { box-shadow: 0 0 0 0 ${theme.primary}88; }
                 50% { box-shadow: 0 0 0 6px ${theme.primary}00; }
@@ -563,28 +457,13 @@ function buildPodcastLayout(state) {
                 animation: voiceSwitchGlow 600ms ease;
             }
 
-            /* 🔥 BARU: transisi halus untuk section yang toggle
-               berdasar mode (AI CAST) — menggantikan display:none/block
-               yang tidak bisa dianimasikan. */
+            
             .mode-panel-transition {
                 transition: max-height 280ms ease, opacity 220ms ease, padding 280ms ease, margin 280ms ease, border-width 280ms ease;
             }
 
-            /* ============================================================
-               🎛️ TAHAP 9.6 — DEBATE SELECTOR (Voice Library blueprint)
-               Row datar seperti Voice Library: border-left aksen +
-               border-bottom seam, TANPA card/glow/pulse/scale. Transisi
-               dibatasi 180ms ease saja.
-               ============================================================ */
-            /* ============================================================
-               🔗 TAHAP 9.11 — DASHBOARD CHASSIS (final)
-               Diperluas: sekarang membungkus Settings→Mode→Export→More
-               Tools→Monitoring→Projects sebagai SATU chassis. Setiap
-               anak langsung kehilangan bg/border/radius individunya
-               (scoped ke .dashboard-continuous saja, tidak menyentuh
-               .desk-monitor/.studio-secondary-panel di tempat lain),
-               diganti separator 1px opacity rendah + padding 8px.
-               ============================================================ */
+            
+            
             .dashboard-continuous {
                 border-radius: 12px;
                 background: linear-gradient(180deg, ${theme.primary}05, rgba(255,255,255,0.01));
@@ -632,7 +511,7 @@ function buildPodcastLayout(state) {
             }
             #debateAgentsSelector .debate-agent-select.full-dim { opacity: 0.55; }
 
-            /* AI Producer monitor - scanline sangat halus, tidak mengganggu ketik */
+            
             .ai-producer-monitor { overflow: hidden; transition: box-shadow var(--motion-slow, 1000ms) var(--motion-ease, ease); }
             .ai-producer-monitor:focus-within {
                 box-shadow: inset 0 0 22px rgba(0,0,0,0.5), inset 0 0 0 1px rgba(255,255,255,0.04), 0 0 0 1px ${theme.primary}40, 0 0 16px -4px ${theme.primary}55;
@@ -643,8 +522,7 @@ function buildPodcastLayout(state) {
                 background: repeating-linear-gradient(0deg, rgba(255,255,255,0.012) 0px, rgba(255,255,255,0.012) 1px, transparent 1px, transparent 3px);
             }
 
-            /* ===== Panel sekunder — sengaja jadi "siluet", bukan card
-               yang bersaing terang dengan Meja Mixing ===== */
+            
             .studio-secondary-panel {
                 background: linear-gradient(180deg, ${theme.primary}05, rgba(255,255,255,0.012));
                 border: 1px solid ${theme.primary}14;

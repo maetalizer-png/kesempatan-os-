@@ -1,6 +1,4 @@
-/* ============================================================
-   RESPONSIVE.CSS — Aturan untuk layar kecil (non-core)
-   ============================================================ */
+
 @media (max-width: 768px) {
   .execute-btn {
     padding: 12px 16px !important;

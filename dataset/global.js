@@ -1,8 +1,8 @@
-// KESEMPATAN OS - DATASET: PERSPEKTIF BISNIS GLOBAL
-// Selaras dengan 10 agent di agents/agents-global.js. Lihat dataset/bisnis.js
-// untuk catatan desain lengkap folder ini.
+
+
+
 const data = [
-    // ================= STARTUP FOUNDER =================
+    
     {
         text: 'Startup tahap awal sebaiknya mengejar pertumbuhan yang bisa diulang dan diskalakan, bukan sekadar pertumbuhan cepat — akuisisi pelanggan yang tidak menguntungkan hanya menunda kematian bisnis dengan biaya modal yang lebih mahal.',
         metadata: { category: 'dataset', domain: 'global', agent: 'StartupFounder', topic: 'pertumbuhan berkelanjutan', tags: ['startup', 'pertumbuhan'] }
@@ -16,7 +16,7 @@ const data = [
         metadata: { category: 'dataset', domain: 'global', agent: 'StartupFounder', topic: 'kesehatan mental pendiri', tags: ['startup', 'kepemimpinan'] }
     },
 
-    // ================= VENTURE CAPITALIST =================
+    
     {
         text: 'Model kekuasaan hukum (power law) dalam pendanaan ventura berarti mayoritas keuntungan sebuah dana modal ventura biasanya datang dari satu atau dua investasi yang menjadi sangat besar, bukan dari rata-rata seluruh portofolio.',
         metadata: { category: 'dataset', domain: 'global', agent: 'VentureCapitalist', topic: 'power law investasi', tags: ['venture capital', 'portofolio'] }
@@ -30,7 +30,7 @@ const data = [
         metadata: { category: 'dataset', domain: 'global', agent: 'VentureCapitalist', topic: 'valuasi tahap awal', tags: ['venture capital', 'valuasi'] }
     },
 
-    // ================= RISK MANAGER =================
+    
     {
         text: 'Manajemen risiko yang matang membedakan antara risiko yang bisa diterima, dimitigasi, dipindahkan lewat asuransi, atau dihindari sama sekali — mencoba menghilangkan semua risiko biasanya justru menghilangkan peluang pertumbuhan.',
         metadata: { category: 'dataset', domain: 'global', agent: 'RiskManager', topic: 'kategori respons risiko', tags: ['manajemen risiko', 'strategi'] }
@@ -44,7 +44,7 @@ const data = [
         metadata: { category: 'dataset', domain: 'global', agent: 'RiskManager', topic: 'risiko ekor gemuk', tags: ['manajemen risiko', 'statistik'] }
     },
 
-    // ================= FUTURE FORECASTER =================
+    
     {
         text: 'Peramalan tren yang kredibel membedakan antara sinyal (perubahan struktural yang persisten) dan derau (fluktuasi acak jangka pendek) — kesalahan paling umum adalah memperlakukan derau seolah-olah itu sinyal tren besar.',
         metadata: { category: 'dataset', domain: 'global', agent: 'FutureForecaster', topic: 'sinyal vs derau', tags: ['forecasting', 'analisis tren'] }
@@ -58,7 +58,7 @@ const data = [
         metadata: { category: 'dataset', domain: 'global', agent: 'FutureForecaster', topic: 'teknologi eksponensial', tags: ['forecasting', 'teknologi'] }
     },
 
-    // ================= GEN Z ANALYST =================
+    
     {
         text: 'Generasi Z tumbuh sebagai generasi digital native pertama yang mengalami internet seumur hidup mereka, membentuk ekspektasi terhadap kecepatan informasi dan transparansi merek yang jauh lebih tinggi dibanding generasi sebelumnya.',
         metadata: { category: 'dataset', domain: 'global', agent: 'GenZAnalyst', topic: 'digital native', tags: ['gen z', 'perilaku konsumen'] }
@@ -72,7 +72,7 @@ const data = [
         metadata: { category: 'dataset', domain: 'global', agent: 'GenZAnalyst', topic: 'loyalitas merek gen z', tags: ['gen z', 'pemasaran'] }
     },
 
-    // ================= BEHAVIORAL ECONOMIST =================
+    
     {
         text: 'Efek jangkar (anchoring) membuat keputusan finansial seseorang terpengaruh secara tidak proporsional oleh angka pertama yang mereka lihat, bahkan ketika angka itu tidak relevan — inilah mengapa harga coret di label diskon efektif memengaruhi persepsi nilai.',
         metadata: { category: 'dataset', domain: 'global', agent: 'BehavioralEconomist', topic: 'efek jangkar', tags: ['ekonomi perilaku', 'bias'] }
@@ -86,7 +86,7 @@ const data = [
         metadata: { category: 'dataset', domain: 'global', agent: 'BehavioralEconomist', topic: 'nudge theory', tags: ['ekonomi perilaku', 'kebijakan'] }
     },
 
-    // ================= CONSUMER BEHAVIOR =================
+    
     {
         text: 'Perjalanan keputusan konsumen modern jarang bersifat linier dari kesadaran ke pembelian — konsumen sering bolak-balik antara riset, perbandingan, dan penundaan sebelum akhirnya mengambil keputusan, terutama untuk pembelian bernilai tinggi.',
         metadata: { category: 'dataset', domain: 'global', agent: 'ConsumerBehavior', topic: 'perjalanan keputusan konsumen', tags: ['perilaku konsumen', 'customer journey'] }
@@ -100,7 +100,7 @@ const data = [
         metadata: { category: 'dataset', domain: 'global', agent: 'ConsumerBehavior', topic: 'paradoks pilihan', tags: ['perilaku konsumen', 'desain pilihan'] }
     },
 
-    // ================= FINANCIAL PLANNER =================
+    
     {
         text: 'Prinsip diversifikasi portofolio menyebar risiko investasi ke berbagai kelas aset yang tidak selalu bergerak searah, sehingga kerugian di satu aset bisa diimbangi kinerja aset lain — ini mengurangi volatilitas tanpa harus mengorbankan seluruh potensi imbal hasil.',
         metadata: { category: 'dataset', domain: 'global', agent: 'FinancialPlanner', topic: 'diversifikasi portofolio', tags: ['perencanaan keuangan', 'investasi'] }
@@ -114,7 +114,7 @@ const data = [
         metadata: { category: 'dataset', domain: 'global', agent: 'FinancialPlanner', topic: 'bunga majemuk', tags: ['perencanaan keuangan', 'investasi jangka panjang'] }
     },
 
-    // ================= DEVIL'S ADVOCATE =================
+    
     {
         text: 'Pemikiran kelompok (groupthink) muncul ketika keinginan untuk mencapai konsensus mengalahkan evaluasi kritis terhadap sebuah rencana — peran devil\'s advocate secara sengaja menantang asumsi tim untuk mencegah keputusan buruk lolos tanpa diuji.',
         metadata: { category: 'dataset', domain: 'global', agent: 'DevilsAdvocate', topic: 'groupthink', tags: ['pengambilan keputusan', 'dinamika tim'] }
@@ -128,7 +128,7 @@ const data = [
         metadata: { category: 'dataset', domain: 'global', agent: 'DevilsAdvocate', topic: 'menguji ketahanan rencana', tags: ['pengambilan keputusan', 'stress test'] }
     },
 
-    // ================= SUNDANYA ASEP (Pengusaha Sunda) =================
+    
     {
         text: 'Filosofi silih asah, silih asih, silih asuh dalam budaya Sunda mengajarkan bahwa kemitraan bisnis yang langgeng dibangun di atas saling mengasah kemampuan, saling menyayangi, dan saling menjaga — bukan sekadar transaksi untung-rugi semata.',
         metadata: { category: 'dataset', domain: 'global', agent: 'SundanyaAsep', topic: 'filosofi bisnis sunda', tags: ['budaya sunda', 'etika bisnis'] }

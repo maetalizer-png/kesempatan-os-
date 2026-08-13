@@ -28,9 +28,9 @@ function renderError(elementId, message) {
     element.textContent = 'Error: ' + message;
 }
 
-// ============================================================
-// GRAPHQL-LIKE API
-// ============================================================
+
+
+
 class GraphQLAPI {
     constructor(db) {
         this._db = db;
@@ -105,9 +105,9 @@ class GraphQLAPI {
     }
 }
 
-// ============================================================
-// VISUAL QUERY BUILDER
-// ============================================================
+
+
+
 class QueryBuilder {
     constructor(db) {
         this._db = db;
@@ -159,9 +159,9 @@ class QueryBuilder {
     }
 }
 
-// ============================================================
-// INTERACTIVE PLAYGROUND
-// ============================================================
+
+
+
 class Playground {
     constructor(db) {
         this._db = db;

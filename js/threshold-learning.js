@@ -1108,13 +1108,13 @@ window.KESEMPATAN.MultiModalLearner = MultiModalLearner;
 window.KESEMPATAN.InternalLogger = InternalLogger;
 window.KESEMPATAN.NotificationSystem = NotificationSystem;
 
-// Kept as real globals (not KESEMPATAN-only): window.AutoLearning is read
-// directly by hitl.js, main.js, workflow.js and reaction-learning.js;
-// window.InternalLogger is part of the app-wide load-order-tolerant
-// fallback logger convention used by dozens of files. DQNEngine,
-// LSTMPredictor, FederatedLearning, SHAPExplainer, MetaLearningEngine,
-// StreamingLearner, MultiModalLearner, AutoLearningUltimate and
-// NotificationSystem have no external readers, so only their
-// KESEMPATAN.X form above is kept.
+
+
+
+
+
+
+
+
 window.AutoLearning = AutoLearningUltimate;
 window.InternalLogger = InternalLogger;

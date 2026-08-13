@@ -1,16 +1,16 @@
 const Logger = window.Utils?.Logger || {
-    info: function () { /* silent */ },
-    warn: function () { /* silent */ },
+    info: function () {  },
+    warn: function () {  },
     error: function (mod, msg) { console.error('[ERROR] [' + mod + '] ' + msg); }
 };
 
-// ============================================================
-// PRIMITIF ALJABAR LINEAR (dipakai bersama modul lain)
-// ============================================================
 
-// Random Gaussian via Box-Muller — dipakai untuk inisialisasi bobot.
-// Bukan cryptographically secure, memang tidak perlu (cuma inisialisasi
-// angka acak untuk bobot yang nanti akan DILATIH, bukan untuk keamanan).
+
+
+
+
+
+
 function randnGaussian() {
     let u = 0;
     let v = 0;
@@ -43,7 +43,7 @@ function zerosMatrix(rows, cols) {
     return m;
 }
 
-// A: m×k, B: k×n → hasil m×n
+
 function matmul(A, B) {
     const m = A.length;
     const k = A[0] ? A[0].length : 0;
@@ -88,7 +88,7 @@ function addMatrices(A, B) {
     return A.map(function (row, i) { return addVectors(row, B[i]); });
 }
 
-// Tambah vektor `bias` ke tiap baris matriks A (broadcast, gaya numpy).
+
 function addBiasRows(A, bias) {
     return A.map(function (row) { return addVectors(row, bias); });
 }
@@ -109,13 +109,13 @@ function dotProduct(a, b) {
     return sum;
 }
 
-// ============================================================
-// EMBEDDING TOKEN
-// ============================================================
-// Matriks embedding: 1 baris per token vocab, dModel kolom.
-// Nilai awal random (BELUM dilatih) — akan diperbarui llm-trainer.js
-// (Tahap 16) atau dimuat dari llm-weights.js/llm-checkpoint.js kalau ada
-// bobot yang sudah jadi.
+
+
+
+
+
+
+
 function createEmbeddingMatrix(vocabSize, dModel, initStd) {
     return randomMatrix(vocabSize, dModel, initStd);
 }
@@ -129,20 +129,20 @@ function lookupEmbeddings(embeddingMatrix, tokenIds) {
     });
 }
 
-// ============================================================
-// POSITIONAL ENCODING (sinusoidal, formula "Attention Is All You Need")
-// ============================================================
-// PE(pos, 2i)   = sin(pos / 10000^(2i/dModel))
-// PE(pos, 2i+1) = cos(pos / 10000^(2i/dModel))
-// Pool baris positional encoding per dModel — pos i TIDAK bergantung
-// pada seqLen (cuma pos & dModel), jadi baris yang sudah dihitung
-// sekali dipakai ulang SELAMANYA. Generate() memanggil ini SETIAP
-// token dengan seqLen yang terus bertambah 1 — tanpa pool, baris
-// pos=0..seqLen-2 yang SAMA dihitung ulang dari nol tiap kali. Aman
-// (fungsi murni, hasilnya cuma dijumlahkan lewat addMatrices yang
-// tidak memutasi input — berbagi referensi baris antar panggilan
-// tidak berisiko).
-const positionalEncodingPool = new Map(); // dModel -> baris[] (tumbuh sesuai kebutuhan)
+
+
+
+
+
+
+
+
+
+
+
+
+
+const positionalEncodingPool = new Map(); 
 
 function getPositionalEncoding(seqLen, dModel) {
     let pool = positionalEncodingPool.get(dModel);
@@ -170,7 +170,7 @@ function addPositionalEncoding(embeddings, posEnc) {
 }
 
 export const LLMEmbedding = {
-    // primitif aljabar linear (dipakai modul lain)
+    
     randnGaussian: randnGaussian,
     randomMatrix: randomMatrix,
     zerosVector: zerosVector,
@@ -183,7 +183,7 @@ export const LLMEmbedding = {
     scaleVector: scaleVector,
     scaleMatrix: scaleMatrix,
     dotProduct: dotProduct,
-    // embedding
+    
     createEmbeddingMatrix: createEmbeddingMatrix,
     lookupEmbeddings: lookupEmbeddings,
     getPositionalEncoding: getPositionalEncoding,

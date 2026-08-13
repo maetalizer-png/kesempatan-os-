@@ -1,11 +1,4 @@
-/* ============================================================
-   ai-agent/task-manager.js
-   Creates and tracks Task objects for the Agent Runtime. Purely
-   in-memory bookkeeping — no new persistence system (a task's
-   own step results are saved to VectorMemory by the Orchestrator
-   via memory-bridge.js, same as every other analysis result in
-   this app).
-   ============================================================ */
+
 
 const tasks = new Map();
 

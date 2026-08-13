@@ -1,8 +1,6 @@
-/* ============================================================
-   LAYOUT.CSS — Layout Global (TANPA SIDEBAR)
-   ============================================================ */
 
-/* --- Container utama --- */
+
+
 .container {
   position: relative;
   z-index: 1;
@@ -23,7 +21,7 @@
   overflow-x: hidden;
 }
 
-/* --- Layout utama --- */
+
 .layout {
   display: flex;
   gap: 20px;
@@ -38,7 +36,7 @@
   min-width: 0;
 }
 
-/* --- Topbar / Header --- */
+
 .topbar {
   display: flex;
   flex-direction: column;
@@ -48,7 +46,7 @@
   margin-bottom: 20px;
 }
 
-/* --- Loop status --- */
+
 .loop-container {
   display: flex;
   justify-content: center;
@@ -79,7 +77,7 @@
   animation: pulse 1.5s infinite;
 }
 
-/* --- Dashboard Grid --- */
+
 .dashboard-grid {
   display: flex;
   flex-direction: column;
@@ -101,17 +99,17 @@
   }
 }
 
-/* --- Card --- */
+
 .card {
-  background: rgba(255, 255, 255, 0.025) !important;  /* 🆕 Efek kaca sangat tipis */
-  backdrop-filter: blur(20px) !important;             /* 🆕 Blur lebih kuat */
+  background: rgba(255, 255, 255, 0.025) !important;  
+  backdrop-filter: blur(20px) !important;             
   -webkit-backdrop-filter: blur(20px) !important;
-  border: 1px solid rgba(0, 255, 163, 0.06) !important; /* 🆕 Garis samar agar tidak hilang */
+  border: 1px solid rgba(0, 255, 163, 0.06) !important; 
   border-radius: var(--radius);
   padding: 0px;
   width: 100%;
   box-sizing: border-box;
-  transition: transform 0.25s cubic-bezier(0.2, 0, 0, 1), box-shadow 0.25s ease; /* 🆕 Transisi lebih halus */
+  transition: transform 0.25s cubic-bezier(0.2, 0, 0, 1), box-shadow 0.25s ease; 
   overflow-x: hidden;
   box-shadow: none !important;
 }
@@ -123,18 +121,18 @@
   grid-column: 1 / -1;
 }
 
-/* 🆕 Beri jarak antar elemen di dalam card agar tidak saling tempel */
+
 .card > *:not(:last-child) {
   margin-bottom: 12px;
 }
 
-/* ========== LIGHT MODE LAYOUT ========== */
-/* ✅ HANYA YANG UNIK: threshold-section */
+
+
 body.light .threshold-section {
   border: none !important;
 }
 
-/* ========== RESPONSIVE LAYOUT (NON-SIDEBAR) ========== */
+
 @media (max-width: 1024px) {
   .dashboard-grid {
     grid-template-columns: 1fr;
@@ -155,7 +153,7 @@ body.light .threshold-section {
     padding: 0px !important;
     margin-bottom: 10px !important;
     border-radius: 14px !important;
-    background: rgba(12, 18, 32, 0.85) !important; /* Mobile tetap gelap agar terbaca */
+    background: rgba(12, 18, 32, 0.85) !important; 
     border: none !important;
     box-shadow: none !important;
   }

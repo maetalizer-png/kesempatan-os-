@@ -1,37 +1,33 @@
-/* ============================================================
-   📁 rap/config.js
-   🔥 KONFIGURASI & STATE RAP BATTLE
-   🔥 ENHANCE: Temperature lebih tinggi untuk kreativitas maksimal
-   ============================================================ */
+
 
 const KESEMPATAN = window.KESEMPATAN || {};
 window.KESEMPATAN = KESEMPATAN;
 
-// ========== CONFIG ==========
+
 const CONFIG = {
-    // Storage
+    
     STORAGE_KEY: 'rap_battle_history_v11',
     MAX_HISTORY: 50,
 
-    // Voice
+    
     VOICE_RATE: 0.95,
     VOICE_PITCH: 1.1,
 
-    // Battle
+    
     MAX_ROUNDS: 7,
     BEAT_BPM: 140,
     REACTIONS: ['🔥', '😂', '🎉', '💯', '👏', '🔥🔥', '💀'],
 
-    // 🔥 AI CONFIG — KREATIVITAS TINGGI
-    AI_TEMPERATURE: 1.0,       // lebih tinggi = lebih kreatif & berani (default 0.85)
-    AI_MAX_TOKENS: 800,        // lebih panjang untuk cerita yang lebih kaya
+    
+    AI_TEMPERATURE: 1.0,       
+    AI_MAX_TOKENS: 800,        
 
-    // 🔥 RHYTHM CONFIG — Longgar, fokus ke ekspresi
+    
     TARGET_SYLLABLES: 11,
-    SYLLABLE_TOLERANCE: 5      // lebih longgar (6-16) biar ekspresi bebas
+    SYLLABLE_TOLERANCE: 5      
 };
 
-// ========== STATE ==========
+
 const rapState = {
     status: 'idle',
     currentRound: 0,
@@ -47,7 +43,7 @@ const rapState = {
 let rapBattleActive = false;
 let rapAbort = false;
 
-// ========== EXPORT ==========
+
 export const RapConfig = {
     CONFIG: CONFIG,
     rapState: rapState,

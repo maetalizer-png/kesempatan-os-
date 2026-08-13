@@ -23,12 +23,12 @@ class EventEmitter {
 
 const emitter = new EventEmitter();
 
-// ========== STATE VERSION ==========
-const STATE_VERSION = 3; // dinaikkan dari 2
 
-// ========== STATE ==========
+const STATE_VERSION = 3; 
+
+
 const state = {
-    // --- VOICE & AUDIO ---
+    
     currentVoiceType: "professional_male",
     currentAgentVoice: null,
     useAgentVoice: false,
@@ -38,11 +38,11 @@ const state = {
     currentBgMusic: "off",
     bgAudio: null,
 
-    // --- TEXT ---
+    
     podcastText: "",
     originalPodcastText: "",
 
-    // --- PLAYBACK ---
+    
     isPlaying: false,
     isDebatePlaying: false,
     currentUtterance: null,
@@ -51,32 +51,32 @@ const state = {
     isSeeking: false,
     audioVisualizerInterval: null,
 
-    // --- MODE ---
+    
     speakerMode: 'single',
     debateAgents: ['RahmadRaharjo', 'Manager', 'Analyst'],
 
-    // --- VOICE GENDER PER DISCUSSION CHARACTER ---
+    
     discussionGenders: { Host: 'pria', Expert: 'wanita', Storyteller: 'pria', Skeptic: 'wanita' },
 
-    // --- INTERNAL AI SOURCE INTEGRATION STATUS (World/Memory/Database) ---
+    
     aiSourcesUsed: { world: 0, memory: 0, database: 0, internal: false },
     lastGenerateDurationMs: 0,
-    lastExportAction: null, // { type: 'naskah'|'export'|'subtitle'|'shownotes', time: timestamp }
+    lastExportAction: null, 
 
-    // --- HISTORY & BOOKMARKS ---
+    
     podcastHistory: [],
     bookmarks: [],
     autoScheduleActive: false,
     scheduleInterval: null,
 
-    // --- UI ---
+    
     currentPlayerMode: 'simple',
     currentTheme: 'dark',
 
-    // --- STREAMING ---
+    
     isLiveStreaming: false,
 
-    // --- ANALYTICS ---
+    
     analytics: {
         totalPlays: 0,
         totalDuration: 0,
@@ -85,15 +85,15 @@ const state = {
         lastListen: null
     },
 
-    // --- AI CONTEXT ---
+    
     aiContext: null,
     currentRecommendations: [],
     currentChapters: [],
 
-    // --- FLAGS ---
+    
     isGenerating: false,
 
-    // ========== FIELD BARU ==========
+    
     userName: "Pengguna",
     favoriteVoices: [],
     lastGeneratedTopic: "",
@@ -105,13 +105,13 @@ const state = {
         defaultTheme: "dark"
     },
 
-    // ========== FIELD INTEGRASI EKSTERNAL ==========
+    
     _memoryInstance: null,
     _databaseInstance: null,
     lastExternalFetch: null
 };
 
-// ========== HISTORY ==========
+
 function loadHistory() {
     try {
         const saved = localStorage.getItem('kes_podcast_state_v19');
@@ -161,14 +161,14 @@ function loadHistory() {
 
     } catch (_) { console.warn('[Podcast] Non-fatal error:', _.message); }
 
-    // One-time durable backup of whatever episode history already
-    // exists (localStorage remains the source of truth either way).
+    
+    
     if (window.KESEMPATAN?.KesDatabase?.migrateArrayOnce) {
         window.KESEMPATAN.KesDatabase.migrateArrayOnce('podcast_history', state.podcastHistory);
     }
 }
 
-// ========== MIGRASI DATA ==========
+
 function migrateState(oldData, oldVersion) {
     let data = { ...oldData };
     data._version = STATE_VERSION;
@@ -189,7 +189,7 @@ function migrateState(oldData, oldVersion) {
         };
     }
 
-    // Migrasi ke v3: tambahkan field integrasi
+    
     if (oldVersion < 3) {
         data._memoryInstance = null;
         data._databaseInstance = null;
@@ -199,7 +199,7 @@ function migrateState(oldData, oldVersion) {
     return data;
 }
 
-// ========== SAVE HISTORY ==========
+
 function saveHistory() {
     try {
         const toSave = {
@@ -217,7 +217,7 @@ function saveHistory() {
     } catch (_) { console.warn('[Podcast] Non-fatal error:', _.message); }
 }
 
-// ========== GETTER/SETTER DENGAN AUTO-SAVE ==========
+
 function getState(key) {
     return key ? state[key] : state;
 }
@@ -233,7 +233,7 @@ function setState(key, value, autoSave) {
     }
 }
 
-// ========== COMPUTED GETTERS ==========
+
 function getComputedState() {
     const totalDuration = state.analytics.totalDuration || 0;
     const totalPlays = state.analytics.totalPlays || 0;
@@ -270,7 +270,7 @@ function getComputedState() {
     };
 }
 
-// ========== RESET ==========
+
 function resetState() {
     if (!confirm('⚠️ Yakin ingin mereset SEMUA data? Tindakan ini tidak bisa dibatalkan!')) {
         return;
@@ -285,7 +285,7 @@ function resetState() {
     location.reload();
 }
 
-// ========== EXPORT ==========
+
 function exportState() {
     const data = {
         _version: STATE_VERSION,
@@ -318,7 +318,7 @@ function exportState() {
     }
 }
 
-// ========== IMPORT ==========
+
 function importState(file) {
     if (!file) {
         alert('❌ Pilih file backup terlebih dahulu!');

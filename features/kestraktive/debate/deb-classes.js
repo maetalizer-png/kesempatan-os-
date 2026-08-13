@@ -1,13 +1,7 @@
-/* ============================================================
-   interactive/debate/deb-classes.js
-   KELAS PENDUKUNG DEBAT — DEB_SecureConfig, DEB_DebateState,
-   DEB_SecurityManager, DEB_DebateAnalytics, DEB_VoiceManager, DEB_DebateExporter,
-   DEB_DebateHistory. Dimuat SEBELUM debate-arena.js (DEB_DebateArena
-   memakai semua kelas ini).
-   ============================================================ */
+
 import { DEB_CONFIG } from './deb-config.js';
 import { DEB_State } from './deb-state.js';
-// Impor sirkular yang disengaja — lihat catatan di deb-voice-engine.js.
+
 import { DEB_speakText, DEB_stopAllSpeech } from './deb-voice-engine.js';
 import { DEB_saveDebateToMemory } from './deb-data-engine.js';
 
@@ -27,9 +21,9 @@ import { DEB_saveDebateToMemory } from './deb-data-engine.js';
         }
     }
 
-    // ============================================================
-    // 8. DEBATE STATE
-    // ============================================================
+    
+    
+    
     export class DEB_DebateState {
         constructor() {
             this.status = 'idle';
@@ -83,9 +77,9 @@ import { DEB_saveDebateToMemory } from './deb-data-engine.js';
         }
     }
 
-    // ============================================================
-    // 9. SECURITY & SANITIZATION
-    // ============================================================
+    
+    
+    
     export class DEB_SecurityManager {
         static sanitizeHTML(str) {
             if (!str) {
@@ -95,10 +89,10 @@ import { DEB_saveDebateToMemory } from './deb-data-engine.js';
             div.textContent = str;
             return div.innerHTML;
         }
-        // AI kadang mengembalikan teks dengan sintaks markdown (**tebal**,
-        // *miring*, ## heading, dst) yang tidak pernah dirender jadi HTML
-        // di panel Debat — hasilnya tanda bintang/pagar tampil apa adanya
-        // di layar. Dibersihkan di sini sebelum ditampilkan.
+        
+        
+        
+        
         static stripMarkdown(str) {
             if (!str) {
                 return '';
@@ -137,11 +131,11 @@ import { DEB_saveDebateToMemory } from './deb-data-engine.js';
             return topic.trim();
         }
         static validateAgent(agent) {
-            // Validasi BENTUK identifier (keamanan: cegah injeksi/XSS),
-            // bukan daftar nama tetap — supaya agen apa pun dari roster
-            // pusat (agents-config.js/world.js, dibaca lewat
-            // DEB_getFullAgentPool()) otomatis diterima tanpa perlu
-            // menambah kode setiap kali ada agen baru.
+            
+            
+            
+            
+            
             if (typeof agent !== 'string' || agent.length === 0 || agent.length > 64) {
                 throw new Error('Agent tidak valid: ' + agent);
             }
@@ -162,9 +156,9 @@ import { DEB_saveDebateToMemory } from './deb-data-engine.js';
         }
     }
 
-    // ============================================================
-    // 10. DEBATE ANALYTICS
-    // ============================================================
+    
+    
+    
     export class DEB_DebateAnalytics {
         constructor() {
             this.scores = {
@@ -262,9 +256,9 @@ import { DEB_saveDebateToMemory } from './deb-data-engine.js';
         }
     }
 
-    // ============================================================
-    // 11. VOICE MANAGER (FIX — PAKAI SPEAKTEXT!)
-    // ============================================================
+    
+    
+    
     export class DEB_VoiceManager {
         constructor() {
             this.isActive = false;
@@ -291,7 +285,7 @@ import { DEB_saveDebateToMemory } from './deb-data-engine.js';
                         return v.lang === 'en-US';
                     }) || self.voices[0] || null;
                 } catch(_) {
-                    // Silent fail
+                    
                 }
             };
             if (this.voices.length === 0) {
@@ -302,7 +296,7 @@ import { DEB_saveDebateToMemory } from './deb-data-engine.js';
             }
         }
 
-        // FIX: PAKAI FUNGSI SPEECH YANG SAMA DENGAN CHAT.JS
+        
         speak(text, options) {
             options = options || {};
             if (!this.isActive || !text || text.length === 0) {
@@ -374,7 +368,7 @@ import { DEB_saveDebateToMemory } from './deb-data-engine.js';
             this.isSpeaking = false;
         }
 
-        // FIX: Toggle juga sync dengan DEB_State.speechEnabled global
+        
         toggle() {
             this.isActive = !this.isActive;
             DEB_State.speechEnabled = this.isActive;
@@ -390,9 +384,9 @@ import { DEB_saveDebateToMemory } from './deb-data-engine.js';
         }
     }
 
-    // ============================================================
-    // 12. DEBATE EXPORTER
-    // ============================================================
+    
+    
+    
     export class DEB_DebateExporter {
         static async exportToPDF(debateData, filename) {
             filename = filename || 'debate-result.pdf';
@@ -489,9 +483,9 @@ import { DEB_saveDebateToMemory } from './deb-data-engine.js';
         }
     }
 
-    // ============================================================
-    // 13. DEBATE HISTORY MANAGER
-    // ============================================================
+    
+    
+    
     export class DEB_DebateHistory {
         constructor() {
             this.storageKey = DEB_CONFIG.STORAGE_KEY;
@@ -555,6 +549,6 @@ import { DEB_saveDebateToMemory } from './deb-data-engine.js';
         }
     }
 
-    // ============================================================
-    // 14. MAIN DEBATE ARENA
-    // ============================================================
+    
+    
+    

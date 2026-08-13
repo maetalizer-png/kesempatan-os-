@@ -1,19 +1,4 @@
-/* ============================================================
-   ai-agent/execution-engine.js
-   Executes a single plan step by dispatching it to the right
-   existing capability and normalizing the result. Does not talk
-   to any external system directly — everything goes through
-   tool-registry.js, agent-registry.js or workflow-engine.js.
 
-   Step shape (produced by planner.js):
-     {
-       id: string,
-       kind: 'tool' | 'agent' | 'worker',
-       name: string,        // tool capability name, agent name, or worker id
-       args: object,
-       description: string
-     }
-   ============================================================ */
 
 import { ToolRegistry } from './tool-registry.js';
 import { WorkflowEngineAdapter } from './workflow-engine.js';
@@ -22,11 +7,11 @@ import { AgentRegistry } from './agent-registry.js';
 const KESEMPATAN = window.KESEMPATAN || {};
 window.KESEMPATAN = KESEMPATAN;
 
-// Planner picks agent names by role (spec 4/15: kapabilitas, bukan id
-// hardcoded) — kalau nama persis tidak ada di roster ~200 agen, cari lewat
-// findAgent() (cocokan role/kata kunci) sebelum menyerah, supaya rencana
-// dinamis tidak gagal cuma karena LLM menyebut nama yang mirip tapi
-// bukan exact match (mis. "DataAnalyst" vs id asli "Analyst").
+
+
+
+
+
 function resolveAgentName(name) {
     if (AgentRegistry.getAnalysisAgent(name)) return name;
     const hits = AgentRegistry.findAgent(name).filter(function(hit) { return hit.pool === 'analysis-agent'; });

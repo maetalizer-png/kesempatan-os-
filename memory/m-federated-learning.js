@@ -25,9 +25,9 @@ export const FederatedLearning = {
     _initDelay: 7000,
     _pendingData: [],
 
-    // ============================================================
-    // INIT
-    // ============================================================
+    
+    
+    
     init: function () {
         if (this._isInitialized) {
             return;
@@ -42,9 +42,9 @@ export const FederatedLearning = {
         }.bind(this), this._initDelay);
     },
 
-    // ============================================================
-    // PROCESS DATA
-    // ============================================================
+    
+    
+    
     _startProcessing: function () {
         if (this._isProcessing || this._hasProcessed) {
             return;
@@ -103,9 +103,9 @@ export const FederatedLearning = {
         setTimeout(processBatch, 500);
     },
 
-    // ============================================================
-    // PROCESS ONE BATCH
-    // ============================================================
+    
+    
+    
     _processBatch: function (batch) {
         if (!Array.isArray(batch)) {
             return;
@@ -139,9 +139,9 @@ export const FederatedLearning = {
         }
     },
 
-    // ============================================================
-    // GET LOCAL DATA
-    // ============================================================
+    
+    
+    
     _getLocalData: function () {
         try {
             if (window.VectorMemory && Array.isArray(window.VectorMemory.vectors)) {
@@ -154,9 +154,9 @@ export const FederatedLearning = {
         }
     },
 
-    // ============================================================
-    // PROGRESS UPDATE
-    // ============================================================
+    
+    
+    
     _updateProgress: function (progress, processed, total) {
         if (typeof document !== 'undefined') {
             document.dispatchEvent(new CustomEvent('federated:progress', {
@@ -169,9 +169,9 @@ export const FederatedLearning = {
         }
     },
 
-    // ============================================================
-    // COMPLETE NOTIFICATION
-    // ============================================================
+    
+    
+    
     _notifyComplete: function () {
         if (typeof document !== 'undefined') {
             document.dispatchEvent(new CustomEvent('federated:complete', {
@@ -186,9 +186,9 @@ export const FederatedLearning = {
         }
     },
 
-    // ============================================================
-    // STORAGE HELPERS
-    // ============================================================
+    
+    
+    
     _getStorageItem: function (key) {
         try {
             if (typeof localStorage === 'undefined') {
@@ -215,9 +215,9 @@ export const FederatedLearning = {
         }
     },
 
-    // ============================================================
-    // PUBLIC API
-    // ============================================================
+    
+    
+    
     sync: async function (learningData) {
         if (!Config.FEDERATED_LEARNING_ENABLED) {
             return false;

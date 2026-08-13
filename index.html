@@ -10,13 +10,7 @@
     <meta property="og:description" content="Living AI Network dengan multi-agent workflow, memori, analitik, dan otomatisasi cerdas.">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://kesempatan-os.vercel.app/">
-    <!--
-      Verifikasi kepemilikan Google Search Console: ganti REPLACE_WITH_GSC_CODE
-      dengan kode dari https://search.google.com/search-console →
-      Add property → domain/URL prefix ini → metode "HTML tag". Sengaja
-      tidak diisi kode asli di sini karena itu spesifik ke akun Google
-      pemilik domain, bukan sesuatu yang bisa dibuat otomatis.
-    -->
+    
     <meta name="google-site-verification" content="CZmjzU3vSZSTuG8KCBY-Mus6VvcgMWMqRY70ClQnCiE" />
     <link rel="stylesheet" href="./style.css">
     <link rel="stylesheet" href="./css/core/global.css">
@@ -43,25 +37,17 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="preconnect" href="https://cdn.jsdelivr.net">
     <link rel="preconnect" href="https://cdnjs.cloudflare.com">
-    <!-- Google Fonts (Inter) dimuat non-render-blocking dengan pola sama
-         seperti Font Awesome di bawah: kalau fonts.googleapis.com lambat
-         atau tidak terjangkau (jaringan HP/firewall tertentu), first paint
-         TIDAK ikut menunggu — teks tampil pakai fallback font sistem dari
-         @font-face di CSS sampai Inter selesai dimuat di background. -->
+    
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700;800&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
     <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700;800&display=swap" rel="stylesheet"></noscript>
-    <!-- Font Awesome (ikon dekoratif, bukan penentu layout) dimuat non-render-blocking:
-         browser mengambilnya di background lewat media="print", lalu media
-         di-swap ke "all" begitu selesai. noscript menjaga ikon tetap tampil
-         kalau JS mati. Ikon sendiri tidak hilang — cuma tidak lagi memblokir
-         first paint. -->
+    
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" media="print" onload="this.media='all'">
     <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"></noscript>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js" crossorigin="anonymous" defer></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" crossorigin="anonymous" defer></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" crossorigin="anonymous" defer></script>
     <style>@keyframes kesSpin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }</style>
-    <!-- Vercel Web Analytics -->
+    
     <script>
       window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
     </script>
@@ -208,12 +194,12 @@
     <script type="module" src="./js/ai-io/cache-db-bridge.js"></script>
     <script type="module" src="./memory/m-memory.js"></script>
     <script type="module">
-        // dataries/world.js (~1.6MB, ~33% of total JS payload) hanya berisi
-        // data referensi statis (country/greeting/news) untuk konteks RAG —
-        // semua consumer (searchWorldData, TRN_getStaticData, dst di
-        // interactive/*, podcast/*, kesem-llm/*, rap/*) sudah defensif
-        // terhadap window.__STATIC_DATA kosong/belum ada (return [] / || []),
-        // jadi aman ditunda sampai browser idle tanpa memblokir render awal.
+        
+        
+        
+        
+        
+        
         const loadWorldData = () => import('./dataries/world.js');
         if ('requestIdleCallback' in window) requestIdleCallback(loadWorldData, { timeout: 3000 });
         else setTimeout(loadWorldData, 500);
@@ -255,19 +241,7 @@
     <script type="module" src="./features/kespremai/offline/offline-mode.js"></script>
     <script type="module" src="./features/kespremai/voice/ai-voice-agents.js"></script>
     <script type="module" src="./js/reaction-learning.js"></script>
-    <!-- Halaman berikut dimuat on-demand oleh js/router.js (ensureModuleThenRun)
-         saat pertama dibuka, bukan lagi eager di sini — masing-masing sudah
-         diverifikasi self-contained (import dependensinya sendiri + panggil
-         render/init miliknya sendiri) dan TIDAK melakukan monkey-patch lintas
-         modul saat load (beda dgn custom-ai/social-share yang tetap eager di
-         atas karena keduanya menimpa WorkflowEngine.start secara global):
-         rap/rap-battle.js, voice-ai/voice-clone.js, visual-ai/visualisation-ai.js,
-         podcast/podcast-generator.js, js/news-aggregator.js,
-         js/ai-editor-ultimate.js, js/api-public.js, observ/Observation.js,
-         noise/noise-filtering.js. workers/ai-worker.js & js/live-crypto.js
-         TETAP eager: js/offline-mode.js meng-hook window.AIWorkers/LiveCrypto
-         SEKALI di load awal (tanpa retry) — kalau dua modul itu dimuat
-         belakangan, hook offline-fallback-nya tidak akan pernah terpasang. -->
+    
     <script type="module" src="./features/pages.js"></script>
     <script type="module" src="./js/core/ui-handlers.js"></script>
     <script type="module" src="./features/websocket/collab.js"></script>

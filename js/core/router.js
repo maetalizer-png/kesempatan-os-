@@ -5,12 +5,12 @@ function getModule(moduleName) {
     return KESEMPATAN[moduleName] || window[moduleName];
 }
 
-// Fallback for pages whose feature module is no longer an eager
-// <script type="module"> in index.html (deferred for initial-load
-// performance — see index.html) — dynamic import() is the only way to
-// load an ES module (with import/export) at runtime; a classic <script>
-// tag can't. Each path is only ever import()-ed once per session, so
-// revisiting a page after its module has loaded just re-runs thenFn().
+
+
+
+
+
+
 const loadedModules = new Set();
 function ensureModuleThenRun(paths, thenFn) {
     const toLoad = paths.filter(function(p) { return !loadedModules.has(p); });
@@ -23,16 +23,16 @@ function ensureModuleThenRun(paths, thenFn) {
     });
 }
 
-// Pages whose module exposes a destroy() that tears down intervals/listeners
-// set up by its render(). The router has no generic "page exit" hook, so
-// nothing called these outside of window 'beforeunload' (tab close) — which
-// never fires on in-app navigation. Revisiting one of these pages N times
-// left N copies of its timers/listeners running (the same bug class fixed
-// individually in live-crypto.js and visual-events.js). This map lets
-// showPage() call destroy() on the page being left, for the modules known to
-// implement one safely (verified idempotent — each guards its own state
-// before clearing, so calling destroy() even when nothing was rendered yet
-// is a no-op).
+
+
+
+
+
+
+
+
+
+
 const PAGE_DESTROY_MAP = {
     memory: 'MemoryPage',
     report: 'ReportPage',
@@ -43,9 +43,9 @@ const PAGE_DESTROY_MAP = {
 };
 let currentPageId = null;
 
-// Pages that render entirely through getModule(X).render(), with the same
-// "not available" fallback message — no page-specific logic beyond the
-// module name and label, so a small table covers all of them.
+
+
+
 const SIMPLE_RENDER_PAGES = {
     memory: ['MemoryPage', 'Memory Manager'],
     report: ['ReportPage', 'Laporan Final'],
@@ -54,10 +54,10 @@ const SIMPLE_RENDER_PAGES = {
     settings: ['SettingsPage', 'Pengaturan']
 };
 
-// Pages with their own render logic (different element ids, module names,
-// render method names, extra args, retry timers, etc). Each handler owns
-// showing its own element and return-ing to skip the fallthrough at the
-// bottom of showPage().
+
+
+
+
 const PAGE_HANDLERS = {
     dashboard: function() {
         const dashboard = document.getElementById('dashboardGrid');
@@ -287,11 +287,11 @@ const PAGE_HANDLERS = {
             if (noiseModule && typeof noiseModule.render === 'function') {
                 noiseModule.render();
             } else {
-                // Fallback for the rare case this page is reached before index.html's
-                // own <script type="module" src="../../features/noise/noise-filtering.js"> has
-                // finished evaluating — a classic (non-module) script tag can't load
-                // a file containing import/export, so this must use a real dynamic
-                // import() instead.
+                
+                
+                
+                
+                
                 import('../../features/noise/noise-filtering.js').then(function() {
                     const loadedNoiseModule = getModule('NoisePage');
                     if (loadedNoiseModule && typeof loadedNoiseModule.render === 'function') loadedNoiseModule.render();
@@ -401,6 +401,6 @@ export const Router = Object.freeze({ showPage: showPage, getModule: getModule }
 
 KESEMPATAN.Router = Router;
 
-// Compat alias: 16+ not-yet-migrated files still call window.showPage directly.
-// Remove once they're migrated to window.KESEMPATAN.Router.showPage.
+
+
 window.showPage = showPage;

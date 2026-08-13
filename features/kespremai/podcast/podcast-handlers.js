@@ -124,10 +124,10 @@ function applyVoice(voiceKey) {
         renderer.render();
         showToast('🎤 Applied: ' + VOICE_PRESETS[voiceKey].name);
 
-        // 🔥 BARU: highlight sesaat di kartu ACTIVE supaya perpindahan
-        // suara terlihat jelas, bukan cuma lewat toast yang gampang
-        // terlewat. Kelas dihapus lagi setelah animasi selesai supaya
-        // bisa replay lagi di perpindahan berikutnya.
+        
+        
+        
+        
         requestAnimationFrame(function() {
             const panel = document.getElementById('activeVoicePanel');
             if (panel) {
@@ -156,11 +156,11 @@ function downloadScript() {
     showToast('📥 Naskah diunduh!');
 }
 
-// ============================================================
-// 🆕 SHOW NOTES GENERATOR — deskripsi episode siap-publish (judul
-// alternatif, ringkasan, poin utama, timestamp chapter) buat
-// ditempel di YouTube/Spotify/show notes page.
-// ============================================================
+
+
+
+
+
 function generateShowNotes() {
     if (!state.podcastText) {
         showToast('⚠️ Generate naskah dulu!');
@@ -218,12 +218,12 @@ function generateShowNotes() {
     showToast('📝 Show notes siap diunduh!');
 }
 
-// ============================================================
-// 🆕 EXPORT SUBTITLE (.srt) — caption siap upload ke YouTube/IG/TikTok.
-// Timing diestimasi dari jumlah kata per baris (≈2.3 kata/detik,
-// disesuaikan kecepatan bicara state.currentRate) karena Web Speech
-// API tidak memberi timestamp asli per kata.
-// ============================================================
+
+
+
+
+
+
 function exportSubtitles() {
     if (!state.podcastText) {
         showToast('⚠️ Generate naskah dulu!');
@@ -246,7 +246,7 @@ function exportSubtitles() {
     let cursor = 0;
     let idx = 1;
     rawLines.forEach(function(line) {
-        if (/^📢|^👉|^📱|^💬|^🚀/.test(line)) return; // lewati footer subscribe, bukan dialog
+        if (/^📢|^👉|^📱|^💬|^🚀/.test(line)) return; 
         const cleanLine = line.replace(tagRe, function(m) { return m.trim() + ' '; });
         const wordCount = Math.max(1, cleanLine.split(/\s+/).length);
         const duration = Math.max(1.2, wordCount / wordsPerSecond);
@@ -337,8 +337,8 @@ function previewVoice() {
     }
 }
 
-// 🆕 Preview suara per kursi di Podcast Room - tap avatar kursi untuk
-// dengar contoh suaranya langsung, sebelum generate naskah penuh.
+
+
 function previewSeatVoice(seatKey) {
     try {
         if (!window.speechSynthesis) {
@@ -597,7 +597,7 @@ function attachEvents() {
             showToast('🗣️ Mode Single aktif');
         });
     }
-    // ===== HANDLER DISKUSI (BARU) =====
+    
     const discussionBtn = document.getElementById('discussionModeBtn');
     if (discussionBtn) {
         addSafeEventListener(discussionBtn, 'click', function(e) {
@@ -735,15 +735,15 @@ function attachEvents() {
             const showToast = renderer.showToast;
             const sanitizeHtml = renderer.sanitizeHtml;
 
-            // 🔥 FIX: dulu tombol GEN/ENHANCE/IMPROVE/Q&A/TRANSLATE/RESET
-            // ini TIDAK melewati render() sama sekali — mereka langsung
-            // ubah innerHTML #aiContextContainer/#recommendationsContainer
-            // lewat updateAIContext(), jadi perbaikan penjaga scroll yang
-            // sudah ada di render() TIDAK berlaku di sini. Kalau konten
-            // itu berubah tinggi (misal "AI Context" box baru muncul),
-            // semua di bawahnya ikut bergeser tanpa transisi halus.
-            // Sekarang posisi scroll disimpan di sini juga, dipulihkan
-            // setelah update selesai.
+            
+            
+            
+            
+            
+            
+            
+            
+            
             const savedScrollY_actionBtn = window.scrollY;
             const restoreScroll_actionBtn = function() {
                 requestAnimationFrame(function() {

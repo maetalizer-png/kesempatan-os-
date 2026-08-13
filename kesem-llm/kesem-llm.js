@@ -1,35 +1,35 @@
-// KESEMPATAN LLM entry point (Web Worker bridge) — window.KesempatanLLM
-// here is a MESSAGE BRIDGE to the module worker running llm-index.js
-// (see llm-worker.js), with the exact same API shape (isReady/
-// initialize/generate/core.save/core.load/core.train) callers already
-// expect.
-//
-// localStorage does not exist inside the Worker, so checkpoint storage
-// is split: the worker only builds/restores the checkpoint OBJECT
-// (pure computation), this main-thread file reads/writes localStorage.
+
+
+
+
+
+
+
+
+
 
 const Logger = window.Utils?.Logger || {
-    info: function() { /* silent — pakai window.Utils.Logger kalau tersedia */ },
-    warn: function() { /* silent */ },
+    info: function() {  },
+    warn: function() {  },
     error: function(mod, msg) { console.error('[ERROR] [' + mod + '] ' + msg); }
 };
 
-// ============================================================
-// 1. BUAT WORKER + JEMBATAN PESAN (request/response berbasis id)
-// ============================================================
+
+
+
 let worker = null;
 let nextId = 1;
 const pending = new Map();
 let modelReady = false;
 
-// ============================================================
-// LIFECYCLE — bebaskan RAM/Wasm Worker kalau tidak dipakai cukup
-// lama, supaya ~50 juta parameter model tidak terus menempati
-// memori padahal user sedang di halaman lain. Worker dibuat ulang
-// LAZY (ensureWorker()) di panggilan berikutnya kalau dibutuhkan
-// lagi — modelReady jadi false, jadi ensureKesempatanLLMReady() di
-// workflow-llm-bridge.js otomatis memulihkan dari checkpoint.
-// ============================================================
+
+
+
+
+
+
+
+
 let lastActivityAt = Date.now();
 const IDLE_DESTROY_MS = 10 * 60 * 1000;
 let idleWatcherInterval = null;
@@ -76,7 +76,7 @@ function ensureWorker() {
         const id = e.data.id;
         const entry = pending.get(id);
         if (!entry) {
-            return; // pesan tanpa pending request (tidak seharusnya terjadi)
+            return; 
         }
         pending.delete(id);
         if (e.data.success) {
@@ -104,15 +104,15 @@ function callWorker(type, payload) {
     });
 }
 
-// ============================================================
-// 2. PENYIMPANAN CHECKPOINT (localStorage cuma ada di thread ini)
-// ============================================================
-// MIGRASI KE INDEXEDDB (Juli 2026) — root cause SEBENARNYA kenapa
-// model tidak pernah mengingat training antar sesi: localStorage
-// cuma ~5-10MB, checkpoint model besar puluhan MB — SELALU
-// QuotaExceededError, diam-diam gagal. IndexedDB kuotanya jauh
-// lebih besar. Sama seperti llm-checkpoint.js, tapi file INI yang
-// benar-benar dipanggil workflow.js lewat window.KesempatanLLM.
+
+
+
+
+
+
+
+
+
 const IDB_NAME = 'kesempatan_llm_checkpoints';
 const IDB_VERSION = 1;
 const IDB_STORE = 'checkpoints';
@@ -163,10 +163,10 @@ async function loadCheckpointObjectFromStorage(name) {
     }
 }
 
-// ============================================================
-// 3. window.KesempatanLLM — BENTUK API PERSIS SAMA SEPERTI SEBELUM
-//    MIGRASI WORKER, supaya workflow.js/api.js tidak perlu berubah
-// ============================================================
+
+
+
+
 async function initialize(options) {
     options = options || {};
 
@@ -204,11 +204,11 @@ function isReady() {
 
 function generate(prompt, agentName, topic, extraOptions) {
     const promise = callWorker('generate', { prompt: prompt, agentName: agentName, topic: topic, extraOptions: extraOptions });
-    // Id dipakai callWorker() SEBELUM promise ini dibuat (nextId sudah
-    // bertambah di dalamnya) — ambil dari nextId-1 supaya pemanggil
-    // bisa targetkan stop() ke request YANG BENAR, bukan "yang sedang
-    // aktif" (root cause bug: 1 agen di mode paralel bisa tersasar
-    // sinyal stop milik agen lain).
+    
+    
+    
+    
+    
     promise.requestId = nextId - 1;
     return promise;
 }
@@ -258,11 +258,11 @@ export const KesempatanLLM = {
 
 window.KesempatanLLM = KesempatanLLM;
 
-// ============================================================
-// 4. SIAP — Worker dibuat LAZY (baru benar-benar start di panggilan
-//    pertama lewat ensureWorker()), jadi event ini bisa langsung
-//    dipancarkan tanpa menunggu apa pun.
-// ============================================================
+
+
+
+
+
 Logger.info('KesemLLMEntry', '✅ KESEMPATAN LLM siap (mode Web Worker — UI tidak akan pernah beku karenanya)');
 if (typeof document !== 'undefined') {
     document.dispatchEvent(new CustomEvent('kesem-llm-ready'));

@@ -127,9 +127,9 @@ function populateWorkerFilter() {
 function addAIWorkerLog(workerId, workerName, message) {
     const worker = { id: workerId, name: workerName };
     const coreInstance = getCore();
-    // Fixed: was calling coreInstance.addLog (never existed on AIWorkersCore —
-    // only the prototype method _addLog does), so the "Test Log" button always
-    // threw a TypeError and the log was silently never added.
+    
+    
+    
     coreInstance._addLog(worker, message);
     updateLogsDisplay();
     if (document.getElementById('aiWorkersDataContainer')) renderLogsPage();

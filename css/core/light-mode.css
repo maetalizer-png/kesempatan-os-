@@ -1,6 +1,4 @@
-/* ============================================================
-   LIGHT-MODE.CSS — Override komponen saat mode terang
-   ============================================================ */
+
 body.light .container { background: rgba(255, 255, 255, 0.85); }
 body.light .card { background: rgba(255, 255, 255, 0.85); border: none !important; }
 body.light .app-icon-circle { background: rgba(0, 0, 0, 0.08); border-color: rgba(0, 0, 0, 0.05); }

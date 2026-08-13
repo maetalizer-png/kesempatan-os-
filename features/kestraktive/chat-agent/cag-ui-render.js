@@ -1,14 +1,11 @@
-/* ============================================================
-   interactive/chat-agent/cag-ui-render.js
-   TAMPILAN CHAT AGENT — suara, riwayat, tema, reaksi, streaming.
-   ============================================================ */
+
 import { CAG_CONFIG } from './cag-config.js';
 import { CAG_State } from './cag-state.js';
-// Impor sirkular yang disengaja — lihat catatan di cag-data-engine.js.
+
 import { CAG_getAgentAvatar } from './cag-data-engine.js';
 
-// ---------- SUARA (TTS/STT) ----------
-// Sama seperti CAI_stripMarkdown — cegah TTS baca tanda markdown secara harfiah.
+
+
 export function CAG_stripMarkdown(text) {
         return text
             .replace(/\*\*\*(.*?)\*\*\*/g, '$1')
@@ -117,14 +114,14 @@ export function CAG_startVoiceInput(inputId) {
         CAG_State.recognition.start();
     }
 
-// ---------- HISTORY (localStorage) ----------
+
 export function CAG_saveChatHistory(panelId, messages) {
         try {
             const history = JSON.parse(localStorage.getItem(CAG_CONFIG.STORAGE_KEY) || '{}');
             history[panelId] = messages.slice(-CAG_CONFIG.MAX_HISTORY);
             localStorage.setItem(CAG_CONFIG.STORAGE_KEY, JSON.stringify(history));
         } catch (_) {
-            // Silent fail
+            
         }
     }
 
@@ -143,7 +140,7 @@ export function CAG_clearChatHistory(panelId) {
             delete history[panelId];
             localStorage.setItem(CAG_CONFIG.STORAGE_KEY, JSON.stringify(history));
         } catch (_) {
-            // Silent fail
+            
         }
     }
 
@@ -233,7 +230,7 @@ export function CAG_exportChatPDF(panelId, filename) {
         }
     }
 
-// ---------- EMOJI, TYPING SOUND, TEMA ----------
+
 export function CAG_toggleEmojiPicker(inputId) {
         const existingPicker = document.getElementById('emojiPickerContainer');
         if (existingPicker) {
@@ -283,7 +280,7 @@ export function CAG_initTypingSound() {
         try {
             CAG_State.typingSoundContext = new (window.AudioContext || window.webkitAudioContext)();
         } catch (_) {
-            // Silent fail
+            
         }
     }
 
@@ -302,7 +299,7 @@ export function CAG_playTypingSound() {
             oscillator.start();
             oscillator.stop(CAG_State.typingSoundContext.currentTime + 0.05);
         } catch (_) {
-            // Silent fail
+            
         }
     }
 
@@ -357,7 +354,7 @@ export function CAG_loadTheme() {
         CAG_updateThemeUI();
     }
 
-// ---------- UTIL TAMPILAN ----------
+
 export function CAG_renderMarkdown(text) {
         let html = CAG_escapeHtml(text);
         html = html.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
@@ -417,7 +414,7 @@ export function CAG_getApiKey() {
         return null;
     }
 
-// ---------- REAKSI & EDIT PESAN ----------
+
 export function CAG_addReaction(messageWrapper, emoji) {
         const existing = messageWrapper.querySelector('.reaction-bar');
         if (existing) {
@@ -559,7 +556,7 @@ export function CAG_deleteMessage(messageWrapper) {
         messageWrapper.remove();
     }
 
-// ---------- RENDER PESAN & STREAMING ----------
+
 export function CAG_cancelAIRequest() {
         if (CAG_State.currentAbortController) {
             CAG_State.currentAbortController.abort();

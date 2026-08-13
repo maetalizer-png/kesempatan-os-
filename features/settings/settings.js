@@ -29,12 +29,12 @@ function isLocalLLMReady() {
     return !!(window.KesempatanLLM && typeof window.KesempatanLLM.isReady === 'function' && window.KesempatanLLM.isReady());
 }
 
-// Pilihan model lokal — 3 opsi persis seperti permintaan: 2 model
-// pretrained (Core Engine v2, WebGPU/WASM, perlu unduh sekali) + Engine
-// 50M buatan sendiri (Core Engine v1, <15MB, 100% offline, tanpa unduhan
-// sama sekali). Value HARUS cocok dengan modelKey di
-// llm-transformers-worker.js (MODEL_REGISTRY) dan LLM_MODEL_CHOICE_OFFLINE
-// di workflow-llm-bridge.js.
+
+
+
+
+
+
 const LOCAL_MODEL_OPTIONS = [
     { value: 'smollm2-135m', label: 'SmolLM2 135M — Ringan & Cepat (~90 MB)' },
     { value: 'qwen2.5-0.5b', label: 'Qwen2.5 0.5B — Lebih Cerdas (~350 MB)' },
@@ -202,9 +202,9 @@ function render() {
                 if (showToast) showToast('Gagal menyimpan pilihan model: ' + e.message, 'error');
                 return;
             }
-            // Reset flag "device diketahui lambat" sesi ini -- pilihan model
-            // baru pantas dapat kesempatan baru, bukan otomatis dilewati
-            // karena model LAIN pernah gagal dimuat sebelumnya.
+            
+            
+            
             window.__kesempatanLLM2SkipThisSession = false;
             const label = LOCAL_MODEL_OPTIONS.find(function(o) { return o.value === choice; });
             if (showToast) {

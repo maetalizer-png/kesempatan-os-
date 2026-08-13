@@ -1,19 +1,15 @@
-/* ============================================================
-   interactive/chat-agent/cag-data-engine.js
-   OTAK CHAT AGENT — cache, integrasi World/Memory/Database,
-   smart search, roster agen dinamis, panggilan AI.
-   ============================================================ */
+
 import { CAG_CONFIG } from './cag-config.js';
 import { CAG_State } from './cag-state.js';
-// Impor sirkular yang disengaja: cag-ui-render.js sendiri mengimpor
-// CAG_getAgentAvatar dari file ini. Aman karena kedua sisi hanya
-// memakai bindingnya di DALAM function body (dipanggil belakangan saat
-// runtime), bukan di top-level module saat evaluasi — ES module
-// mendukung impor sirkular selama tidak ada sisi yang butuh nilainya
-// SEBELUM kedua modul selesai dievaluasi.
+
+
+
+
+
+
 import { CAG_escapeHtml } from './cag-ui-render.js';
 
-// ---------- CACHE SYSTEM ----------
+
 export function CAG_getCached(key) {
         const entry = CAG_State.queryCache.get(key);
         if (!entry) {
@@ -49,7 +45,7 @@ export function CAG_getCacheStats() {
         };
     }
 
-// ---------- INTEGRASI DATA (World / Memory / Database) ----------
+
 export function CAG_getStaticData() {
         return window.__STATIC_DATA || [];
     }
@@ -77,7 +73,7 @@ export function CAG_smartSearch(query, data, threshold) {
             let score = 0;
             let matchCount = 0;
             
-            // FAKTOR 1: Keyword match (weighted)
+            
             for (const kw of keywords) {
                 if (text.includes(kw)) {
                     matchCount++;
@@ -85,7 +81,7 @@ export function CAG_smartSearch(query, data, threshold) {
                 }
             }
             
-            // FAKTOR 2: Semantic similarity (kalau ada embedding)
+            
             if (item.embedding) {
                 const queryEmbedding = window.KESEMPATAN?.Memory?.MemoryUtils?.simpleEmbed ? 
                     window.KESEMPATAN.Memory.MemoryUtils.simpleEmbed(query) : null;
@@ -95,7 +91,7 @@ export function CAG_smartSearch(query, data, threshold) {
                 }
             }
             
-            // FAKTOR 3: Metadata boost
+            
             if (item.metadata) {
                 if (item.metadata.type === 'country' || item.metadata.type === 'language') {
                     score += 5;
@@ -114,7 +110,7 @@ export function CAG_smartSearch(query, data, threshold) {
                 }
             }
             
-            // FAKTOR 4: Recency boost
+            
             if (item.timestamp) {
                 const age = Date.now() - item.timestamp;
                 const days = age / (1000 * 60 * 60 * 24);
@@ -127,7 +123,7 @@ export function CAG_smartSearch(query, data, threshold) {
                 }
             }
             
-            // FAKTOR 5: Length boost (data lebih panjang = lebih informatif)
+            
             if (text.length > 100) {
                 score += 2;
             }
@@ -135,7 +131,7 @@ export function CAG_smartSearch(query, data, threshold) {
                 score += 3;
             }
             
-            // FAKTOR 6: Keyword density
+            
             const wordCount = text.split(' ').length || 1;
             const density = matchCount / wordCount;
             score += density * 10;
@@ -193,7 +189,7 @@ export function CAG_fetchStaticData(query) {
         return results;
     }
 
-// ---------- FETCH KONTEKS (3 SUMBER) ----------
+
 export async function CAG_fetchFromVectorMemory(query, topK) {
         const memory = CAG_getMemoryInstance();
         if (!memory || typeof memory.search !== 'function') {
@@ -218,9 +214,9 @@ export async function CAG_fetchFromVectorMemory(query, topK) {
         }
     }
 
-    // BARU: dulu Chat Agent cuma MEMBACA dari Vector Memory, tidak
-    // pernah menyimpan hasil percakapan kembali. Meniru pola yang sudah
-    // terbukti di Debate (DEB_saveDebateToMemory) dan Chat AI.
+    
+    
+    
     export async function CAG_saveMessageToMemory(userMessage, aiResponse, agentName) {
         const memory = CAG_getMemoryInstance();
         if (!memory) return;
@@ -250,12 +246,12 @@ export async function CAG_fetchFromDatabase(query, limit) {
         }
         const maxResults = limit || CAG_CONFIG.DB_LIMIT;
 
-        // KESDatabase (kes-database.js) mengekspos API generik: query/get/
-        // find/add/insert/save — bukan queryParser.parseAndExecute atau
-        // executeQuery (API itu tidak pernah ada di implementasi sungguhan,
-        // jadi lapisan Database selama ini selalu kosong). database/search.js
-        // kemungkinan menambah method .search() — dicoba lebih dulu, lalu
-        // fallback ke find/query yang memang ada di instance KESDatabase.
+        
+        
+        
+        
+        
+        
         const attempts = [
             function() { return db.search ? db.search(query, { limit: maxResults }) : null; },
             function() { return db.find ? db.find({ text: query, limit: maxResults }) : null; },
@@ -275,7 +271,7 @@ export async function CAG_fetchFromDatabase(query, limit) {
                     return result.slice(0, maxResults);
                 }
             } catch (_) {
-                // Coba strategi API berikutnya
+                
             }
         }
         return [];
@@ -307,7 +303,7 @@ export async function CAG_getAllContext(query, options) {
         const combined = [];
         const seenIds = new Set();
         
-        // PRIORITAS 1: STATIC DATA (World) — paling valid
+        
         for (const item of staticData) {
             const id = item.id || item.text?.substring(0, 50);
             if (!seenIds.has(id)) {
@@ -316,7 +312,7 @@ export async function CAG_getAllContext(query, options) {
             }
         }
         
-        // PRIORITAS 2: MEMORY DATA
+        
         for (const item of memoryData) {
             const id = item.id || item.text?.substring(0, 50);
             if (!seenIds.has(id)) {
@@ -325,7 +321,7 @@ export async function CAG_getAllContext(query, options) {
             }
         }
         
-        // PRIORITAS 3: DATABASE
+        
         for (const item of dbData) {
             const id = item.id || item.text?.substring(0, 50);
             if (!seenIds.has(id)) {
@@ -334,7 +330,7 @@ export async function CAG_getAllContext(query, options) {
             }
         }
         
-        // SORT BY PRIORITY + SCORE
+        
         combined.sort(function(a, b) {
             if (a._priority !== b._priority) {
                 return a._priority - b._priority;
@@ -342,7 +338,7 @@ export async function CAG_getAllContext(query, options) {
             return (b._score || 0) - (a._score || 0);
         });
         
-        // BARU: OBSERVATION ENGINE + NOISE FILTERING
+        
         let obsContext = { marketInsight: '', credibilityNote: '' };
         try {
             if (window.KESEMPATAN?.Observation && typeof window.KESEMPATAN?.Observation.getSignals === 'function' && typeof window.KESEMPATAN?.Observation.generateAIInsight === 'function') {
@@ -383,7 +379,7 @@ export async function CAG_getAllContext(query, options) {
         return result;
     }
 
-// ---------- PREFERENSI ----------
+
 export function CAG_loadPreferences() {
         try {
             const saved = localStorage.getItem(CAG_CONFIG.PREF_KEY);
@@ -400,7 +396,7 @@ export function CAG_loadPreferences() {
                 };
             }
         } catch (_) {
-            // Silent fail
+            
         }
         return {
             categories: ['politik', 'ekonomi', 'teknologi'],
@@ -424,11 +420,11 @@ export function CAG_savePreferences(prefs) {
                 CAG_State.stylePreference = prefs.style;
             }
         } catch (_) {
-            // Silent fail
+            
         }
     }
 
-// ---------- ROSTER AGEN DINAMIS (dari .agent-checkbox dashboard) ----------
+
 export function CAG_humanizeAgentName(agent) {
         if (!agent || typeof agent !== 'string') {
             return '';
@@ -497,7 +493,7 @@ export function CAG_getAgentAvatar(agent) {
         return profile.emoji || '';
     }
 
-// ---------- PANGGILAN AI ----------
+
 export async function CAG_callAI(prompt, apiKey) {
         if (CAG_State.currentAbortController) {
             CAG_State.currentAbortController.abort();
@@ -515,9 +511,9 @@ export async function CAG_callAI(prompt, apiKey) {
                     body: JSON.stringify({
                         model: 'deepseek/deepseek-chat',
                         messages: [{ role: 'user', content: prompt }],
-                        // DISAMAKAN dengan Debate/Tournament (800/0.7) atas
-                        // permintaan user — dulu 500/0.3 membuat respons Chat
-                        // Agent terasa lebih datar dibanding Debate.
+                        
+                        
+                        
                         max_tokens: 1200,
                         temperature: 0.7
                     }),
@@ -530,8 +526,8 @@ export async function CAG_callAI(prompt, apiKey) {
                 throw new Error(data.error?.message || 'Gagal');
             } catch (error) {
                 if (error.name === 'AbortError') throw error;
-                // OpenRouter specifically failed — fall through to the
-                // multi-provider fallback below instead of failing outright.
+                
+                
             }
         }
 

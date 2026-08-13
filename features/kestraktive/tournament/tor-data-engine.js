@@ -1,8 +1,4 @@
-/* ============================================================
-   interactive/tournament/tor-data-engine.js
-   OTAK TURNAMEN — integrasi World/Memory/Database, simpan
-   hasil ke memory.
-   ============================================================ */
+
     export function TRN_getMemoryInstance() {
         return window.KESEMPATAN?.VectorMemory || window.VectorMemory || window.VectorMemoryV5 || null;
     }
@@ -69,12 +65,12 @@
         }
         const maxResults = limit || 3;
 
-        // KESDatabase (kes-database.js) mengekspos API generik: query/get/
-        // find/add/insert/save — bukan queryParser.parseAndExecute atau
-        // executeQuery (API itu tidak pernah ada di implementasi sungguhan,
-        // jadi lapisan Database selama ini selalu kosong). database/search.js
-        // kemungkinan menambah method .search() — dicoba lebih dulu, lalu
-        // fallback ke find/query yang memang ada di instance KESDatabase.
+        
+        
+        
+        
+        
+        
         const attempts = [
             function() { return db.search ? db.search(topic, { limit: maxResults }) : null; },
             function() { return db.find ? db.find({ text: topic, limit: maxResults }) : null; },
@@ -94,7 +90,7 @@
                     return result.slice(0, maxResults);
                 }
             } catch (_) {
-                // Coba strategi API berikutnya
+                
             }
         }
         return [];

@@ -1,19 +1,19 @@
-// Character-level JSON structural grammar — a small pushdown automaton
-// that tracks exactly what characters are legal next, given everything
-// consumed so far, so token sampling can reject any continuation that
-// would make the output invalid JSON.
-//
-// Scope, deliberately: this guarantees STRUCTURAL validity (the result
-// always passes JSON.parse()) — it says nothing about which keys/values
-// are semantically correct. That's a different, much harder problem
-// (schema-level constraints), and out of scope for what "constrained
-// JSON output" needs to solve here: today, agents can freely emit
-// text that ISN'T even parseable JSON (safeParseResponse() in
-// js/core/utils.js is a best-effort REPAIR of that after the fact); this
-// module prevents the malformed case from being generated at all.
-//
-// Zero dependencies, pure functions, fully unit-testable in isolation
-// (see test.js) without touching the model/sampler/tokenizer at all.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 const WHITESPACE = new Set([' ', '\t', '\n', '\r']);
 const DIGITS = new Set('0123456789'.split(''));
@@ -28,10 +28,10 @@ function cloneState(state) {
     return { stack: state.stack.slice(), expect: state.expect, sub: state.sub ? Object.assign({}, state.sub) : null };
 }
 
-// Called whenever a value (string/number/literal/object/array) has just
-// closed — decides what's legal next based on whether that value was an
-// object KEY (expect === 'key' at the moment it closed) or a normal
-// value, and what container (if any) we're still inside.
+
+
+
+
 function afterValueClosed(state) {
     const s = cloneState(state);
     s.sub = null;
@@ -106,7 +106,7 @@ function afterValueClosedThenReconsume(state, ch) {
     return stepChar(closed, ch);
 }
 
-// -?(0|[1-9][0-9]*)(\.[0-9]+)?([eE][+-]?[0-9]+)?
+
 function stepNumber(state, ch) {
     const sub = state.sub;
     const isDigit = DIGITS.has(ch);
@@ -175,7 +175,7 @@ function stepString(state, ch) {
     }
     if (ch === '"') return afterValueClosed(state);
     if (ch === '\\') { const s = cloneState(state); s.sub = { kind: 'string', escaped: true }; return s; }
-    // Bare control characters (0x00-0x1F) are illegal unescaped in a JSON string.
+    
     if (ch.charCodeAt(0) < 0x20) return null;
     return state;
 }
@@ -187,7 +187,7 @@ function stepChar(state, ch) {
         if (state.sub.kind === 'literal') return stepLiteral(state, ch);
         return null;
     }
-    if (WHITESPACE.has(ch)) return state; // insignificant whitespace between tokens
+    if (WHITESPACE.has(ch)) return state; 
     switch (state.expect) {
         case 'value':
             return stepStartValue(state, ch);
@@ -213,16 +213,16 @@ function stepChar(state, ch) {
             if (ch === ']') return closeContainer(state, 'array');
             return null;
         case 'done':
-            return null; // any non-whitespace after the top-level value is invalid
+            return null; 
         default:
             return null;
     }
 }
 
-// A number has no explicit terminator character — it's "done" the
-// instant a non-number character (or EOF) follows. This collapses a
-// number sitting in a terminable phase into its post-value state, for
-// completion checks (isComplete) and for deciding whether EOS is legal.
+
+
+
+
 function normalize(state) {
     if (state.sub && state.sub.kind === 'number') {
         const terminable = ['leading-zero', 'int', 'frac-rest', 'exp-rest'];

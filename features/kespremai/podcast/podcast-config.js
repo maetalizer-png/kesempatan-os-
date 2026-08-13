@@ -374,8 +374,8 @@ export const LANGUAGES = {
     it: { name: "🇮🇹 Italiano", code: "it-IT", label: "Italiano" }
 };
 
-// Card/border alpha kept low (0.025/0.07-0.1) so the page doesn't read as
-// a grid of neon boxes — cards stay understated and blend with the background.
+
+
 export const THEMES = {
     dark: { bg: '#03050A', primary: '#00FFA3', secondary: '#9B59B6', text: '#FFFFFF', card: 'rgba(255,255,255,0.025)', border: 'rgba(255,255,255,0.07)' },
     neon: { bg: '#0A0A1A', primary: '#FF00FF', secondary: '#00FFFF', text: '#FFFFFF', card: 'rgba(255,255,255,0.025)', border: 'rgba(255,0,255,0.1)' },
@@ -395,9 +395,9 @@ export const BG_MUSIC = {
     ambient: { name: "🌊 Ambient", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-5.mp3" }
 };
 
-// volume = confidence/loudness, pauseFactor = thinking-pause before speaking
-// (higher = more deliberate), pitchVariance = natural pitch wobble per line
-// so it doesn't read as flat/robotic.
+
+
+
 export const AGENT_VOICES = {
     RahmadRaharjo: { name: "👨 Rahmad Raharjo", pitch: 0.85, rate: 0.88, volume: 0.95, pauseFactor: 1.15, pitchVariance: 0.05, desc: "Bijak, santai, pengalaman" },
     NenekBijak: { name: "👵 Nenek Bijak", pitch: 1.1, rate: 0.75, volume: 0.85, pauseFactor: 1.4, pitchVariance: 0.08, desc: "Lembut, penuh pengalaman hidup, bicara pelan-pelan" },
@@ -411,8 +411,8 @@ export const AGENT_VOICES = {
     SundanyaAsep: { name: "😂 Sundanya Asep", pitch: 1.18, rate: 1.02, volume: 0.98, pauseFactor: 0.8, pitchVariance: 0.09, desc: "Lucu, santai, sunda banget" },
     Analyst: { name: "📊 Analyst", pitch: 0.86, rate: 0.88, volume: 0.9, pauseFactor: 1.1, pitchVariance: 0.03, desc: "Analitis, detail, objektif" },
     Moderator: { name: "🎙️ Moderator", pitch: 0.95, rate: 0.93, volume: 0.97, pauseFactor: 0.95, pitchVariance: 0.04, desc: "Netral, terstruktur, profesional" },
-    // pitch/rate spread wide on purpose: this is the fallback distinguishing
-    // factor when the browser only exposes one TTS voice for a language.
+    
+    
     discussion_host: {
         name: "🎙️ Host",
         pitch: 1.02, rate: 0.98, volume: 1.0, pauseFactor: 0.7, pitchVariance: 0.06,
@@ -434,9 +434,9 @@ export const AGENT_VOICES = {
         desc: "Kritis, suka bertanya 'kenapa', jeda sebelum menyanggah"
     },
 
-    // Male/female variants of each discussion role: personality traits
-    // (pauseFactor, pitchVariance, energy) stay identical per role — only
-    // the base pitch range differs, following typical human pitch ranges.
+    
+    
+    
     discussion_host_pria: {
         name: "👨‍🎙️ Host (Pria)", pitch: 0.92, rate: 0.98, volume: 1.0, pauseFactor: 0.7, pitchVariance: 0.06,
         desc: "Ramah, membawa suasana, energik, suka bertanya"
@@ -471,7 +471,7 @@ export const AGENT_VOICES = {
     }
 };
 
-// ========== KONFIGURASI INTEGRASI DATABASE ==========
+
 export const DB_COLLECTIONS = {
     analyses: 'analyses',
     podcasts: 'podcasts'

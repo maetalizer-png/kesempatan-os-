@@ -1,7 +1,7 @@
-// AI Editor Worker — menjalankan konvolusi sharpen 3x3 dari enhance2x()
-// (ai-editor-ultimate.js) di luar main thread. Loop-nya sama persis dengan
-// versi sinkron sebelumnya — hanya lokasi eksekusinya yang berubah, bukan
-// hasilnya.
+
+
+
+
 'use strict';
 
 self.onmessage = function (e) {
@@ -10,8 +10,8 @@ self.onmessage = function (e) {
     const src = new Uint8ClampedArray(e.data.buffer);
     const out = new Uint8ClampedArray(src.length);
 
-    // Start as a copy so alpha and border pixels (never touched by the loop
-    // below, same as the original code) keep their original values.
+    
+    
     out.set(src);
 
     const k = [0, -1, 0, -1, 5, -1, 0, -1, 0];

@@ -2,7 +2,7 @@ const BATCH_SIZE = 5;
 const BATCH_DELAY = 3000;
 
 const RSS_FEEDS = [
-    // ========== ASIA (15) ==========
+    
     { name: 'Channel News Asia', category: 'news', region: 'asia', url: 'https://www.channelnewsasia.com/rss', icon: '🌏' },
     { name: 'South China Morning Post', category: 'news', region: 'asia', url: 'https://www.scmp.com/rss/feed', icon: '🇭🇰' },
     { name: 'Nikkei Asia', category: 'business', region: 'asia', url: 'https://asia.nikkei.com/rss', icon: '🇯🇵' },
@@ -19,7 +19,7 @@ const RSS_FEEDS = [
     { name: 'The Diplomat', category: 'politics', region: 'asia', url: 'https://thediplomat.com/feed', icon: '🎯' },
     { name: 'Malay Mail', category: 'news', region: 'asia', url: 'https://www.malaymail.com/rss', icon: '🇲🇾' },
     
-    // ========== TIMUR TENGAH (10) ==========
+    
     { name: 'Arab News', category: 'news', region: 'timur-tengah', url: 'https://www.arabnews.com/rss/all', icon: '🇸🇦' },
     { name: 'The National UAE', category: 'news', region: 'timur-tengah', url: 'https://www.thenationalnews.com/rss', icon: '🇦🇪' },
     { name: 'Gulf News', category: 'news', region: 'timur-tengah', url: 'https://gulfnews.com/rss', icon: '🇦🇪' },
@@ -31,7 +31,7 @@ const RSS_FEEDS = [
     { name: 'Al Monitor', category: 'politics', region: 'timur-tengah', url: 'https://www.al-monitor.com/feed', icon: '📰' },
     { name: 'Middle East Eye', category: 'news', region: 'timur-tengah', url: 'https://www.middleeasteye.net/feed', icon: '🕌' },
     
-    // ========== EROPA (10) ==========
+    
     { name: 'The Guardian UK', category: 'news', region: 'eropa', url: 'https://www.theguardian.com/world/rss', icon: '🇬🇧' },
     { name: 'Le Monde', category: 'news', region: 'eropa', url: 'https://www.lemonde.fr/en/rss', icon: '🇫🇷' },
     { name: 'Der Spiegel', category: 'news', region: 'eropa', url: 'https://www.spiegel.de/schlagzeilen/index.rss', icon: '🇩🇪' },
@@ -43,7 +43,7 @@ const RSS_FEEDS = [
     { name: 'EuroNews', category: 'news', region: 'eropa', url: 'https://www.euronews.com/rss', icon: '🇪🇺' },
     { name: 'Politico EU', category: 'politics', region: 'eropa', url: 'https://www.politico.eu/feed', icon: '🏛️' },
     
-    // ========== AMERIKA (10) ==========
+    
     { name: 'The Globe and Mail', category: 'news', region: 'amerika', url: 'https://www.theglobeandmail.com/feed/', icon: '🇨🇦' },
     { name: 'The Wall Street Journal', category: 'business', region: 'amerika', url: 'https://feeds.wsjonline.com/wsj/global', icon: '📊' },
     { name: 'The Washington Post', category: 'news', region: 'amerika', url: 'https://feeds.washingtonpost.com/rss/world', icon: '🇺🇸' },
@@ -55,14 +55,14 @@ const RSS_FEEDS = [
     { name: 'Clarin Argentina', category: 'news', region: 'amerika', url: 'https://www.clarin.com/rss', icon: '🇦🇷' },
     { name: 'Folha de S.Paulo', category: 'news', region: 'amerika', url: 'https://www.folha.uol.com.br/rss', icon: '🇧🇷' },
     
-    // ========== AFRIKA (5) ==========
+    
     { name: 'AllAfrica', category: 'news', region: 'afrika', url: 'https://allafrica.com/tools/headlines/rss/latest/headlines.rss', icon: '🌍' },
     { name: 'The East African', category: 'news', region: 'afrika', url: 'https://www.theeastafrican.co.ke/rss', icon: '🇰🇪' },
     { name: 'Mail & Guardian', category: 'news', region: 'afrika', url: 'https://mg.co.za/feed', icon: '🇿🇦' },
     { name: 'Vanguard Nigeria', category: 'news', region: 'afrika', url: 'https://www.vanguardngr.com/feed', icon: '🇳🇬' },
     { name: 'GhanaWeb', category: 'news', region: 'afrika', url: 'https://www.ghanaweb.com/feed', icon: '🇬🇭' },
     
-    // ========== PASIFIK (3) ==========
+    
     { name: 'Sydney Morning Herald', category: 'news', region: 'pasifik', url: 'https://www.smh.com.au/rss/feed', icon: '🇦🇺' },
     { name: 'New Zealand Herald', category: 'news', region: 'pasifik', url: 'https://www.nzherald.co.nz/rss', icon: '🇳🇿' },
     { name: 'The Fiji Times', category: 'news', region: 'pasifik', url: 'https://www.fijitimes.com/feed', icon: '🇫🇯' }
@@ -123,7 +123,7 @@ const loadInternationalNews = async function() {
                 successCount++;
                 
             } catch (error) {
-                // skip
+                
             }
         }
         

@@ -26,9 +26,9 @@ function escapeHtml(value) {
         .replace(/'/g, '&#39;');
 }
 
-// ============================================================
-// MONITORING DASHBOARD
-// ============================================================
+
+
+
 class MonitoringDashboard {
     constructor(db) {
         this._db = db;

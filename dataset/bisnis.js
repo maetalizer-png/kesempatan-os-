@@ -1,11 +1,11 @@
-// KESEMPATAN OS - DATASET: BISNIS INTI
-// Korpus konteks untuk LLM lokal, selaras dengan 14 agent inti bisnis di
-// agents/agents-config.js. Bukan RAG/world-knowledge (itu tugas dataries/) —
-// folder dataset/ ini khusus jadi bahan bacaan tambahan (di luar system
-// prompt) untuk melatih & memberi konteks LLM lokal lewat
-// buildBootstrapCorpus() di js/workflow/workflow-llm-bridge.js.
+
+
+
+
+
+
 const data = [
-    // ================= RAHMAD RAHARJO (Senior Business Strategist) =================
+    
     {
         text: 'Peluang bisnis terbaik sering muncul di celah antara kebutuhan yang belum terlayani dan sumber daya yang belum dimanfaatkan. Analis peluang yang baik selalu bertanya: siapa yang paling dirugikan oleh kondisi saat ini, dan apa yang bisa dibayar mahal untuk menghilangkan masalah itu.',
         metadata: { category: 'dataset', domain: 'bisnis', agent: 'RahmadRaharjo', topic: 'identifikasi peluang', tags: ['strategi', 'peluang', 'analisis pasar'] }
@@ -19,7 +19,7 @@ const data = [
         metadata: { category: 'dataset', domain: 'bisnis', agent: 'RahmadRaharjo', topic: 'timing pasar', tags: ['timing', 'strategi masuk pasar'] }
     },
 
-    // ================= MANAGER (Strategic Business Coordinator) =================
+    
     {
         text: 'Koordinasi tim lintas fungsi berjalan baik ketika setiap anggota tahu persis siapa pemilik keputusan akhir untuk tiap area kerja. Ambiguitas kepemilikan adalah penyebab paling umum proyek yang molor tanpa sebab yang jelas.',
         metadata: { category: 'dataset', domain: 'bisnis', agent: 'Manager', topic: 'koordinasi tim', tags: ['manajemen', 'eksekusi', 'akuntabilitas'] }
@@ -33,7 +33,7 @@ const data = [
         metadata: { category: 'dataset', domain: 'bisnis', agent: 'Manager', topic: 'prioritas', tags: ['manajemen waktu', 'prioritas'] }
     },
 
-    // ================= HUNTER (Opportunity Seeker) =================
+    
     {
         text: 'Pemburu peluang yang jeli memantau tiga sinyal: perubahan regulasi yang membuka celah baru, pergeseran perilaku konsumen yang belum direspons pemain lama, dan teknologi baru yang menurunkan biaya masuk ke industri tertentu.',
         metadata: { category: 'dataset', domain: 'bisnis', agent: 'Hunter', topic: 'sinyal peluang', tags: ['peluang', 'trend watching'] }
@@ -47,7 +47,7 @@ const data = [
         metadata: { category: 'dataset', domain: 'bisnis', agent: 'Hunter', topic: 'ukuran pasar', tags: ['tam', 'analisis pasar'] }
     },
 
-    // ================= ANALYST (Quantitative Analyst) =================
+    
     {
         text: 'Analisis kuantitatif yang kredibel selalu memisahkan korelasi dari kausalitas. Dua variabel yang bergerak bersamaan belum tentu satu menyebabkan yang lain — bisa jadi keduanya dipengaruhi faktor ketiga yang tidak terlihat di data.',
         metadata: { category: 'dataset', domain: 'bisnis', agent: 'Analyst', topic: 'korelasi vs kausalitas', tags: ['statistik', 'analisis data'] }
@@ -61,7 +61,7 @@ const data = [
         metadata: { category: 'dataset', domain: 'bisnis', agent: 'Analyst', topic: 'proyeksi pertumbuhan', tags: ['forecasting', 'model pertumbuhan'] }
     },
 
-    // ================= STRATEGIST (Long-term Strategy Planner) =================
+    
     {
         text: 'Strategi jangka panjang yang kuat dibangun di atas keunggulan kompetitif yang sulit ditiru — bisa berupa efek jaringan, biaya berpindah yang tinggi, skala ekonomi, atau merek yang sudah tertanam kuat di benak pelanggan.',
         metadata: { category: 'dataset', domain: 'bisnis', agent: 'Strategist', topic: 'keunggulan kompetitif', tags: ['strategi', 'moat'] }
@@ -75,7 +75,7 @@ const data = [
         metadata: { category: 'dataset', domain: 'bisnis', agent: 'Strategist', topic: 'trade-off strategis', tags: ['strategi', 'fokus'] }
     },
 
-    // ================= VERIFIER (Truth & Consistency Verifier) =================
+    
     {
         text: 'Klaim bisnis yang kredibel harus bisa ditelusuri ke sumber data primer. Klaim yang hanya mengutip "penelitian menunjukkan" tanpa rujukan spesifik patut dicurigai sampai terbukti sebaliknya.',
         metadata: { category: 'dataset', domain: 'bisnis', agent: 'Verifier', topic: 'verifikasi klaim', tags: ['verifikasi', 'kredibilitas'] }
@@ -89,7 +89,7 @@ const data = [
         metadata: { category: 'dataset', domain: 'bisnis', agent: 'Verifier', topic: 'bias konfirmasi', tags: ['bias', 'objektivitas'] }
     },
 
-    // ================= RESEARCHER (Data & Research Specialist) =================
+    
     {
         text: 'Riset pasar yang solid menggabungkan data kuantitatif berskala besar dengan wawancara kualitatif mendalam. Data survei bisa menunjukkan pola, tapi wawancara langsung mengungkap alasan di balik pola itu.',
         metadata: { category: 'dataset', domain: 'bisnis', agent: 'Researcher', topic: 'metode riset campuran', tags: ['riset', 'metodologi'] }
@@ -103,7 +103,7 @@ const data = [
         metadata: { category: 'dataset', domain: 'bisnis', agent: 'Researcher', topic: 'riset kompetitor', tags: ['riset', 'kompetitor'] }
     },
 
-    // ================= COPYWRITER (Marketing Copy & Content Writer) =================
+    
     {
         text: 'Copywriting yang efektif berbicara tentang hasil yang diinginkan pembaca, bukan fitur produk. Orang tidak membeli bor listrik karena ingin punya bor — mereka membeli karena ingin lubang yang rapi di dinding.',
         metadata: { category: 'dataset', domain: 'bisnis', agent: 'Copywriter', topic: 'benefit vs fitur', tags: ['copywriting', 'pemasaran'] }
@@ -117,7 +117,7 @@ const data = [
         metadata: { category: 'dataset', domain: 'bisnis', agent: 'Copywriter', topic: 'call to action', tags: ['copywriting', 'konversi'] }
     },
 
-    // ================= SCRIPT (Video Script Writer) =================
+    
     {
         text: 'Tiga detik pertama sebuah video menentukan apakah penonton bertahan atau langsung menggeser. Naskah video yang baik membuka dengan hook yang langsung menjawab "apa untungnya bagi saya", bukan perkenalan panjang.',
         metadata: { category: 'dataset', domain: 'bisnis', agent: 'Script', topic: 'hook video', tags: ['naskah', 'video'] }
@@ -131,7 +131,7 @@ const data = [
         metadata: { category: 'dataset', domain: 'bisnis', agent: 'Script', topic: 'gaya dialog', tags: ['naskah', 'gaya bahasa'] }
     },
 
-    // ================= PLANNER (Content & Social Media Planner) =================
+    
     {
         text: 'Kalender konten yang sehat menyeimbangkan tiga jenis konten: edukatif yang membangun kepercayaan, menghibur yang membangun jangkauan, dan promosi langsung yang mengonversi — dengan rasio yang condong ke dua jenis pertama.',
         metadata: { category: 'dataset', domain: 'bisnis', agent: 'Planner', topic: 'jenis konten', tags: ['perencanaan konten', 'media sosial'] }
@@ -145,7 +145,7 @@ const data = [
         metadata: { category: 'dataset', domain: 'bisnis', agent: 'Planner', topic: 'daur ulang konten', tags: ['perencanaan konten', 'efisiensi'] }
     },
 
-    // ================= DISTRIBUTOR (Distribution Channel Manager) =================
+    
     {
         text: 'Pemilihan kanal distribusi harus mempertimbangkan di mana pelanggan ideal sudah menghabiskan waktu, bukan kanal mana yang paling populer secara umum. Kanal yang tepat untuk produk B2B jarang sama dengan produk konsumen massal.',
         metadata: { category: 'dataset', domain: 'bisnis', agent: 'Distributor', topic: 'pemilihan kanal', tags: ['distribusi', 'kanal'] }
@@ -159,7 +159,7 @@ const data = [
         metadata: { category: 'dataset', domain: 'bisnis', agent: 'Distributor', topic: 'skala distribusi', tags: ['distribusi', 'margin'] }
     },
 
-    // ================= OPTIMIZER (Performance & Conversion Optimizer) =================
+    
     {
         text: 'Optimasi konversi yang sistematis dimulai dari mengidentifikasi titik dengan drop-off tertinggi di funnel, bukan mengubah semua elemen halaman sekaligus tanpa tahu mana yang sebenarnya bermasalah.',
         metadata: { category: 'dataset', domain: 'bisnis', agent: 'Optimizer', topic: 'analisis funnel', tags: ['optimasi', 'konversi'] }
@@ -173,7 +173,7 @@ const data = [
         metadata: { category: 'dataset', domain: 'bisnis', agent: 'Optimizer', topic: 'kecepatan halaman', tags: ['optimasi', 'ux'] }
     },
 
-    // ================= MEMORY (Memory & Knowledge Manager) =================
+    
     {
         text: 'Basis pengetahuan organisasi yang berguna mengorganisir informasi berdasarkan konteks penggunaan, bukan hanya berdasarkan kategori topik — orang mencari jawaban saat menghadapi masalah spesifik, bukan sedang membaca ensiklopedia.',
         metadata: { category: 'dataset', domain: 'bisnis', agent: 'Memory', topic: 'organisasi pengetahuan', tags: ['manajemen pengetahuan', 'dokumentasi'] }
@@ -187,7 +187,7 @@ const data = [
         metadata: { category: 'dataset', domain: 'bisnis', agent: 'Memory', topic: 'konteks historis', tags: ['manajemen pengetahuan', 'pembelajaran organisasi'] }
     },
 
-    // ================= PROMPTOPTIMIZER (Prompt Engineer & A/B Testing Specialist) =================
+    
     {
         text: 'Prompt yang efektif untuk model bahasa memberi konteks peran yang jelas, format keluaran yang eksplisit, dan contoh konkret — instruksi yang abstrak seperti "jawab dengan baik" hampir selalu menghasilkan keluaran yang tidak konsisten.',
         metadata: { category: 'dataset', domain: 'bisnis', agent: 'PromptOptimizer', topic: 'struktur prompt', tags: ['prompt engineering', 'ai'] }

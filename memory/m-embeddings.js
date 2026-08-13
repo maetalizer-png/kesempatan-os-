@@ -12,9 +12,9 @@ const Config = MemoryConfig;
 const TEXT_MODEL = 'Xenova/all-MiniLM-L6-v2';
 const TRANSFORMERS_CDN = 'https://cdn.jsdelivr.net/npm/@xenova/transformers@2.13.0/dist/transformers.min.js';
 
-// ============================================================
-// MULTIMODAL EMBEDDING
-// ============================================================
+
+
+
 class MultimodalEmbedding {
     constructor() {
         this.isReady = false;
@@ -216,7 +216,7 @@ class MultimodalEmbedding {
                 vec[i] = pixels[i * step] / 255;
             }
         } catch (error) {
-            // fallback aman tanpa pixel
+            
         }
 
         const norm = Math.sqrt(vec.reduce(function (sum, value) {
@@ -248,7 +248,7 @@ class MultimodalEmbedding {
                 vec[i] = samples[i * step] / 32768;
             }
         } catch (error) {
-            // fallback aman tanpa audio sample
+            
         }
 
         const norm = Math.sqrt(vec.reduce(function (sum, value) {
@@ -352,7 +352,7 @@ class MultimodalEmbedding {
                 } else if (audioData instanceof Uint8Array) {
                     arrayBuffer = audioData.buffer;
                 } else if (typeof audioData === 'string') {
-                    // Data URL ("data:audio/...;base64,XXXX") atau base64 mentah.
+                    
                     const base64 = audioData.indexOf(',') > -1
                         ? audioData.split(',')[1]
                         : audioData;

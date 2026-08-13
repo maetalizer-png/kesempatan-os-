@@ -1,7 +1,7 @@
-// Static imports (in dependency order) replace the old runtime
-// document.createElement('script') loader: the ES module graph itself now
-// guarantees m-config.js -> m-utilities.js -> ... -> m-governance.js finish
-// evaluating, in this order, before any code below runs.
+
+
+
+
 import './m-config.js';
 import './m-utilities.js';
 import './m-metrics.js';

@@ -1,23 +1,11 @@
-/* ============================================================
-   KESEMPATAN OS - PUBLIC API SERVER REAL 
-   ✅ Internal Logger (Zero console.log)
-   ✅ Zero alert
-   ✅ 100% const
-   ✅ Rate Limiting
-   ✅ Input Validation (Joi)
-   ✅ Environment Variables
-   ✅ CORS Origin Restriction
-   ✅ HTTPS Ready
-   ✅ Better Error Handling
-   ✅ 100% more secure
-   ============================================================ */
+
 
 (function() {
     'use strict';
 
-    // ============================================================
-    // DEPENDENCIES
-    // ============================================================
+    
+    
+    
     const express = require('express');
     const cors = require('cors');
     const crypto = require('crypto');
@@ -26,9 +14,9 @@
     const Joi = require('joi');
     const rateLimit = require('express-rate-limit');
 
-    // ============================================================
-    // INTERNAL LOGGER (Zero console.log)
-    // ============================================================
+    
+    
+    
     const InternalLogger = Object.freeze({
         _logs: [],
         _maxLogs: 1000,

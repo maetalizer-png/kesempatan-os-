@@ -1,15 +1,15 @@
 const Logger = window.Utils?.Logger || {
-    info: function () { /* silent */ },
-    warn: function () { /* silent */ },
+    info: function () {  },
+    warn: function () {  },
     error: function (mod, msg) { console.error('[ERROR] [' + mod + '] ' + msg); }
 };
 
 const FORMAT_VERSION = 1;
 
-// ============================================================
-// SERIALISASI (matriks kita sudah plain array, jadi ini terutama
-// soal bungkus versi + validasi struktur, bukan konversi format)
-// ============================================================
+
+
+
+
 function serializeWeights(model) {
     if (!model || !model.embeddingMatrix || !model.decoderWeights) {
         throw new Error('[LLMWeights] serializeWeights butuh model dengan embeddingMatrix & decoderWeights');
@@ -35,9 +35,9 @@ function deserializeWeights(serialized) {
     };
 }
 
-// ============================================================
-// STATISTIK
-// ============================================================
+
+
+
 function countMatrixParams(matrix) {
     if (!Array.isArray(matrix) || matrix.length === 0) return 0;
     return matrix.length * (Array.isArray(matrix[0]) ? matrix[0].length : 1);
@@ -65,17 +65,17 @@ function countParameters(model) {
     return total;
 }
 
-// Estimasi kasar penyimpanan mentah (float64 JS number = 8 byte).
-// Angka sebenarnya di localStorage/JSON akan lebih besar (representasi
-// teks), ini cuma acuan ukuran "bobot murni" di memori.
+
+
+
 function estimateMemoryBytes(model) {
     return countParameters(model) * 8;
 }
 
-// ============================================================
-// KONVERSI KE/DARI Float32Array (representasi lebih ringkas,
-// dipakai llm-checkpoint.js kalau perlu hemat ruang penyimpanan)
-// ============================================================
+
+
+
+
 function matrixToFloat32(matrix) {
     const rows = matrix.length;
     const cols = matrix[0] ? matrix[0].length : 0;
@@ -100,15 +100,15 @@ function float32ToMatrix(packed) {
     return matrix;
 }
 
-// ============================================================
-// TYPED ARRAY <-> BASE64 (byte-level, lossless)
-// ============================================================
-// 🆕 Dipakai llm-checkpoint.js untuk menyimpan bobot terkuantisasi
-// (Int8Array dari llm-quantization.js) sebagai STRING ringkas di
-// localStorage. Catatan penting: JSON.stringify() pada TypedArray
-// TIDAK menghemat apa-apa (hasilnya objek `{"0":1,"1":2,...}`,
-// malah lebih besar dari array biasa) — base64 atas byte mentah
-// adalah cara yang benar-benar ringkas, bukan cuma "typed array".
+
+
+
+
+
+
+
+
+
 function typedArrayToBase64(typedArray) {
     const bytes = new Uint8Array(typedArray.buffer, typedArray.byteOffset, typedArray.byteLength);
     let binary = '';

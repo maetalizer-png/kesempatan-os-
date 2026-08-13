@@ -1,21 +1,16 @@
-/* ============================================================
-   📁 rap/engine/character.js
-   🔥 CHARACTER ENGINE — 35+ PERSONA + CONTOH GAYA RAP ASLI
-   🔥 SETIAP PERSONA PUNYA CONTOH BARIS & FRASA KHAS
-   🔥 ENHANCE: Persona lebih hidup dengan contoh gaya bicara
-   ============================================================ */
+
 
 const KESEMPATAN = window.KESEMPATAN || {};
 window.KESEMPATAN = KESEMPATAN;
 
-// ============================================================
-// 1. PERSONA DATABASE (DENGAN CONTOH GAYA)
-// ============================================================
+
+
+
 
 const PERSONA_DB = {
-    // ==========================================================
-    // 🔥 UTAMA (11) — DENGAN CONTOH GAYA
-    // ==========================================================
+    
+    
+    
     'RahmadRaharjo': {
         name: 'Rahmad Raharjo',
         archetype: 'Street King',
@@ -31,7 +26,7 @@ const PERSONA_DB = {
         signature: 'Fakta bicara, bukan omongan!',
         baseEmotion: 'Tenang',
         catchphrase: 'Fakta bicara, bukan omongan!',
-        // 🔥 CONTOH GAYA RAP (baris-baris khas)
+        
         styleExample: [
             'Ku bawa data, bukan cerita dongeng',
             'Statistika bicara, kau cuma bisa diam',
@@ -54,7 +49,7 @@ const PERSONA_DB = {
         signature: 'Statistika tidak pernah bohong!',
         baseEmotion: 'Dingin',
         catchphrase: 'Statistika tidak pernah bohong!',
-        // 🔥 CONTOH GAYA RAP
+        
         styleExample: [
             'Ini bisnis, bukan drama',
             'Portofolio ku lebih berat dari ego mu',
@@ -77,7 +72,7 @@ const PERSONA_DB = {
         signature: 'Scale up atau mati!',
         baseEmotion: 'Enerjik',
         catchphrase: 'Scale up atau mati!',
-        // 🔥 CONTOH GAYA RAP
+        
         styleExample: [
             'Scale up, hustle hard, nggak ada istilah slow',
             'Bayanganmu ketinggalan, aku udah next level',
@@ -100,7 +95,7 @@ const PERSONA_DB = {
         signature: 'Kata-katamu, senjatamu sendiri!',
         baseEmotion: 'Jenaka',
         catchphrase: 'Kata-katamu, senjatamu sendiri!',
-        // 🔥 CONTOH GAYA RAP
+        
         styleExample: [
             'Kau serang aku, tapi kata-katamu balik ke kamu',
             'Di balik argumenmu, ada ketakutan yang sama',
@@ -123,7 +118,7 @@ const PERSONA_DB = {
         signature: 'Hadeuh... dasar!',
         baseEmotion: 'Santai',
         catchphrase: 'Hadeuh... dasar!',
-        // 🔥 CONTOH GAYA RAP
+        
         styleExample: [
             'Hadeuh... dasar kau teh, lucu tapi menyedihkan',
             'Cerita ku panjang, tapi di akhir kau yang kena',
@@ -146,7 +141,7 @@ const PERSONA_DB = {
         signature: 'Data tidak pernah salah!',
         baseEmotion: 'Dingin',
         catchphrase: 'Data tidak pernah salah!',
-        // 🔥 CONTOH GAYA RAP
+        
         styleExample: [
             'Probabilitasmu menang: nol koma nol!',
             'Data ku grafik naik, kau grafik jatuh bebas',
@@ -169,7 +164,7 @@ const PERSONA_DB = {
         signature: 'Hidup ini seperti...',
         baseEmotion: 'Reflektif',
         catchphrase: 'Hidup ini seperti...',
-        // 🔥 CONTOH GAYA RAP
+        
         styleExample: [
             'Hidup ini seperti refleksi, kau lihat dirimu sendiri',
             'Kau berlari dari bayangan, tapi bayangan itu dirimu',
@@ -192,7 +187,7 @@ const PERSONA_DB = {
         signature: 'Target lock, fire!',
         baseEmotion: 'Agresif',
         catchphrase: 'Target lock, fire!',
-        // 🔥 CONTOH GAYA RAP
+        
         styleExample: [
             'Target lock, fire! Rap ku peluru kau yang kena',
             'Kau cuma mangsa, aku predator di sini',
@@ -215,7 +210,7 @@ const PERSONA_DB = {
         signature: 'Analisis saya: Anda kalah!',
         baseEmotion: 'Serius',
         catchphrase: 'Analisis saya: Anda kalah!',
-        // 🔥 CONTOH GAYA RAP
+        
         styleExample: [
             'Analisis ku: kau kalah dari baris pertama',
             'Setiap kata ku bongkar, kau nggak punya dasar',
@@ -238,7 +233,7 @@ const PERSONA_DB = {
         signature: 'Perang dimenangkan sebelum pertempuran!',
         baseEmotion: 'Berwibawa',
         catchphrase: 'Perang dimenangkan sebelum pertempuran!',
-        // 🔥 CONTOH GAYA RAP
+        
         styleExample: [
             'Perang ini ku menangkan dari baris pertama',
             'Kau pikir kau serang, tapi itu bagian dari rencana ku',
@@ -261,7 +256,7 @@ const PERSONA_DB = {
         signature: 'Kata-kata adalah senjata!',
         baseEmotion: 'Kreatif',
         catchphrase: 'Kata-kata adalah senjata!',
-        // 🔥 CONTOH GAYA RAP
+        
         styleExample: [
             'Kata-kata adalah senjata, dan aku nuklir',
             'Double entendre di setiap baris, kau baca dua makna',
@@ -270,9 +265,9 @@ const PERSONA_DB = {
         vibeWords: ['wordplay', 'puisi', 'senjata', 'makna', 'kreatif', 'puitis']
     },
 
-    // ==========================================================
-    // 🔥 TAMBAHAN (DENGAN CONTOH GAYA)
-    // ==========================================================
+    
+    
+    
     'Iceman': {
         name: 'Iceman',
         archetype: 'Cold Killer',
@@ -341,9 +336,9 @@ const PERSONA_DB = {
     }
 };
 
-// ============================================================
-// 2. EMOTIONAL PROGRESSION
-// ============================================================
+
+
+
 
 const EMOTION_FLOW = [
     { name: 'Santai', energy: 20, intensity: 1 },
@@ -367,16 +362,16 @@ function getPersona(agent) {
     return PERSONA_DB[agent] || PERSONA_DB['RahmadRaharjo'];
 }
 
-// ============================================================
-// 2a. 🔥 EMOTION → VOICE MODIFIER
-// ✅ Sebelumnya getEmotion() cuma dipakai untuk teks prompt AI —
-//    battle yang "makin panas" di ronde belakang tidak pernah
-//    terdengar di suara (rate/pitch rapper tetap datar dari awal
-//    sampai akhir). Fungsi ini menerjemahkan energy/intensity emosi
-//    per-ronde jadi pengali rate & pitch kecil, supaya delivery vokal
-//    ikut naik seiring battle memanas — tanpa mengubah karakter dasar
-//    tiap rapper (VOICE_PROFILES tetap jadi baseline).
-// ============================================================
+
+
+
+
+
+
+
+
+
+
 function getEmotionModifier(round, totalRounds) {
     const emotion = getEmotion(round, totalRounds);
     const t = Math.max(0, Math.min(1, emotion.energy / 100));
@@ -384,25 +379,25 @@ function getEmotionModifier(round, totalRounds) {
         name: emotion.name,
         energy: emotion.energy,
         intensity: emotion.intensity,
-        // Energy 0 -> ~0.91x, energy 100 -> ~1.09x (rate), lebih kecil untuk pitch
+        
         rateMult: 1 + (t - 0.5) * 0.18,
         pitchMult: 1 + (t - 0.5) * 0.14
     };
 }
 
-// ============================================================
-// 2b. 🔥 VOICE PROFILES — SUARA REALISTIS PER RAPPER
-// ✅ Setiap rapper punya rate/pitch/jeda/ad-lib SENDIRI, diturunkan
-//    dari baseEmotion & flow masing-masing (bukan disamaratakan).
-//    Sebelumnya SEMUA rapper pakai CONFIG.VOICE_RATE/PITCH yang
-//    sama persis — jadi kedengaran seperti 1 suara robotik yang
-//    sama untuk 14 karakter berbeda. Ini yang bikin nggak realistis.
-// ✅ rate: kecepatan bicara (1.0 = normal)
-// ✅ pitch: nada dasar suara (1.0 = normal, >1 lebih tinggi/melengking)
-// ✅ pauseMs: jeda antar baris (ms) — flow lambat = jeda lebih lama
-// ✅ punchlineBoost: tambahan pitch khusus di baris penutup/punchline
-// ✅ adlibs: kata seruan khas yang diselipkan (realistis kayak rapper asli)
-// ============================================================
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 const VOICE_PROFILES = {
     'RahmadRaharjo': { rate: 0.95, pitch: 0.92, pauseMs: 420, punchlineBoost: 0.15, volume: 0.92, adlibs: ['Fakta!', 'Buktikan!', 'Uh.'] },
@@ -427,20 +422,20 @@ function getVoiceProfile(agent) {
     return VOICE_PROFILES[agent] || DEFAULT_VOICE_PROFILE;
 }
 
-// ============================================================
-// 2c. 🔥 PEMILIHAN VOICE TTS PER RAPPER (ANTI-MONOTON)
-// ✅ ROOT CAUSE dari keluhan "semua rapper masih kedengaran sama":
-//    sebelumnya SEMUA 14 persona dipaksa pakai voice id-ID PERTAMA
-//    yang ditemukan browser (voices.find(v=>v.lang==='id-ID')) —
-//    jadi walaupun rate/pitch/pauseMs berbeda, timbre/suara dasarnya
-//    IDENTIK untuk semua orang. Kalau device/browser cuma punya 1
-//    voice Indonesia (umum terjadi), ini memang batas keras platform
-//    Web Speech API — tapi begitu ada LEBIH dari 1 voice id- yang
-//    terpasang (banyak browser modern/OS punya beberapa), sekarang
-//    tiap persona akan konsisten mendapat voice YANG BERBEDA (dipilih
-//    deterministik dari nama agent, bukan random tiap kali), bukan
-//    cuma rate/pitch yang beda di atas voice yang sama.
-// ============================================================
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 function _hashString(str) {
     let h = 0;
     for (let i = 0; i < str.length; i++) {
@@ -458,8 +453,8 @@ function pickVoiceForAgent(agent, voices) {
     return pool[_hashString(agent) % pool.length];
 }
 
-// Avatar emoji + warna per archetype — dipakai UI Cypher Lounge biar
-// rapper "kelihatan" beda satu sama lain, bukan cuma teks.
+
+
 const AVATAR_MAP = {
     'RahmadRaharjo': { emoji: '👨', color1: '#00D4FF', color2: '#0072FF' },
     'Manager':        { emoji: '📋', color1: '#FF6B6B', color2: '#FF2D75' },
@@ -481,9 +476,9 @@ function getAvatar(agent) {
     return AVATAR_MAP[agent] || { emoji: '🎤', color1: '#888', color2: '#555' };
 }
 
-// 🔥 Roster lengkap untuk UI "Cypher Lounge" — semua rapper yang ada
-// digabung jadi satu daftar siap-pakai (nama, archetype, avatar,
-// catchphrase, lagu rekomendasi kalau RapSoundbank sudah load).
+
+
+
 function getAllPersonaCards() {
     return Object.keys(PERSONA_DB).map(function(key) {
         const p = PERSONA_DB[key];
@@ -505,9 +500,9 @@ function getAllPersonaCards() {
     });
 }
 
-// ============================================================
-// 3. EXPOSE
-// ============================================================
+
+
+
 
 export const RapCharacterEngine = {
     getPersona: getPersona,

@@ -1,14 +1,14 @@
 const Logger = window.Utils?.Logger || {
-    info: function () { /* silent */ },
-    warn: function () { /* silent */ },
+    info: function () {  },
+    warn: function () {  },
     error: function (mod, msg) { console.error('[ERROR] [' + mod + '] ' + msg); }
 };
 
-// ============================================================
-// TOKEN SPESIAL
-// ============================================================
-// ID token spesial DIJAMIN selalu 0-3, berapapun ukuran vocab-nya.
-// llm-vocabulary.js WAJIB mematuhi kontrak ini saat membangun tabel token.
+
+
+
+
+
 const SPECIAL_TOKENS = Object.freeze({
     PAD: '<pad>',
     UNK: '<unk>',
@@ -23,12 +23,12 @@ const SPECIAL_TOKEN_IDS = Object.freeze({
     EOS: 3
 });
 
-// ============================================================
-// PRESET ARSITEKTUR
-// ============================================================
-// "tiny" — preset default sepanjang Tahap 0-10 (sebelum training
-// nyata), cukup kecil supaya forward pass tetap cepat di JS murni
-// tanpa GPU/WebGPU.
+
+
+
+
+
+
 const TINY = Object.freeze({
     name: 'tiny',
     vocabSize: 8000,
@@ -41,8 +41,8 @@ const TINY = Object.freeze({
     initStd: 0.02
 });
 
-// "small" — target setelah pipeline tokenizer→vocabulary→training
-// terbukti benar di preset tiny.
+
+
 const SMALL = Object.freeze({
     name: 'small',
     vocabSize: 32000,
@@ -55,9 +55,9 @@ const SMALL = Object.freeze({
     initStd: 0.02
 });
 
-// "compact" — langkah antara tiny dan small (~7 juta parameter),
-// dipakai untuk menguji stabilitas & kualitas di perangkat sebelum
-// naik ke kelas 100M+ yang butuh GPU dan korpus jauh lebih besar.
+
+
+
 const COMPACT = Object.freeze({
     name: 'compact',
     vocabSize: 4000,
@@ -70,15 +70,15 @@ const COMPACT = Object.freeze({
     initStd: 0.02
 });
 
-// "medium" — ~31 juta parameter DENGAN weight tying + state Adam
-// Float32Array (scratchpad, recycling in-place). Titik ini TERVERIFIKASI
-// aman lewat pengujian nyata (training 15 kalimat, Adam, heap 1GB) —
-// BUKAN dihitung teoritis. Target awal 50 juta (dModel 512/768+, 14-16
-// layer) TERBUKTI OOM bahkan dengan optimasi ini — biang keroknya
-// alokasi array sementara selama backward pass (belum diimplementasi
-// ulang jadi scratchpad/buffer-reuse, itu pekerjaan lanjutan berisiko
-// lebih tinggi karena menyentuh kode gradient-checked). Lihat catatan
-// lengkap di kesempatan-llm.md.
+
+
+
+
+
+
+
+
+
 const MEDIUM = Object.freeze({
     name: 'medium',
     vocabSize: 16000,
@@ -91,17 +91,17 @@ const MEDIUM = Object.freeze({
     initStd: 0.02
 });
 
-// "large" — ~49,6 juta parameter, TEMUAN PRESISI Juli 2026: profiling
-// memori tahap-per-tahap menunjukkan backward() (BUKAN forward/Adam)
-// adalah konsumen memori dominan — menyimpan gradien 14 layer
-// sekaligus (perlu utk update simultan) lebih mahal daripada 8 layer
-// yang lebih lebar dengan jumlah parameter setara. dModel besar +
-// layer sedikit mendekati target 50 juta dengan margin memori lebih
-// baik daripada dModel kecil + layer banyak (preset "medium").
-// TERVERIFIKASI: training 15 kalimat (Adam) berhasil di heap 1536MB —
-// TAPI margin lebih tipis dari "medium" (yang aman bahkan di 512MB),
-// jadi TIDAK otomatis jadi default aktif, tersedia untuk dipilih
-// kalau device terbukti punya cukup headroom memori.
+
+
+
+
+
+
+
+
+
+
+
 const LARGE = Object.freeze({
     name: 'large',
     vocabSize: 16000,
@@ -116,12 +116,12 @@ const LARGE = Object.freeze({
 
 const PRESETS = Object.freeze({ tiny: TINY, compact: COMPACT, medium: MEDIUM, large: LARGE, small: SMALL });
 
-// ============================================================
-// SETTING RUNTIME (eksekusi — terpisah dari arsitektur model)
-// ============================================================
+
+
+
 const BACKENDS = Object.freeze({
-    CPU_JS: 'cpu-js',  // vanilla JS — satu-satunya yang tersedia sekarang
-    WEBGPU: 'webgpu'   // reserved untuk migrasi nanti
+    CPU_JS: 'cpu-js',  
+    WEBGPU: 'webgpu'   
 });
 
 const DEFAULT_RUNTIME = Object.freeze({
@@ -129,15 +129,15 @@ const DEFAULT_RUNTIME = Object.freeze({
     precision: 'f32',
     seed: 42,
     logLevel: 'warn',
-    maxNewTokens: 128,       // batas default token yang digenerate per panggilan
-    // Model ~50 juta parameter jauh lebih rentan berhalusinasi/mengulang
-    // kalimat dibanding model eksternal besar — suhu & nucleus dibatasi
-    // lebih ketat (0.3-0.5 / 0.85-0.9) sebagai default, plus repetition
-    // penalty supaya tidak terjebak loop kalimat yang sama.
+    maxNewTokens: 128,       
+    
+    
+    
+    
     temperature: 0.4,
     topP: 0.88,
     repetitionPenalty: 1.15,
-    greedy: false            // false = sampling suhu; true = selalu ambil token termungkin
+    greedy: false            
 });
 
 function createRuntimeConfig(overrides) {
@@ -146,12 +146,12 @@ function createRuntimeConfig(overrides) {
     return Object.freeze(merged);
 }
 
-// ============================================================
-// VALIDASI
-// ============================================================
-// Dijalankan sekali tiap createConfig() dipanggil — modul lain
-// (llm-attention.js, llm-embedding.js, dst) boleh asumsikan config yang
-// mereka terima selalu valid, tanpa validasi ulang.
+
+
+
+
+
+
 function validateConfig(config) {
     const errors = [];
 
@@ -197,9 +197,9 @@ function deepFreeze(obj) {
     return Object.freeze(obj);
 }
 
-// ============================================================
-// PUBLIC API
-// ============================================================
+
+
+
 function createConfig(options) {
     options = options || {};
     const presetName = options.preset || 'tiny';

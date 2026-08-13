@@ -21,7 +21,7 @@ function getDatabaseInstance() {
     return window.KESDatabase || window.getDatabaseV10 || null;
 }
 
-// 🔥 AMBIL DATA STATIS DARI WORLD.JS
+
 function fetchStaticData(topic) {
     const staticData = getStaticData();
     if (staticData.length === 0) return [];
@@ -48,7 +48,7 @@ function fetchStaticData(topic) {
     return results.slice(0, 5);
 }
 
-// 🔥 AMBIL DARI VECTOR MEMORY (dinamis)
+
 async function fetchFromVectorMemory(topic, topK) {
     const memory = getMemoryInstance();
     if (!memory || typeof memory.search !== 'function') return [];
@@ -61,14 +61,14 @@ async function fetchFromVectorMemory(topic, topK) {
     }
 }
 
-// 🔥 AMBIL DARI KES DATABASE
+
 async function fetchFromDatabase(topic, limit) {
     const db = getDatabaseInstance();
     if (!db) return [];
     
     try {
         let results = [];
-        // Coba berbagai method
+        
         if (db.queryParser && typeof db.queryParser.parseAndExecute === 'function') {
             const sql = "SELECT * FROM podcast_history WHERE topic LIKE '%" + topic + "%' ORDER BY timestamp DESC LIMIT " + (limit || 3);
             results = await db.queryParser.parseAndExecute(sql);
@@ -86,7 +86,7 @@ async function fetchFromDatabase(topic, limit) {
     }
 }
 
-// 🔥 SIMPAN KE SEMUA TEMPAT
+
 async function savePodcastToMemory(podcastData) {
     const { topic, script, score, voice, summary } = podcastData;
     const memory = getMemoryInstance();
@@ -101,7 +101,7 @@ async function savePodcastToMemory(podcastData) {
         type: 'podcast'
     };
 
-    // 🔥 SIMPAN KE VECTOR MEMORY
+    
     if (memory) {
         try {
             if (typeof memory.save === 'function') {
@@ -112,7 +112,7 @@ async function savePodcastToMemory(podcastData) {
         } catch (_) { console.warn('[Podcast] Non-fatal error:', _.message); }
     }
 
-    // 🔥 SIMPAN KE KES DATABASE
+    
     if (db) {
         try {
             const record = { ...metadata, script: script };
@@ -127,24 +127,24 @@ async function savePodcastToMemory(podcastData) {
     }
 }
 
-// ========== VOICE CACHE ==========
+
 let cachedVoice = null;
 let cachedLang = null;
 let cachedGender = null;
 
-// ============================================================
-// 🔧 FIX AKAR MASALAH: "suara pria masih kedengaran seperti wanita"
-// ============================================================
-// Sebelumnya getCachedVoice() cuma ambil voice PERTAMA yang cocok
-// bahasanya, tanpa peduli gender - jadi preset "Pria" dan "Wanita"
-// sama-sama pakai voice sistem yang SAMA (biasanya default Android
-// untuk id-ID cuma ada 1, dan seringkali bernada wanita), cuma
-// dibedakan lewat pitch-shift ringan yang gak cukup buat bikin
-// kedengaran benar-benar pria. Sekarang voice dicocokkan ke gender
-// dulu (lewat nama voice sistem) kalau perangkat punya lebih dari
-// satu opsi; kalau cuma ada 1 voice untuk bahasa itu (umum terjadi),
-// otomatis fallback dan pitch preset di config.js sudah diperlebar
-// rentangnya supaya tetap ada perbedaan yang terasa.
+
+
+
+
+
+
+
+
+
+
+
+
+
 const MALE_NAME_HINTS = /\b(male|pria|laki|man|pria|he-)\b/i;
 const FEMALE_NAME_HINTS = /\b(female|wanita|perempuan|woman|she-)\b/i;
 
@@ -152,17 +152,17 @@ function findVoiceByGender(voices, gender) {
     if (!voices || voices.length === 0) return null;
     const wantHints = gender === 'female' ? FEMALE_NAME_HINTS : MALE_NAME_HINTS;
     const avoidHints = gender === 'female' ? MALE_NAME_HINTS : FEMALE_NAME_HINTS;
-    // 1. Voice yang namanya eksplisit menyebut gender yang diinginkan
+    
     let match = voices.find(function(v) { return wantHints.test(v.name); });
     if (match) return match;
-    // 2. Kalau tidak ada nama eksplisit, minimal hindari voice yang
-    //    eksplisit menyebut gender LAWAN, ambil sisanya
+    
+    
     const filtered = voices.filter(function(v) { return !avoidHints.test(v.name); });
     return filtered.length > 0 ? filtered[0] : null;
 }
 
-// Peta gender untuk AGENT_VOICES yang tidak eksplisit menyatakan
-// gender di key-nya (varian diskusi _pria/_wanita sudah eksplisit).
+
+
 const AGENT_GENDER_MAP = {
     RahmadRaharjo: 'male', KakekSantai: 'male', CowokKalem: 'male', KakakMotivator: 'male',
     Manager: 'male', StartupFounder: 'male', SundanyaAsep: 'male', Analyst: 'male', Moderator: 'male',
@@ -194,14 +194,14 @@ function getCachedVoice(langCode, gender) {
     } catch (_) { return null; }
 }
 
-// ============================================================
-// 🔥 FIX: pilih voice TTS berbeda per pembicara (bukan 1 voice yang
-// sama dipakai semua orang) - supaya mode Diskusi/Debat kedengaran
-// seperti beberapa orang berbeda ngobrol, bukan 1 orang yang cuma
-// di-pitch-shift. Round-robin lewat semua voice yang tersedia untuk
-// bahasa itu; kalau browser cuma punya 1 voice untuk bahasa tsb
-// (umum terjadi utk id-ID di banyak browser), otomatis fallback ke
-// voice tunggal seperti sebelumnya (pitch/rate tetap jadi pembeda utama).
+
+
+
+
+
+
+
+
 let allVoicesCache = null;
 function getAllVoicesForLang(langCode) {
     if (!window.speechSynthesis) return [];
@@ -226,12 +226,12 @@ function isSpeechSupported() {
     return !!(window.speechSynthesis);
 }
 
-// 🆕 FIX: di banyak Android WebView, speechSynthesis.getVoices() balikin
-// array KOSONG di awal - daftar voice baru terisi async lewat event
-// 'voiceschanged' (kadang butuh >1 detik). Kalau Preview/Generate dipanggil
-// sebelum itu, voice matching (termasuk gender-matching) gagal diam-diam.
-// Helper ini nunggu voices beneran siap (dengan timeout supaya gak gantung
-// selamanya kalau browser gak pernah fire event itu).
+
+
+
+
+
+
 let voicesReadyPromise = null;
 function waitForVoices(timeoutMs) {
     if (!isSpeechSupported()) return Promise.resolve([]);
@@ -265,7 +265,7 @@ function preloadVoice() {
     } catch (_) { console.warn('[Podcast] Non-fatal error:', _.message); }
 }
 
-// ========== REAL MP3 EXPORTER ==========
+
 class RealMP3Exporter {
     constructor() {
         this.audioContext = null;
@@ -450,7 +450,7 @@ class RealMP3Exporter {
 
 const realMP3Exporter = new RealMP3Exporter();
 
-// ========== REAL LIVE STREAMER ==========
+
 class RealLiveStreamer {
     constructor() {
         this.isLive = false;
@@ -546,7 +546,7 @@ class RealLiveStreamer {
 
 const realLiveStreamer = new RealLiveStreamer();
 
-// ========== REAL COLLABORATIVE ==========
+
 class RealCollaborative {
     constructor() {
         this.channel = null;
@@ -601,7 +601,7 @@ class RealCollaborative {
 
 const realCollaborative = new RealCollaborative();
 
-// ========== ANALYTICS ==========
+
 function trackAnalytics(event, data) {
     state.analytics.totalPlays++;
     if (data.duration) state.analytics.totalDuration += data.duration;

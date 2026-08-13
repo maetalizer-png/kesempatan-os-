@@ -315,11 +315,11 @@ class KES3DViz {
         this.container.style.cursor = 'grab';
     }
 
-    // Tab di latar belakang = render loop tetap jalan penuh (requestAnimationFrame
-    // browser TIDAK otomatis berhenti untuk WebGL canvas seperti untuk elemen
-    // biasa) — GPU/CPU terus terpakai untuk sesuatu yang tidak terlihat sama
-    // sekali. Hentikan render loop saat tab disembunyikan, lanjutkan otomatis
-    // saat kembali terlihat.
+    
+    
+    
+    
+    
     setupVisibilityHandling() {
         this._onVisibilityChange = function() {
             if (document.hidden) {

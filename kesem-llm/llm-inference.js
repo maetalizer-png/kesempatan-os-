@@ -2,8 +2,8 @@ import { LLMEmbedding } from './llm-embedding.js';
 import { LLMDecoder } from './llm-decoder.js';
 
 const Logger = window.Utils?.Logger || {
-    info: function () { /* silent */ },
-    warn: function () { /* silent */ },
+    info: function () {  },
+    warn: function () {  },
     error: function (mod, msg) { console.error('[ERROR] [' + mod + '] ' + msg); }
 };
 
@@ -11,21 +11,21 @@ function requireDeps() {
     return { E: LLMEmbedding, D: LLMDecoder };
 }
 
-// ============================================================
-// BUAT BOBOT MODEL (embedding + decoder) — dipanggil SEKALI
-// saat model diinisialisasi (lihat llm-runtime.js), bukan tiap forward pass.
-// ============================================================
+
+
+
+
 function createModelWeights(config) {
     const { E, D } = requireDeps();
     const embeddingMatrix = E.createEmbeddingMatrix(config.vocabSize, config.dModel, config.initStd);
     const decoderWeights = D.createDecoderWeights(config);
 
-    // WEIGHT TYING: outputProjection = transpose(embeddingMatrix),
-    // bukan matriks acak terpisah — memangkas (vocabSize × dModel)
-    // parameter tanpa mengorbankan ekspresivitas (teknik standar,
-    // dipakai GPT-2 dkk). Disinkronkan ulang tiap langkah training
-    // di llm-trainer.js (lihat trainStep) supaya tetap terikat
-    // setelah bobotnya diperbarui.
+    
+    
+    
+    
+    
+    
     decoderWeights.outputProjection = E.transpose(embeddingMatrix);
 
     return {
@@ -34,13 +34,13 @@ function createModelWeights(config) {
     };
 }
 
-// ============================================================
-// FORWARD PASS
-// ============================================================
-// tokenIds: array int (SATU sequence, sudah dalam batas maxContextLength).
-// Mengembalikan logits: seqLen×vocabSize (skor mentah, BELUM softmax —
-// softmax/sampling jadi urusan llm-runtime.js supaya llm-inference.js murni
-// matematika model, tidak ikut campur strategi pemilihan token).
+
+
+
+
+
+
+
 function forward(tokenIds, model, config) {
     const { E, D } = requireDeps();
 
@@ -59,12 +59,12 @@ function forward(tokenIds, model, config) {
     return D.projectToLogits(hidden, model.decoderWeights);
 }
 
-// Versi ber-cache dari forward() — newTokenIds cuma token BARU (1
-// token tiap langkah generate, atau seluruh prompt di panggilan
-// pertama). positionOffset = berapa token yang SUDAH ada di cache
-// (0 di panggilan pertama) — penting supaya positional encoding
-// token baru benar (posisi absolut, bukan mulai dari 0 lagi tiap
-// panggilan). layerCaches null di panggilan pertama.
+
+
+
+
+
+
 function forwardCached(newTokenIds, model, config, layerCaches, positionOffset) {
     const { E, D } = requireDeps();
 
@@ -77,9 +77,9 @@ function forwardCached(newTokenIds, model, config, layerCaches, positionOffset) 
     }
 
     const tokenEmbeddings = E.lookupEmbeddings(model.embeddingMatrix, newTokenIds);
-    // getPositionalEncoding sudah pakai pool (lihat llm-embedding.js) —
-    // ambil sampai totalLen lalu iris baris posisi absolut yang
-    // relevan (positionOffset..totalLen-1), bukan mulai dari 0 lagi.
+    
+    
+    
     const fullPosEnc = E.getPositionalEncoding(totalLen, config.dModel);
     const posEncForNew = fullPosEnc.slice(positionOffset, totalLen);
     const x = E.addPositionalEncoding(tokenEmbeddings, posEncForNew);
@@ -89,8 +89,8 @@ function forwardCached(newTokenIds, model, config, layerCaches, positionOffset) 
     return { logits: logits, layerCaches: result.layerCaches };
 }
 
-// Ambil logits token BERIKUTNYA saja (baris terakhir) — inilah yang
-// dipakai llm-runtime.js tiap langkah generation loop.
+
+
 function getNextTokenLogits(tokenIds, model, config) {
     const logits = forward(tokenIds, model, config);
     return logits[logits.length - 1];

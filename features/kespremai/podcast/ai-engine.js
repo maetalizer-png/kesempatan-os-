@@ -49,14 +49,14 @@ class VoiceCloningEngine {
 
 const voiceEngine = new VoiceCloningEngine();
 
-// ========== AI INTERNAL ENGINE ==========
-// ============================================================
-// 🌍 LANG_STRINGS — kamus konten multi-bahasa untuk generateText()
-// Cakupan penuh: id (default), en, de. Bahasa lain di dropdown
-// fallback ke id (lihat catatan di generateText). Struktur ini
-// sengaja dibuat data-driven supaya gampang nambah bahasa baru -
-// tinggal tambah 1 blok objek baru dengan key bahasa yang sesuai.
-// ============================================================
+
+
+
+
+
+
+
+
 const LANG_STRINGS = {
     id: {
         noTopicLabel: 'peluang bisnis',
@@ -245,7 +245,7 @@ class AIInternal {
             'pelanggan', 'pasar', 'kompetitor', 'risiko', 'keuntungan',
             'analisis', 'data', 'tren', 'pertumbuhan', 'skalabilitas',
             'efisiensi', 'otomatisasi', 'teknologi', 'kreatif', 'solusi',
-            // 🔥 TAMBAHAN
+            
             'ekosistem', 'sinergi', 'disrupsi', 'agilitas', 'resiliensi',
             'kapitalisasi', 'monetisasi', 'akuisisi', 'ekspansi', 'diversifikasi',
             'optimasi', 'kolaborasi', 'transformasi', 'adaptasi', 'visibilitas',
@@ -264,23 +264,23 @@ class AIInternal {
         };
     }
 
-    // ============================================================
-    // 🌍 SISTEM MULTI-BAHASA — LANG_STRINGS
-    // ============================================================
-    // FIX AKAR MASALAH: sebelumnya dropdown Bahasa cuma mengubah kode
-    // TTS (aksen suara) - naskah yang DIBACAKAN tetap Bahasa Indonesia
-    // apapun bahasanya, jadi kalau pilih Jerman, hasilnya teks
-    // Indonesia dibaca dengan pengucapan Jerman yang aneh/salah.
-    // Sekarang konten naskah BENERAN ikut bahasa yang dipilih untuk
-    // Indonesia/English/Deutsch (cakupan penuh). Untuk 15 bahasa
-    // lainnya di dropdown, sistem transparan: fallback ke Bahasa
-    // Indonesia + toast pemberitahuan (bukan pura-pura sudah lengkap),
-    // sambil struktur LANG_STRINGS ini didesain gampang diperluas.
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     generateText(prompt, maxTokens, temperature, lang) {
         maxTokens = maxTokens || 400;
-        // 🔥 Default temperature dinaikkan 0.5 -> 0.7 (menyamai Debate)
-        // atas permintaan user — respons jadi lebih variatif/mendalam
-        // untuk pemanggil mana pun yang tidak set temperature sendiri.
+        
+        
+        
         temperature = temperature || 0.7;
         const L = LANG_STRINGS[lang] || LANG_STRINGS.id;
 
@@ -364,12 +364,12 @@ class AIInternal {
             return text;
         }
 
-        // ========== FALLBACK (TANPA SUBSCRIBE TEXT) ==========
-        // FIX: sebelumnya topik asli dari input mandiri user TIDAK PERNAH dipakai
-        // di sini - hanya vocabulary acak yang dipilih, sehingga naskah podcast
-        // independen (topik manual) selalu berisi buzzword acak dan tidak pernah
-        // menyebut topik yang benar-benar diketik user. Sekarang ambil topik asli
-        // dari prompt (pola sama seperti di cabang hasData) dan prioritaskan itu.
+        
+        
+        
+        
+        
+        
         const topicMatch = prompt.match(/tentang\s*"([^"]+)"/);
         const actualTopic = topicMatch ? topicMatch[1] : null;
 
@@ -389,8 +389,8 @@ class AIInternal {
         const numSentences = 6 + Math.floor(Math.random() * 4);
         for (let i = 0; i < numSentences; i++) {
             const template = sentenceTemplates[i % sentenceTemplates.length];
-            // FIX: topik asli diprioritaskan di sebagian besar kalimat; vocabulary
-            // cuma dipakai sesekali sebagai variasi tambahan, bukan pengganti topik.
+            
+            
             let topic;
             if (actualTopic && (i % 3 !== 2)) {
                 topic = actualTopic;
@@ -407,11 +407,11 @@ class AIInternal {
             const recIndex = Math.floor(Math.random() * recommendations.length);
             result.push(recommendations[recIndex]);
         }
-        // 🔥 SUBSCRIBE TEXT DIHAPUS DARI SINI (hanya di ui-generator)
+        
         return result.join(' ');
     }
 
-    // ===== FUNGSI-FUNGSI LAINNYA (tetap sama) =====
+    
 
     rememberContext(context) {
         this.conversationHistory.push({

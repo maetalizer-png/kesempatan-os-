@@ -4,8 +4,8 @@ import { LLMVocabulary } from './llm-vocabulary.js';
 import { LLMInference } from './llm-inference.js';
 
 const Logger = window.Utils?.Logger || {
-    info: function () { /* silent */ },
-    warn: function () { /* silent */ },
+    info: function () {  },
+    warn: function () {  },
     error: function (mod, msg) { console.error('[ERROR] [' + mod + '] ' + msg); }
 };
 function requireDeps() {
@@ -16,9 +16,9 @@ function requireDeps() {
         Inference: LLMInference
     };
 }
-// ============================================================
-// BUAT MODEL
-// ============================================================
+
+
+
 async function createModel(options) {
     const { Config, Tokenizer, Vocabulary, Inference } = requireDeps();
     options = options || {};
@@ -43,9 +43,9 @@ async function createModel(options) {
         decoderWeights: weights.decoderWeights
     };
 }
-// ============================================================
-// SAMPLING DASAR
-// ============================================================
+
+
+
 function argmax(row) {
     let bestIdx = 0;
     let bestVal = -Infinity;
@@ -68,15 +68,15 @@ function sampleWeighted(probabilities) {
     }
     return probabilities.length - 1;
 }
-// Q1 (Juli 2026, DIPERBAIKI setelah verifikasi empiris menunjukkan mask
-// awal tidak cukup): mask SEMUA id yang TIDAK punya token nyata di
-// vocab.idToToken — bukan cuma unkId literal. decode() (llm-vocabulary.js)
-// mengembalikan string "<unk>" utk id APAPUN yang tidak ada di map, dan
-// BPE sering menghasilkan vocabulary AKTUAL lebih kecil dari vocabSize
-// yang dikonfigurasi (banyak id di ujung atas TIDAK PERNAH dipetakan ke
-// token nyata) — model bisa memilih id "kosong" itu, semuanya decode
-// jadi <unk> walau bukan unkId resmi. Daftar id valid dihitung SEKALI
-// per model (cache di closure, bukan per-token) demi performa.
+
+
+
+
+
+
+
+
+
 const validIdCache = new WeakMap();
 function getInvalidIdMask(vocab, vocabSize) {
     let cached = validIdCache.get(vocab);
@@ -93,8 +93,8 @@ function maskSpecialTokens(logits, vocab) {
     if (typeof vocab.unkId === 'number') masked[vocab.unkId] = -Infinity;
     if (typeof vocab.padId === 'number') masked[vocab.padId] = -Infinity;
     if (typeof vocab.bosId === 'number') masked[vocab.bosId] = -Infinity;
-    // Blokir SEMUA id tanpa token nyata (akar masalah sebenarnya —
-    // lihat catatan di atas), bukan cuma id spesial yang bernama.
+    
+    
     const invalidIds = getInvalidIdMask(vocab, logits.length);
     for (let i = 0; i < invalidIds.length; i++) {
         masked[invalidIds[i]] = -Infinity;
@@ -104,8 +104,8 @@ function maskSpecialTokens(logits, vocab) {
 function sampleNextToken(logits, temperature, greedy, samplingOptions) {
     samplingOptions = samplingOptions || {};
     if (greedy) {
-        // Repetition penalty tetap berlaku di mode greedy juga — tanpa itu
-        // greedy decoding gampang terjebak loop "kata yang sama berulang".
+        
+        
         if (window.LLMSampler) {
             let penalized = window.LLMSampler.applyRepetitionPenalty(logits, samplingOptions.recentTokenIds, samplingOptions.repetitionPenalty);
             if (samplingOptions.jsonGrammarState && samplingOptions.vocab) {
@@ -139,9 +139,9 @@ function softmaxFallback(row) {
     const sum = exps.reduce(function (a, b) { return a + b; }, 0);
     return exps.map(function (e) { return e / sum; });
 }
-// ============================================================
-// STOP SIGNAL — baca dari options.stopSignal (objek atau fungsi)
-// ============================================================
+
+
+
 function isStopped(options) {
     if (!options) {
         return false;
@@ -158,15 +158,15 @@ function isStopped(options) {
     }
     return false;
 }
-// ============================================================
-// GENERATE — loop token demi token (ASYNC, tidak membekukan UI)
-// ============================================================
-// options: { maxNewTokens, temperature, greedy, yieldEvery, stopSignal }
-// yieldEvery: lepas kendali ke browser tiap sekian token (default 1 =
-//   tiap token, paling responsif). Satu forward pass tetap sinkron,
-//   tapi jeda antar-token membuat layar bisa scroll & klik diproses.
-// stopSignal: objek {stopped:true} atau fungsi ()=>boolean; kalau true
-//   di awal suatu langkah, loop berhenti (stoppedBySignal=true).
+
+
+
+
+
+
+
+
+
 async function generate(model, promptText, options) {
     const { Tokenizer, Vocabulary, Inference } = requireDeps();
     options = options || {};
@@ -219,12 +219,12 @@ async function generate(model, promptText, options) {
         stoppedBySignal: stoppedBySignal
     };
 }
-// Versi KV-CACHE dari generate() — panggilan PERTAMA proses seluruh
-// prompt sekali (bangun cache awal), langkah SELANJUTNYA cuma proses 1
-// token baru lewat forwardCached() (bukan mengulang seluruh sequence
-// yang terus tumbuh tiap langkah seperti generate() lama). Solusi O(n)
-// menggantikan O(n²) — inilah akar lambatnya generate() sebelumnya.
-// generate() lama TIDAK diubah/dihapus, tetap tersedia sbg referensi.
+
+
+
+
+
+
 async function generateCached(model, promptText, options) {
     const { Tokenizer, Vocabulary, Inference } = requireDeps();
     options = options || {};
@@ -234,46 +234,46 @@ async function generateCached(model, promptText, options) {
     const topP = typeof options.topP === 'number' ? options.topP : model.config.runtime.topP;
     const repetitionPenalty = typeof options.repetitionPenalty === 'number' ? options.repetitionPenalty : model.config.runtime.repetitionPenalty;
     const yieldEvery = Number.isInteger(options.yieldEvery) && options.yieldEvery > 0 ? options.yieldEvery : 1;
-    // Opt-in only (Fase 0 roadmap: constrained JSON output) — default
-    // behavior for every existing caller is completely unchanged unless
-    // they explicitly pass constrainJSON:true. window.LLMJSONGrammar comes
-    // from llm-json-grammar.js (imported transitively via llm-sampler.js).
+    
+    
+    
+    
     const constrainJSON = options.constrainJSON === true && !!window.LLMJSONGrammar;
     let jsonGrammarState = constrainJSON ? window.LLMJSONGrammar.createState() : null;
-    // Tracks whether detokenize() would insert a space before the NEXT
-    // token's text (true right after a token that completed a "word") —
-    // needed because JSON literals/numbers can't tolerate an inserted
-    // space, unlike string content (see llm-sampler.js's impliedText()).
+    
+    
+    
+    
     let jsonWordBoundaryPending = false;
     const pieces = Tokenizer.tokenize(promptText, model.merges);
     const promptIds = Vocabulary.encode(pieces, model.vocab);
     let ids = [model.vocab.bosId].concat(promptIds);
-    // FIX ROOT CAUSE SEBENARNYA (Juli 2026, ditemukan dari laporan
-    // pengguna nyata): panggilan PERTAMA forwardCached() (di bawah)
-    // memproses SELURUH prompt tanpa cache (belum ada apa pun utk
-    // di-cache) — biayanya O(promptLen²), TIDAK terbantu KV-cache
-    // sama sekali (cache cuma membantu token SETELAH prompt). Prompt
-    // agen ASLI (~422 token, bukan prompt pendek uji coba sebelumnya)
-    // bikin langkah ini sendiri makan puluhan detik di SKALA MANAPUN
-    // (diukur: 24,6 detik di preset medium, 37 detik di large) —
-    // inilah akar lambat sebenarnya, BUKAN soal ukuran model semata.
-    // Dibatasi khusus jalur lokal, simpan bagian AKHIR prompt (biasanya
-    // berisi topik/instruksi spesifik, bukan cuma system prompt umum).
-    // FIX (Juli 2026, rekomendasi eksternal yang tepat): truncation
-    // SEBELUMNYA cuma simpan bagian AKHIR prompt — tapi identitas agen
-    // ("Anda adalah RahmadRaharjo, agen analisis...") ada di system
-    // prompt di AWAL (lihat buildPrompt() di workflow.js), bukan di
-    // akhir. Simpan-akhir-saja membuang identitas agen, kemungkinan
-    // penyebab jawaban terasa generik/kurang sesuai karakter masing2
-    // agen. MIDDLE TRUNCATION: simpan AWAL (identitas+instruksi inti)
-    // DAN AKHIR (topik+format output yang diminta), buang bagian TENGAH
-    // (biasanya few-shot examples — panjang tapi kurang kritis
-    // dibanding identitas & instruksi output).
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     const LOCAL_MAX_PROMPT_TOKENS = 150;
     if (ids.length > LOCAL_MAX_PROMPT_TOKENS) {
-        const headLen = Math.floor(LOCAL_MAX_PROMPT_TOKENS * 0.4); // ~40% utk identitas/awal
-        const tailLen = LOCAL_MAX_PROMPT_TOKENS - headLen - 1; // sisanya utk topik/akhir (−1 utk BOS)
-        const head = ids.slice(1, 1 + headLen); // lewati BOS lama, diambil lagi di bawah
+        const headLen = Math.floor(LOCAL_MAX_PROMPT_TOKENS * 0.4); 
+        const tailLen = LOCAL_MAX_PROMPT_TOKENS - headLen - 1; 
+        const head = ids.slice(1, 1 + headLen); 
         const tail = ids.slice(ids.length - tailLen);
         ids = [model.vocab.bosId].concat(head, tail);
     }
@@ -281,7 +281,7 @@ async function generateCached(model, promptText, options) {
         ids = ids.slice(ids.length - model.config.model.maxContextLength + 1);
     }
 
-    // Panggilan PERTAMA: proses SELURUH prompt sekali, bangun cache awal.
+    
     let result = Inference.forwardCached(ids, model, model.config.model, null, 0);
     let layerCaches = result.layerCaches;
     let positionOffset = ids.length;
@@ -321,11 +321,11 @@ async function generateCached(model, promptText, options) {
             await new Promise(function (resolve) { setTimeout(resolve, 0); });
         }
         if (step + 1 >= maxNewTokens) {
-            break; // token terakhir sudah di-sample, tidak perlu forward lagi
+            break; 
         }
-        // Langkah SELANJUTNYA: cuma proses token BARU yang baru di-sample
-        // (1 token), pakai & perbarui cache — BUKAN mengulang seluruh
-        // sequence dari awal.
+        
+        
+        
         result = Inference.forwardCached([nextId], model, model.config.model, layerCaches, positionOffset);
         layerCaches = result.layerCaches;
         positionOffset += 1;

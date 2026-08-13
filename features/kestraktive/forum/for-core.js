@@ -1,9 +1,4 @@
-/* ============================================================
-   interactive/forum/for-core.js
-   INTI FORUM — tanya semua agen, mode switcher 5 panel, upgrade
-   UI lintas panel, preferensi, notifikasi, render panel, init,
-   ekspor window.ChatModule. Dimuat PALING TERAKHIR.
-   ============================================================ */
+
 import { FOR_CONFIG } from './for-config.js';
 import { FOR_State } from './for-state.js';
 import {
@@ -37,7 +32,7 @@ window.askAllAgents = async function(question) {
             return;
         }
         
-        // AMBIL DATA DARI 3 SUMBER (SAMA KAYAK CHAT AI!)
+        
         const context = await FOR_getAllContext(question, {
             forceRefresh: false,
             topK: FOR_CONFIG.TOP_K_MEMORY,
@@ -68,20 +63,20 @@ window.askAllAgents = async function(question) {
                 const cfg = window.getAgentConfig ? window.getAgentConfig(agent) : null;
                 const role = cfg?.role || 'ahli';
                 
-                // BUILD PROMPT DENGAN DATA DARI 3 SUMBER (SAMA KAYAK CHAT AI!)
+                
                 const prompt = FOR_buildForumPrompt(agent, role, question, context);
                 
-                // PAKAI CALL AI LANGSUNG (SAMA KAYAK CHAT AI!)
+                
                 const response = await FOR_callAI(prompt, apiKey);
                 
-                // CLEAN RESPONSE
+                
                 let answer = response;
                 if (window.safeParseResponse) {
                     const parsed = window.safeParseResponse(response);
                     answer = parsed.summary || parsed.recommendation || response;
                 }
                 
-                // BATASI PANJANG JAWABAN
+                
                 answer = answer.substring(0, 600);
                 
                 FOR_addForumMessage(displayName, answer, false);
@@ -131,10 +126,10 @@ function FOR_initChatModeButtons() {
         const finalAgent = document.getElementById('modeChatAgentBtn');
         const finalForum = document.getElementById('modeForumBtn');
 
-        // Debat & Turnamen dulu di-switch dari main.js (initInteractivePageButtons,
-        // sudah dihapus — lihat KESEMPATAN_OS_REORG_NOTES.md). Sekarang jadi
-        // satu-satunya sumber switching untuk seluruh 5 panel Fitur Interaktif,
-        // supaya main.js tidak perlu tahu apa-apa soal halaman ini lagi.
+        
+        
+        
+        
         let finalDebate = debateBtn;
         let finalTournament = tournamentBtn;
         if (debateBtn) {
@@ -278,9 +273,9 @@ function FOR_upgradeChatUI() {
                 container.insertAdjacentHTML('afterbegin', headerHTML);
             }
 
-            // Sambungkan tombol header ke fungsi asli (dulu dipanggil lewat
-            // onclick="FOR_toggleTheme()" dkk — nama global yang tidak pernah ada,
-            // jadi tombol-tombol ini tidak pernah berfungsi).
+            
+            
+            
             const cm = window.ChatModule || {};
             const themeBtn = document.getElementById('themeToggleBtn');
             if (themeBtn && cm.toggleTheme) {
@@ -342,10 +337,10 @@ function FOR_upgradeChatUI() {
             const msg = panel.querySelector('#' + p.msgId);
             if (msg && !msg.classList.contains('chat-messages-premium')) {
                 msg.classList.add('chat-messages-premium');
-                // FIX: kalau panel SUDAH punya pesan hidup (user sempat
-                // kirim pesan sebelum setTimeout ini sempat jalan), JANGAN
-                // pulihkan riwayat lagi — riwayat itu sudah mengandung pesan
-                // yang sama, dan menampilkannya lagi bikin dobel persis.
+                
+                
+                
+                
                 const alreadyHasLiveMessages = msg.querySelector('.message-wrapper') !== null;
                 if (!alreadyHasLiveMessages) {
                     const history = FOR_loadChatHistory(p.msgId);

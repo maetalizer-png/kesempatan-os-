@@ -1,13 +1,4 @@
-/* ============================================================
-   ai-agent/orchestrator.js
-   Walks ONE plan (produced by planner.js) and executes it via
-   execution-engine.js, honoring the AUTO/SEQUENTIAL/PARALLEL/HITL
-   execution modes from spec section 14. Gates risky steps (spec
-   section 17) behind approval-manager.js before running them.
-   Does not decide REPLANNING vs COMPLETE itself — that decision
-   belongs to agent-runtime.js, which owns the full lifecycle and
-   calls back into planner.js if this plan's evaluation says REPLAN.
-   ============================================================ */
+
 
 import { TaskManager } from './task-manager.js';
 import { ExecutionEngine } from './execution-engine.js';
@@ -35,8 +26,8 @@ async function runStepsSequentially(plan, task) {
 }
 
 async function runStepsInParallel(plan, task) {
-    // Risky steps still go through sequential approval-gating first; the
-    // rest run concurrently.
+    
+    
     const risky = plan.filter(function(step) { return ApprovalManager.isRiskyAction(step.name); });
     const safe = plan.filter(function(step) { return !ApprovalManager.isRiskyAction(step.name); });
     const riskyResults = await runStepsSequentially(risky, task);

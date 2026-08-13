@@ -1,7 +1,7 @@
-// Static imports (in dependency order) replace the old runtime
-// document.createElement('script') loader: the ES module graph itself now
-// guarantees rap-config.js -> rap-helpers.js -> ... -> rap-main.js finish
-// evaluating, in this order, before any code below runs.
+
+
+
+
 import './rap-config.js';
 import './rap-helpers.js';
 import './rap-character.js';
@@ -23,28 +23,28 @@ import './rap-main.js';
     const KESEMPATAN = window.KESEMPATAN || {};
     window.KESEMPATAN = KESEMPATAN;
 
-    // rap-main.js already ran its own init() by this point (synchronously
-    // on DOMContentLoaded or immediately if the document was already
-    // complete) — this module still waits for VectorMemory readiness
-    // (a genuinely async condition, not a load-order issue static imports
-    // can solve) before re-invoking init() so memory-dependent battle
-    // context is available once VectorMemory finishes initializing.
+    
+    
+    
+    
+    
+    
     const waitForMemory = function() {
         return new Promise(function(resolve) {
-            // 1. CEK LANGSUNG
+            
             if (window.VectorMemory || window.VectorMemoryV5) {
                 resolve();
                 return;
             }
 
-            // 2. CEK DARI _memoryClass (CORE)
+            
             if (window._memoryClass) {
                 setTimeout(function() {
                     if (window.VectorMemory || window.VectorMemoryV5) {
                         resolve();
                         return;
                     }
-                    // Fallback: buat instance manual
+                    
                     try {
                         const Core = window._memoryClass;
                         const instance = new Core();
@@ -59,7 +59,7 @@ import './rap-main.js';
                 return;
             }
 
-            // 3. TUNGGU DENGAN INTERVAL (10 DETIK)
+            
             let attempts = 0;
             const maxAttempts = 100;
             const checkInterval = setInterval(function() {

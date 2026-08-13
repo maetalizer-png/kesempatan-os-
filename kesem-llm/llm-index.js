@@ -24,8 +24,8 @@ import { LLMApi } from './llm-api.js';
 import { LLMCore } from './llm-core.js';
 
 const Logger = window.Utils?.Logger || {
-    info: function () { /* silent */ },
-    warn: function () { /* silent */ },
+    info: function () {  },
+    warn: function () {  },
     error: function (mod, msg) { console.error('[ERROR] [' + mod + '] ' + msg); }
 };
 
@@ -55,8 +55,8 @@ export const KesempatanLLM = {
     api: LLMApi,
     core: LLMCore,
 
-    // Jalan pintas paling sering dipakai konsumen luar (workflow.js) —
-    // langsung ke LLMCore/LLMApi tanpa perlu tahu strukturnya di dalam.
+    
+    
     initialize: LLMCore.initialize,
     isReady: LLMApi.isReady,
     generate: LLMApi.generate

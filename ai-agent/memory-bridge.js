@@ -1,9 +1,4 @@
-/* ============================================================
-   ai-agent/memory-bridge.js
-   Thin adapter over the existing VectorMemory (memory/m-index.js).
-   Not a second memory system — reads/writes the same store every
-   other module in the app already uses.
-   ============================================================ */
+
 
 const KESEMPATAN = window.KESEMPATAN || {};
 window.KESEMPATAN = KESEMPATAN;

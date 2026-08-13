@@ -1,13 +1,9 @@
-/* ============================================================
-   interactive/forum/for-ui-render.js
-   TAMPILAN FORUM — suara, riwayat, tema, emoji, reaksi, streaming,
-   render pesan forum.
-   ============================================================ */
+
 import { FOR_CONFIG } from './for-config.js';
 import { FOR_State } from './for-state.js';
 import { FOR_getAgentAvatar } from './for-data-engine.js';
 
-// ---------- SUARA (STT) ----------
+
 export function FOR_startVoiceInput(inputId) {
         if (!('webkitSpeechRecognition' in window || 'SpeechRecognition' in window)) {
             return;
@@ -67,14 +63,14 @@ export function FOR_startVoiceInput(inputId) {
         FOR_State.recognition.start();
     }
 
-// ---------- HISTORY (localStorage) ----------
+
 export function FOR_saveChatHistory(panelId, messages) {
         try {
             const history = JSON.parse(localStorage.getItem(FOR_CONFIG.STORAGE_KEY) || '{}');
             history[panelId] = messages.slice(-FOR_CONFIG.MAX_HISTORY);
             localStorage.setItem(FOR_CONFIG.STORAGE_KEY, JSON.stringify(history));
         } catch (_) {
-            // Silent fail
+            
         }
     }
 
@@ -93,7 +89,7 @@ export function FOR_clearChatHistory(panelId) {
             delete history[panelId];
             localStorage.setItem(FOR_CONFIG.STORAGE_KEY, JSON.stringify(history));
         } catch (_) {
-            // Silent fail
+            
         }
     }
 
@@ -103,7 +99,7 @@ export function FOR_saveMessageToHistory(panelId, sender, message, isUser) {
         FOR_saveChatHistory(panelId, history);
     }
 
-// ---------- EMOJI, TYPING SOUND, TEMA ----------
+
 export function FOR_toggleEmojiPicker(inputId) {
         const existingPicker = document.getElementById('emojiPickerContainer');
         if (existingPicker) {
@@ -153,7 +149,7 @@ export function FOR_initTypingSound() {
         try {
             FOR_State.typingSoundContext = new (window.AudioContext || window.webkitAudioContext)();
         } catch (_) {
-            // Silent fail
+            
         }
     }
 
@@ -172,7 +168,7 @@ export function FOR_playTypingSound() {
             oscillator.start();
             oscillator.stop(FOR_State.typingSoundContext.currentTime + 0.05);
         } catch (_) {
-            // Silent fail
+            
         }
     }
 
@@ -227,7 +223,7 @@ export function FOR_loadTheme() {
         FOR_updateThemeUI();
     }
 
-// ---------- UTIL TAMPILAN ----------
+
 export function FOR_renderMarkdown(text) {
         let html = FOR_escapeHtml(text);
         html = html.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
@@ -262,7 +258,7 @@ export function FOR_getApiKey() {
         return null;
     }
 
-// ---------- REAKSI & EDIT PESAN ----------
+
 export function FOR_addReaction(messageWrapper, emoji) {
         const existing = messageWrapper.querySelector('.reaction-bar');
         if (existing) {
@@ -404,7 +400,7 @@ export function FOR_deleteMessage(messageWrapper) {
         messageWrapper.remove();
     }
 
-// ---------- RENDER PESAN & STREAMING ----------
+
 export function FOR_addStreamingMessage(container, sender) {
         const time = FOR_getTimestamp();
         const wrapper = document.createElement('div');

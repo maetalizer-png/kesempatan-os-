@@ -1,7 +1,7 @@
 const data = [
-    // ==========================================================
-    // 🇺🇸 AMERIKA SERIKAT
-    // ==========================================================
+    
+    
+    
     {
         text: 'Amerika Serikat - Negara adidaya di Amerika Utara dengan ekonomi dan militer terbesar dunia. Ibu kota: Washington D.C. Populasi: 334 juta jiwa. Mata uang: Dolar AS (USD). Bahasa: Inggris. Sistem pemerintahan: Republik Federal Konstitusional. Anggota G7, G20, NATO, dan PBB. Pusat teknologi, hiburan, dan keuangan global. Rumah bagi Silicon Valley, Hollywood, dan Wall Street. Negara dengan pengaruh global terbesar di dunia.',
         metadata: {
@@ -141,9 +141,9 @@ const data = [
             tags: ['negara', 'american-utara', 'adidaya', 'teknologi', 'g7']
         }
     },
-    // ==========================================================
-    // 🇨🇦 KANADA
-    // ==========================================================
+    
+    
+    
     {
         text: 'Kanada - Negara di Amerika Utara dengan alam dan sumber daya melimpah. Ibu kota: Ottawa. Populasi: 39 juta jiwa. Mata uang: Dolar Kanada (CAD). Bahasa: Inggris, Prancis. Sistem pemerintahan: Monarki Konstitusional Federal Parlementer. Anggota G7, G20, NATO, dan Commonwealth. Pemimpin global dalam energi terbarukan dan AI. Rumah bagi Niagara Falls, Rocky Mountains, dan budaya multikultural.',
         metadata: {
@@ -283,9 +283,9 @@ const data = [
             tags: ['negara', 'american-utara', 'g7', 'nato', 'ai']
         }
     },
-    // ==========================================================
-    // 🇲🇽 MEKSIKO
-    // ==========================================================
+    
+    
+    
     {
         text: 'Meksiko - Negara di Amerika Utara dengan ekonomi dan budaya kaya. Ibu kota: Mexico City. Populasi: 130 juta jiwa. Mata uang: Peso (MXN). Bahasa: Spanyol. Sistem pemerintahan: Republik Federal Presidensial. Anggota G20, USMCA, dan OECD. Pusat manufaktur dan ekspor utama. Rumah bagi peradaban Maya dan Aztec, serta masakan Meksiko yang mendunia.',
         metadata: {
@@ -429,9 +429,9 @@ const data = [
 
 export const DATA = data;
 
-// ============================================================
-// LOGGER
-// ============================================================
+
+
+
 if (window.InternalLogger) {
     window.InternalLogger.info('CountryAmericanUtara', '✅ Loaded ' + data.length + ' countries (SUPER LENGKAP - 3 NEGARA!)');
 }

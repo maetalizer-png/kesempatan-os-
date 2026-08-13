@@ -16,18 +16,18 @@ const updateGallery = renderer.updateGallery;
 const renderBookmarks = renderer.renderBookmarks;
 const addSafeEventListener = renderer.addSafeEventListener;
 
-// ============================================================
-// 🆕 MESIN RITME & INTONASI (upgrade kualitas suara)
-// ============================================================
-// Web Speech API cuma terima 1 pitch/rate statis per utterance, jadi
-// kalau 1 baris panjang dibacakan sekaligus, hasilnya flat & terburu-buru
-// (gak ada "napas"). Di sini teks dipecah per kalimat, tiap kalimat dapat:
-//  - jeda antar-kalimat natural (lebih panjang di tanda tanya/seru, dan
-//    diskalakan oleh pauseFactor persona - Skeptic mikir lebih lama,
-//    Host lebih cepat menyambung)
-//  - wobble pitch mikro acak (pitchVariance) supaya gak terdengar robotic
-//  - infleksi otomatis: naik dikit di kalimat tanya, sedikit lebih
-//    energik di kalimat seru, sedikit melambat di kalimat panjang
+
+
+
+
+
+
+
+
+
+
+
+
 const INTERJECTION_RE = /^(Wah|Hmm+|Eh|Iya nih|Lho|Oke|Nah|Waduh)[,!]?\s*/i;
 
 function splitIntoSentences(text) {
@@ -46,7 +46,7 @@ function speakExpressive(fullText, voiceParams, langCode, rateMultiplier, callba
     const pitchVariance = voiceParams.pitchVariance || 0;
     let i = 0;
     let cancelled = false;
-    let searchFrom = 0; // 🆕 posisi pencarian kalimat di dalam fullText, untuk karaoke caption
+    let searchFrom = 0; 
 
     function speakNext() {
         if (cancelled) return;
@@ -79,10 +79,10 @@ function speakExpressive(fullText, voiceParams, langCode, rateMultiplier, callba
 
         if (i === 0 && callbacks.onStart) callbacks.onStart(fullText);
 
-        // 🆕 KARAOKE CAPTION — highlight kata yang sedang diucapkan.
-        // Dukungan `onboundary` (word/sentence boundary) bervariasi per
-        // browser/TTS engine; kalau tidak didukung, caption tetap
-        // tampil statis seperti sebelumnya (degradasi aman, tidak error).
+        
+        
+        
+        
         utter.onboundary = function(e) {
             if (renderer.highlightSpokenWord && sentenceStart >= 0 && (e.name === 'word' || !e.name)) {
                 renderer.highlightSpokenWord(sentenceStart + e.charIndex, e.charLength || 1);
@@ -101,21 +101,21 @@ function speakExpressive(fullText, voiceParams, langCode, rateMultiplier, callba
     return { cancel: function() { cancelled = true; } };
 }
 
-// ========== PLAY / STOP ==========
-// ============================================================
-// 🎬 AUDIO STINGER — jingle intro/outro sintesis (Web Audio API,
-// tanpa file eksternal). Ini yang membedakan "podcast rumahan" dari
-// "podcast dunia" - branding audio singkat di awal & akhir episode,
-// seperti jingle NPR/Spotify Original/dsb.
-// ============================================================
+
+
+
+
+
+
+
 function playStinger(type) {
     try {
         const AudioCtx = window.AudioContext || window.webkitAudioContext;
         if (!AudioCtx) return;
         const ctx = new AudioCtx();
         const now = ctx.currentTime;
-        // Intro: arpeggio naik (C5-E5-G5-C6) - cerah, mengundang.
-        // Outro: arpeggio turun (G5-E5-C5) - hangat, menutup dengan mantap.
+        
+        
         const notes = type === 'intro' ? [523.25, 659.25, 783.99, 1046.50] : [783.99, 659.25, 523.25];
         notes.forEach(function(freq, i) {
             const osc = ctx.createOscillator();
@@ -305,10 +305,10 @@ function playDebate() {
     speakNextLine();
 }
 
-// ========== PLAY DISCUSSION (TAMBAHAN - PARSER FLEKSIBEL) ==========
+
 function playDiscussion() {
     const lines = state.podcastText.split('\n');
-    // Pola untuk mendeteksi pembicara
+    
     const speakerPatterns = [
         /^\[(Host|Expert|Storyteller|Skeptic)\]/i,
         /^(Host|Expert|Storyteller|Skeptic)\s*[:：]\s*/i,
@@ -318,7 +318,7 @@ function playDiscussion() {
     let speakerLines = [];
     let usedPattern = null;
 
-    // Coba setiap pola, ambil yang paling banyak match
+    
     for (let p of speakerPatterns) {
         const matched = lines.filter(l => p.test(l.trim()));
         if (matched.length > speakerLines.length) {
@@ -329,12 +329,12 @@ function playDiscussion() {
 
     if (speakerLines.length === 0) {
         showToast('⚠️ Format diskusi tidak dikenali, play normal');
-        playPodcast(); // fallback
+        playPodcast(); 
         return;
     }
 
-    // 🆕 pakai varian suara pria/wanita sesuai pilihan gender per peran
-    // (state.discussionGenders), fallback ke 'pria' kalau belum diset
+    
+    
     const genders = state.discussionGenders || {};
     const speakerMap = {
         'Host': 'discussion_host_' + (genders.Host || 'pria'),
@@ -342,8 +342,8 @@ function playDiscussion() {
         'Storyteller': 'discussion_storyteller_' + (genders.Storyteller || 'pria'),
         'Skeptic': 'discussion_skeptic_' + (genders.Skeptic || 'wanita')
     };
-    // index tetap per peran supaya tiap peran konsisten dapat voice yang sama
-    // sepanjang episode (bukan acak tiap baris), meski episode di-generate ulang
+    
+    
     const speakerVoiceIndex = { 'Host': 0, 'Expert': 1, 'Storyteller': 2, 'Skeptic': 3 };
 
     let idx = 0;
@@ -369,21 +369,21 @@ function playDiscussion() {
         let speaker = null;
         let text = '';
 
-        // Ekstrak pembicara menggunakan pola yang ditemukan
+        
         const trimmed = rawLine.trim();
         for (let p of speakerPatterns) {
             const match = trimmed.match(p);
             if (match) {
                 speaker = match[1];
                 let remainder = trimmed.replace(p, '').trim();
-                // Bersihkan sisa karakter
+                
                 remainder = remainder.replace(/^[:：\-—]\s*/, '').trim();
                 text = remainder;
                 break;
             }
         }
 
-        // Fallback: cari kata kunci di awal
+        
         if (!speaker) {
             const words = trimmed.split(/\s+/);
             const firstWord = words[0] ? words[0].replace(/[\[\]:：\-—]/g, '') : '';
@@ -398,7 +398,7 @@ function playDiscussion() {
         }
 
         if (!speaker) {
-            // Tidak dikenali, skip
+            
             idx++;
             setTimeout(speakNext, 200);
             return;
@@ -411,9 +411,9 @@ function playDiscussion() {
         const rate = Math.max(0.5, Math.min(2.0, agentVoice.rate * emotionMod.rate));
         const voice = core.getVoiceForSpeaker(langCode, speakerVoiceIndex[speaker] ?? 0, core.inferAgentGender(agentKey));
 
-        // jeda antar giliran bicara dibuat variatif dan diskalakan pauseFactor
-        // persona (mis. Skeptic mikir dulu sebelum nyanggah, Host lebih cepat
-        // menyambung) - biar gak terasa "robotic metronome"
+        
+        
+        
         const pauseFactor = agentVoice.pauseFactor || 1;
         const pauseMs = Math.round((700 + Math.floor(Math.random() * 400)) * pauseFactor);
 
@@ -464,7 +464,7 @@ function togglePlay() {
     else playPodcast();
 }
 
-// ========== AUDIO VISUALIZER ==========
+
 function startAudioVisualizer() {
     const container = document.getElementById('playerProContainer');
     if (!container) return;
@@ -487,7 +487,7 @@ function stopAudioVisualizer() {
     }
 }
 
-// ========== BACKGROUND MUSIC ==========
+
 function playBackgroundMusic() {
     if (state.bgAudio) { state.bgAudio.pause(); state.bgAudio = null; }
     const music = BG_MUSIC[state.currentBgMusic];
@@ -502,9 +502,9 @@ function stopBackgroundMusic() {
     if (state.bgAudio) { state.bgAudio.pause(); state.bgAudio = null; }
 }
 
-// 🆕 AUTO-DUCKING — teknik mixing podcast profesional: musik latar
-// otomatis mengecil selagi ada yang bicara, naik lagi saat jeda,
-// supaya narasi/dialog tetap jelas terdengar di atas musik.
+
+
+
 let duckInterval = null;
 function duckBackgroundMusic(active) {
     if (!state.bgAudio) return;
@@ -522,11 +522,11 @@ function duckBackgroundMusic(active) {
     }, 40);
 }
 
-// ========== SAVE HISTORY ==========
+
 function savePodcastToHistory() {
     const topic = generator.getTopic ? generator.getTopic() : (document.getElementById('topicInput') ? document.getElementById('topicInput').value : 'Topik tidak disebutkan');
     const episode = {
-        episodeNumber: state.podcastHistory.length + 1, // 🆕 penomoran episode otomatis
+        episodeNumber: state.podcastHistory.length + 1, 
         text: state.podcastText.substring(0, 200) + '...',
         fullText: state.podcastText,
         voice: state.currentVoiceType,
@@ -545,7 +545,7 @@ function savePodcastToHistory() {
     state.podcastHistory.push(episode);
     core.saveHistory();
     updateGallery();
-    // Durable backup in IndexedDB — localStorage stays the fast/source-of-truth copy.
+    
     if (window.KESEMPATAN?.KesDatabase?.mirrorHistoryItem) {
         window.KESEMPATAN.KesDatabase.mirrorHistoryItem('podcast_history', episode);
     }
@@ -576,10 +576,10 @@ function loadHistoryItem(index) {
     const editor = document.getElementById('scriptEditor');
     if (editor) editor.value = state.podcastText;
     generator.updateAIContext();
-    // renderer.renderChapters(); // 🔥 Dihapus karena fungsi tidak tersedia
+    
 }
 
-// ========== BOOKMARK ==========
+
 function addBookmark() {
     const time = Math.floor(state.bookmarks.length * 30);
     const text = state.podcastText.substring(0, 30) + '...';
@@ -597,7 +597,7 @@ function jumpToBookmark(index) {
     }
 }
 
-// ========== SKIP & SPEED ==========
+
 function skipTime(seconds) {
     if (state.currentUtterance) {
         window.speechSynthesis.cancel();
@@ -680,7 +680,7 @@ function jumpToChapter(index) {
     skipTime(ch.start);
 }
 
-// ========== RENDER WRAPPER ==========
+
 function render() {
     renderer.render();
 }

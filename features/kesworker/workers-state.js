@@ -38,7 +38,7 @@ function loadStats() {
 }
 function saveStats() {
     localStorage.setItem('kes_worker_stats', JSON.stringify(workerStats));
-    // Durable backup in IndexedDB — localStorage stays the source of truth.
+    
     if (window.KESEMPATAN?.KesDatabase?.mirrorSnapshot) {
         window.KESEMPATAN.KesDatabase.mirrorSnapshot('worker_stats', workerStats);
     }

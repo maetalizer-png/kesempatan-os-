@@ -1,17 +1,17 @@
 import { LLMRuntime } from './llm-runtime.js';
 
 const Logger = window.Utils?.Logger || {
-    info: function () { /* silent */ },
-    warn: function () { /* silent */ },
+    info: function () {  },
+    warn: function () {  },
     error: function (mod, msg) { console.error('[ERROR] [' + mod + '] ' + msg); }
 };
 function requireRuntime() {
     return LLMRuntime;
 }
-// ============================================================
-// SELF-CONSISTENCY — generate N kali (sampling), ambil yang paling
-// representatif (panjang token paling dekat median).
-// ============================================================
+
+
+
+
 async function generateWithSelfConsistency(model, promptText, options) {
     const Runtime = requireRuntime();
     options = options || {};
@@ -25,9 +25,9 @@ async function generateWithSelfConsistency(model, promptText, options) {
     const chosen = results.find(function (r) { return r.tokensGenerated === median; }) || results[0];
     return { chosen: chosen, allResults: results };
 }
-// ============================================================
-// CHAIN 2-LANGKAH: DRAFT → REFINE
-// ============================================================
+
+
+
 async function draftThenRefine(model, promptText, refineInstruction, options) {
     const Runtime = requireRuntime();
     options = options || {};

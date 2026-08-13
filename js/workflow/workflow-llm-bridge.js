@@ -1,8 +1,8 @@
 import { Utils } from '../core/utils.js';
-// dataset/ (~165 entri, ~77KB) diimpor DINAMIS di dalam buildBootstrapCorpus(),
-// bukan statis di sini — file ini eager-loaded lewat index.html, jadi import
-// statis akan memaksa dataset/ ikut ter-parse di SETIAP boot aplikasi padahal
-// isinya cuma dipakai saat model lokal benar-benar diinisialisasi.
+
+
+
+
 
 const KESEMPATAN = window.KESEMPATAN || {};
 window.KESEMPATAN = KESEMPATAN;
@@ -13,11 +13,11 @@ const LLM_GENERATE_TIMEOUT_MS = 45000;
 const LLM_SLOW_DEVICE_KEY = 'kes_llm_slow_device_until';
 const LLM_SLOW_DEVICE_TTL_MS = 24 * 60 * 60 * 1000;
 
-// Pilihan model lokal pengguna (Pengaturan -> settings.js) — disimpan di
-// localStorage supaya tidak reset saat refresh. 'engine-50m-offline' bukan
-// modelKey Core Engine v2 sungguhan — itu sinyal "jangan pakai v2 sama
-// sekali, langsung Core Engine v1" (transformer buatan sendiri, <15MB,
-// selalu tersedia tanpa jaringan).
+
+
+
+
+
 const LLM_MODEL_CHOICE_KEY = 'kes_llm_model_choice';
 const LLM_MODEL_CHOICE_OFFLINE = 'engine-50m-offline';
 const LLM_MODEL_CHOICE_DEFAULT = 'smollm2-135m';
@@ -49,13 +49,13 @@ function markDeviceSlow() {
 
 let __activeGenerateCount = 0;
 
-// ============================================================
-// TELEMETRI — window.KESEMPATAN.LLMTelemetry: hitung berapa kali jalur
-// lokal vs eksternal benar-benar dipakai, latensi, dan berapa karakter
-// dihasilkan lokal — dipakai untuk memverifikasi "Primary Route" (lokal
-// harus jadi jalur utama, eksternal cuma fallback) benar-benar terjadi
-// di lapangan, bukan cuma niat di kode.
-// ============================================================
+
+
+
+
+
+
+
 const LLM_TELEMETRY = window.KESEMPATAN.LLMTelemetry || (function() {
     const store = {
         localV2: { calls: 0, failures: 0, totalLatencyMs: 0, totalCharsGenerated: 0 },
@@ -67,13 +67,13 @@ const LLM_TELEMETRY = window.KESEMPATAN.LLMTelemetry || (function() {
     return store;
 })();
 
-// FIX: dulu bucket dipilih dengan `engine === 'local' ? local : external`,
-// jadi setiap panggilan 'local-v2' (Core Engine v2 — jalur PERTAMA yang
-// dicoba, dan yang paling sering dipakai) salah masuk ke bucket
-// `external`, membuat rasio fallback yang dilaporkan jauh lebih buruk
-// dari kenyataan. localV2/local/external sekarang masing-masing punya
-// bucket sendiri sesuai nilai `engine` yang sebenarnya dikembalikan
-// callGenerativeEngine().
+
+
+
+
+
+
+
 function recordLLMTelemetry(engine, latencyMs, success, extra) {
     const bucket = engine === 'local-v2' ? LLM_TELEMETRY.localV2
         : engine === 'local' ? LLM_TELEMETRY.local
@@ -90,38 +90,38 @@ function recordLLMTelemetry(engine, latencyMs, success, extra) {
     }
 }
 
-// Kondisi PERSIS yang menentukan apakah callGenerativeEngine() akan
-// mencoba jalur lokal lebih dulu — diekspos terpisah supaya workflow.js
-// bisa MEMPREDIKSI kunci cache (response-cache.js) SEBELUM generate()
-// benar-benar dipanggil, tanpa duplikasi kondisi yang bisa melenceng.
+
+
+
+
 function isLocalEngineEligible() {
     return !window.__kesempatanLLMSkipThisSession && !!window.KesempatanLLM &&
         typeof window.KesempatanLLM.isReady === 'function' && window.KesempatanLLM.isReady();
 }
 
-// Core Engine v2 (model pretrained sungguhan lewat @huggingface/transformers,
-// lihat llm-transformers-bridge.js) — kalau siap, INI yang dicoba PALING
-// DULU (Primary Route), sebelum Core Engine v1 (transformer buatan sendiri
-// ~50 juta parameter) dan sebelum provider API eksternal.
+
+
+
+
 function isV2EngineEligible() {
     if (getPersistedModelChoice() === LLM_MODEL_CHOICE_OFFLINE) return false;
     return !window.__kesempatanLLM2SkipThisSession && !!window.KesempatanLLM2 &&
         typeof window.KesempatanLLM2.isReady === 'function' && window.KesempatanLLM2.isReady();
 }
 
-// Mengembalikan { text, engine } — engine: 'local-v2' | 'local' | 'external'.
-// Dulu cuma mengembalikan string mentah, membuat pemanggil (workflow.js)
-// TIDAK BISA tahu mesin mana yang sebenarnya menjawab (termasuk saat lokal
-// timeout lalu diam-diam fallback ke luar di tengah panggilan) — akibatnya
-// cache respons (response-cache.js) menyimpan hasil dari mesin berbeda-beda
-// di bawah SATU kunci model yang sama, saling menimpa cache secara acak.
-// Sekarang engine yang SEBENARNYA dipakai selalu ikut dikembalikan.
-//
-// URUTAN (Primary Route sesuai permintaan — jangan panggil API eksternal
-// selama Worker lokal berjalan normal):
-//   1. Core Engine v2 (pretrained, WebGPU/WASM)
-//   2. Core Engine v1 (transformer buatan sendiri, selalu tersedia offline)
-//   3. Provider API eksternal (last resort)
+
+
+
+
+
+
+
+
+
+
+
+
+
 async function callGenerativeEngine(prompt, agent, topic) {
     if (isV2EngineEligible()) {
         __activeGenerateCount++;
@@ -141,10 +141,10 @@ async function callGenerativeEngine(prompt, agent, topic) {
             }
             recordLLMTelemetry('local-v2', Math.round(performance.now() - startedAt), false, { agent: agent, reason: 'empty-output' });
         } catch (e) {
-            // Generasi yang masih berjalan di Worker TIDAK dibatalkan paksa
-            // (transformers.js belum terbukti mendukung interupsi per-token
-            // yang andal) — dibiarkan selesai sendiri di latar belakang,
-            // hasilnya cuma dibuang. UI tidak pernah menunggu/beku karenanya.
+            
+            
+            
+            
             if (Logger) {
                 Logger.warn('Workflow', 'Agent "' + agent + '": Core Engine v2 gagal/timeout (' + e.message + '), coba engine berikutnya');
             }
@@ -152,7 +152,7 @@ async function callGenerativeEngine(prompt, agent, topic) {
         } finally {
             __activeGenerateCount--;
         }
-        // jatuh ke Core Engine v1 di bawah (bukan langsung ke eksternal)
+        
     }
 
     if (isLocalEngineEligible()) {
@@ -200,11 +200,11 @@ async function callGenerativeEngine(prompt, agent, topic) {
 
 const MAX_BOOTSTRAP_AGENTS = 999;
 const MAX_BOOTSTRAP_TEXT_LENGTH = 800;
-// Batas kontribusi dataset/ ke korpus bootstrap. Korpus ini juga dipakai
-// melatih ulang tokenizer BPE (createModel() di kesem-llm/llm-runtime.js),
-// yang biaya komputasinya naik seiring ukuran korpus — dibatasi supaya
-// dataset (bisa >150 entri) tidak membuat inisialisasi jadi lambat,
-// sambil tetap menambah keragaman materi jauh di luar 55 system prompt.
+
+
+
+
+
 const MAX_DATASET_ENTRIES = 120;
 const MAX_DATASET_TEXT_LENGTH = 500;
 
@@ -281,16 +281,16 @@ function withTimeout(promise, ms, label) {
     ]);
 }
 
-// ============================================================
-// CORE ENGINE v2 READINESS — mirip ensureKesempatanLLMReady() di bawah,
-// tapi jauh lebih sederhana: v2 tidak perlu bootstrap corpus/training,
-// cuma initialize() sekali (unduh+muat model, dicache lewat IndexedDB di
-// llm-transformers-worker.js sehingga percobaan BERIKUTNYA jauh lebih
-// cepat). Kunci localStorage TERPISAH dari v1 supaya kegagalan salah satu
-// engine tidak ikut membuat engine yang lain dilewati.
-// ============================================================
+
+
+
+
+
+
+
+
 const LLM2_SLOW_DEVICE_KEY = 'kes_llm2_slow_device_until';
-const LLM2_INIT_TIMEOUT_MS = 90000; // unduh model pertama kali bisa perlu waktu lebih lama dari v1
+const LLM2_INIT_TIMEOUT_MS = 90000; 
 
 function isV2DeviceKnownSlow() {
     try {
@@ -314,9 +314,9 @@ let __v2InitPromise = null;
 async function ensureKesempatanLLMv2Ready() {
     const modelKey = getPersistedModelChoice();
     if (modelKey === LLM_MODEL_CHOICE_OFFLINE) {
-        // Pengguna secara eksplisit memilih "Engine 50M (Cadangan Offline)"
-        // di Pengaturan -- v2 (pretrained, butuh unduhan) tidak boleh dicoba
-        // sama sekali, langsung ke Core Engine v1.
+        
+        
+        
         return false;
     }
     if (window.KesempatanLLM2 && window.KesempatanLLM2.isReady && window.KesempatanLLM2.isReady()) {
@@ -324,10 +324,10 @@ async function ensureKesempatanLLMv2Ready() {
         if (active === modelKey) {
             return true;
         }
-        // Pengguna ganti pilihan model SETELAH model lain sudah termuat --
-        // initialize() di bawah akan lepas model lama & muat yang baru
-        // (lihat initializeEngine() di llm-transformers-worker.js), jadi
-        // lanjut ke jalur inisialisasi normal, bukan early-return true.
+        
+        
+        
+        
     }
     if (!window.KesempatanLLM2 || !window.KesempatanLLM2.initialize) {
         return false;
@@ -342,9 +342,9 @@ async function ensureKesempatanLLMv2Ready() {
         }
         return false;
     }
-    // Kalau initialize() sedang berjalan (dipanggil bersamaan dari beberapa
-    // agen paralel), semua pemanggil menunggu Promise YANG SAMA, bukan
-    // memicu initialize() berkali-kali.
+    
+    
+    
     if (__v2InitPromise) {
         return __v2InitPromise;
     }
@@ -526,13 +526,13 @@ async function cacheAgentResultIfValid(agent, model, prompt, parsed) {
     }
 }
 
-// Ringkasan siap-pakai untuk dashboard "kesehatan sistem" (pages/telemetry.js):
-// per-engine call count/failure/avg latency, plus fallbackRate = porsi
-// panggilan yang berakhir di provider eksternal dari total panggilan LLM.
-// Roadmap Fase 0 "Observability dasar" secara eksplisit minta metrik ini
-// ("rasio fallback ke provider eksternal turun terukur") — sebelumnya data
-// ini SUDAH direkam (LLM_TELEMETRY) tapi tidak pernah ditampilkan di UI
-// manapun.
+
+
+
+
+
+
+
 function getTelemetrySummary() {
     function summarizeBucket(bucket) {
         return {

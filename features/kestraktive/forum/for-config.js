@@ -1,9 +1,6 @@
-/* ============================================================
-   interactive/forum/for-config.js
-   KONFIGURASI FORUM 55 AGEN — CONSTANTS SAJA
-   ============================================================ */
-    // 1. KONFIGURASI
-    // ============================================================
+
+    
+    
 export const FOR_CONFIG = {
         STORAGE_KEY: 'kes_chat_history_v25',
         THEME_KEY: 'kes_chat_theme',
@@ -24,5 +21,5 @@ export const FOR_CONFIG = {
         REACTIONS: ['❤️', '👍', '😂', '🎉', '🔥']
     };
 
-    // ============================================================
-    // 2. STATE (independen dari modul chat lain)
+    
+    

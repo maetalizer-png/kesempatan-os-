@@ -1,20 +1,14 @@
-/* ============================================================
-   ai-agent/planner.js
-   Turns a natural-language goal into a dynamic step list by
-   asking the LLM (via provider-router.js) what capabilities are
-   available right now — nothing here hardcodes a fixed workflow
-   (spec section 13/15: capability-driven, not a hardcoded path).
-   ============================================================ */
+
 
 import { ProviderRouter } from './provider-router.js';
 import { ToolRegistry } from './tool-registry.js';
 import { AgentRegistry } from './agent-registry.js';
 
-// Roster inti (13 agen pertama di agents/agents-config.js, sebelum
-// digabung dengan file kategori general/politics/global/science) dipakai
-// sebagai contoh nyata di prompt planner, bukan nama karangan — LLM boleh
-// juga memakai agen lain dari ~200 total lewat AgentRegistry.findAgent()
-// (dipanggil oleh execution-engine.js saat nama tidak cocok persis).
+
+
+
+
+
 function describeCapabilities() {
     const tools = ToolRegistry.list().filter(function(t) { return t.available; }).map(function(t) { return t.name; });
     const workerCategories = AgentRegistry.listWorkerCategories();
@@ -74,9 +68,9 @@ async function createPlan(goal, context) {
     try {
         return parsePlanJSON(text);
     } catch (e) {
-        // Degraded but honest fallback: a single-step plan running the goal
-        // itself through the default analysis-agent path, rather than
-        // silently failing the whole task on a malformed plan response.
+        
+        
+        
         return [{ id: 's0', kind: 'agent', name: 'Analyst', args: { instruction: goal }, description: 'Fallback: plan LLM tidak valid, jalankan analisis langsung.' }];
     }
 }

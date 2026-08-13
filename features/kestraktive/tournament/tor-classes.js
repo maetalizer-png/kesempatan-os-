@@ -1,10 +1,4 @@
-/* ============================================================
-   interactive/tournament/tor-classes.js
-   KELAS PENDUKUNG TURNAMEN — TRN_SecureConfig, TRN_DebateState,
-   TRN_SecurityManager, TRN_DebateAnalytics, TRN_VoiceManager (dengan profil
-   suara per-agen), TRN_DebateExporter, TRN_DebateHistory. Dimuat SEBELUM
-   tournament-arena.js.
-   ============================================================ */
+
 import { TRN_isKnownRosterAgent } from './tor-config.js';
 import { TRN_saveDebateToMemory } from './tor-data-engine.js';
 
@@ -30,9 +24,9 @@ import { TRN_saveDebateToMemory } from './tor-data-engine.js';
         }
     }
 
-    // ============================================================
-    // 3. DEBATE STATE
-    // ============================================================
+    
+    
+    
     export class TRN_DebateState {
         constructor() {
             this.status = 'idle';
@@ -84,9 +78,9 @@ import { TRN_saveDebateToMemory } from './tor-data-engine.js';
         }
     }
 
-    // ============================================================
-    // 4. SECURITY & SANITIZATION
-    // ============================================================
+    
+    
+    
     export class TRN_SecurityManager {
         static sanitizeHTML(str) {
             if (!str) {
@@ -96,9 +90,9 @@ import { TRN_saveDebateToMemory } from './tor-data-engine.js';
             div.textContent = str;
             return div.innerHTML;
         }
-        // Sama seperti debate.js — AI kadang membalas dengan sintaks markdown
-        // (**tebal**, dst) yang tidak pernah dirender di panel Turnamen,
-        // jadi tanda bintang/pagar tampil apa adanya. Dibersihkan di sini.
+        
+        
+        
         static stripMarkdown(str) {
             if (!str) {
                 return '';
@@ -154,9 +148,9 @@ import { TRN_saveDebateToMemory } from './tor-data-engine.js';
         }
     }
 
-    // ============================================================
-    // 5. DEBATE ANALYTICS
-    // ============================================================
+    
+    
+    
     export class TRN_DebateAnalytics {
         constructor() {
             this.scores = {
@@ -254,12 +248,12 @@ import { TRN_saveDebateToMemory } from './tor-data-engine.js';
         }
     }
 
-    // ============================================================
-    // 6. VOICE MANAGER
-    // ============================================================
-    // Profil suara per-agen — supaya Agen A & B terdengar beda (bukan
-    // satu suara datar yang sama untuk semua), konsisten dengan
-    // pendekatan yang sama di debate.js.
+    
+    
+    
+    
+    
+    
     export function TRN_hashAgentKeyForVoice(key) {
         let hash = 0;
         const str = String(key || '');
@@ -316,13 +310,13 @@ import { TRN_saveDebateToMemory } from './tor-data-engine.js';
             if (!this.isActive || !text || text.length === 0) {
                 return Promise.resolve();
             }
-            // FIX (pola sama persis dgn bug yang ditemukan di debate.js):
-            // sebelumnya cleanText di sini cuma sanitizeHTML+buang tag HTML,
-            // TIDAK membuang sintaks markdown (**tebal**, *miring*, dst) —
-            // browser TTS membacakan tanda "*" secara harfiah sbg kata
-            // "asterisk". stripMarkdown() SUDAH ADA & sudah dipakai benar
-            // utk tampilan visual (addMessage/showResult di
-            // tournament-arena.js), cuma jalur suara ini yang kelewatan.
+            
+            
+            
+            
+            
+            
+            
             const cleanText = TRN_SecurityManager.sanitizeHTML(TRN_SecurityManager.stripMarkdown(text))
                 .replace(/<[^>]*>/g, '')
                 .replace(/&nbsp;/g, ' ');
@@ -466,9 +460,9 @@ import { TRN_saveDebateToMemory } from './tor-data-engine.js';
         }
     }
 
-    // ============================================================
-    // 7. DEBATE EXPORTER
-    // ============================================================
+    
+    
+    
     export class TRN_DebateExporter {
         static async exportToPDF(debateData, filename) {
             filename = filename || 'debate-result.pdf';
@@ -565,9 +559,9 @@ import { TRN_saveDebateToMemory } from './tor-data-engine.js';
         }
     }
 
-    // ============================================================
-    // 8. DEBATE HISTORY MANAGER
-    // ============================================================
+    
+    
+    
     export class TRN_DebateHistory {
         constructor() {
             this.storageKey = 'tournament_history_v10';

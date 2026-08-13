@@ -4,8 +4,8 @@ import { LLMWeights } from './llm-weights.js';
 import { LLMQuantization } from './llm-quantization.js';
 
 const Logger = window.Utils?.Logger || {
-    info: function () { /* silent */ },
-    warn: function () { /* silent */ },
+    info: function () {  },
+    warn: function () {  },
     error: function (mod, msg) { console.error('[ERROR] [' + mod + '] ' + msg); }
 };
 
@@ -14,14 +14,14 @@ function requireQuantization() {
 }
 
 const CHECKPOINT_FORMAT_VERSION = 3;
-// (STORAGE_PREFIX localStorage lama dihapus — sudah migrasi ke
-// IndexedDB, lihat saveCheckpointToStorage/loadCheckpointFromStorage
-// di bawah)
 
-// Bungkus 1 hasil quantizeMatrix() (Int8Array mentah) jadi bentuk
-// ringkas untuk JSON: base64 string, bukan array/objek dari 3000+
-// entri individual (JSON.stringify TypedArray = tiap elemen jadi
-// key/value sendiri, tidak menghemat apa-apa dibanding array biasa).
+
+
+
+
+
+
+
 function packQuantizedMatrix(q) {
     return {
         rows: q.rows,
@@ -80,25 +80,25 @@ function unpackQuantizedLayer(packed) {
     };
 }
 
-// ============================================================
-// BUAT CHECKPOINT dari model hasil LLMRuntime.createModel()
-// ============================================================
+
+
+
 function createCheckpoint(model, metadata) {
     const Q = requireQuantization();
     metadata = metadata || {};
 
-    // vocab.tokenToId/idToToken adalah Map — konversi ke array
-    // pasangan supaya JSON-safe (Map tidak bisa di-JSON.stringify
-    // langsung, hasilnya cuma "{}").
+    
+    
+    
     const vocabEntries = Array.from(model.vocab.tokenToId.entries());
 
-    // Kuantisasi int8 (per-tensor scale/zeroPoint) lalu pack tiap
-    // matriks jadi base64 — lihat catatan di atas untuk root cause
-    // kenapa ini WAJIB, bukan sekadar optimisasi opsional.
-    // outputProjection SENGAJA TIDAK disimpan terpisah (v3+) — weight
-    // tying berarti itu SELALU cuma transpose(embeddingMatrix), jadi
-    // menyimpannya lagi adalah duplikasi murni (~10MB pada model
-    // large). Direkonstruksi via transpose saat restore.
+    
+    
+    
+    
+    
+    
+    
     const quantized = Q.quantizeModel(model);
     const packedWeights = {
         quantized: true,
@@ -124,9 +124,9 @@ function createCheckpoint(model, metadata) {
     };
 }
 
-// ============================================================
-// PULIHKAN MODEL dari checkpoint
-// ============================================================
+
+
+
 function restoreModelFromCheckpoint(checkpoint) {
     const Q = requireQuantization();
     if (checkpoint.checkpointFormatVersion !== CHECKPOINT_FORMAT_VERSION) {
@@ -160,8 +160,8 @@ function restoreModelFromCheckpoint(checkpoint) {
         }
     };
     const weights = Q.dequantizeModel(quantized);
-    // outputProjection TIDAK ada di checkpoint v3+ (weight tying,
-    // lihat createCheckpoint) — direkonstruksi via transpose.
+    
+    
     const E = LLMEmbedding;
     weights.decoderWeights.outputProjection = E.transpose(weights.embeddingMatrix);
 
@@ -174,22 +174,22 @@ function restoreModelFromCheckpoint(checkpoint) {
     };
 }
 
-// ============================================================
-// PENYIMPANAN IndexedDB (bukan localStorage lagi)
-// ============================================================
-// MIGRASI Juli 2026 — root cause masalah kualitas model tidak kunjung
-// membaik antar sesi: localStorage cuma ~5-10MB, checkpoint model
-// "large" (49.6M param, int8+base64) ~50-63MB — TIDAK PERNAH benar2
-// tersimpan (selalu QuotaExceededError), jadi training progress
-// hilang tiap sesi, model mulai nyaris dari nol lagi berulang-ulang.
-// IndexedDB kuotanya jauh lebih besar (ratusan MB-GB tergantung
-// browser/disk tersedia) DAN tersedia LANGSUNG di dalam Web Worker
-// (beda dari localStorage yang API Window-only) — tidak perlu jalur
-// "kirim balik ke thread utama" seperti API Window-only lainnya.
-// API IndexedDB async secara alami — saveCheckpointToStorage/
-// loadCheckpointFromStorage sekarang ASYNC, SEMUA pemanggil perlu
-// pakai await (sudah diaudit: llm-core.js save()/load() adalah
-// satu-satunya pemanggil, sudah disesuaikan jadi async juga).
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 const IDB_NAME = 'kesempatan_llm_checkpoints';
 const IDB_VERSION = 1;
 const IDB_STORE = 'checkpoints';
@@ -220,10 +220,10 @@ async function saveCheckpointToStorage(checkpoint, name) {
         db.close();
         return { success: true, key: name, sizeBytes: JSON.stringify(checkpoint).length };
     } catch (e) {
-        // IndexedDB juga punya kuota (biasanya jauh lebih besar dari
-        // localStorage, tapi TETAP ada batasnya di device dgn disk
-        // sangat terbatas) — tetap dilaporkan jujur kalau gagal,
-        // bukan diam-diam ditelan.
+        
+        
+        
+        
         return { success: false, error: e.message || String(e) };
     }
 }

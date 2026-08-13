@@ -1,8 +1,8 @@
 import { LLMTransformer } from './llm-transformer.js';
 
 const Logger = window.Utils?.Logger || {
-    info: function () { /* silent */ },
-    warn: function () { /* silent */ },
+    info: function () {  },
+    warn: function () {  },
     error: function (mod, msg) { console.error('[ERROR] [' + mod + '] ' + msg); }
 };
 
@@ -10,8 +10,8 @@ function requireTransformer() {
     return LLMTransformer;
 }
 
-// Buat bobot untuk `config.nLayers` blok transformer + 1 LayerNorm
-// final (konvensi umum: normalisasi sekali lagi di ujung stack).
+
+
 function createEncoderWeights(config) {
     const T = requireTransformer();
     const layers = new Array(config.nLayers);
@@ -24,7 +24,7 @@ function createEncoderWeights(config) {
     };
 }
 
-// x: seqLen×dModel (embedding + positional encoding yang sudah digabung)
+
 function runEncoder(x, encoderWeights, config) {
     const T = requireTransformer();
     let hidden = x;

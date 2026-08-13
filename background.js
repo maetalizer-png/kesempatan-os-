@@ -1,9 +1,4 @@
-/* ============================================================
-   KESEMPATAN OS - LIVING AI NETWORK BACKGROUND (INSTANCED MESH)
-    background.js
-    SINGLE FILE — OPTIMIZED FOR ANDROID
-    UKURAN PARTIKEL SANGAT KECIL (0.03 - 0.08)
-   ============================================================ */
+
 
 const KESEMPATAN = window.KESEMPATAN || {};
 window.KESEMPATAN = KESEMPATAN;
@@ -141,22 +136,22 @@ window.KESEMPATAN = KESEMPATAN;
                 container.appendChild(renderer.domElement);
                 rendererState.renderer = renderer;
 
-                // FIX: WebGL context lost — kejadian NORMAL & sering di
-                // Android Chrome (device di-background lama, GPU driver
-                // reset, memori GPU ditekan OS) yang SEBELUMNYA sama
-                // sekali tidak ditangani, bikin canvas jadi hitam PERMANEN
-                // setelah beberapa menit karena browser tidak pernah
-                // mencoba restore (harus explicit preventDefault()) dan
-                // scene lama tidak pernah dibangun ulang.
+                
+                
+                
+                
+                
+                
+                
                 renderer.domElement.addEventListener('webglcontextlost', function(event) {
                     event.preventDefault();
                     window.__bgContextLost = true;
                 }, false);
                 renderer.domElement.addEventListener('webglcontextrestored', function() {
                     window.__bgContextLost = false;
-                    // Scene/geometry/material lama sudah tidak valid stlh
-                    // context hilang — bangun ulang total dari nol dgn
-                    // reset semua singleton modul, bukan cuma renderer-nya.
+                    
+                    
+                    
                     try {
                         const oldContainer = document.getElementById('bg-canvas-container');
                         if (oldContainer) oldContainer.remove();
@@ -344,7 +339,7 @@ window.KESEMPATAN = KESEMPATAN;
                 dummy = new THREE.Object3D();
                 matrix = new THREE.Matrix4();
 
-                // UKURAN SANGAT KECIL → 0.03 - 0.08
+                
                 const sizeRange = [0.03, 0.08];
                 for (let i = 0; i < count; i++) {
                     particlePositions[i*3] = (Math.random() - 0.5) * 35;
@@ -649,7 +644,7 @@ window.KESEMPATAN = KESEMPATAN;
 
             function animate(timestamp) {
                 if (window.__bgGeneration !== myGeneration) {
-                    return; // generasi lama, berhenti diam2 (sudah digantikan rebuild baru)
+                    return; 
                 }
                 requestAnimationFrame(animate);
 

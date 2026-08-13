@@ -20,15 +20,15 @@ function createId() {
     return Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 10);
 }
 
-// ============================================================
-// QUANTUM ENCRYPTION
-// ============================================================
 
-// Persisted (localStorage) 32-byte value, generated once with
-// crypto.getRandomValues and reused thereafter — used for both the PBKDF2
-// salt and the per-device key component below. Salt does not need to be
-// secret (that's the whole point of PBKDF2 salting), so localStorage is a
-// fine place for it despite being readable client-side.
+
+
+
+
+
+
+
+
 function _qeLoadOrCreatePersistedBytes(storageKey) {
     try {
         const stored = localStorage.getItem(storageKey);
@@ -39,15 +39,15 @@ function _qeLoadOrCreatePersistedBytes(storageKey) {
             }
         }
     } catch (e) {
-        // fall through to generate a fresh value
+        
     }
     const bytes = Array.from(crypto.getRandomValues(new Uint8Array(32)));
     try {
         localStorage.setItem(storageKey, JSON.stringify(bytes));
     } catch (e) {
-        // localStorage unavailable/full — encryption still works for this
-        // session, it just won't survive a reload (matches the previous,
-        // always-fresh-salt behavior in that one edge case only).
+        
+        
+        
     }
     return bytes;
 }
@@ -66,23 +66,23 @@ const QuantumEncryption = {
         }
 
         if (!this._salt) {
-            // Persisted rather than regenerated every session — previously
-            // this was crypto.getRandomValues() fresh on every init(), which
-            // meant the derived key changed on every page load and every
-            // record ever encrypted became permanently undecryptable the
-            // moment the tab was closed and reopened (verified directly:
-            // decrypting the same ciphertext after resetting _salt/_key/
-            // _initialized throws AES-GCM OperationError every time).
+            
+            
+            
+            
+            
+            
+            
             this._salt = _qeLoadOrCreatePersistedBytes('kes_qe_salt_v1');
         }
 
         if (!this._deviceSecret) {
-            // Config.encryptionKey is a literal shipped in this app's public
-            // source, so it's identical for every installation. Mixing in a
-            // random value generated once per browser/device and stored
-            // locally means the actual derived key differs per installation
-            // without requiring a user-facing passphrase — it never leaves
-            // the device and needs no UI.
+            
+            
+            
+            
+            
+            
             this._deviceSecret = _qeLoadOrCreatePersistedBytes('kes_qe_device_secret_v1')
                 .map(function (b) { return b.toString(16).padStart(2, '0'); })
                 .join('');
@@ -255,9 +255,9 @@ const QuantumEncryption = {
     }
 };
 
-// ============================================================
-// CRDT
-// ============================================================
+
+
+
 class CRDT {
     constructor() {
         this.id = createId();
@@ -362,9 +362,9 @@ class CRDT {
     }
 }
 
-// ============================================================
-// DATA VERSIONING
-// ============================================================
+
+
+
 class DataVersioning {
     constructor(db) {
         this._db = db;
@@ -457,9 +457,9 @@ class DataVersioning {
     }
 }
 
-// ============================================================
-// SNAPSHOT MANAGER
-// ============================================================
+
+
+
 class SnapshotManager {
     constructor(db) {
         this._db = db;
@@ -538,9 +538,9 @@ class SnapshotManager {
     }
 }
 
-// ============================================================
-// MULTI-TENANCY
-// ============================================================
+
+
+
 class MultiTenancy {
     constructor(db) {
         this._db = db;

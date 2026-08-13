@@ -1,23 +1,23 @@
-// WebGPU acceleration for matmul — the dominant compute cost in transformer
-// forward passes (Q/K/V projections, attention scores, FFN layers).
-//
-// Untested on real GPU hardware (Node.js sandbox has no WebGPU
-// implementation), so this module requires itself to pass two checks
-// before being used at all:
-//   1. CORRECTNESS — GPU matmul result compared against the long-tested
-//      CPU result across several matrix sizes, must match within a small
-//      floating-point tolerance.
-//   2. SPEED — GPU timed against CPU at the actual matrix sizes this model
-//      uses (dModel~128); the model is small enough that GPU overhead
-//      (buffer upload, dispatch, readback) can outweigh the benefit.
-// If either check fails — results differ, GPU unavailable, or GPU is
-// slower — this module disables itself and the system keeps running on
-// CPU exactly as before. No "silently wrong" risk: unless both correct AND
-// fast are confirmed, it's not used at all.
-//
-// Scope: inference (generate()) only, never training (llm-trainer.js) —
-// the CPU matmul path that already passed gradient-checking stays
-// untouched for training.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 const Logger = window.Utils?.Logger || {
     info: function () {},
@@ -25,9 +25,9 @@ const Logger = window.Utils?.Logger || {
     error: function () {}
 };
 
-// Shader WGSL — matmul naif A[m x k] * B[k x n] = hasil[m x n],
-// 1 thread GPU per elemen hasil. Konvensi baris-mayor (row-major),
-// sama persis dengan matmul() versi CPU di llm-embedding.js.
+
+
+
 const MATMUL_WGSL = `
 struct Dims {
 m: u32,
@@ -55,7 +55,7 @@ matOut[row * dims.n + col] = sum;
 }
 `;
 
-let gpuState = null; // { device, pipeline } kalau siap & terverifikasi, null kalau tidak
+let gpuState = null; 
 
 function flatten(matrix) {
     const rows = matrix.length;
@@ -81,8 +81,8 @@ function unflatten(flat, rows, cols) {
     return out;
 }
 
-// Matmul GPU MENTAH — tanpa verifikasi, dipanggil internal saja
-// (setelah gpuState terbukti valid lewat selfTest()).
+
+
 async function gpuMatmulRaw(A, B, device, pipeline) {
     const m = A.length;
     const k = A[0].length;
@@ -171,12 +171,12 @@ function matricesClose(A, B, epsilon) {
     return true;
 }
 
-// Verifikasi kebenaran+kecepatan — WAJIB lolos sebelum GPU dipakai
-// sama sekali. dModel: dimensi sebenarnya dipakai model aktif,
-// supaya perbandingan kecepatan relevan (bukan ukuran sembarang).
+
+
+
 async function selfTest(device, pipeline, dModel) {
-    // 1) Kebenaran — 3 ukuran berbeda, toleransi longgar (float32 GPU
-    // vs float64 JS CPU wajar sedikit beda di digit terakhir).
+    
+    
     const sizes = [[4, 4, 4], [16, 8, 16], [dModel, dModel, dModel]];
     for (const [m, k, n] of sizes) {
         const A = randomMatrix(m, k);
@@ -189,8 +189,8 @@ async function selfTest(device, pipeline, dModel) {
         }
     }
 
-    // 2) Kecepatan — pada dimensi SEBENARNYA dipakai model ini.
-    // Model kecil = overhead dispatch GPU bisa kalah dari CPU.
+    
+    
     const testA = randomMatrix(dModel, dModel);
     const testB = randomMatrix(dModel, dModel);
     const REPEATS = 5;

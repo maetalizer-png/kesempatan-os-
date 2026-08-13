@@ -1,8 +1,4 @@
-/* ============================================================
-   interactive/tournament/tor-core.js
-   INTI TURNAMEN — Arena visual, bracket, orkestrasi
-   pertandingan, panel & init. Dimuat PALING TERAKHIR.
-   ============================================================ */
+
 import { TRN_showToast, TRN_getFullAgentPool } from './tor-config.js';
 import { TRN_State } from './tor-state.js';
 import { TRN_SecurityManager } from './tor-classes.js';
@@ -43,13 +39,13 @@ import { TRN_DebateArena } from './tor-tournament-arena.js';
         }
     }
 
-    // ============================================================
-    // 11. INITIALIZATION
-    // ============================================================
+    
+    
+    
     const tournamentArena = new TRN_DebateArena();
-    // window.TournamentArena must stay bare: the history list below renders
-    // onclick="window.TournamentArena?.exporter/history...()" strings, which
-    // can only resolve a real window global, never window.KESEMPATAN.X.
+    
+    
+    
     window.TournamentArena = tournamentArena;
     window.KESEMPATAN = window.KESEMPATAN || {};
     window.KESEMPATAN.TournamentArena = tournamentArena;
@@ -107,9 +103,9 @@ import { TRN_DebateArena } from './tor-tournament-arena.js';
             '<div id="tournamentChampion" style="margin-top:12px;"></div>';
     }
 
-    // ============================================================
-    // PENYUSUN BRACKET & RESOLUSI PEMENANG
-    // ============================================================
+    
+    
+    
     function TRN_buildBracketPool(formatKey) {
         const pool = TRN_getFullAgentPool();
         for (let i = pool.length - 1; i > 0; i--) {
@@ -124,10 +120,10 @@ import { TRN_DebateArena } from './tor-tournament-arena.js';
         if (formatKey === 'top16') {
             return pool.slice(0, Math.min(16, pool.length));
         }
-        // 'full' — seluruh roster yang terdeteksi dari dashboard (bisa
-        // sampai ~200 agen). Match berjumlah besar = banyak panggilan
-        // AI dan makan waktu lama; ini konsekuensi wajar dari pilihan
-        // format ini, bukan bug.
+        
+        
+        
+        
         return pool;
     }
 
@@ -149,9 +145,9 @@ import { TRN_DebateArena } from './tor-tournament-arena.js';
         return agentA;
     }
 
-    // ============================================================
-    // ORKESTRASI TURNAMEN (single-elimination bracket)
-    // ============================================================
+    
+    
+    
 
     function TRN_updateTournamentProgress(text) {
         const el = document.getElementById('tournamentProgress');
@@ -334,8 +330,8 @@ import { TRN_DebateArena } from './tor-tournament-arena.js';
             voiceToggle.addEventListener('change', function(e) {
                 tournamentArena.voice.isActive = e.target.checked;
                 if (e.target.checked && window.speechSynthesis) {
-                    // FIX suara tidak keluar: sama spt Debat — buka kunci
-                    // speechSynthesis persis di gesture klik toggle ini.
+                    
+                    
                     window.speechSynthesis.cancel();
                     const unlock = new SpeechSynthesisUtterance('ok');
                     unlock.volume = 0.01;
@@ -431,10 +427,10 @@ import { TRN_DebateArena } from './tor-tournament-arena.js';
         setTimeout(TRN_upgradeTournamentUI, 200);
     }
 
-    // ============================================================
-    // 12. HISTORY MODAL (belum ada tombol pemicu di panel Turnamen;
-    //     fungsi disiapkan untuk pemakaian mendatang)
-    // ============================================================
+    
+    
+    
+    
     function TRN_showHistoryModal(history) {
         const modal = document.createElement('div');
         modal.style.cssText = 'position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); display:flex; align-items:center; justify-content:center; z-index:9999; padding:20px; animation:fadeIn 0.3s ease;';
@@ -471,9 +467,9 @@ import { TRN_DebateArena } from './tor-tournament-arena.js';
         });
     }
 
-    // ============================================================
-    // 13. CSS ANIMATIONS
-    // ============================================================
+    
+    
+    
     const style = document.createElement('style');
     style.textContent = '@keyframes fadeIn { from { opacity:0; transform:translateY(-10px); } to { opacity:1; transform:translateY(0); } } @keyframes pulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.02)} } #tournamentContainer::-webkit-scrollbar { width:6px; } #tournamentContainer::-webkit-scrollbar-track { background:rgba(255,255,255,0.05); border-radius:3px; } #tournamentContainer::-webkit-scrollbar-thumb { background:rgba(0,255,163,0.3); border-radius:3px; } #tournamentContainer::-webkit-scrollbar-thumb:hover { background:rgba(0,255,163,0.5); } .btn-start-light { transition:all 0.3s ease; } .btn-start-light:hover { box-shadow:0 8px 30px rgba(0,255,163,0.2); }';
     document.head.appendChild(style);

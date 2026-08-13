@@ -1,8 +1,4 @@
-/* ============================================================
-   interactive/debate/deb-core.js
-   INTI DEBAT — upgrade UI, modal riwayat, CSS, instansiasi
-   DEB_DebateArena, render panel, init. Dimuat PALING TERAKHIR.
-   ============================================================ */
+
 import { DEB_CONFIG, DEB_showToast, DEB_getAgentProfile, DEB_populateAgentSelect } from './deb-config.js';
 import { DEB_State } from './deb-state.js';
 import { DEB_clearCache, DEB_getCacheStats } from './deb-data-engine.js';
@@ -119,9 +115,9 @@ import { DEB_DebateArena } from './deb-debate-arena.js';
         });
     }
 
-    // ============================================================
-    // 16. HISTORY MODAL
-    // ============================================================
+    
+    
+    
     function DEB_showHistoryModal(history) {
         const modal = document.createElement('div');
         modal.style.cssText = 'position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); display:flex; align-items:center; justify-content:center; z-index:9999; padding:20px; animation:fadeIn 0.3s ease;';
@@ -158,17 +154,17 @@ import { DEB_DebateArena } from './deb-debate-arena.js';
         });
     }
 
-    // ============================================================
-    // 17. CSS ANIMATIONS
-    // ============================================================
+    
+    
+    
 
     const styleEl = document.createElement('style');
     styleEl.textContent = '@keyframes fadeIn { from { opacity:0; transform:translateY(-10px); } to { opacity:1; transform:translateY(0); } } @keyframes pulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.02)} } #debateLiveContainer::-webkit-scrollbar { width:6px; } #debateLiveContainer::-webkit-scrollbar-track { background:rgba(255,255,255,0.05); border-radius:3px; } #debateLiveContainer::-webkit-scrollbar-thumb { background:rgba(0,255,163,0.3); border-radius:3px; } #debateLiveContainer::-webkit-scrollbar-thumb:hover { background:rgba(0,255,163,0.5); } .btn-start-light, .btn-stop-light, .btn-export-light { transition:all 0.3s ease; } .btn-start-light:hover, .btn-stop-light:hover { transform:translateY(-2px); } .btn-start-light:hover { box-shadow:0 8px 30px rgba(0,255,163,0.2); } .btn-stop-light:hover { box-shadow:0 8px 30px rgba(255,107,107,0.2); } .btn-export-light:hover { background:rgba(255,255,255,0.06); color:#fff; }';
     document.head.appendChild(styleEl);
 
-    // ============================================================
-    // 18. INITIALIZATION
-    // ============================================================
+    
+    
+    
     const debate = new DEB_DebateArena();
     window.KESEMPATAN.DebateArena = debate;
 
@@ -182,10 +178,10 @@ import { DEB_DebateArena } from './deb-debate-arena.js';
         DEB_populateAgentSelect(document.getElementById('debateAgentA'), 0);
         DEB_populateAgentSelect(document.getElementById('debateAgentB'), 1);
 
-        // Roster agen dashboard bisa selesai dirender SETELAH panel ini
-        // pertama kali tampil (mis. kategori agen lain masih memuat).
-        // Coba isi ulang beberapa kali di awal supaya dropdown tidak
-        // "macet kosong" kalau user langsung buka tab Debat lebih dulu.
+        
+        
+        
+        
         [500, 1500, 3000].forEach(function(delay) {
             setTimeout(function() {
                 const selA = document.getElementById('debateAgentA');
@@ -208,12 +204,12 @@ import { DEB_DebateArena } from './deb-debate-arena.js';
             voiceToggle.addEventListener('change', function() {
                 debate.voice.toggle();
                 if (debate.voice.isActive) {
-                    // FIX suara tidak keluar: browser (Chrome Android dkk)
-                    // membisukan speechSynthesis.speak() kalau dipanggil
-                    // TIDAK langsung dari gesture klik user — argumen debat
-                    // baru bicara jauh setelah beberapa await async. Klik
-                    // toggle INI adalah gesture asli, jadi "buka kunci" di
-                    // sini dgn utterance singkat nyaris tak terdengar.
+                    
+                    
+                    
+                    
+                    
+                    
                     if (window.speechSynthesis) {
                         window.speechSynthesis.cancel();
                         const unlock = new SpeechSynthesisUtterance('ok');
@@ -260,10 +256,10 @@ import { DEB_DebateArena } from './deb-debate-arena.js';
                     return;
                 }
 
-                // Roster agen bisa saja belum siap saat panel pertama kali
-                // dirender (dashboard masih memuat). Coba isi ulang dulu
-                // sebelum menyerah, supaya "Agent tidak valid" tidak
-                // muncul begitu saja tanpa penjelasan.
+                
+                
+                
+                
                 if (!agentA || !agentB) {
                     DEB_populateAgentSelect(agentASel, 0);
                     DEB_populateAgentSelect(agentBSel, 1);
@@ -282,7 +278,7 @@ import { DEB_DebateArena } from './deb-debate-arena.js';
                 try {
                     await debate.startDebate({ topic: topic, agentA: agentA, agentB: agentB, rounds: rounds, model: model, moderator: moderator });
                 } catch (_) {
-                    // Silent fail
+                    
                 } finally {
                     startBtn.disabled = false;
                     startBtn.textContent = 'Mulai Debat';
@@ -339,9 +335,9 @@ import { DEB_DebateArena } from './deb-debate-arena.js';
         setTimeout(DEB_upgradeDebateUI, 200);
     }
 
-    // ============================================================
-    // 19. INITIALIZE
-    // ============================================================
+    
+    
+    
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', DEB_initDebateUI);
     } else {

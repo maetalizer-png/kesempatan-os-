@@ -1,17 +1,11 @@
-/* ============================================================
-COMPONENTS/CHARTS.CSS — Radar & Time Analytic (BENTUK A, rim
-tersambung). Kartu = clip-path chamfer + latar neon yang tampak
-sebagai garis 1px lewat ::before inset:1px (pola sama dengan
-.threshold-section di forms.css) => garis bordir MENYAMBUNG di
-pojok chamfer, tidak terputus. Napas 12px di container.
-============================================================ */
-/* napas panel Time Analytic (kebal cache) */
+
+
 #timeAnalyticsContainer {
     box-sizing: border-box !important;
     padding-left: 12px !important;
     padding-right: 12px !important;
 }
-/* ---- kartu grafik: rim A tersambung ---- */
+
 .chart-container {
     position: relative;
     isolation: isolate;

@@ -42,7 +42,7 @@ export class SmartCache {
             return undefined;
         }
 
-        // Refresh posisi (LRU) — Map di JS mempertahankan urutan insersi.
+        
         this._store.delete(key);
         this._store.set(key, entry);
         this._hits++;
@@ -124,7 +124,7 @@ export const InternalLogger = (function () {
             try {
                 listener(entry);
             } catch (_) {
-                // silent
+                
             }
         }
 
@@ -233,7 +233,7 @@ export const NotificationSystem = (function () {
             try {
                 listener(publicNotification);
             } catch (_) {
-                // silent
+                
             }
         }
 
@@ -358,10 +358,10 @@ KESEMPATAN.KesDatabase._dbUtils = Object.freeze({
     sleep: sleep
 });
 
-// Bare (not KESEMPATAN.InternalLogger, which is a separate logger owned by
-// js/core/utils.js): dozens of unrelated files (country/data loaders, hitl.js,
-// response-cache.js, etc.) read window.InternalLogger directly as a shared
-// cross-cutting logger.
+
+
+
+
 window.InternalLogger = InternalLogger;
 
 if (window.Utils && window.Utils.Logger) {

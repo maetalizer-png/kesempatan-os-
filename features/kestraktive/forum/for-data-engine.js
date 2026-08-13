@@ -1,12 +1,8 @@
-/* ============================================================
-   interactive/forum/for-data-engine.js
-   OTAK FORUM — cache, integrasi World/Memory/Database, smart
-   search, penyusun prompt forum, panggilan AI.
-   ============================================================ */
+
 import { FOR_CONFIG } from './for-config.js';
 import { FOR_State } from './for-state.js';
 
-// ---------- CACHE SYSTEM ----------
+
 export function FOR_getCached(key) {
         const entry = FOR_State.queryCache.get(key);
         if (!entry) {
@@ -42,7 +38,7 @@ export function FOR_getCacheStats() {
         };
     }
 
-// ---------- INTEGRASI DATA (World / Memory / Database) ----------
+
 export function FOR_getStaticData() {
         return window.__STATIC_DATA || [];
     }
@@ -70,7 +66,7 @@ export function FOR_smartSearch(query, data, threshold) {
             let score = 0;
             let matchCount = 0;
             
-            // FAKTOR 1: Keyword match (weighted)
+            
             for (const kw of keywords) {
                 if (text.includes(kw)) {
                     matchCount++;
@@ -78,7 +74,7 @@ export function FOR_smartSearch(query, data, threshold) {
                 }
             }
             
-            // FAKTOR 2: Semantic similarity (kalau ada embedding)
+            
             if (item.embedding) {
                 const queryEmbedding = window.KESEMPATAN?.Memory?.MemoryUtils?.simpleEmbed ? 
                     window.KESEMPATAN.Memory.MemoryUtils.simpleEmbed(query) : null;
@@ -88,7 +84,7 @@ export function FOR_smartSearch(query, data, threshold) {
                 }
             }
             
-            // FAKTOR 3: Metadata boost
+            
             if (item.metadata) {
                 if (item.metadata.type === 'country' || item.metadata.type === 'language') {
                     score += 5;
@@ -107,7 +103,7 @@ export function FOR_smartSearch(query, data, threshold) {
                 }
             }
             
-            // FAKTOR 4: Recency boost
+            
             if (item.timestamp) {
                 const age = Date.now() - item.timestamp;
                 const days = age / (1000 * 60 * 60 * 24);
@@ -120,7 +116,7 @@ export function FOR_smartSearch(query, data, threshold) {
                 }
             }
             
-            // FAKTOR 5: Length boost (data lebih panjang = lebih informatif)
+            
             if (text.length > 100) {
                 score += 2;
             }
@@ -128,7 +124,7 @@ export function FOR_smartSearch(query, data, threshold) {
                 score += 3;
             }
             
-            // FAKTOR 6: Keyword density
+            
             const wordCount = text.split(' ').length || 1;
             const density = matchCount / wordCount;
             score += density * 10;
@@ -186,7 +182,7 @@ export function FOR_fetchStaticData(query) {
         return results;
     }
 
-// ---------- FETCH KONTEKS (3 SUMBER) ----------
+
 export async function FOR_fetchFromVectorMemory(query, topK) {
         const memory = FOR_getMemoryInstance();
         if (!memory || typeof memory.search !== 'function') {
@@ -211,9 +207,9 @@ export async function FOR_fetchFromVectorMemory(query, topK) {
         }
     }
 
-    // BARU: dulu Forum cuma MEMBACA dari Vector Memory, tidak pernah
-    // menyimpan hasil diskusi kembali. Meniru pola yang sudah terbukti
-    // di Debate (DEB_saveDebateToMemory), Chat AI, dan Chat Agent.
+    
+    
+    
     export async function FOR_saveMessageToMemory(userMessage, aiResponse, agentName) {
         const memory = FOR_getMemoryInstance();
         if (!memory) return;
@@ -243,12 +239,12 @@ export async function FOR_fetchFromDatabase(query, limit) {
         }
         const maxResults = limit || FOR_CONFIG.DB_LIMIT;
 
-        // KESDatabase (kes-database.js) mengekspos API generik: query/get/
-        // find/add/insert/save — bukan queryParser.parseAndExecute atau
-        // executeQuery (API itu tidak pernah ada di implementasi sungguhan,
-        // jadi lapisan Database selama ini selalu kosong). database/search.js
-        // kemungkinan menambah method .search() — dicoba lebih dulu, lalu
-        // fallback ke find/query yang memang ada di instance KESDatabase.
+        
+        
+        
+        
+        
+        
         const attempts = [
             function() { return db.search ? db.search(query, { limit: maxResults }) : null; },
             function() { return db.find ? db.find({ text: query, limit: maxResults }) : null; },
@@ -268,7 +264,7 @@ export async function FOR_fetchFromDatabase(query, limit) {
                     return result.slice(0, maxResults);
                 }
             } catch (_) {
-                // Coba strategi API berikutnya
+                
             }
         }
         return [];
@@ -300,7 +296,7 @@ export async function FOR_getAllContext(query, options) {
         const combined = [];
         const seenIds = new Set();
         
-        // PRIORITAS 1: STATIC DATA (World) — paling valid
+        
         for (const item of staticData) {
             const id = item.id || item.text?.substring(0, 50);
             if (!seenIds.has(id)) {
@@ -309,7 +305,7 @@ export async function FOR_getAllContext(query, options) {
             }
         }
         
-        // PRIORITAS 2: MEMORY DATA
+        
         for (const item of memoryData) {
             const id = item.id || item.text?.substring(0, 50);
             if (!seenIds.has(id)) {
@@ -318,7 +314,7 @@ export async function FOR_getAllContext(query, options) {
             }
         }
         
-        // PRIORITAS 3: DATABASE
+        
         for (const item of dbData) {
             const id = item.id || item.text?.substring(0, 50);
             if (!seenIds.has(id)) {
@@ -327,7 +323,7 @@ export async function FOR_getAllContext(query, options) {
             }
         }
         
-        // SORT BY PRIORITY + SCORE
+        
         combined.sort(function(a, b) {
             if (a._priority !== b._priority) {
                 return a._priority - b._priority;
@@ -335,7 +331,7 @@ export async function FOR_getAllContext(query, options) {
             return (b._score || 0) - (a._score || 0);
         });
         
-        // BARU: OBSERVATION ENGINE + NOISE FILTERING
+        
         let obsContext = { marketInsight: '', credibilityNote: '' };
         try {
             if (window.KESEMPATAN?.Observation && typeof window.KESEMPATAN?.Observation.getSignals === 'function' && typeof window.KESEMPATAN?.Observation.generateAIInsight === 'function') {
@@ -376,15 +372,15 @@ export async function FOR_getAllContext(query, options) {
         return result;
     }
 
-// ---------- BUILD PROMPT FORUM ----------
+
 export function FOR_buildForumPrompt(agent, role, question, context, agentSystemPrompt) {
         let prompt = 'Kamu adalah ' + agent + ', ' + role + '.\n\n';
         if (agentSystemPrompt) {
-            // FIX KUALITAS: sebelumnya cuma "Kamu adalah X, role satu
-            // kalimat". Sekarang selipkan PROFIL KEAHLIAN LENGKAP
-            // (systemPrompt dari prompts/*.json, sama yg dipakai Dashboard)
-            // supaya jawaban forum benar2 mencerminkan keahlian spesifik
-            // agen, bukan jawaban generik yg bisa ditulis agen mana pun.
+            
+            
+            
+            
+            
             prompt += 'PROFIL & KEAHLIAN LENGKAP ANDA:\n' + agentSystemPrompt + '\n';
             prompt += '(CATATAN: instruksi "Output dalam format JSON" di profil di atas TIDAK berlaku di forum ini — tetap terapkan cara berpikir & ketajaman analisisnya, tapi jawab dengan bahasa natural sesuai instruksi di bawah, bukan JSON.)\n\n';
         }
@@ -430,7 +426,7 @@ export function FOR_buildForumPrompt(agent, role, question, context, agentSystem
         return prompt;
     }
 
-// ---------- PREFERENSI ----------
+
 export function FOR_loadPreferences() {
         try {
             const saved = localStorage.getItem(FOR_CONFIG.PREF_KEY);
@@ -447,7 +443,7 @@ export function FOR_loadPreferences() {
                 };
             }
         } catch (_) {
-            // Silent fail
+            
         }
         return {
             categories: ['politik', 'ekonomi', 'teknologi'],
@@ -471,11 +467,11 @@ export function FOR_savePreferences(prefs) {
                 FOR_State.stylePreference = prefs.style;
             }
         } catch (_) {
-            // Silent fail
+            
         }
     }
 
-// ---------- IDENTITAS AGEN ----------
+
 export function FOR_humanizeAgentName(agent) {
         if (!agent || typeof agent !== 'string') {
             return '';
@@ -512,7 +508,7 @@ export function FOR_getAgentAvatar(agent) {
         return profile.emoji || '';
     }
 
-// ---------- PANGGILAN AI ----------
+
 export async function FOR_callAI(prompt, apiKey) {
         if (FOR_State.currentAbortController) {
             FOR_State.currentAbortController.abort();
@@ -530,9 +526,9 @@ export async function FOR_callAI(prompt, apiKey) {
                     body: JSON.stringify({
                         model: 'deepseek/deepseek-chat',
                         messages: [{ role: 'user', content: prompt }],
-                        // DISAMAKAN dengan Debate/Tournament (800/0.7) atas
-                        // permintaan user — dulu 500/0.3 membuat respons Forum
-                        // terasa lebih datar dibanding Debate.
+                        
+                        
+                        
                         max_tokens: 1200,
                         temperature: 0.7
                     }),
@@ -545,8 +541,8 @@ export async function FOR_callAI(prompt, apiKey) {
                 throw new Error(data.error?.message || 'Gagal');
             } catch (error) {
                 if (error.name === 'AbortError') throw error;
-                // OpenRouter specifically failed — fall through to the
-                // multi-provider fallback below instead of failing outright.
+                
+                
             }
         }
 

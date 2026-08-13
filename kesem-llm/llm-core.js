@@ -7,8 +7,8 @@ import { LLMWeights } from './llm-weights.js';
 import { LLMGpu } from './llm-gpu.js';
 
 const Logger = window.Utils?.Logger || {
-    info: function () { /* silent */ },
-    warn: function () { /* silent */ },
+    info: function () {  },
+    warn: function () {  },
     error: function (mod, msg) { console.error('[ERROR] [' + mod + '] ' + msg); }
 };
 function requireDeps() {
@@ -21,21 +21,21 @@ function requireDeps() {
 }
 let activeModel = null;
 
-// ============================================================
-// GPU WARM-UP (Fase 1 roadmap: llm-gpu.js sudah punya kernel WebGPU +
-// self-verifikasi kebenaran/kecepatan sejak lama, tapi initGPU() tidak
-// pernah dipanggil siapa pun — kapabilitasnya menganggur total. Ini
-// HANYA menjalankan verifikasi itu sekali per lifetime Worker dan
-// mencatat hasilnya lewat getStats(); TIDAK mengubah forward pass
-// inference/training yang sudah ada (llm-attention.js/llm-transformer.js
-// tetap 100% CPU seperti sebelumnya). Menyambungkan matmul asli ke GPU
-// butuh membuat seluruh rantai forward pass (dipakai bersama training)
-// jadi async, dan tidak bisa diverifikasi di sandbox ini sama sekali
-// (navigator.gpu tidak ada) — jadi TIDAK dilakukan di sini. Langkah ini
-// membuat verdict self-test-nya kelihatan (aktif & lebih cepat, atau
-// dinonaktifkan otomatis + alasannya) sebagai dasar keputusan berbasis
-// data untuk penyambungan penuh nanti, bukan tebakan.
-// ============================================================
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 let gpuAttempted = false;
 let gpuStatus = { attempted: false, active: false };
 
@@ -50,9 +50,9 @@ function warmupGpu(model) {
     });
 }
 
-// ============================================================
-// INISIALISASI
-// ============================================================
+
+
+
 async function initialize(options) {
     const { Runtime, Checkpoint, Trainer, Tokenizer } = requireDeps();
     options = options || {};
@@ -113,22 +113,22 @@ function getModel() {
     }
     return activeModel;
 }
-// ============================================================
-// GENERATE
-// ============================================================
-// 🔧 TAHAP 2 (anti-macet): generateText sekarang async supaya bisa
-// meng-await Runtime.generate() yang (setelah llm-runtime.js diperbarui)
-// melepas kendali ke event loop tiap token. Sebelum runtime diperbarui,
-// Runtime.generate masih sinkron — `await` pada nilai sinkron tetap
-// mengembalikan nilai itu apa adanya, jadi perubahan ini AMAN ditempel
-// lebih dulu: perilaku tidak berubah sampai runtime ikut di-update.
+
+
+
+
+
+
+
+
+
 async function generateText(promptText, options) {
     const { Runtime } = requireDeps();
     return await Runtime.generateCached(getModel(), promptText, options);
 }
-// ============================================================
-// TRAIN
-// ============================================================
+
+
+
 async function train(corpusTexts, options) {
     const { Trainer, Tokenizer } = requireDeps();
     const model = getModel();
@@ -139,9 +139,9 @@ async function train(corpusTexts, options) {
     });
     return await Trainer.trainOnCorpus(model, sequences, options);
 }
-// ============================================================
-// SIMPAN / MUAT
-// ============================================================
+
+
+
 async function save(name, metadata) {
     const { Checkpoint } = requireDeps();
     const checkpoint = Checkpoint.createCheckpoint(getModel(), metadata);
@@ -149,12 +149,12 @@ async function save(name, metadata) {
 }
 async function load(name) {
     const { Checkpoint } = requireDeps();
-    // FIX KRITIS: loadCheckpointFromStorage() sekarang ASYNC (IndexedDB,
-    // bukan localStorage lagi) — SEBELUMNYA kode ini memperlakukan
-    // hasilnya sbg nilai langsung, padahal itu Promise (selalu truthy,
-    // dan restoreModelFromCheckpoint() akan menerima objek Promise alih-
-    // alih data checkpoint asli — salah total). Sekarang di-await dengan
-    // benar.
+    
+    
+    
+    
+    
+    
     const saved = await Checkpoint.loadCheckpointFromStorage(name);
     if (!saved) {
         throw new Error('[LLMCore] Checkpoint "' + name + '" tidak ditemukan');
@@ -162,12 +162,12 @@ async function load(name) {
     activeModel = Checkpoint.restoreModelFromCheckpoint(saved);
     return activeModel;
 }
-// ============================================================
-// CHECKPOINT SEBAGAI OBJEK MURNI (tanpa localStorage) — dipakai
-// llm-worker.js, yang TIDAK punya akses localStorage (API itu cuma
-// ada di Window, bukan di Worker). Thread utama yang menyimpan/
-// membaca localStorage; worker cuma mengolah datanya.
-// ============================================================
+
+
+
+
+
+
 function buildCheckpointObject(metadata) {
     const { Checkpoint } = requireDeps();
     return Checkpoint.createCheckpoint(getModel(), metadata);

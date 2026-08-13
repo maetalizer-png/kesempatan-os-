@@ -1,8 +1,4 @@
-/* ============================================================
-   📁 rap/logic.js (AGGREGATOR)
-   🔥 GABUNGKAN SEMUA MODUL RAP, EKSPOR KE KESEMPATAN.RapBattle.logic
-   🔥 ✅ SUDAH TERHUBUNG KE ENGINE BARU!
-   ============================================================ */
+
 
 import { RapConfig as config } from './rap-config.js';
 import { RapHelpers as helpers } from './rap-helpers.js';
@@ -14,7 +10,7 @@ window.KESEMPATAN = KESEMPATAN;
 KESEMPATAN.RapBattle = KESEMPATAN.RapBattle || {};
 
 export const logic = {
-    // Config & State
+    
     CONFIG: config.CONFIG,
     rapState: config.rapState,
     getRapBattleActive: config.getRapBattleActive,
@@ -22,53 +18,53 @@ export const logic = {
     getRapAbort: config.getRapAbort,
     setRapAbort: config.setRapAbort,
 
-    // Helpers
+    
     sanitizeHTML: helpers.sanitizeHTML,
     getTimestamp: helpers.getTimestamp,
     getDisplayName: helpers.getDisplayName,
     getApiKey: helpers.getApiKey,
 
-    // Beat
+    
     initBeat: orchestrator.initBeat,
     playBeat: orchestrator.playBeat,
     stopBeat: orchestrator.stopBeat,
     toggleBeat: orchestrator.toggleBeat,
-    // 🔥 FIX: setBeatPattern/getBeatPattern sudah ada di orchestrator.js
-    // tapi sebelumnya TIDAK diteruskan ke sini — jadi dropdown genre
-    // beat di UI memanggil fungsi yang undefined (silent no-op).
+    
+    
+    
     setBeatPattern: orchestrator.setBeatPattern,
     getBeatPattern: orchestrator.getBeatPattern,
-    // 🔥 BARU: sistem lagu (soundbank) — ganti lagu sekaligus genre & BPM
+    
     setActiveSong: orchestrator.setActiveSong,
     getActiveSong: orchestrator.getActiveSong,
     getCurrentBPM: orchestrator.getCurrentBPM,
     buildSongContext: orchestrator.buildSongContext,
     speakHook: orchestrator.speakHook,
 
-    // Flow
+    
     analyzeFlow: orchestrator.analyzeFlow,
 
-    // Audience
+    
     addAudienceReaction: orchestrator.addAudienceReaction,
     randomReaction: orchestrator.randomReaction,
     startAutoReactions: orchestrator.startAutoReactions,
     stopAutoReactions: orchestrator.stopAutoReactions,
 
-    // Voice
+    
     speakRap: orchestrator.speakRap,
 
-    // History
+    
     saveHistory: orchestrator.saveHistory,
     loadHistory: orchestrator.loadHistory,
 
-    // Export
+    
     exportRapResult: orchestrator.exportRapResult,
 
-    // ============================================================
-    // 🔥 ENGINE BARU — METHOD YANG TERSEDIA
-    // ============================================================
     
-    // Character Engine
+    
+    
+    
+    
     getPersona: engine.getPersona,
     getEmotion: engine.getEmotion,
     getEmotionModifier: engine.getEmotionModifier,
@@ -76,48 +72,48 @@ export const logic = {
     getAllPersonaCards: engine.getAllPersonaCards,
     getVoiceProfile: engine.getVoiceProfile,
 
-    // Intelligence Engine
+    
     getAgents: engine.getAgents,
     createBattleDirector: engine.createBattleDirector,
     predictCrowdReaction: engine.predictCrowdReaction,
     getReactions: engine.getReactions,
     getBattlePlan: engine.getBattlePlan,
 
-    // Optimizer Engine
+    
     learn: engine.learn,
     getLessons: engine.getLessons,
     optimizeVerse: engine.optimizeVerse,
     checkQuality: engine.checkQuality,
 
-    // AI & Core
+    
     buildRapPrompt: engine.buildRapPrompt,
     callAI: engine.callAI,
     getRap: engine.getRap,
     judgeRap: engine.judgeRap,
 
-    // ============================================================
-    // 🔥 COMPATIBILITY — METHOD LAMA YANG MASIH DIPERLUKAN
-    // ============================================================
     
-    // 🔥 Diganti dengan getBattlePlan (tetap export untuk kompatibilitas)
+    
+    
+    
+    
     chooseStrategy: function(round, totalRounds, opponentAnalysis, memory) {
         return engine.getBattlePlan(round, totalRounds);
     },
 
-    // 🔥 Diganti dengan checkQuality (tetap export untuk kompatibilitas)
+    
     evaluateVerseLocal: function(verse, memory) {
         return engine.checkQuality(verse);
     },
 
-    // 🔥 Diganti dengan _analyzeOpponent (tetap export untuk kompatibilitas)
+    
     analyzeOpponent: function(opponentVerse) {
-        // Panggil private method melalui wrapper
+        
         return engine._analyzeOpponent ? 
             engine._analyzeOpponent(opponentVerse) : 
             { keywords: [], repeatedWords: [], weaknesses: [] };
     },
 
-    // 🔥 Battle Memory (tetap)
+    
     createBattleMemory: engine._extractSignature ? 
         function() { return { usedEndings: new Set(), usedOpeners: new Set(), wordCounts: {}, ownVerses: [] }; } :
         function() { return { usedEndings: new Set(), usedOpeners: new Set(), wordCounts: {}, ownVerses: [] }; },
@@ -132,7 +128,7 @@ export const logic = {
         }
     },
 
-    // Orchestrator - Main
+    
     startRapBattle: orchestrator.startRapBattle,
     abortRap: orchestrator.abortRap,
     runTournament: orchestrator.runTournament,

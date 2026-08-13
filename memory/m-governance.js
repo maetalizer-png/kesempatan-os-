@@ -6,12 +6,12 @@ KESEMPATAN.Memory = KESEMPATAN.Memory || {};
 
 const Logger = Utils.Logger;
 
-// ============================================================
-// KONTRAK PENYIMPANAN — FROZEN
-// JANGAN rename STORAGE_KEY sembarangan (mereset kuota/tier).
-// State governance bukan data mahal, tapi ganti hanya lewat
-// migration jika benar-benar perlu.
-// ============================================================
+
+
+
+
+
+
 const GOV_CONFIG = {
     STORAGE_KEY: 'kes_memory_governance',
     NOVELTY_THRESHOLD: 0.92,
@@ -33,9 +33,9 @@ const GOV_CONFIG = {
     MAX_HISTORY_EVENTS: 150
 };
 
-// ============================================================
-// STATE
-// ============================================================
+
+
+
 let state = {
     dayStamp: new Date().toDateString(),
     budgetUsed: {},
@@ -75,7 +75,7 @@ function loadState() {
             state = Object.assign({}, state, parsed);
         }
     } catch (_) {
-        // start clean
+        
     }
 }
 
@@ -87,7 +87,7 @@ function saveState() {
 
         localStorage.setItem(GOV_CONFIG.STORAGE_KEY, JSON.stringify(state));
     } catch (_) {
-        // ignore storage error
+        
     }
 }
 
@@ -102,9 +102,9 @@ function resetDailyIfNeeded() {
     }
 }
 
-// ============================================================
-// NOVELTY CHECK
-// ============================================================
+
+
+
 async function checkNovelty(text) {
     const core = window._memoryCore;
 
@@ -136,9 +136,9 @@ async function checkNovelty(text) {
     }
 }
 
-// ============================================================
-// BUDGET GOVERNOR
-// ============================================================
+
+
+
 function getDailyBudgetFor(source) {
     if (GOV_CONFIG.DAILY_BUDGET_FIXED[source] !== undefined) {
         return GOV_CONFIG.DAILY_BUDGET_FIXED[source];
@@ -210,9 +210,9 @@ function consumeBudget(source) {
     }
 }
 
-// ============================================================
-// TIERING
-// ============================================================
+
+
+
 function recordAccess(id) {
     const entry = state.tierData[id];
 
@@ -242,9 +242,9 @@ function getTier(id) {
     return entry ? entry.tier : null;
 }
 
-// ============================================================
-// HISTORY & STATS
-// ============================================================
+
+
+
 function recordEvent(type, source, text, extra) {
     state.history.unshift(Object.assign({
         type: type,
@@ -323,9 +323,9 @@ function setEmergencyStop(active) {
     );
 }
 
-// ============================================================
-// MAIN GATE
-// ============================================================
+
+
+
 async function ingest(text, metadata, image, audio) {
     metadata = metadata || {};
 
@@ -426,15 +426,15 @@ async function ingest(text, metadata, image, audio) {
     };
 }
 
-// ============================================================
-// INSTALL GATE
-// ============================================================
+
+
+
 function installGate() {
     const mem = window.VectorMemory || window._memoryCore;
 
-    // Guard GLOBAL (bukan per-objek) supaya gate tidak pernah
-    // terbungkus dua kali meski install dipanggil pada objek
-    // berbeda di timing berbeda.
+    
+    
+    
     if (!mem || typeof mem.save !== 'function' || window.__MemoryGovernanceInstalled) {
         return false;
     }
@@ -455,15 +455,15 @@ function installGate() {
 
 let installAttempts = 0;
 
-// MODERNISASI ASYNC (Juli 2026, risiko rendah): sebelumnya cuma polling
-// setInterval 500ms x40 percobaan (bisa nunggu sia-sia sampai 20 detik
-// kalau VectorMemory lambat siap) — sekarang dengarkan event
-// 'memory-api-ready' yang SUDAH di-dispatch m-index.js begitu
-// window.VectorMemory benar-benar siap (sukses ATAU fallback). Polling
-// TETAP disertakan sbg jaring pengaman (kalau listener terpasang
-// SETELAH event sempat terlanjur ter-dispatch duluan, akibat urutan
-// modul yang tidak selalu sama), tapi jadi jalur cadangan yang jarang
-// terpakai, bukan mekanisme utama lagi.
+
+
+
+
+
+
+
+
+
 if (typeof document !== 'undefined') {
     document.addEventListener('memory-api-ready', function onReady() {
         document.removeEventListener('memory-api-ready', onReady);
@@ -482,9 +482,9 @@ const installTimer = setInterval(function () {
 loadState();
 resetDailyIfNeeded();
 
-// ============================================================
-// DASHBOARD
-// ============================================================
+
+
+
 function renderDashboard(containerId) {
     const container = document.getElementById(containerId || 'memoryGovernanceDashboard');
 

@@ -1,9 +1,9 @@
 const KESEMPATAN = window.KESEMPATAN || {};
 window.KESEMPATAN = KESEMPATAN;
 
-// ==========================================================
-// 2. INTERNAL LOGGER (Zero console.log)
-// ==========================================================
+
+
+
 const InternalLogger = window.InternalLogger || {
     _logs: [],
     _maxLogs: 1000,
@@ -24,12 +24,12 @@ const InternalLogger = window.InternalLogger || {
     error: function(module, message) { this.log(this._levels.ERROR, module, message); }
 };
 
-// ==========================================================
-// 3. REGISTER DATA
-// ==========================================================
-// ==========================================================
-// 4. CACHE SYSTEM
-// ==========================================================
+
+
+
+
+
+
 const DataCache = {
     _cache: new Map(),
     _maxSize: 100,
@@ -56,9 +56,9 @@ const DataCache = {
     getStats: function() { return { size: this._cache.size, maxSize: this._maxSize, ttl: this._ttl }; }
 };
 
-// ==========================================================
-// 5. VALIDATION
-// ==========================================================
+
+
+
 const validatePlatform = function(item) {
     if (!item || typeof item !== 'object') return false;
     if (!item.metadata || typeof item.metadata !== 'object') return false;
@@ -67,14 +67,14 @@ const validatePlatform = function(item) {
     return true;
 };
 
-// ==========================================================
-// 6. PLATFORM DATA — 85+ GLOBAL!
-// ==========================================================
+
+
+
 
 const data = [
-    // ==========================================================
-    // 🌍 GLOBAL (6)
-    // ==========================================================
+    
+    
+    
     {
         text: 'LinkedIn - Platform profesional global terbesar. Didirikan 2002 oleh Reid Hoffman. 900+ juta pengguna di 200+ negara.',
         metadata: {
@@ -167,9 +167,9 @@ const data = [
         }
     },
     
-    // ==========================================================
-    // 🇺🇸 AMERIKA (4)
-    // ==========================================================
+    
+    
+    
     {
         text: 'USAJobs - Platform job pemerintah AS. Resmi untuk lowongan federal.',
         metadata: {
@@ -231,9 +231,9 @@ const data = [
         }
     },
     
-    // ==========================================================
-    // 🇬🇧 INGGRIS (2)
-    // ==========================================================
+    
+    
+    
     {
         text: 'Reed - Platform job terbesar Inggris. Didirikan 1995. Lowongan berbagai bidang.',
         metadata: {
@@ -265,9 +265,9 @@ const data = [
         }
     },
     
-    // ==========================================================
-    // 🇩🇪 JERMAN (2)
-    // ==========================================================
+    
+    
+    
     {
         text: 'StepStone - Platform job Eropa. Didirikan 1996. Beroperasi di 20+ negara.',
         metadata: {
@@ -299,9 +299,9 @@ const data = [
         }
     },
     
-    // ==========================================================
-    // 🇫🇷 PRANCIS (1)
-    // ==========================================================
+    
+    
+    
     {
         text: 'Cadremploi - Platform job Prancis. Didirikan 1999. Lowongan untuk profesional.',
         metadata: {
@@ -318,9 +318,9 @@ const data = [
         }
     },
     
-    // ==========================================================
-    // 🇨🇳 CHINA (3)
-    // ==========================================================
+    
+    
+    
     {
         text: '51job - Platform job terbesar China. Didirikan 1998. Lowongan berbagai bidang.',
         metadata: {
@@ -367,9 +367,9 @@ const data = [
         }
     },
     
-    // ==========================================================
-    // 🇯🇵 JEPANG (2)
-    // ==========================================================
+    
+    
+    
     {
         text: 'Indeed Japan - Versi Indeed di Jepang. Didirikan 2004. Terbesar di Jepang.',
         metadata: {
@@ -401,9 +401,9 @@ const data = [
         }
     },
     
-    // ==========================================================
-    // 🇰🇷 KOREA SELATAN (1) — BARU!
-    // ==========================================================
+    
+    
+    
     {
         text: 'JobKorea - Platform job terbesar Korea Selatan. Didirikan 1998. Lowongan berbagai bidang.',
         metadata: {
@@ -420,9 +420,9 @@ const data = [
         }
     },
     
-    // ==========================================================
-    // 🇮🇳 INDIA (3)
-    // ==========================================================
+    
+    
+    
     {
         text: 'Naukri - Platform job terbesar India. Didirikan 1997. 60+ juta pengguna.',
         metadata: {
@@ -469,9 +469,9 @@ const data = [
         }
     },
     
-    // ==========================================================
-    // 🇦🇺 AUSTRALIA (2)
-    // ==========================================================
+    
+    
+    
     {
         text: 'Seek - Platform job terbesar Australia. Didirikan 1997. Lowongan berbagai bidang.',
         metadata: {
@@ -503,9 +503,9 @@ const data = [
         }
     },
     
-    // ==========================================================
-    // 🇳🇿 SELANDIA BARU (1) — BARU!
-    // ==========================================================
+    
+    
+    
     {
         text: 'TradeMe Jobs - Platform job terbesar Selandia Baru. Didirikan 1999.',
         metadata: {
@@ -522,9 +522,9 @@ const data = [
         }
     },
     
-    // ==========================================================
-    // 🇿🇦 AFRIKA SELATAN (1)
-    // ==========================================================
+    
+    
+    
     {
         text: 'Careers24 - Platform job terbesar Afrika Selatan. Didirikan 2004.',
         metadata: {
@@ -541,9 +541,9 @@ const data = [
         }
     },
     
-    // ==========================================================
-    // 🇮🇩 INDONESIA (11) — UPGRADE!
-    // ==========================================================
+    
+    
+    
     {
         text: 'JobStreet Indonesia - Platform job terbesar di Indonesia. Didirikan 1997. Lowongan berbagai bidang.',
         metadata: {
@@ -740,9 +740,9 @@ const data = [
         }
     },
     
-    // ==========================================================
-    // 🇨🇦 KANADA (2)
-    // ==========================================================
+    
+    
+    
     {
         text: 'Workopolis - Platform job terbesar Kanada. Didirikan 2000.',
         metadata: {
@@ -774,9 +774,9 @@ const data = [
         }
     },
     
-    // ==========================================================
-    // 🇳🇱 BELANDA (2)
-    // ==========================================================
+    
+    
+    
     {
         text: 'Indeed NL - Versi Indeed di Belanda. Didirikan 2004.',
         metadata: {
@@ -808,9 +808,9 @@ const data = [
         }
     },
     
-    // ==========================================================
-    // 🇪🇸 SPANYOL (2)
-    // ==========================================================
+    
+    
+    
     {
         text: 'InfoJobs - Platform job terbesar Spanyol. Didirikan 2001.',
         metadata: {
@@ -842,9 +842,9 @@ const data = [
         }
     },
     
-    // ==========================================================
-    // 🇮🇹 ITALIA (2)
-    // ==========================================================
+    
+    
+    
     {
         text: 'Indeed Italia - Versi Indeed di Italia. Didirikan 2004.',
         metadata: {
@@ -876,9 +876,9 @@ const data = [
         }
     },
     
-    // ==========================================================
-    // 🇵🇱 POLANDIA (2)
-    // ==========================================================
+    
+    
+    
     {
         text: 'Pracuj.pl - Platform job terbesar Polandia. Didirikan 2000.',
         metadata: {
@@ -910,9 +910,9 @@ const data = [
         }
     },
     
-    // ==========================================================
-    // 🇷🇺 RUSIA (2)
-    // ==========================================================
+    
+    
+    
     {
         text: 'HeadHunter - Platform job terbesar Rusia. Didirikan 2000.',
         metadata: {
@@ -944,9 +944,9 @@ const data = [
         }
     },
     
-    // ==========================================================
-    // 🇹🇷 TURKI (2)
-    // ==========================================================
+    
+    
+    
     {
         text: 'Kariyer.net - Platform job terbesar Turki. Didirikan 2000.',
         metadata: {
@@ -978,9 +978,9 @@ const data = [
         }
     },
     
-    // ==========================================================
-    // 🇦🇪 UEA (2)
-    // ==========================================================
+    
+    
+    
     {
         text: 'Naukri Gulf - Platform job terbesar UEA. Didirikan 2005. Fokus Timur Tengah.',
         metadata: {
@@ -1012,9 +1012,9 @@ const data = [
         }
     },
     
-    // ==========================================================
-    // 🇸🇬 SINGAPURA (2)
-    // ==========================================================
+    
+    
+    
     {
         text: 'JobStreet SG - Platform job terbesar Singapura. Didirikan 1997.',
         metadata: {
@@ -1046,9 +1046,9 @@ const data = [
         }
     },
     
-    // ==========================================================
-    // 🇲🇾 MALAYSIA (2)
-    // ==========================================================
+    
+    
+    
     {
         text: 'JobStreet MY - Platform job terbesar Malaysia. Didirikan 1997.',
         metadata: {
@@ -1080,9 +1080,9 @@ const data = [
         }
     },
     
-    // ==========================================================
-    // 🇵🇭 FILIPINA (2)
-    // ==========================================================
+    
+    
+    
     {
         text: 'JobStreet PH - Platform job terbesar Filipina. Didirikan 1997.',
         metadata: {
@@ -1114,9 +1114,9 @@ const data = [
         }
     },
     
-    // ==========================================================
-    // 🇹🇭 THAILAND (2)
-    // ==========================================================
+    
+    
+    
     {
         text: 'JobThai - Platform job terbesar Thailand. Didirikan 2001.',
         metadata: {
@@ -1148,9 +1148,9 @@ const data = [
         }
     },
     
-    // ==========================================================
-    // 🇻🇳 VIETNAM (2)
-    // ==========================================================
+    
+    
+    
     {
         text: 'VietnamWorks - Platform job terbesar Vietnam. Didirikan 2005.',
         metadata: {
@@ -1182,9 +1182,9 @@ const data = [
         }
     },
     
-    // ==========================================================
-    // 🇧🇷 BRAZIL (2)
-    // ==========================================================
+    
+    
+    
     {
         text: 'InfoJobs Brazil - Platform job terbesar Brazil. Didirikan 2005.',
         metadata: {
@@ -1216,9 +1216,9 @@ const data = [
         }
     },
     
-    // ==========================================================
-    // 🇲🇽 MEKSIKO (2)
-    // ==========================================================
+    
+    
+    
     {
         text: 'OCCMundial - Platform job terbesar Meksiko. Didirikan 2003.',
         metadata: {
@@ -1250,9 +1250,9 @@ const data = [
         }
     },
     
-    // ==========================================================
-    // 🇧🇪 BELGIA (2)
-    // ==========================================================
+    
+    
+    
     {
         text: 'Indeed Belgium - Versi Indeed di Belgia. Didirikan 2004.',
         metadata: {
@@ -1284,9 +1284,9 @@ const data = [
         }
     },
     
-    // ==========================================================
-    // 🇨🇭 SWISS (2)
-    // ==========================================================
+    
+    
+    
     {
         text: 'JobUp - Platform job terbesar Swiss. Didirikan 2001.',
         metadata: {
@@ -1318,9 +1318,9 @@ const data = [
         }
     },
     
-    // ==========================================================
-    // 🇦🇹 AUSTRIA (2)
-    // ==========================================================
+    
+    
+    
     {
         text: 'Karriere.at - Platform job terbesar Austria. Didirikan 1999.',
         metadata: {
@@ -1352,9 +1352,9 @@ const data = [
         }
     },
     
-    // ==========================================================
-    // 🇸🇪 SWEDIA (2)
-    // ==========================================================
+    
+    
+    
     {
         text: 'Arbetsförmedlingen - Platform job pemerintah Swedia. Didirikan 2000.',
         metadata: {
@@ -1386,9 +1386,9 @@ const data = [
         }
     },
     
-    // ==========================================================
-    // 🇳🇴 NORWEGIA (1)
-    // ==========================================================
+    
+    
+    
     {
         text: 'Finn.no Jobb - Platform job terbesar Norwegia. Didirikan 2000.',
         metadata: {
@@ -1405,9 +1405,9 @@ const data = [
         }
     },
     
-    // ==========================================================
-    // 🇩🇰 DENMARK (2)
-    // ==========================================================
+    
+    
+    
     {
         text: 'Jobindex - Platform job terbesar Denmark. Didirikan 1996.',
         metadata: {
@@ -1440,16 +1440,16 @@ const data = [
     }
 ];
 
-// ==========================================================
-// 7. VALIDASI & REGISTER
-// ==========================================================
+
+
+
 const validData = data.filter(validatePlatform);
 
 export const DATA = validData;
 
-// ==========================================================
-// 8. AI RECOMMENDATION MODULE
-// ==========================================================
+
+
+
 const AIKarir = {
     recommendJobs: function(userProfile) {
         const skills = userProfile.skills || [];
@@ -1604,9 +1604,9 @@ const AIKarir = {
     }
 };
 
-// ==========================================================
-// 9. REAL-TIME JOB DATA (Simulasi)
-// ==========================================================
+
+
+
 const RealTimeJob = {
     getLiveJobs: function(platform, keyword) {
         const count = 1000 + Math.floor(Math.random() * 9000);
@@ -1655,9 +1655,9 @@ const RealTimeJob = {
     }
 };
 
-// ==========================================================
-// 10. COMPANY REVIEWS MODULE
-// ==========================================================
+
+
+
 const CompanyReviews = {
     _reviews: {
         'LinkedIn': { rating: 4.2, count: 15000, categories: { workLife: 4.0, compensation: 3.8, culture: 4.3, career: 4.1 } },
@@ -1709,9 +1709,9 @@ const CompanyReviews = {
     }
 };
 
-// ==========================================================
-// 11. JOB APPLICATION TRACKER
-// ==========================================================
+
+
+
 const JobTracker = {
     _applications: [],
     _idCounter: 0,
@@ -1780,9 +1780,9 @@ const JobTracker = {
     }
 };
 
-// ==========================================================
-// 12. SALARY BENCHMARKING
-// ==========================================================
+
+
+
 const SalaryBenchmark = {
     benchmarkByIndustry: function(industry) {
         const data = {
@@ -1828,9 +1828,9 @@ const SalaryBenchmark = {
     }
 };
 
-// ==========================================================
-// 13. CHART VISUALISATION MODULE
-// ==========================================================
+
+
+
 const JobChart = {
     renderCountryChart: function(containerId) {
         const data = MarplaceKarirAPI.getCountryDistribution();
@@ -1878,12 +1878,12 @@ const JobChart = {
     }
 };
 
-// ==========================================================
-// 14. API FUNCTIONS
-// ==========================================================
+
+
+
 if (typeof KESEMPATAN.MarplaceKarirAPI === 'undefined') {
     KESEMPATAN.MarplaceKarirAPI = {
-        // SEARCH (5)
+        
         getJobPlatforms: function(query) {
             const cacheKey = 'getJobPlatforms_' + (query || 'all');
             const cached = DataCache.get(cacheKey);
@@ -2135,9 +2135,9 @@ if (typeof KESEMPATAN.MarplaceKarirAPI === 'undefined') {
             return DataCache.getStats();
         },
         
-        // ==========================================================
-        // AI RECOMMENDATION FUNCTIONS
-        // ==========================================================
+        
+        
+        
         
         recommendJobs: function(userProfile) {
             return AIKarir.recommendJobs(userProfile);
@@ -2159,9 +2159,9 @@ if (typeof KESEMPATAN.MarplaceKarirAPI === 'undefined') {
             return AIKarir.getMatchScore(cv, jobDesc);
         },
         
-        // ==========================================================
-        // REAL-TIME JOB DATA
-        // ==========================================================
+        
+        
+        
         
         getLiveJobs: function(platform, keyword) {
             return RealTimeJob.getLiveJobs(platform, keyword);
@@ -2175,9 +2175,9 @@ if (typeof KESEMPATAN.MarplaceKarirAPI === 'undefined') {
             return RealTimeJob.getLiveSalary(jobTitle, location);
         },
         
-        // ==========================================================
-        // COMPANY REVIEWS FUNCTIONS
-        // ==========================================================
+        
+        
+        
         
         getGlassdoorReviews: function(company) {
             return CompanyReviews.getGlassdoorReviews(company);
@@ -2195,9 +2195,9 @@ if (typeof KESEMPATAN.MarplaceKarirAPI === 'undefined') {
             return CompanyReviews.getAggregatedCompanyRating(company);
         },
         
-        // ==========================================================
-        // JOB TRACKER FUNCTIONS
-        // ==========================================================
+        
+        
+        
         
         addApplication: function(jobData) {
             return JobTracker.addApplication(jobData);
@@ -2219,9 +2219,9 @@ if (typeof KESEMPATAN.MarplaceKarirAPI === 'undefined') {
             return JobTracker.getAllApplications();
         },
         
-        // ==========================================================
-        // SALARY BENCHMARK FUNCTIONS
-        // ==========================================================
+        
+        
+        
         
         benchmarkByIndustry: function(industry) {
             return SalaryBenchmark.benchmarkByIndustry(industry);
@@ -2235,9 +2235,9 @@ if (typeof KESEMPATAN.MarplaceKarirAPI === 'undefined') {
             return SalaryBenchmark.benchmarkByExperience(years);
         },
         
-        // ==========================================================
-        // CHART FUNCTIONS
-        // ==========================================================
+        
+        
+        
         
         renderCountryChart: function(containerId) {
             return JobChart.renderCountryChart(containerId);
@@ -2263,9 +2263,9 @@ if (typeof KESEMPATAN.MarplaceKarirAPI === 'undefined') {
     InternalLogger.info('MarplaceKarirAPI', '✅ API ready — 45+ functions!');
 }
 
-// ==========================================================
-// 15. LOG
-// ==========================================================
+
+
+
 const logCount = validData.length;
 const countryCount = new Set(validData.map(function(d) { return d.metadata.country; })).size;
 const regionCount = new Set(validData.map(function(d) { return d.metadata.region; })).size;

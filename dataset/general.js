@@ -1,10 +1,10 @@
-// KESEMPATAN OS - DATASET: PENGETAHUAN UMUM
-// Selaras dengan 12 agent di agents/agents-general.js (Hukum, Ekonomi,
-// Psikologi, Geografi, Sejarah, Filsafat, SeniBudaya, Olahraga, Pendidikan,
-// Agama, Pertanian, TeknologiInformasi). Lihat dataset/bisnis.js untuk
-// catatan desain lengkap tentang tujuan folder ini.
+
+
+
+
+
 const data = [
-    // ================= HUKUM =================
+    
     {
         text: 'Kontrak yang mengikat secara hukum di Indonesia butuh empat syarat sah: kesepakatan para pihak, kecakapan bertindak, objek yang jelas, dan sebab yang halal — kehilangan salah satu syarat ini bisa membuat kontrak batal demi hukum.',
         metadata: { category: 'dataset', domain: 'general', agent: 'Hukum', topic: 'syarat sah kontrak', tags: ['hukum perdata', 'kontrak'] }
@@ -18,7 +18,7 @@ const data = [
         metadata: { category: 'dataset', domain: 'general', agent: 'Hukum', topic: 'hierarki perundangan', tags: ['hukum tata negara', 'regulasi'] }
     },
 
-    // ================= EKONOMI =================
+    
     {
         text: 'Inflasi yang moderat dan terkendali umumnya dianggap sehat bagi ekonomi karena mendorong konsumsi dan investasi, tapi inflasi yang terlalu tinggi mengikis daya beli dan menciptakan ketidakpastian yang menghambat perencanaan jangka panjang.',
         metadata: { category: 'dataset', domain: 'general', agent: 'Ekonomi', topic: 'inflasi', tags: ['makroekonomi', 'kebijakan moneter'] }
@@ -32,7 +32,7 @@ const data = [
         metadata: { category: 'dataset', domain: 'general', agent: 'Ekonomi', topic: 'pdb dan kesejahteraan', tags: ['makroekonomi', 'pembangunan'] }
     },
 
-    // ================= PSIKOLOGI =================
+    
     {
         text: 'Bias ketersediaan membuat orang menilai kemungkinan suatu kejadian berdasarkan seberapa mudah contoh kejadian itu diingat, bukan berdasarkan frekuensi statistik sebenarnya — inilah sebabnya berita tentang kecelakaan pesawat terasa lebih menakutkan daripada risiko kecelakaan mobil yang sebenarnya jauh lebih tinggi.',
         metadata: { category: 'dataset', domain: 'general', agent: 'Psikologi', topic: 'bias ketersediaan', tags: ['psikologi kognitif', 'bias'] }
@@ -46,7 +46,7 @@ const data = [
         metadata: { category: 'dataset', domain: 'general', agent: 'Psikologi', topic: 'disonansi kognitif', tags: ['psikologi sosial', 'kognisi'] }
     },
 
-    // ================= GEOGRAFI =================
+    
     {
         text: 'Indonesia terletak di pertemuan tiga lempeng tektonik utama — Eurasia, Indo-Australia, dan Pasifik — yang menjelaskan mengapa negara ini memiliki aktivitas gunung berapi dan gempa bumi yang tinggi, sekaligus tanah vulkanik yang subur untuk pertanian.',
         metadata: { category: 'dataset', domain: 'general', agent: 'Geografi', topic: 'lempeng tektonik indonesia', tags: ['geografi fisik', 'geologi'] }
@@ -60,7 +60,7 @@ const data = [
         metadata: { category: 'dataset', domain: 'general', agent: 'Geografi', topic: 'urbanisasi', tags: ['geografi perkotaan', 'tata ruang'] }
     },
 
-    // ================= SEJARAH =================
+    
     {
         text: 'Proklamasi kemerdekaan Indonesia pada 17 Agustus 1945 merupakan puncak dari pergerakan nasional yang dibangun selama puluhan tahun melalui organisasi seperti Budi Utomo, Sarekat Islam, dan Perhimpunan Indonesia yang menumbuhkan kesadaran identitas nasional.',
         metadata: { category: 'dataset', domain: 'general', agent: 'Sejarah', topic: 'proklamasi kemerdekaan', tags: ['sejarah indonesia', 'kemerdekaan'] }
@@ -74,7 +74,7 @@ const data = [
         metadata: { category: 'dataset', domain: 'general', agent: 'Sejarah', topic: 'revolusi industri', tags: ['sejarah dunia', 'industrialisasi'] }
     },
 
-    // ================= FILSAFAT =================
+    
     {
         text: 'Etika deontologis menilai benar-salahnya suatu tindakan dari kesesuaiannya dengan aturan atau kewajiban moral, berbeda dengan etika konsekuensialis yang menilai tindakan dari hasil akhirnya — perdebatan klasik ini muncul terus dalam dilema moral sehari-hari.',
         metadata: { category: 'dataset', domain: 'general', agent: 'Filsafat', topic: 'etika deontologis vs konsekuensialis', tags: ['filsafat moral', 'etika'] }
@@ -88,7 +88,7 @@ const data = [
         metadata: { category: 'dataset', domain: 'general', agent: 'Filsafat', topic: 'gotong royong', tags: ['filsafat nusantara', 'etika sosial'] }
     },
 
-    // ================= SENI BUDAYA =================
+    
     {
         text: 'Wayang kulit bukan sekadar pertunjukan hiburan, tapi juga media penyampaian nilai moral dan filosofi hidup lewat lakon-lakon yang diadaptasi dari epos Mahabharata dan Ramayana, dengan sisipan kritik sosial kontemporer oleh dalang.',
         metadata: { category: 'dataset', domain: 'general', agent: 'SeniBudaya', topic: 'wayang kulit', tags: ['seni tradisional', 'budaya jawa'] }
@@ -102,7 +102,7 @@ const data = [
         metadata: { category: 'dataset', domain: 'general', agent: 'SeniBudaya', topic: 'gamelan', tags: ['musik tradisional', 'budaya'] }
     },
 
-    // ================= OLAHRAGA =================
+    
     {
         text: 'Latihan interval intensitas tinggi terbukti lebih efisien meningkatkan kapasitas kardiovaskular dalam waktu singkat dibanding latihan kardio intensitas rendah berdurasi panjang, meski keduanya punya manfaat kesehatan yang saling melengkapi.',
         metadata: { category: 'dataset', domain: 'general', agent: 'Olahraga', topic: 'latihan interval', tags: ['sains olahraga', 'kebugaran'] }
@@ -116,7 +116,7 @@ const data = [
         metadata: { category: 'dataset', domain: 'general', agent: 'Olahraga', topic: 'pemulihan atlet', tags: ['sains olahraga', 'kesehatan'] }
     },
 
-    // ================= PENDIDIKAN =================
+    
     {
         text: 'Pembelajaran aktif yang melibatkan diskusi, praktik, dan pemecahan masalah terbukti menghasilkan retensi pengetahuan yang jauh lebih tinggi dibanding metode ceramah pasif, sesuai dengan piramida pembelajaran yang menekankan keterlibatan langsung siswa.',
         metadata: { category: 'dataset', domain: 'general', agent: 'Pendidikan', topic: 'pembelajaran aktif', tags: ['pedagogi', 'metode belajar'] }
@@ -130,7 +130,7 @@ const data = [
         metadata: { category: 'dataset', domain: 'general', agent: 'Pendidikan', topic: 'pembelajaran berbasis proyek', tags: ['kurikulum', 'keterampilan abad 21'] }
     },
 
-    // ================= AGAMA =================
+    
     {
         text: 'Konsep toleransi beragama di Indonesia tercermin dalam semboyan Bhinneka Tunggal Ika, yang mengakui keberagaman keyakinan sebagai kekuatan bangsa, bukan sumber perpecahan, selama nilai kemanusiaan universal tetap dijunjung bersama.',
         metadata: { category: 'dataset', domain: 'general', agent: 'Agama', topic: 'toleransi beragama', tags: ['kerukunan', 'pluralisme'] }
@@ -144,7 +144,7 @@ const data = [
         metadata: { category: 'dataset', domain: 'general', agent: 'Agama', topic: 'dialog antaragama', tags: ['kerukunan', 'dialog'] }
     },
 
-    // ================= PERTANIAN =================
+    
     {
         text: 'Sistem pertanian terpadu yang menggabungkan tanaman pangan, peternakan, dan perikanan dalam satu lahan meningkatkan efisiensi sumber daya karena limbah dari satu komponen bisa menjadi input bagi komponen lainnya, misalnya kotoran ternak sebagai pupuk organik.',
         metadata: { category: 'dataset', domain: 'general', agent: 'Pertanian', topic: 'pertanian terpadu', tags: ['agroekosistem', 'keberlanjutan'] }
@@ -158,7 +158,7 @@ const data = [
         metadata: { category: 'dataset', domain: 'general', agent: 'Pertanian', topic: 'diversifikasi tanaman', tags: ['manajemen risiko', 'kesuburan tanah'] }
     },
 
-    // ================= TEKNOLOGI INFORMASI =================
+    
     {
         text: 'Arsitektur microservices memecah aplikasi besar menjadi layanan-layanan kecil yang independen, memudahkan tim mengembangkan dan menskalakan bagian tertentu tanpa harus menyentuh keseluruhan sistem, meski menambah kompleksitas koordinasi antar-layanan.',
         metadata: { category: 'dataset', domain: 'general', agent: 'TeknologiInformasi', topic: 'arsitektur microservices', tags: ['arsitektur perangkat lunak', 'skalabilitas'] }

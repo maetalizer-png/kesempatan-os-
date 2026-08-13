@@ -1,22 +1,13 @@
-/* ============================================================
-   📁 rap/engine/soundbank.js
-   🔥 SOUNDBANK ENGINE — PERPUSTAKAAN LAGU/BEAT UNTUK RAPPER
-   🔥 24 LAGU, 3 GENRE (trap/boom-bap/drill), BPM & MOOD BERBEDA
-   🔥 SETIAP RAPPER PUNYA REKOMENDASI LAGU SESUAI KARAKTERNYA
-   ✅ Genre di sini merujuk ke BEAT_PATTERNS yang sudah ada di
-  orchestrator.js (drum sequencer real, bukan cuma label) —
-  jadi setiap lagu di sini benar-benar bisa dibunyikan, bukan
-  cuma metadata kosong.
-   ============================================================ */
+
 
 const KESEMPATAN = window.KESEMPATAN || {};
 window.KESEMPATAN = KESEMPATAN;
 
-// ============================================================
-// 1. DAFTAR LAGU (24)
-// ============================================================
+
+
+
 const SONGS = [
-    // ========== 🔥 TRAP (8) ==========
+    
     { id: 'trap-01', title: 'Malam Ibukota', genre: 'trap', bpm: 145, mood: 'gelap-agresif', hook: 'Lampu kota nyala, aku yang berkuasa!' },
     { id: 'trap-02', title: 'Data & Darah', genre: 'trap', bpm: 150, mood: 'dingin-presisi', hook: 'Angka jadi senjata, kau kalah sebelum mulai!' },
     { id: 'trap-03', title: 'Scale Up', genre: 'trap', bpm: 160, mood: 'enerjik-ambisius', hook: 'Dari nol ke sejuta, kau masih di garis start!' },
@@ -26,7 +17,7 @@ const SONGS = [
     { id: 'trap-07', title: 'Twist Akhir', genre: 'trap', bpm: 142, mood: 'licik-cerdas', hook: 'Kata-katamu, senjata balik ke kamu sendiri!' },
     { id: 'trap-08', title: 'Mic Drop Dingin', genre: 'trap', bpm: 140, mood: 'beku', hook: 'Kau sudah mati dari baris pertama...' },
 
-    // ========== 🥁 BOOM BAP (8) ==========
+    
     { id: 'boom-01', title: 'Jalanan Lama', genre: 'boom-bap', bpm: 92, mood: 'klasik-santai', hook: 'Dari jalanan ke panggung, cerita ku nggak pernah bohong' },
     { id: 'boom-02', title: 'Filosofi Senja', genre: 'boom-bap', bpm: 86, mood: 'reflektif', hook: 'Hidup ini seperti bayangan yang kau kejar sendiri' },
     { id: 'boom-03', title: 'Warung Kopi Sunda', genre: 'boom-bap', bpm: 90, mood: 'santai-lucu', hook: 'Hadeuh... dasar, tapi sindiran ku nusuk' },
@@ -36,7 +27,7 @@ const SONGS = [
     { id: 'boom-07', title: 'Bayangan Kota', genre: 'boom-bap', bpm: 84, mood: 'misterius', hook: 'Kau tidak bisa melihatku, tapi aku selalu di sini' },
     { id: 'boom-08', title: 'Grafik Kemenangan', genre: 'boom-bap', bpm: 96, mood: 'presisi', hook: 'Data ku grafik naik, kau grafik jatuh bebas' },
 
-    // ========== ⚡ DRILL (8) ==========
+    
     { id: 'drill-01', title: 'Serangan Fajar', genre: 'drill', bpm: 142, mood: 'agresif-cepat', hook: 'Fokus, mata nggak berkedip, target eliminated!' },
     { id: 'drill-02', title: 'Ledakan Startup', genre: 'drill', bpm: 150, mood: 'meledak-ledak', hook: 'Scale up atau mati, nggak ada plan B!' },
     { id: 'drill-03', title: 'Statistik Berdarah', genre: 'drill', bpm: 146, mood: 'tajam-dingin', hook: 'Probabilitasmu menang: nol koma nol!' },
@@ -47,9 +38,9 @@ const SONGS = [
     { id: 'drill-08', title: 'Strategi Terakhir', genre: 'drill', bpm: 141, mood: 'terencana-tegas', hook: 'Strategi ku: diam, lalu ledak di waktu yang tepat' }
 ];
 
-// ============================================================
-// 2. PEMETAAN REKOMENDASI LAGU PER RAPPER (by archetype/mood)
-// ============================================================
+
+
+
 const PERSONA_SONG_MAP = {
     'RahmadRaharjo': ['trap-02', 'boom-08', 'drill-03'],
     'Manager': ['trap-04', 'boom-04', 'drill-08'],
@@ -79,9 +70,9 @@ function getSongsByGenre(genre) {
     return SONGS.filter(function(s) { return s.genre === genre; });
 }
 
-// Rekomendasikan lagu untuk seorang rapper — utamakan lagu yang
-// sudah dipetakan khusus untuknya, kalau tidak ada fallback acak
-// dari genre yang sesuai baseEmotion-nya (kalau character.js sudah load).
+
+
+
 function recommendSongForPersona(agent) {
     const mapped = PERSONA_SONG_MAP[agent];
     if (mapped && mapped.length > 0) {
@@ -96,9 +87,9 @@ function getDefaultSongForGenre(genre) {
     return list.length > 0 ? list[0] : SONGS[0];
 }
 
-// ============================================================
-// 3. EXPOSE
-// ============================================================
+
+
+
 KESEMPATAN.RapSoundbank = {
     SONGS: SONGS,
     getAllSongs: getAllSongs,

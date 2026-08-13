@@ -1,30 +1,30 @@
-// Core Engine v2 (module Worker) — menjalankan model bahasa pretrained
-// SUNGGUHAN (bukan transformer buatan sendiri seperti kesem-llm/) lewat
-// @huggingface/transformers (ONNX Runtime Web) — WebGPU sebagai backend
-// eksekusi utama, otomatis fallback ke WASM/CPU kalau perangkat/browser
-// tidak mendukung WebGPU atau pembuatan pipeline WebGPU gagal. Berjalan
-// di Worker terpisah (module Worker, karena butuh `import`/`import()`)
-// supaya unduhan + inferensi model besar tidak pernah membekukan UI thread.
-//
-// MODEL: 2 pilihan pretrained, dipilih pengguna lewat halaman Pengaturan
-// (settings.js) dan disimpan di localStorage — lihat MODEL_REGISTRY di
-// bawah. Default SmolLM2-135M-Instruct (jauh lebih kecil dari Qwen2.5-0.5B)
-// dipakai kalau pengguna belum pernah memilih, karena model lebih kecil
-// berarti kompatibilitas lintas-perangkat lebih luas (menghindari risiko
-// memori overflow/perangkat overheat).
-//
-// CACHING: file model (bisa puluhan-ratusan MB) disimpan di IndexedDB
-// lewat custom cache transformers.js (env.useCustomCache), BUKAN cache
-// HTTP browser bawaan, konsisten dengan pola IndexedDB yang sudah dipakai
-// di seluruh KESEMPATAN OS (lihat kesem-llm.js, kes-database.js). Kunci
-// cache adalah URL berkas itu sendiri (termasuk nama repo model), jadi
-// otomatis terpisah per model tanpa perlu penanganan khusus.
 
-// MODEL_REGISTRY: tiap entri = daftar kandidat repo Hugging Face dicoba
-// berurutan (kalau kandidat pertama tidak ditemukan/berpindah nama,
-// otomatis coba kandidat berikutnya — tidak pernah gagal total cuma
-// karena 1 nama repo salah). DEFAULT_MODEL_KEY dipakai kalau worker
-// diinisialisasi tanpa modelKey eksplisit.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 const MODEL_REGISTRY = {
     'smollm2-135m': {
         candidates: ['HuggingFaceTB/SmolLM2-135M-Instruct', 'onnx-community/SmolLM2-135M-Instruct-ONNX']
@@ -35,10 +35,10 @@ const MODEL_REGISTRY = {
 };
 const DEFAULT_MODEL_KEY = 'smollm2-135m';
 
-// jsdelivr `+esm` membundel paket npm (ESM-first, tanpa build UMD resmi
-// untuk v3) jadi modul ES siap-pakai lewat import() langsung di browser —
-// tanpa perlu npm/bundler, konsisten dengan arsitektur "no build step"
-// KESEMPATAN OS. unpkg jadi cadangan kalau jsdelivr sedang bermasalah.
+
+
+
+
 const CDN_CANDIDATES = [
     'https://cdn.jsdelivr.net/npm/@huggingface/transformers@3/+esm',
     'https://unpkg.com/@huggingface/transformers@3?module'
@@ -62,11 +62,11 @@ function openCacheDB() {
     });
 }
 
-// Implementasi minimal kontrak Cache Web API (match/put) yang dibutuhkan
-// transformers.js env.customCache — disimpan di IndexedDB, bukan Cache
-// Storage API bawaan browser, sesuai permintaan eksplisit. Best-effort:
-// kegagalan baca/tulis cache TIDAK PERNAH menggagalkan pemuatan model,
-// cuma berarti file itu diunduh ulang.
+
+
+
+
+
 const idbModelCache = {
     match: async function (request) {
         const url = typeof request === 'string' ? request : request.url;
@@ -82,7 +82,7 @@ const idbModelCache = {
             if (!record) return undefined;
             return new Response(record.body, { headers: record.headers, status: 200 });
         } catch (e) {
-            return undefined; // cache miss aman -> transformers.js fetch ulang dari jaringan
+            return undefined; 
         }
     },
     put: async function (request, response) {
@@ -101,7 +101,7 @@ const idbModelCache = {
             });
             db.close();
         } catch (e) {
-            // Best-effort — file besar/quota penuh dsb tidak boleh menggagalkan load model.
+            
         }
     }
 };
@@ -118,7 +118,7 @@ async function loadTransformersLib() {
     let lastErr = null;
     for (let i = 0; i < CDN_CANDIDATES.length; i++) {
         try {
-            transformersLib = await import(/* webpackIgnore: true */ CDN_CANDIDATES[i]);
+            transformersLib = await import( CDN_CANDIDATES[i]);
             return transformersLib;
         } catch (e) {
             lastErr = e;
@@ -133,7 +133,7 @@ async function detectPreferredDevice() {
             const adapter = await navigator.gpu.requestAdapter();
             if (adapter) return 'webgpu';
         } catch (e) {
-            // navigator.gpu ada tapi requestAdapter gagal -> WASM
+            
         }
     }
     return 'wasm';
@@ -143,11 +143,11 @@ function postProgress(payload) {
     self.postMessage(Object.assign({ type: 'progress' }, payload));
 }
 
-// Bangun pipeline text-generation, coba device pilihan dulu; kalau
-// device itu WebGPU dan pembuatan pipeline-nya gagal (adapter ada tapi
-// model/browser combo tidak kompatibel — kasus nyata yang cukup umum),
-// otomatis mundur ke WASM sebagai percobaan kedua sebelum benar2 menyerah.
-// Mencoba tiap kandidat repo untuk modelKey terpilih sampai satu berhasil.
+
+
+
+
+
 async function buildPipeline(preferredDevice, modelKey) {
     const { pipeline, env } = await loadTransformersLib();
 
@@ -198,8 +198,8 @@ async function initializeEngine(modelKey) {
         return { device: activeDevice, modelId: activeModelId, modelKey: activeModelKey, dtype: activeDtype };
     }
     if (generatorPipeline && activeModelKey !== modelKey) {
-        // Pengguna ganti pilihan model -- lepas pipeline lama (bebaskan
-        // RAM/VRAM) sebelum memuat yang baru, bukan menumpuk keduanya.
+        
+        
         disposeEngine();
     }
     const preferredDevice = await detectPreferredDevice();
@@ -213,7 +213,7 @@ function isReady() {
     return !!generatorPipeline;
 }
 
-// options: { systemPrompt, maxNewTokens, temperature, topP, repetitionPenalty }
+
 async function generateText(userPrompt, options) {
     if (!generatorPipeline) {
         throw new Error('[TransformersWorker] Engine belum diinisialisasi — panggil initialize dulu');
@@ -225,9 +225,9 @@ async function generateText(userPrompt, options) {
     }
     messages.push({ role: 'user', content: String(userPrompt) });
 
-    // Parameter inferensi dibatasi sama seperti Core Engine v1 (model kecil
-    // rentan halusinasi/pengulangan tanpa batas ketat): temperature 0.3-0.5,
-    // top_p 0.85-0.9, repetition_penalty 1.15.
+    
+    
+    
     const genOptions = {
         max_new_tokens: Number.isInteger(options.maxNewTokens) ? Math.min(options.maxNewTokens, 400) : 220,
         temperature: typeof options.temperature === 'number' ? Math.min(0.5, Math.max(0.3, options.temperature)) : 0.4,
@@ -241,8 +241,8 @@ async function generateText(userPrompt, options) {
     try {
         output = await generatorPipeline(messages, genOptions);
     } catch (e) {
-        // Sebagian model/browser combo belum mendukung chat-template array
-        // langsung -- coba lagi dengan prompt string polos sebagai cadangan.
+        
+        
         const plainPrompt = (options.systemPrompt ? options.systemPrompt + '\n\n' : '') + userPrompt;
         output = await generatorPipeline(plainPrompt, genOptions);
     }
@@ -262,7 +262,7 @@ async function generateText(userPrompt, options) {
 
 function disposeEngine() {
     if (generatorPipeline && generatorPipeline.dispose) {
-        try { generatorPipeline.dispose(); } catch (e) { /* best-effort */ }
+        try { generatorPipeline.dispose(); } catch (e) {  }
     }
     generatorPipeline = null;
     activeDevice = null;

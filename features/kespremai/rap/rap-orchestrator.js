@@ -1,14 +1,4 @@
-/* ============================================================
-   📁 rap/orchestrator.js
-   🔥 ORCHESTRASI RAP BATTLE - startRapBattle, abortRap
-   🔥 LANGSUNG PAKAI KESEMPATAN.RapHelpers, KESEMPATAN.RapConfig, KESEMPATAN.RapEngine
-   🔥 ✅ SUDAH TERHUBUNG KE MEMORY.JS & ENGINE BARU!
-   🔥 ✅ EXPORT LENGKAP (PDF, JSON, TXT)!
-   🔥 ✅ HAPUS VARIABLE TIDAK TERPAKAI
-   🔥 ✅ VALIDASI AGENT TIDAK BOLEH SAMA
-   🔥 ✅ BEAT PATTERN SYSTEM (Trap, Boom Bap, Drill)
-   🔥 ✅ VISUALIZER INTEGRATION
-   ============================================================ */
+
 
 import { RapConfig } from './rap-config.js';
 import { RapHelpers } from './rap-helpers.js';
@@ -29,18 +19,18 @@ const getApiKey = RapHelpers.getApiKey;
 
 const memory = window.KESEMPATAN?.VectorMemory || window.VectorMemory || window.VectorMemoryV5;
 
-// ============================================================
-// 🔥 BEAT - ENHANCED WITH PATTERN SYSTEM
-// ============================================================
+
+
+
 let beatContext = null;
 let beatInterval = null;
 let beatActive = false;
 let beatPattern = 'trap';
 let beatStep = 0;
-// 🔥 BPM sekarang dinamis per-lagu, bukan lagi angka tetap dari
-// CONFIG.BEAT_BPM. activeSong nyimpen lagu yang lagi dipilih dari
-// RapSoundbank (kalau ada), currentBPM adalah BPM efektif yang
-// dipakai drum sequencer & delivery vokal (lihat speakRap).
+
+
+
+
 let activeSong = null;
 let currentBPM = CONFIG.BEAT_BPM;
 
@@ -69,7 +59,7 @@ function initBeat() {
     try {
         beatContext = new (window.AudioContext || window.webkitAudioContext)();
     } catch (e) {
-        // Silent fail
+        
     }
 }
 
@@ -86,7 +76,7 @@ function playKick() {
         gain.gain.exponentialRampToValueAtTime(0.001, beatContext.currentTime + 0.05);
         osc.stop(beatContext.currentTime + 0.05);
     } catch (e) {
-        // Silent fail
+        
     }
 }
 
@@ -103,7 +93,7 @@ function playSnare() {
         gain.gain.exponentialRampToValueAtTime(0.001, beatContext.currentTime + 0.03);
         osc.stop(beatContext.currentTime + 0.03);
     } catch (e) {
-        // Silent fail
+        
     }
 }
 
@@ -120,7 +110,7 @@ function playHat() {
         gain.gain.exponentialRampToValueAtTime(0.001, beatContext.currentTime + 0.02);
         osc.stop(beatContext.currentTime + 0.02);
     } catch (e) {
-        // Silent fail
+        
     }
 }
 
@@ -137,7 +127,7 @@ function playBass() {
         gain.gain.exponentialRampToValueAtTime(0.001, beatContext.currentTime + 0.1);
         osc.stop(beatContext.currentTime + 0.1);
     } catch (e) {
-        // Silent fail
+        
     }
 }
 
@@ -166,7 +156,7 @@ function playBeat() {
             
             beatStep++;
         } catch (e) {
-            // Silent fail
+            
         }
     }, interval);
 
@@ -215,14 +205,14 @@ function setBeatPattern(pattern) {
     const valid = ['trap', 'boom-bap', 'drill'];
     if (valid.includes(pattern)) {
         beatPattern = pattern;
-        // Kalau ganti genre manual (bukan lewat lagu), lepas lagu aktif
-        // dan balik BPM ke default CONFIG supaya tidak nyangkut di BPM lagu lama.
+        
+        
         activeSong = null;
         currentBPM = CONFIG.BEAT_BPM;
         if (KESEMPATAN.RapBattle.ui) {
             KESEMPATAN.RapBattle.ui.showToast('🎵 Pattern: ' + pattern, 'info');
         }
-        // Sync UI dropdown
+        
         const select = document.getElementById('beatPatternSelect');
         if (select) {
             select.value = pattern;
@@ -238,9 +228,9 @@ function getBeatPattern() {
     return beatPattern;
 }
 
-// 🔥 Pilih LAGU spesifik dari RapSoundbank — genre pattern & BPM
-// ikut lagu itu sekaligus, jadi drum sequencer & delivery vokal
-// (lihat speakRap) benar-benar mengikuti tempo lagu yang dipilih.
+
+
+
 function setActiveSong(songId) {
     if (!KESEMPATAN.RapSoundbank) return null;
     const song = KESEMPATAN.RapSoundbank.getSongById(songId);
@@ -274,12 +264,12 @@ function getCurrentBPM() {
     return currentBPM;
 }
 
-// 🔥 FITUR LAGU — sebelumnya field `hook` di tiap lagu RapSoundbank
-// (24 lagu) TIDAK PERNAH dipakai di mana pun selain metadata dropdown.
-// Fungsi ini menjadikan hook lagu bagian nyata dari pengalaman battle:
-// dipakai di intro MC, dikirim ke AI sebagai konteks penulisan lirik
-// (lihat RapEngine.getRap/buildRapPrompt), dan dinyanyikan ulang saat
-// momen "Hook Callback" (lihat startRapBattle).
+
+
+
+
+
+
 function buildSongContext() {
     let song = activeSong;
     if (!song && KESEMPATAN.RapSoundbank) {
@@ -296,9 +286,9 @@ function buildSongContext() {
     };
 }
 
-// 🔥 "Nyanyikan" hook lagu — dipakai di momen Hook Callback. Beda dari
-// speakRap biasa: rate lebih lambat & pitch ditahan agak tinggi supaya
-// kedengaran seperti chorus/hook yang dinyanyikan, bukan dibacakan.
+
+
+
 function speakHook(hookText) {
     if (!hookText) return;
     try {
@@ -317,13 +307,13 @@ function speakHook(hookText) {
         if (voice) utterance.voice = voice;
         window.speechSynthesis.speak(utterance);
     } catch (e) {
-        // Silent fail
+        
     }
 }
 
-// ============================================================
-// 🔥 AUDIENCE
-// ============================================================
+
+
+
 let audienceReactions = [];
 let reactionInterval = null;
 
@@ -378,29 +368,29 @@ function stopAutoReactions() {
     }
 }
 
-// ============================================================
-// 🔥 VOICE — DIROMBAK TOTAL UNTUK REALISME
-// Sebelumnya: satu utterance panjang, rate & pitch SAMA untuk
-// SEMUA rapper (CONFIG.VOICE_RATE/PITCH tetap), tidak ada jeda
-// antar baris, tidak ada penekanan di punchline. Kedengaran datar
-// & robotik, semua rapper "bersuara sama".
-//
-// Sekarang:
-// 1. Setiap rapper pakai VOICE_PROFILE sendiri (rate/pitch/pauseMs/
-//    ad-lib) dari character.js — jadi Firestarter kedengaran cepat
-//    & meledak-ledak, Iceman kedengaran lambat & datar, dst.
-// 2. Lirik dipecah PER BARIS, diucapkan satu-satu (bukan 1 kalimat
-//    panjang) dengan jeda antar baris yang MENGIKUTI BPM lagu aktif
-//    (irama) — makin cepat BPM, makin rapat jedanya, meniru rapper
-//    asli yang mengejar ketukan beat.
-// 3. Baris terakhir (punchline/closer) & baris yang diakhiri "!"
-//    dapat boost pitch (intonasi naik, penekanan) sesuai
-//    punchlineBoost persona. Baris yang diakhiri "?" naik sedikit
-//    di akhir (nada tanya).
-// 4. Sesekali (di baris pertama tiap verse) diselipkan ad-lib khas
-//    persona ("Yeah!", "Burn!", dst) sebelum baris dimulai — ciri
-//    khas rapper asli yang bikin lebih hidup.
-// ============================================================
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 function speakRap(text, sender, agentKey, round, totalRounds) {
     if (!text || text.length === 0) {
         return;
@@ -414,12 +404,12 @@ function speakRap(text, sender, agentKey, round, totalRounds) {
             ? KESEMPATAN.RapCharacterEngine.getVoiceProfile(agentKey)
             : { rate: CONFIG.VOICE_RATE, pitch: CONFIG.VOICE_PITCH, pauseMs: 350, punchlineBoost: 0.15, adlibs: [] };
 
-        // 🔥 EMOTION ESCALATION — battle yang makin panas di ronde
-        // belakang sekarang benar-benar terdengar: rate & pitch dasar
-        // digeser sedikit oleh energy emosi ronde saat ini (lihat
-        // character.js:getEmotionModifier). Ronde 1 tenang, ronde
-        // menjelang closer lebih menggigit — tanpa menghilangkan
-        // karakter dasar tiap rapper.
+        
+        
+        
+        
+        
+        
         const emoMod = (KESEMPATAN.RapCharacterEngine && KESEMPATAN.RapCharacterEngine.getEmotionModifier && round)
             ? KESEMPATAN.RapCharacterEngine.getEmotionModifier(round, totalRounds || round)
             : { rateMult: 1, pitchMult: 1 };
@@ -434,8 +424,8 @@ function speakRap(text, sender, agentKey, round, totalRounds) {
             : (voices.find(function(v) { return v.lang === 'id-ID'; }) ||
                voices.find(function(v) { return v.lang && v.lang.indexOf('id') === 0; }));
 
-        // Jeda antar baris mengikuti BPM aktif: 1 ketukan = 60000/bpm ms,
-        // dikombinasikan dengan gaya jeda dasar si rapper (pauseMs).
+        
+        
         const beatUnitMs = 60000 / (currentBPM || CONFIG.BEAT_BPM || 140);
         const lineGapMs = Math.round((profile.pauseMs + beatUnitMs) / 2);
 
@@ -453,15 +443,15 @@ function speakRap(text, sender, agentKey, round, totalRounds) {
                 const ending = lineEnding(line);
                 const landsRhyme = !isLast && prevEnding && ending && ending === prevEnding;
 
-                // 🔥 BUILD-UP dalam satu verse — rapper asli jarang
-                // membacakan setiap baris di kecepatan/nada yang sama
-                // persis; ada dorongan bertahap menuju punchline.
+                
+                
+                
                 const rampRate = 1 + progress * 0.06;
                 const rampPitch = progress * 0.05;
 
-                // 🔥 HUMANISASI — variasi mikro acak per baris supaya
-                // tidak terdengar seperti mesin yang membaca ulang pola
-                // identik baris demi baris.
+                
+                
+                
                 const jitterRate = 1 + (Math.random() - 0.5) * 0.05;
                 const jitterPitch = (Math.random() - 0.5) * 0.06;
 
@@ -473,7 +463,7 @@ function speakRap(text, sender, agentKey, round, totalRounds) {
                 let pitch = profile.pitch * emoMod.pitchMult + rampPitch + jitterPitch;
                 if (isPunchline) pitch += profile.punchlineBoost;
                 if (isQuestion) pitch += profile.punchlineBoost * 0.5;
-                if (landsRhyme) pitch += profile.punchlineBoost * 0.4; // "landing" penekanan di akhir rima
+                if (landsRhyme) pitch += profile.punchlineBoost * 0.4; 
                 utterance.pitch = Math.max(0.1, Math.min(2, pitch));
                 utterance.volume = Math.max(0.3, Math.min(1, (profile.volume || 0.9) + (Math.random() - 0.5) * 0.06));
                 if (indonesianVoice) utterance.voice = indonesianVoice;
@@ -487,7 +477,7 @@ function speakRap(text, sender, agentKey, round, totalRounds) {
         }
 
         (async function deliver() {
-            // Ad-lib pembuka khas persona (mis. "Yeah!", "Burn!")
+            
             if (profile.adlibs && profile.adlibs.length > 0 && Math.random() < 0.6) {
                 await speakOneLine(profile.adlibs[Math.floor(Math.random() * profile.adlibs.length)], false, 0);
                 await new Promise(function(r) { setTimeout(r, lineGapMs * 0.4); });
@@ -497,10 +487,10 @@ function speakRap(text, sender, agentKey, round, totalRounds) {
                 const isLast = i === lines.length - 1;
                 const progress = lines.length > 1 ? i / (lines.length - 1) : 1;
 
-                // 🔥 Ad-lib mid-verse — sesekali (bukan tiap baris)
-                // rapper asli menyelipkan seruan di tengah verse, bukan
-                // cuma di pembuka. Dijaga jarang (25%) & tidak di baris
-                // pertama/terakhir supaya tidak mengganggu alur.
+                
+                
+                
+                
                 if (i > 0 && !isLast && i % 4 === 0 && profile.adlibs && profile.adlibs.length > 0 && Math.random() < 0.25) {
                     await speakOneLine(profile.adlibs[Math.floor(Math.random() * profile.adlibs.length)], false, progress);
                     await new Promise(function(r) { setTimeout(r, lineGapMs * 0.3); });
@@ -513,13 +503,13 @@ function speakRap(text, sender, agentKey, round, totalRounds) {
             }
         })();
     } catch (e) {
-        // Silent fail
+        
     }
 }
 
-// ============================================================
-// 🔥 HISTORY
-// ============================================================
+
+
+
 function saveHistory(rapData) {
     try {
         let history = JSON.parse(localStorage.getItem(CONFIG.STORAGE_KEY) || '[]');
@@ -533,7 +523,7 @@ function saveHistory(rapData) {
             history.length = CONFIG.MAX_HISTORY;
         }
         localStorage.setItem(CONFIG.STORAGE_KEY, JSON.stringify(history));
-        // Durable backup in IndexedDB — localStorage stays the source of truth.
+        
         if (window.KESEMPATAN?.KesDatabase?.mirrorHistoryItem) {
             window.KESEMPATAN.KesDatabase.mirrorHistoryItem('rap_battle_history', battle);
         }
@@ -554,9 +544,9 @@ function loadHistory() {
     }
 }
 
-// ============================================================
-// 🔥 FLOW ANALYSIS
-// ============================================================
+
+
+
 function analyzeFlow(text) {
     const words = text.split(/\s+/);
     const sentences = text.split(/[.!?]+/);
@@ -605,9 +595,9 @@ function analyzeFlow(text) {
     };
 }
 
-// ============================================================
-// 🔥 EXPORT — LENGKAP
-// ============================================================
+
+
+
 function exportRapResult(format) {
     format = format || 'pdf';
 
@@ -703,7 +693,7 @@ function exportRapResult(format) {
                 }
                 return;
             } catch (e) {
-                // Silent fail, fallback ke TXT
+                
             }
         }
         exportRapResult('txt');
@@ -751,9 +741,9 @@ function exportRapResult(format) {
     }
 }
 
-// ============================================================
-// 🔥 START RAP BATTLE
-// ============================================================
+
+
+
 async function startRapBattle(topic, agentA, agentB, rounds) {
     rounds = rounds || 3;
 
@@ -798,7 +788,7 @@ async function startRapBattle(topic, agentA, agentB, rounds) {
             memoryContext = await memory.search(topic, { topK: 3 });
             rapState.memoryContext = memoryContext;
         } catch (e) {
-            // Silent fail
+            
         }
     }
 
@@ -821,7 +811,7 @@ async function startRapBattle(topic, agentA, agentB, rounds) {
         }
     }
 
-    // 🔥 START VISUALIZER
+    
     if (KESEMPATAN.RapBattle.ui && KESEMPATAN.RapBattle.ui.startVisualizer) {
         KESEMPATAN.RapBattle.ui.startVisualizer();
     }
@@ -840,20 +830,20 @@ async function startRapBattle(topic, agentA, agentB, rounds) {
         }
         rapState.currentRound = round;
 
-        // Refresh song context tiap ronde — user bisa ganti lagu di
-        // tengah battle lewat dropdown, jadi konteks lirik & hook
-        // callback harus ikut lagu yang SEDANG aktif, bukan yang
-        // dipilih di awal.
+        
+        
+        
+        
         const roundSongContext = buildSongContext();
         const plan = RapEngine.getBattlePlan ? RapEngine.getBattlePlan(round, rounds) : null;
 
         if (KESEMPATAN.RapBattle.ui) {
             KESEMPATAN.RapBattle.ui.updateRapStats();
-            // 🔥 Sebelumnya cuma "--- RONDE X ---" generik, padahal
-            // intelligence.js sudah punya strategi & goal per-ronde
-            // (BATTLE_PLANS) yang TIDAK PERNAH disuarakan ke penonton.
-            // Sekarang MC benar-benar mengumumkan tema rondenya —
-            // kayak announcer di liga battle rap internasional.
+            
+            
+            
+            
+            
             if (plan) {
                 KESEMPATAN.RapBattle.ui.addMessage('🎤 MC', '--- RONDE ' + round + ': ' + plan.strategy.toUpperCase() + ' 🎤 ---');
                 KESEMPATAN.RapBattle.ui.addMessage('🎤 MC', '🎯 ' + plan.goal);
@@ -898,12 +888,12 @@ async function startRapBattle(topic, agentA, agentB, rounds) {
 
         addAudienceReaction(RapEngine.predictCrowdReaction ? RapEngine.predictCrowdReaction(rapB).emoji : randomReaction());
 
-        // 🔥 HOOK CALLBACK — momen chorus di tengah battle. Terjadi
-        // pas ronde ini kebetulan bertema "Callback" (lihat
-        // intelligence.js:BATTLE_PLANS, sekarang skalanya proporsional
-        // ke total ronde — lihat fix getBattlePlan). Hook lagu aktif
-        // "dinyanyikan" MC & penonton ikut riuh — ciri khas panggung
-        // battle rap internasional.
+        
+        
+        
+        
+        
+        
         if (plan && plan.strategy === 'Callback' && roundSongContext && roundSongContext.hook) {
             if (KESEMPATAN.RapBattle.ui) {
                 KESEMPATAN.RapBattle.ui.addMessage('🎶 HOOK', '"' + roundSongContext.hook + '"');
@@ -986,11 +976,11 @@ async function startRapBattle(topic, agentA, agentB, rounds) {
         history: rapState.history
     });
 
-    // 🔥 BARU: dulu hasil battle cuma tersimpan di localStorage
-    // (saveHistory), tidak pernah masuk ke Vector Memory (jadi tidak
-    // pernah jadi konteks untuk battle berikutnya) atau KES Database
-    // (jadi tidak ada rekam jejak permanen lintas-perangkat). Meniru
-    // pola yang sudah terbukti di Debate/Podcast Studio.
+    
+    
+    
+    
+    
     try {
         const battleSummary = '🎤 Rap Battle: "' + topic + '" — ' + displayA + ' vs ' + displayB +
             '. Pemenang: ' + winner.winner + '. Alasan: ' + (winner.reason || '-') +
@@ -1016,8 +1006,8 @@ async function startRapBattle(topic, agentA, agentB, rounds) {
             db.save('rap_battle_history', Object.assign({ summary: battleSummary }, battleMetadata)).catch(function(e) { console.warn('[RapOrchestrator] db.save failed:', e.message); });
         }
     } catch (e) {
-        // Kegagalan simpan memori/database tidak boleh mengganggu hasil
-        // battle yang sudah selesai — sudah tersimpan aman di localStorage.
+        
+        
     }
 
     try {
@@ -1027,7 +1017,7 @@ async function startRapBattle(topic, agentA, agentB, rounds) {
             strategy: rapState.currentRound > 3 ? 'long' : 'short'
         });
     } catch (e) {
-        // Silent fail
+        
     }
 
     if (KESEMPATAN.RapBattle.ui) {
@@ -1044,15 +1034,15 @@ function abortRap() {
     setRapAbort(true);
 }
 
-// ============================================================
-// 🏆 HALL OF FAME — STATUS "TERKENAL" BERDASARKAN REKAM JEJAK
-// ✅ Tidak menambah storage baru: cukup mengagregasi riwayat battle
-//    yang SUDAH tersimpan lewat saveHistory/loadHistory. Setiap
-//    kemenangan menaikkan "fame tier" persona di dalam KESEMPATAN OS
-//    — inilah makna "rapper terkenal" di panggung ini: bukan meniru
-//    rapper dunia nyata, tapi status legendaris yang dibangun sendiri
-//    lewat battle demi battle, seperti liga battle rap sungguhan.
-// ============================================================
+
+
+
+
+
+
+
+
+
 function getFameTier(wins) {
     if (wins >= 20) return { tier: 'GOAT Legend', icon: '👑' };
     if (wins >= 10) return { tier: 'Juara Dunia', icon: '🏆' };
@@ -1107,13 +1097,13 @@ function announceHallOfFame(limit) {
     return board;
 }
 
-// ============================================================
-// 🌍 TOURNAMENT / CONTEST MODE — PANGGUNG KONTES
-// ✅ Turnamen gugur tunggal (single-elimination) memakai
-//    startRapBattle yang sudah ada apa adanya — tidak ada arsitektur
-//    baru, cuma dirangkai berurutan jadi babak demi babak.
-// agentKeys: array key persona (mis. semua 14 default kalau tidak diisi)
-// ============================================================
+
+
+
+
+
+
+
 function runTournament(agentKeys, topic, roundsPerMatch) {
     return (async function() {
         let contestants = (agentKeys && agentKeys.length >= 2)
@@ -1125,7 +1115,7 @@ function runTournament(agentKeys, topic, roundsPerMatch) {
             return null;
         }
 
-        // Acak urutan awal supaya bracket tidak selalu sama
+        
         for (let i = contestants.length - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));
             [contestants[i], contestants[j]] = [contestants[j], contestants[i]];
@@ -1152,7 +1142,7 @@ function runTournament(agentKeys, topic, roundsPerMatch) {
                 if (getRapAbort()) return null;
 
                 if (i + 1 >= contestants.length) {
-                    // Jumlah ganjil — peserta terakhir lolos otomatis (bye)
+                    
                     nextRound.push(contestants[i]);
                     if (KESEMPATAN.RapBattle.ui) {
                         KESEMPATAN.RapBattle.ui.addMessage('🌍 MC', getDisplayName(contestants[i]) + ' lolos otomatis ke babak berikutnya (bye)');
@@ -1163,7 +1153,7 @@ function runTournament(agentKeys, topic, roundsPerMatch) {
                 const a = contestants[i];
                 const b = contestants[i + 1];
                 const result = await startRapBattle(topic, a, b, roundsPerMatch || 3);
-                if (!result) return null; // dibatalkan atau error fatal
+                if (!result) return null; 
 
                 bracketLog.push({ round: roundNum, agentA: getDisplayName(a), agentB: getDisplayName(b), winner: result.winner });
                 nextRound.push(result.winner === getDisplayName(b) ? b : a);
@@ -1185,9 +1175,9 @@ function runTournament(agentKeys, topic, roundsPerMatch) {
     })();
 }
 
-// ============================================================
-// 🔥 EXPOSE
-// ============================================================
+
+
+
 export const RapOrchestrator = {
     initBeat: initBeat,
     playBeat: playBeat,

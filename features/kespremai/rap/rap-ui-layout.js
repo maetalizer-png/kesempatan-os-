@@ -1,10 +1,4 @@
-/* ============================================================
-   📁 rap/ui-renderer/ui-layout.js
-   🔥 LAYOUT LAYER — seluruh markup HTML + fungsi render roster/select.
-   Dipindahkan apa adanya dari ui-renderer.js (byte-identik):
-   renderCypherLounge(), markRole(), clearRole(), syncHiddenSelects(),
-   renderSongSelect() TIDAK diubah satu karakter pun.
-   ============================================================ */
+
 
 const KESEMPATAN = window.KESEMPATAN || {};
 window.KESEMPATAN = KESEMPATAN;
@@ -28,15 +22,15 @@ function renderCypherLounge(container) {
         '</div>';
     }).join('');
 
-    // Default: 2 rapper pertama otomatis jadi Agent A & Agent B,
-    // sama seperti perilaku default sebelumnya (RahmadRaharjo vs Manager).
+    
+    
     const allCards = grid.querySelectorAll('.rapper-card');
     if (allCards[0]) markRole(allCards[0], 'A');
     if (allCards[1]) markRole(allCards[1], 'B');
     syncHiddenSelects(container);
 }
 
-// Tandai sebuah kartu sebagai Agent A / Agent B secara visual.
+
 function markRole(card, role) {
     card.classList.remove('selected', 'role-a', 'role-b');
     card.dataset.role = role;
@@ -55,8 +49,8 @@ function clearRole(card) {
     if (badge) badge.style.display = 'none';
 }
 
-// Sinkronkan hidden <select> (dipakai kode lama untuk kompatibilitas)
-// dengan kartu yang sedang berperan A/B di Cypher Lounge.
+
+
 function syncHiddenSelects(container) {
     const grid = container.querySelector('#cypherLoungeGrid');
     const selA = container.querySelector('#rapAgentA');
@@ -81,12 +75,12 @@ function syncHiddenSelects(container) {
     }
 }
 
-// ============================================================
-// 🔥 SONG SELECT — DAFTAR 24 LAGU DARI SOUNDBANK, DIKELOMPOKKAN GENRE
-// ✅ Sebelumnya cuma 3 opsi genre polos (Trap/Boom Bap/Drill) tanpa
-//    identitas lagu. Sekarang setiap opsi adalah LAGU sungguhan
-//    dengan judul & BPM sendiri — pilih lagu, genre+BPM ikut berubah.
-// ============================================================
+
+
+
+
+
+
 function renderSongSelect(container) {
     const select = container.querySelector('#beatPatternSelect');
     if (!select) return;

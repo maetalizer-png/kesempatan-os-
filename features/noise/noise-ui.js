@@ -61,6 +61,6 @@ window.KESEMPATAN = KESEMPATAN;
     KESEMPATAN.NoiseUI = NoiseUI;
     export const NoisePage = { render: render, destroy: destroy };
     KESEMPATAN.NoisePage = NoisePage;
-    // Kept as a real global: 8 other modules (observ-ui-renderer, cai/cag/for/deb-data-engine,
-    // tor-tournament-arena, rap-engine, ui-generator) read window.NoisePage directly.
+    
+    
     window.NoisePage = KESEMPATAN.NoisePage;

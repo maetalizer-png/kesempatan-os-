@@ -1,10 +1,4 @@
-/* ============================================================
-   interactive/debate/deb-debate-arena.js
-   KELAS UTAMA DEB_DebateArena — orkestrasi penuh 1 pertandingan
-   debat (opening, bantahan per ronde, closing, penjurian).
-   Dipakai juga oleh Turnamen (interactive/tournament/) sebagai
-   mesin "satu pertandingan" dalam bracket.
-   ============================================================ */
+
 import { DEB_CONFIG, DEB_showToast, DEB_getAgentProfile } from './deb-config.js';
 import { DEB_speakText } from './deb-voice-engine.js';
 import { DEB_getAllContext } from './deb-data-engine.js';
@@ -48,7 +42,7 @@ import {
             }.bind(this), { once: true });
         }
 
-        // ===== AMBIL SEMUA DATA DARI 3 SUMBER DENGAN CACHE =====
+        
         async fetchAllData(topic) {
             const context = await DEB_getAllContext(topic, {
                 forceRefresh: false,
@@ -71,7 +65,7 @@ import {
             };
         }
 
-        // ===== UPDATE DASHBOARD =====
+        
         updateDashboard() {
             const scoreA = this.analytics.getScore('agentA');
             const scoreB = this.analytics.getScore('agentB');
@@ -117,7 +111,7 @@ import {
             }.bind(this), 1000);
         }
 
-        // ===== BUILD PROMPT DENGAN DATA + SOURCE LABEL =====
+        
         buildPromptWithData(agent, topic, type, options) {
             options = options || {};
             let prompt = '';
@@ -170,11 +164,11 @@ import {
 
             const profile = DEB_getAgentProfile(agent);
             const persona = profile.name + (profile.role ? ', seorang ' + profile.role : '');
-            // FIX KUALITAS: sebelumnya persona cuma "nama + role 1 kalimat".
-            // Sekarang selipkan PROFIL KEAHLIAN LENGKAP (systemPrompt dari
-            // prompts/*.json, sama yg dipakai Dashboard) supaya argumen debat
-            // benar2 mencerminkan cara berpikir & ketajaman analisis khas
-            // agen tsb, bukan argumen generik yang bisa ditulis agen mana pun.
+            
+            
+            
+            
+            
             const expertiseBlock = profile.systemPrompt
                 ? '\nPROFIL & KEAHLIAN ANDA:\n' + profile.systemPrompt + '\n(CATATAN: instruksi "Output dalam format JSON" di profil di atas TIDAK berlaku di debat ini — tetap terapkan cara berpikir & ketajaman analisisnya, tapi jawab sebagai ARGUMEN DEBAT natural sesuai instruksi di bawah, bukan JSON.)\n'
                 : '';
@@ -210,7 +204,7 @@ import {
             return prompt;
         }
 
-        // ===== START DEBATE =====
+        
         async startDebate(options) {
             try {
                 const topic = this.security.validateTopic(options.topic);
@@ -444,7 +438,7 @@ import {
             }
         }
 
-        // ===== AI RESPONSE =====
+        
         async getAIResponse(agent, topic, type, model, options) {
             options = options || {};
             const prompt = this.buildPromptWithData(agent, topic, type, options);
@@ -456,7 +450,7 @@ import {
             }
         }
 
-        // ===== CALL AI =====
+        
         async callAI(prompt, model) {
             model = model || DEB_CONFIG.DEFAULT_MODEL;
             try {
@@ -474,10 +468,10 @@ import {
                         model: model === 'deepseek' ? 'deepseek/deepseek-chat' : model,
                         messages: [{ role: 'user', content: prompt }],
                         max_tokens: this.config.MAX_TOKENS,
-                        // Jitter kecil di atas TEMPERATURE dasar (bukan diganti,
-                        // cuma ditambah variasi acak 0-0.15) — mencegah gaya
-                        // argumen terasa monoton/template persis sama tiap
-                        // pertandingan, tanpa mengorbankan koherensi jawaban.
+                        
+                        
+                        
+                        
                         temperature: Math.min(1, this.config.TEMPERATURE + Math.random() * 0.15)
                     }),
                     signal: this.state.abortController?.signal
@@ -498,7 +492,7 @@ import {
             }
         }
 
-        // ===== JUDGE =====
+        
         async judge(topic, agentA, agentB, openingA, openingB, rebuttalA, rebuttalB, closingA, closingB, mode, model) {
             let dataContext = '';
             if (this.state.context && this.state.context.combined && this.state.context.combined.length > 0) {
@@ -548,7 +542,7 @@ import {
             }
         }
 
-        // ===== UI METHODS =====
+        
         addMessage(sender, message) {
             const container = document.getElementById('debateLiveContainer');
             if (!container) {
@@ -781,6 +775,6 @@ import {
         }
     }
 
-    // ============================================================
-    // 15. UI UPGRADE
-    // ============================================================
+    
+    
+    

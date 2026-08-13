@@ -411,11 +411,6 @@ async function generateWithFallback(prompt, agentName, initialProvider = null) {
                 const outputTokens = Math.ceil(result.length / 4);
                 const cost = CostTracker.addCost(provider, inputTokens, outputTokens);
                 if (Logger) Logger.success('AI', `✅ ${provider} → ${agentName} ($${cost.toFixed(6)})`);
-                // Cache key uses 'any' for the model, matching the get() lookup above —
-                // this cache is intentionally model-agnostic (a hit from any provider
-                // that succeeded before is fine, since fallback tries many models per
-                // request). Previously this wrote under the real model name while get()
-                // always queried 'any', so the hash never matched and reads never hit.
                 if (responseCache) await responseCache.set(prompt, agentName, 'any', result);
                 return result;
             }
@@ -454,5 +449,4 @@ export const AIClients = Object.freeze({
 window.KESEMPATAN = window.KESEMPATAN || {};
 window.KESEMPATAN.AIClients = AIClients;
 
-// Bridge for consumers not yet migrated to `import { AIClients } from './ai-clients.js'`.
 window.AIClients = AIClients;

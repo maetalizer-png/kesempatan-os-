@@ -1,11 +1,4 @@
-/* ============================================================
-   interactive/chat-ai/cai-core.js
-   INTI CHAT AI — kirim pesan ke AI, render panel, inisialisasi,
-   dan ekspor window.ChatModule (dibaca chat-agent.js/forum.js/
-   main.js). Dimuat PALING TERAKHIR — butuh semua file lain di
-   folder ini (config.js, state.js, data-engine.js, ui-render.js)
-   sudah dimuat lebih dulu.
-   ============================================================ */
+
 import { CAI_CONFIG, CAI_PROMPT_SAPAN } from './cai-config.js';
 import { CAI_State } from './cai-state.js';
 import {
@@ -26,12 +19,12 @@ import {
 } from './cai-ui-render.js';
 
 async function CAI_sendChatToAI() {
-        // FIX: kunci anti-panggil-ganda. Sebelumnya tidak ada penjaga
-        // sama sekali di sini — kalau tombol kirim/Enter terpicu dua kali
-        // beruntun (double-tap, atau touch+click yang keduanya sempat
-        // nyangkut di device tertentu), dua eksekusi async berjalan
-        // BERSAMAAN, masing-masing menambahkan bubble "Anda" + "AI"
-        // sendiri-sendiri → pesan & balasan tampak dobel persis.
+        
+        
+        
+        
+        
+        
         if (CAI_State.isSendingToAI) {
             return;
         }
@@ -41,13 +34,13 @@ async function CAI_sendChatToAI() {
                 const unlockUtterance = new SpeechSynthesisUtterance('ok');
                 unlockUtterance.volume = 0.01;
                 window.speechSynthesis.speak(unlockUtterance);
-                // FIX: sebelumnya utterance "ok" ini dibiarkan bicara
-                // sampai selesai (baru dibatalkan nanti pas CAI_speakText
-                // jalan) — user lapor "ok" kedengeran jelas duluan
-                // sebelum jawaban asli. Potong paksa dalam 50ms: cukup
-                // singkat utk tidak sempat terdengar, tapi panggilan
-                // .speak()-nya SENDIRI (bukan seberapa lama ia bicara)
-                // yang sebenarnya "membuka kunci" audio di gesture ini.
+                
+                
+                
+                
+                
+                
+                
                 setTimeout(function() {
                     window.speechSynthesis.cancel();
                 }, 50);
@@ -71,20 +64,20 @@ async function CAI_sendChatToAI() {
             input.value = '';
             CAI_playTypingSound();
 
-            // INTEGRASI SAPAAN (world.js): kalau pesan user MURNI sapaan
-            // (halo/hai/selamat pagi, dst — bukan pertanyaan/analisis), balas
-            // langsung pakai data sapaan dari dataries/sapaan/greetings.js
-            // (dimuat langsung oleh preloadGreetingsEarly(), tidak ikut antre
-            // di world.js). Lebih cepat, gratis (tanpa panggil API AI), dan
-            // datanya tetap satu sumber — tidak ada salinan di chat.js.
+            
+            
+            
+            
+            
+            
             if (CAI_detectGreetingIntent(message)) {
                 const typing = CAI_showTypingIndicator(container);
-                await CAI_waitForGreetingData(1500, 'waktu'); // jaga-jaga kalau preload belum sempat selesai
-                // Utamakan sapaan daerah/hari-raya yang lebih spesifik (mis.
-                // "Sugeng enjing" atau "Selamat Lebaran") kalau memang itu
-                // yang diketik user — baru fallback ke kata waktu ("siang"
-                // dari "Selamat siang"), lalu jam device kalau user cuma
-                // bilang "Hai"/"Halo" tanpa keterangan waktu.
+                await CAI_waitForGreetingData(1500, 'waktu'); 
+                
+                
+                
+                
+                
                 const greetingWord = CAI_extractGreetingWord(message);
                 const greetingItem = CAI_getRegionalOrHolidayGreeting(message) || CAI_getGreetingByWord(greetingWord) || CAI_getTimeBasedGreeting();
                 if (greetingItem && greetingItem.text) {
@@ -99,16 +92,16 @@ async function CAI_sendChatToAI() {
                     return;
                 }
                 typing.remove();
-                // Data sapaan tetap belum siap setelah menunggu (mis. file
-                // gagal load) — lanjut ke alur AI biasa di bawah, jangan
-                // biarkan user menggantung tanpa balasan.
+                
+                
+                
             }
 
-            // INTEGRASI KABAR (dataries/sapaan/interaktif.js): kalau pesan user
-            // basa-basi "apa kabar" / "gimana kabarnya" / "how are you",
-            // balas langsung pakai salah satu dari 82 variasi balasan kabar,
-            // diprioritaskan yang moodnya senada dengan gaya bicara user
-            // (santai/formal) supaya terasa nyambung, bukan acak.
+            
+            
+            
+            
+            
             if (CAI_detectKabarIntent(message)) {
                 const typing = CAI_showTypingIndicator(container);
                 await CAI_waitForGreetingData(1500, 'kabar');
@@ -187,7 +180,7 @@ async function CAI_sendChatToAI() {
         }
     }
 
-// ---------- RENDER HTML PANEL (dipindah dari index.html) ----------
+
 function CAI_renderChatAiPanel() {
         const container = document.getElementById('interactiveChatAiPanel');
         if (!container || container.dataset.rendered === 'true') {
@@ -197,7 +190,7 @@ function CAI_renderChatAiPanel() {
         container.innerHTML = "<div id=\"chatAiMessages\" class=\"chat-messages\" style=\"height:300px; background:rgba(0,0,0,0.3); border-radius:16px; padding:12px; overflow-y:auto;\"><div style=\"color:#00FFA3;\">AI Assistant:</div><div style=\"color:#A0B3C9;\">Halo! Tanyakan tentang bisnis, peluang, atau strategi. Saya bisa bicara! </div></div><div style=\"display:flex; gap:10px; margin-top:12px;\"><input type=\"text\" id=\"chatAiInput\" placeholder=\"Ketik pertanyaan...\" style=\"flex:1;\"><button id=\"chatAiSendBtn\" class=\"execute-btn secondary\">Kirim</button></div>";
     }
 
-// ---------- INISIALISASI PANEL CHAT AI ----------
+
 function CAI_initChatAi() {
         CAI_renderChatAiPanel();
 
@@ -242,11 +235,11 @@ function CAI_initChatAi() {
         window.getChatCacheStats = CAI_getCacheStats;
     }
 
-// ---------- EXPOSE (KESEMPATAN.ChatModule — dibangun bertahap oleh
-// chat-ai/core.js, chat-agent/core.js, forum/core.js secara aditif;
-// window.ChatModule tetap dipertahankan sebagai referensi objek yang SAMA
-// karena ai-voice-agents.js memodifikasi propertinya (speakText) langsung
-// lewat nama window.ChatModule) ----------
+
+
+
+
+
 window.KESEMPATAN = window.KESEMPATAN || {};
 window.KESEMPATAN.ChatModule = window.KESEMPATAN.ChatModule || window.ChatModule || {};
 window.ChatModule = window.KESEMPATAN.ChatModule;
@@ -283,7 +276,7 @@ Object.assign(window.ChatModule, {
     getKabarReplyByMood: CAI_getKabarReplyByMood
 });
 
-// ---------- INITIALIZE ----------
+
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', CAI_initChatAi);
 } else {

@@ -28,9 +28,9 @@ export const RapBattleMain = {
 
 KESEMPATAN.RapBattleMain = RapBattleMain;
 
-// Internal logic/ui references are re-added onto the same public
-// KESEMPATAN.RapBattle object that rap-logic.js/rap-ui.js already populated
-// with .logic/.ui, alongside the flattened passthrough methods above.
+
+
+
 KESEMPATAN.RapBattle = {
     render: ui.render,
     startRapBattle: logic.startRapBattle,

@@ -1518,9 +1518,9 @@ export const ReactionLearning = Object.freeze({
 
 KESEMPATAN.ReactionLearning = ReactionLearning;
 
-// Kept as a real global (not KESEMPATAN-only): threshold-learning.js
-// monkey-patches window.recordFeedback (wraps it) to hook approval feedback
-// into the auto-learning threshold engine.
+
+
+
 window.recordFeedback = recordFeedback;
 
 if (document.readyState === 'loading') {

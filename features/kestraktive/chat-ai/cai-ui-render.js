@@ -1,13 +1,8 @@
-/* ============================================================
-   interactive/chat-ai/cai-ui-render.js
-   TAMPILAN CHAT AI — preferensi, suara (TTS/STT), riwayat,
-   tema, emoji, reaksi pesan, streaming, render bubble chat.
-   Butuh config.js & state.js sudah dimuat lebih dulu.
-   ============================================================ */
+
 import { CAI_CONFIG } from './cai-config.js';
 import { CAI_State } from './cai-state.js';
 
-// ---------- PREFERENSI & FEEDBACK ----------
+
 export function CAI_loadPreferences() {
         try {
             const saved = localStorage.getItem(CAI_CONFIG.PREF_KEY);
@@ -24,7 +19,7 @@ export function CAI_loadPreferences() {
                 };
             }
         } catch (_) {
-            // Silent fail
+            
         }
         return {
             categories: ['politik', 'ekonomi', 'teknologi'],
@@ -48,7 +43,7 @@ export function CAI_savePreferences(prefs) {
                 CAI_State.stylePreference = prefs.style;
             }
         } catch (_) {
-            // Silent fail
+            
         }
     }
 
@@ -59,7 +54,7 @@ export function CAI_loadFeedback() {
                 return JSON.parse(saved);
             }
         } catch (_) {
-            // Silent fail
+            
         }
         return [];
     }
@@ -72,7 +67,7 @@ export function CAI_saveFeedback(feedback) {
             }
             localStorage.setItem(CAI_CONFIG.FEEDBACK_KEY, JSON.stringify(CAI_State.feedbackHistory));
         } catch (_) {
-            // Silent fail
+            
         }
     }
 
@@ -104,11 +99,11 @@ export function CAI_handleFeedback(messageId, rating) {
         }
     }
 
-// ---------- SUARA (TTS/STT) ----------
-// Menghapus sintaks markdown jadi teks polos SEBELUM dikirim ke TTS —
-// tanpa ini, browser speech synthesis membaca tanda "**"/"*"/"`" secara
-// harfiah sbg kata "asterisk"/dst (pola bug yang sama seperti yang
-// sudah diperbaiki di Debate/Tournament via SecurityManager.stripMarkdown).
+
+
+
+
+
 export function CAI_stripMarkdown(text) {
         return text
             .replace(/\*\*\*(.*?)\*\*\*/g, '$1')
@@ -141,11 +136,11 @@ export function CAI_speakText(text) {
         if (targetVoice) {
             utterance.voice = targetVoice;
         }
-        // FIX: bug lama & terkenal di Chrome — speechSynthesis diam-diam
-        // "pause" sendiri di tengah kalimat panjang (biasanya sekitar
-        // 15 detik), utterance tidak pernah lanjut/selesai. resume()
-        // berkala menjaganya tetap jalan; interval dibersihkan begitu
-        // utterance benar2 selesai/dibatalkan/error.
+        
+        
+        
+        
+        
         const keepAlive = setInterval(function() {
             if (window.speechSynthesis.speaking) {
                 window.speechSynthesis.resume();
@@ -244,14 +239,14 @@ export function CAI_startVoiceInput(inputId) {
         CAI_State.recognition.start();
     }
 
-// ---------- HISTORY (localStorage) ----------
+
 export function CAI_saveChatHistory(panelId, messages) {
         try {
             const history = JSON.parse(localStorage.getItem(CAI_CONFIG.STORAGE_KEY) || '{}');
             history[panelId] = messages.slice(-CAI_CONFIG.MAX_HISTORY);
             localStorage.setItem(CAI_CONFIG.STORAGE_KEY, JSON.stringify(history));
         } catch (_) {
-            // Silent fail
+            
         }
     }
 
@@ -270,7 +265,7 @@ export function CAI_clearChatHistory(panelId) {
             delete history[panelId];
             localStorage.setItem(CAI_CONFIG.STORAGE_KEY, JSON.stringify(history));
         } catch (_) {
-            // Silent fail
+            
         }
     }
 
@@ -360,7 +355,7 @@ export function CAI_exportChatPDF(panelId, filename) {
         }
     }
 
-// ---------- EMOJI, TYPING SOUND, TEMA ----------
+
 export function CAI_toggleEmojiPicker(inputId) {
         const existingPicker = document.getElementById('emojiPickerContainer');
         if (existingPicker) {
@@ -410,7 +405,7 @@ export function CAI_initTypingSound() {
         try {
             CAI_State.typingSoundContext = new (window.AudioContext || window.webkitAudioContext)();
         } catch (_) {
-            // Silent fail
+            
         }
     }
 
@@ -429,7 +424,7 @@ export function CAI_playTypingSound() {
             oscillator.start();
             oscillator.stop(CAI_State.typingSoundContext.currentTime + 0.05);
         } catch (_) {
-            // Silent fail
+            
         }
     }
 
@@ -484,7 +479,7 @@ export function CAI_loadTheme() {
         CAI_updateThemeUI();
     }
 
-// ---------- UTIL TAMPILAN ----------
+
 export function CAI_renderMarkdown(text) {
         let html = CAI_escapeHtml(text);
         html = html.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
@@ -574,7 +569,7 @@ export function CAI_getApiKey() {
         return null;
     }
 
-// ---------- REAKSI & EDIT PESAN ----------
+
 export function CAI_addReaction(messageWrapper, emoji) {
         const existing = messageWrapper.querySelector('.reaction-bar');
         if (existing) {
@@ -721,7 +716,7 @@ export function CAI_getAgentAvatar(agent) {
         return profile.emoji || '';
     }
 
-// ---------- RENDER PESAN & STREAMING ----------
+
 export function CAI_cancelAIRequest() {
         if (CAI_State.currentAbortController) {
             CAI_State.currentAbortController.abort();
@@ -916,7 +911,7 @@ export function CAI_addFeedbackButtons(messageWrapper) {
         });
     }
 
-// ---------- CSS GLOBAL PANEL INTERAKTIF (dipasang sekali, id-guarded) ----------
+
     const styleId = 'chat-complete-style';
     if (!document.getElementById(styleId)) {
         const style = document.createElement('style');
@@ -1217,4 +1212,4 @@ export function CAI_addFeedbackButtons(messageWrapper) {
         document.head.appendChild(style);
     }
 
-    // ============================================================
+    

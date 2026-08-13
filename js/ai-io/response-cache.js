@@ -715,7 +715,7 @@ export const ResponseCacheManager = Object.freeze({
 
 KESEMPATAN.ResponseCache = ResponseCacheManager;
 
-// Bridge for consumers not yet migrated to import { ResponseCacheManager } from './response-cache.js'.
+
 window.ResponseCacheManager = ResponseCacheManager;
 window.setCacheDatabase = setDatabase;
 
@@ -752,9 +752,9 @@ export const CachePageManager = {
         return false;
     }
 };
-// CachePage stays bare (in addition to the KESEMPATAN pointer below) because
-// cache-db-bridge.js reads window.CachePage directly as an explicit fallback
-// when window.KESEMPATAN.ResponseCache isn't ready yet.
+
+
+
 KESEMPATAN.CachePage = CachePageManager;
 window.CachePage = CachePageManager;
 

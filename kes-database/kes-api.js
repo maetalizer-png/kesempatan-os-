@@ -48,7 +48,7 @@ function createCrdt() {
         try {
             return new KESEMPATAN.KesDatabase.CRDT();
         } catch (_) {
-            // fallback below
+            
         }
     }
 
@@ -83,11 +83,11 @@ const DB_STORES = Object.freeze([
     'reports',
     'workflow_state',
 
-    // ============================================================
-    // v13 — write-behind mirror stores for growth-prone localStorage
-    // keys (see mirrorHistoryItem/migrateLegacyArrayOnce below). Each
-    // store just needs a record shape of { id, timestamp, ...payload }.
-    // ============================================================
+    
+    
+    
+    
+    
     'podcast_history',
     'rap_battle_history',
     'obs_trigger_history',
@@ -104,18 +104,18 @@ const DB_STORES = Object.freeze([
     'learning_data'
 ]);
 
-// ============================================================
-// FRAMEWORK HELPERS
-// ============================================================
+
+
+
 const FrameworkHelpers = Object.freeze({
     getDB: function () {
         return getDatabase();
     }
 });
 
-// ============================================================
-// KESDATABASE - MAIN CLASS
-// ============================================================
+
+
+
 class KESDatabase {
     constructor() {
         this._dbName = Config.name || 'KESEMPATAN_OS_DB';
@@ -166,9 +166,9 @@ class KESDatabase {
         Logger.info('KESDatabase', 'Constructed');
     }
 
-    // ============================================================
-    // LAZY LOADING
-    // ============================================================
+    
+    
+    
     _lazyLoad(name) {
         if (this._lazyLoaded[name]) {
             return this._components[name];
@@ -352,9 +352,9 @@ class KESDatabase {
         }
     }
 
-    // ============================================================
-    // PUBLIC ACCESSORS
-    // ============================================================
+    
+    
+    
     get quantumEncryption() {
         return this._components.quantumEncryption;
     }
@@ -451,9 +451,9 @@ class KESDatabase {
         return this._lazyLoad('playground');
     }
 
-    // ============================================================
-    // INIT
-    // ============================================================
+    
+    
+    
     async init() {
         if (this._isReady) {
             return;
@@ -514,9 +514,9 @@ class KESDatabase {
         }.bind(this));
     }
 
-    // ============================================================
-    // CORE OPERATIONS
-    // ============================================================
+    
+    
+    
     _processQueue() {
         while (this._pendingQueue.length > 0) {
             const item = this._pendingQueue.shift();
@@ -605,16 +605,16 @@ class KESDatabase {
         return await parser.parseAndExecute(query, params || []);
     }
 
-    // ============================================================
-    // REPORTS — convenience wrapper di atas saveQuantumEncrypted()
-    // ============================================================
-    // FIX: dipanggil workflow.js sebagai appDatabase.saveReport(topic,
-    // score, data) setelah agregasi selesai — method ini sebelumnya
-    // TIDAK ADA sama sekali di kelas ini (store 'reports' sudah lama
-    // terdaftar di DB_STORES, tapi belum pernah ada cara menulis ke
-    // sana). Dibangun di atas saveQuantumEncrypted() yang sudah ada
-    // supaya laporan ikut terenkripsi+audit log+live query notify,
-    // konsisten dengan semua operasi tulis lain di kelas ini.
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     async saveReport(topic, score, reportData) {
         const id = createId();
         const record = Object.assign({}, reportData || {}, {
@@ -626,10 +626,10 @@ class KESDatabase {
     }
 
     async getReports(limit) {
-        // FIX: getAllFromStore() mengembalikan record MENTAH (field
-        // `data` masih terenkripsi, karena saveReport() menulis lewat
-        // saveQuantumEncrypted()) — didekripsi dulu di sini, meniru pola
-        // yang sama persis dengan getEncrypted().
+        
+        
+        
+        
         const raw = await this.getAllFromStore('reports');
         const sorted = raw.sort(function (a, b) {
             return (b.timestamp || 0) - (a.timestamp || 0);
@@ -648,19 +648,19 @@ class KESDatabase {
         return decrypted;
     }
 
-    // ============================================================
-    // RESPONSE CACHE — convenience wrapper di atas saveQuantumEncrypted()
-    // ============================================================
-    // FIX: response-cache.js mengharapkan 5 method ini di appDatabase
-    // (getCachedResponse/setCachedResponse/deleteCachedResponse/
-    // clearCache/getAllCache) — sebelumnya TIDAK SATUPUN ada di kelas
-    // ini (store 'api_cache' sudah lama terdaftar di DB_STORES, tapi
-    // belum pernah ada cara baca/tulis ke sana), jadi getStats() yang
-    // dipanggil auto-refresh tiap 10 detik selalu gagal. Dibangun
-    // persis pola saveReport/getReports di atas — saveQuantumEncrypted/
-    // getEncrypted/getAllFromStore/deleteRecord/_clearStore yang sudah
-    // ada, supaya cache ikut terenkripsi+audit log, konsisten dgn
-    // operasi tulis lain di kelas ini.
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     async setCachedResponse(key, agentName, response) {
         const record = {
             agent: agentName,
@@ -672,8 +672,8 @@ class KESDatabase {
     }
 
     async getCachedResponse(key) {
-        // getEncrypted() sudah mengembalikan null kalau record tidak
-        // ada — response-cache.js baca field `.response` dari hasilnya.
+        
+        
         const record = await this.getEncrypted('api_cache', key);
         return record ? record.response : null;
     }
@@ -687,12 +687,12 @@ class KESDatabase {
     }
 
     async getAllCache() {
-        // Sama pola dgn getReports(): getAllFromStore() mengembalikan
-        // record MENTAH (field `data` masih terenkripsi), didekripsi
-        // dulu di sini. `key` & `timestamp` dari wrapper luar ikut
-        // disertakan (bukan cuma payload) — dipakai response-cache.js
-        // utk tampilkan daftar cache & hitung statistik (total/valid/
-        // ukuran/daftar agen).
+        
+        
+        
+        
+        
+        
         const raw = await this.getAllFromStore('api_cache');
 
         if (!this.quantumEncryption || typeof this.quantumEncryption.decrypt !== 'function') {
@@ -881,7 +881,7 @@ class KESDatabase {
                         try {
                             await auditLog.log('delete', storeName, { id: id }, 'system');
                         } catch (_) {
-                            // silent
+                            
                         }
                     }
                 }
@@ -961,7 +961,7 @@ class KESDatabase {
                     percentage: Math.round((estimate.usage / estimate.quota) * 100)
                 };
             } catch (_) {
-                // silent
+                
             }
         }
 
@@ -1016,9 +1016,9 @@ class KESDatabase {
         });
     }
 
-    // ============================================================
-    // AUTO-BACKUP, SYNC, HEALTH CHECKS
-    // ============================================================
+    
+    
+    
     _startAutoBackup() {
         const intervalId = setInterval(async function () {
             if (!this._isReady) {
@@ -1148,9 +1148,9 @@ class KESDatabase {
         this._intervals.push(intervalId);
     }
 
-    // ============================================================
-    // SUBSCRIPTION
-    // ============================================================
+    
+    
+    
     _notify(event, data) {
         for (const subscriber of this._subscribers) {
             if (subscriber.event === event) {
@@ -1180,9 +1180,9 @@ class KESDatabase {
         }.bind(this);
     }
 
-    // ============================================================
-    // PUBLIC HELPERS
-    // ============================================================
+    
+    
+    
     async executeQuery(query, params) {
         const parser = this._components.queryParser || this._lazyLoad('queryParser');
 
@@ -1190,14 +1190,14 @@ class KESDatabase {
             throw new Error('Query parser unavailable');
         }
 
-        // SAMBUNGKAN SmartCache ke jalur query sungguhan (Juli 2026 — kelas
-        // sudah ada dari sesi sebelumnya, tapi cuma getStats()/clear() yang
-        // dipanggil, TIDAK PERNAH get()/set() — jadi statistiknya SELALU 0
-        // hit, tidak ada manfaat nyata). HANYA query SELECT (baca) yang
-        // di-cache — INSERT/UPDATE/DELETE (tulis) SENGAJA TIDAK PERNAH
-        // di-cache, supaya operasi tulis selalu benar-benar dieksekusi,
-        // tidak pernah "dilewati" krn kena entri cache lama (itu akan jadi
-        // bug kehilangan data yang serius kalau sampai terjadi).
+        
+        
+        
+        
+        
+        
+        
+        
         const trimmed = (query || '').trim().toUpperCase();
         const isCacheable = trimmed.startsWith('SELECT');
         const cache = this._components.smartCache || this._lazyLoad('smartCache');
@@ -1232,9 +1232,9 @@ class KESDatabase {
         return [];
     }
 
-    // ============================================================
-    // SELF-HEALING
-    // ============================================================
+    
+    
+    
     async selfHeal() {
         try {
             const warnings = [];
@@ -1282,9 +1282,9 @@ class KESDatabase {
         }
     }
 
-    // ============================================================
-    // CLEANUP & DESTROY
-    // ============================================================
+    
+    
+    
     async cleanup() {
         if (this._components.smartCache && typeof this._components.smartCache.clear === 'function') {
             this._components.smartCache.clear();
@@ -1354,9 +1354,9 @@ class KESDatabase {
         }.bind(this));
     }
 
-    // ============================================================
-    // TRANSACTION & BATCH
-    // ============================================================
+    
+    
+    
     async transaction(storeNames, callback) {
         if (!Config.transactionEnabled) {
             throw new Error('Transactions disabled');
@@ -1386,7 +1386,7 @@ class KESDatabase {
                     try {
                         tx.abort();
                     } catch (_) {
-                        // ignore
+                        
                     }
 
                     reject(error);
@@ -1411,9 +1411,9 @@ class KESDatabase {
     }
 }
 
-// ============================================================
-// SINGLETON
-// ============================================================
+
+
+
 let dbInstance = null;
 
 async function getDatabase() {
@@ -1426,22 +1426,22 @@ async function getDatabase() {
     return dbInstance;
 }
 
-// ============================================================
-// LOCALSTORAGE -> INDEXEDDB WRITE-BEHIND MIRROR
-//
-// localStorage stays the source of truth for every existing
-// synchronous read — nothing about those call sites changes.
-// These two helpers only ever ADD a durable, effectively-unbounded
-// copy in IndexedDB on top:
-//   - mirrorHistoryItem(): call right after a localStorage write,
-//     fire-and-forget. Never throws; a failure here just means
-//     that one entry didn't get backed up, localStorage is
-//     unaffected either way.
-//   - migrateLegacyArrayOnce(): run once (per storeName) to copy
-//     whatever's already sitting in localStorage into IndexedDB the
-//     first time this code runs on a given browser, guarded by a
-//     localStorage flag so it never re-runs.
-// ============================================================
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 async function mirrorHistoryItem(storeName, item) {
     if (!window.KESDatabase || window.KESDatabase._isDummy || typeof window.KESDatabase.bulkInsert !== 'function') {
         return;
@@ -1454,9 +1454,9 @@ async function mirrorHistoryItem(storeName, item) {
     }
 }
 
-// For data that's a single evolving snapshot (worker stats, learning
-// weights, etc.) rather than an append-only history — always writes to
-// the same fixed id, so it stays one record instead of growing forever.
+
+
+
 async function mirrorSnapshot(storeName, data) {
     if (!window.KESDatabase || window.KESDatabase._isDummy || typeof window.KESDatabase.bulkInsert !== 'function') {
         return;
@@ -1469,9 +1469,9 @@ async function mirrorSnapshot(storeName, data) {
     }
 }
 
-// Lower-level variant for callers who already have the array in memory
-// (e.g. a module whose "legacy" data lives inside a combined state blob
-// rather than directly under one localStorage key).
+
+
+
 async function migrateArrayOnce(storeName, items) {
     const flagKey = 'kes_idb_migrated_' + storeName;
     if (localStorage.getItem(flagKey)) {
@@ -1547,10 +1547,10 @@ export {
 KESEMPATAN.KesDatabase.KESDatabaseEngine = KESDatabase;
 KESEMPATAN.KesDatabase.getDatabase = getDatabase;
 KESEMPATAN.KesDatabase.FrameworkHelpers = FrameworkHelpers;
-// GraphQLAPI/QueryBuilder/Playground now live in kes-api-playground.js —
-// they attach themselves to KESEMPATAN.KesDatabase the same way, so the
-// lazy-load checks above (typeof KESEMPATAN.KesDatabase.GraphQLAPI ===
-// 'function') keep working unchanged regardless of which file set them.
+
+
+
+
 KESEMPATAN.KesDatabase.mirrorHistoryItem = mirrorHistoryItem;
 KESEMPATAN.KesDatabase.mirrorSnapshot = mirrorSnapshot;
 KESEMPATAN.KesDatabase.migrateLegacyArrayOnce = migrateLegacyArrayOnce;

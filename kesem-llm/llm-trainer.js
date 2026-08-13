@@ -5,8 +5,8 @@ import { LLMSampler } from './llm-sampler.js';
 import { LLMOptimizer } from './llm-optimizer.js';
 
 const Logger = window.Utils?.Logger || {
-    info: function () { /* silent */ },
-    warn: function () { /* silent */ },
+    info: function () {  },
+    warn: function () {  },
     error: function (mod, msg) { console.error('[ERROR] [' + mod + '] ' + msg); }
 };
 
@@ -20,21 +20,21 @@ function requireDeps() {
     };
 }
 
-// ============================================================
-// CROSS-ENTROPY LOSS + GRADIEN (digabung — turunan softmax+CE
-// sangat sederhana kalau dihitung bersamaan: dLogits = p - oneHot)
-// ============================================================
-// 🔧 FIX BUG LAMA (ditemukan Juli 2026 lewat gradient checking numerik
-// saat verifikasi weight tying — TIDAK terkait tying, sudah ada sejak
-// awal): loss dibagi seqLen (rata-rata per-token), TAPI dLogits
-// sebelumnya TIDAK PERNAH ikut dibagi seqLen — gradien selalu
-// 'seqLen' kali terlalu besar dibanding yang seharusnya untuk loss
-// rata-rata yang dilaporkan (contoh: 3x terlalu besar untuk sequence
-// 3 token, 10x untuk 10 token). Learning rate EFEKTIF jadi jauh
-// lebih besar dari yang di-set, kemungkinan ikut berkontribusi ke
-// training yang kurang stabil. Diverifikasi numerik (finite-
-// difference vs analitik): rasio SEBELUM fix persis 1/seqLen di
-// setiap elemen, SESUDAH fix jadi 1:1 (selisih <1e-6).
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 function crossEntropyLossAndGrad(logits, targetIds) {
     const { S } = requireDeps();
     const seqLen = logits.length;
@@ -44,7 +44,7 @@ function crossEntropyLossAndGrad(logits, targetIds) {
     for (let t = 0; t < seqLen; t++) {
         const probs = S.softmax(logits[t]);
         const target = targetIds[t];
-        const p = Math.max(probs[target], 1e-12); // jaga-jaga log(0)
+        const p = Math.max(probs[target], 1e-12); 
         totalLoss += -Math.log(p);
 
         dLogits[t] = probs.map(function (v) { return v / seqLen; });
@@ -54,11 +54,11 @@ function crossEntropyLossAndGrad(logits, targetIds) {
     return { loss: totalLoss / seqLen, dLogits: dLogits };
 }
 
-// ============================================================
-// BACKWARD PRIMITIF
-// ============================================================
 
-// y = x @ W  (tanpa bias) — dipakai proyeksi Q/K/V/O & outputProjection
+
+
+
+
 function linearBackward(x, W, dY) {
     const { E } = requireDeps();
     return {
@@ -67,7 +67,7 @@ function linearBackward(x, W, dY) {
     };
 }
 
-// y = x @ W + b — dipakai FFN
+
 function linearWithBiasBackward(x, W, dY) {
     const { E } = requireDeps();
     const lin = linearBackward(x, W, dY);
@@ -80,7 +80,7 @@ function linearWithBiasBackward(x, W, dY) {
     return { dX: lin.dX, dW: lin.dW, dB: dB };
 }
 
-// Turunan GELU (aproksimasi tanh, SAMA persis dengan forward di llm-transformer.js)
+
 function geluDerivative(x) {
     const c = Math.sqrt(2 / Math.PI);
     const inner = c * (x + 0.044715 * x * x * x);
@@ -95,8 +95,8 @@ function geluBackward(preActivation, dOut) {
     });
 }
 
-// LayerNorm backward — formula gabungan standar:
-// dX_i = (1/std) * (dXhat_i - mean(dXhat) - xhat_i * mean(dXhat·xhat))
+
+
 function layerNormBackwardRow(x, gamma, beta, dY, eps) {
     const n = x.length;
     let mean = 0;
@@ -152,19 +152,19 @@ function layerNormBackward(x, params, dY, eps) {
     return { dX: dX, dGamma: dGamma, dBeta: dBeta };
 }
 
-// Backward attention skala-titik untuk SATU head.
-// Forward: scores = QK^T/sqrt(d) + mask, weights = softmax(scores), out = weights@V
+
+
 function scaledDotProductAttentionBackward(Q, K, V, weights, dOutput) {
     const { E } = requireDeps();
     const dHead = Q[0].length;
     const scale = 1 / Math.sqrt(dHead);
 
-    // dV = weights^T @ dOutput
+    
     const dV = E.matmul(E.transpose(weights), dOutput);
-    // dWeights = dOutput @ V^T
+    
     const dWeights = E.matmul(dOutput, E.transpose(V));
 
-    // Backward softmax per baris: dScores_i = weights_i * (dWeights_i - sum(dWeights_i * weights_i))
+    
     const dScores = weights.map(function (row, i) {
         let dot = 0;
         for (let j = 0; j < row.length; j++) {
@@ -181,7 +181,7 @@ function scaledDotProductAttentionBackward(Q, K, V, weights, dOutput) {
     return { dQ: dQ, dK: dK, dV: dV };
 }
 
-// Backward multi-head attention penuh (mengulang forward supaya dapat cache Q/K/V/weights per head).
+
 function multiHeadAttentionBackward(x, blockAttentionWeights, nHeads, mask, dOutput) {
     const { E, A } = requireDeps();
 
@@ -202,11 +202,11 @@ function multiHeadAttentionBackward(x, blockAttentionWeights, nHeads, mask, dOut
     }
     const merged = A.mergeHeads(headOutputs);
 
-    // ===== BACKWARD =====
+    
     const outLin = linearBackward(merged, blockAttentionWeights.Wo, dOutput);
     const dMerged = outLin.dX;
 
-    // splitHeads = kebalikan dari mergeHeads untuk keperluan gradien
+    
     const dHeadOutputs = A.splitHeads(dMerged, nHeads);
 
     const dQh = new Array(nHeads);
@@ -219,7 +219,7 @@ function multiHeadAttentionBackward(x, blockAttentionWeights, nHeads, mask, dOut
         dVh[h] = g.dV;
     }
 
-    // mergeHeads = kebalikan dari splitHeads untuk keperluan gradien
+    
     const dQ = A.mergeHeads(dQh);
     const dK = A.mergeHeads(dKh);
     const dV = A.mergeHeads(dVh);
@@ -236,9 +236,9 @@ function multiHeadAttentionBackward(x, blockAttentionWeights, nHeads, mask, dOut
     };
 }
 
-// ============================================================
-// FORWARD DENGAN CACHE (per blok transformer)
-// ============================================================
+
+
+
 function transformerBlockForwardWithCache(x, blockWeights, config, mask) {
     const { E, A, T } = requireDeps();
 
@@ -261,7 +261,7 @@ function transformerBlockForwardWithCache(x, blockWeights, config, mask) {
 function transformerBlockBackward(cache, blockWeights, config, mask, dOutput) {
     const { E, T } = requireDeps();
 
-    // residual 2: afterFFN = afterAttn + ffnOut → gradien mengalir utuh ke DUA cabang
+    
     const dFfnOut = dOutput;
     const dAfterAttnFromResidual2 = dOutput;
 
@@ -274,7 +274,7 @@ function transformerBlockBackward(cache, blockWeights, config, mask, dOutput) {
     const ln2Grad = layerNormBackward(cache.afterAttn, blockWeights.ln2, dNormed2);
     const dAfterAttn = E.addMatrices(dAfterAttnFromResidual2, ln2Grad.dX);
 
-    // residual 1: afterAttn = x + attnOut → gradien mengalir utuh ke DUA cabang
+    
     const dAttnOut = dAfterAttn;
     const dXFromResidual1 = dAfterAttn;
 
@@ -295,9 +295,9 @@ function transformerBlockBackward(cache, blockWeights, config, mask, dOutput) {
     };
 }
 
-// ============================================================
-// FORWARD PENUH (embedding → N blok → finalNorm → logits) DENGAN CACHE
-// ============================================================
+
+
+
 function forwardWithCache(tokenIds, model, config) {
     const { E, T, A } = requireDeps();
 
@@ -341,10 +341,10 @@ function backward(cache, dLogits, model, config) {
         dHidden = blockResult.dX;
     }
 
-    // dHidden sekarang gradien terhadap x0 (embedding + positional encoding).
-    // Positional encoding tidak punya parameter, jadi seluruh dHidden
-    // adalah gradien buat embedding — di-scatter-add ke baris token yang
-    // relevan (token yang sama di posisi berbeda gradiennya diakumulasi).
+    
+    
+    
+    
     const dEmbeddingMatrix = E.zerosMatrix(model.embeddingMatrix.length, config.dModel);
     for (let t = 0; t < cache.tokenIds.length; t++) {
         const id = cache.tokenIds[t];
@@ -361,13 +361,13 @@ function backward(cache, dLogits, model, config) {
     };
 }
 
-// ============================================================
-// GRADIENT CLIPPING (by global norm) — praktik standar training
-// transformer, cegah SGD polos overshoot kalau kebetulan gradien
-// di satu langkah jadi besar (umum terjadi di model kecil/awal
-// training, tanpa ini loss bisa melonjak sesekali alih-alih turun
-// stabil).
-// ============================================================
+
+
+
+
+
+
+
 function tensorSquaredNormSum(tensor) {
     let sum = 0;
     if (Array.isArray(tensor[0])) {
@@ -404,7 +404,7 @@ function clipGradientsByGlobalNorm(grads, maxNorm) {
     const globalNorm = Math.sqrt(totalSquared);
 
     if (globalNorm <= maxNorm || globalNorm === 0) {
-        return grads; // tidak perlu di-clip
+        return grads; 
     }
 
     const factor = maxNorm / globalNorm;
@@ -430,14 +430,14 @@ function clipGradientsByGlobalNorm(grads, maxNorm) {
     return grads;
 }
 
-// ============================================================
-// TRAIN STEP — forward, loss, backward, update parameter
-// ============================================================
-// Adam opt-in lewat options.optimizer==='adam' (default tetap SGD,
-// tidak mengubah perilaku yang sudah berjalan). Adam TIDAK menyentuh
-// forward/backward/loss di atas (sudah diverifikasi gradient-checking
-// sebelumnya) — cuma mengganti rumus UPDATE dari gradien yang sudah
-// benar, jadi jauh lebih rendah risiko daripada mengubah backward().
+
+
+
+
+
+
+
+
 function getAdamState(model, O) {
     if (!model._adamState) {
         model._adamState = {
@@ -464,10 +464,10 @@ function getAdamState(model, O) {
                 gamma: O.createAdamState(model.decoderWeights.finalNorm.gamma),
                 beta: O.createAdamState(model.decoderWeights.finalNorm.beta)
             }
-            // outputProjection TIDAK punya state Adam sendiri lagi —
-            // weight tying berarti tidak ada update independen untuk
-            // itu, gradiennya digabung ke embeddingMatrix (lihat
-            // trainStep). Baris ini sengaja dihapus, bukan alpa.
+            
+            
+            
+            
         };
     }
     return model._adamState;
@@ -488,9 +488,9 @@ function trainStep(model, tokenIds, learningRate, maxGradNorm, options) {
         throw new Error('[LLMTrainer] trainStep butuh minimal 2 token (1 input + 1 target)');
     }
 
-    // Sekuens auto-train dibangun dari prompt agen ASLI (bisa jauh
-    // lebih panjang dari maxContextLength) — dipotong di sini, satu
-    // titik otoritatif yang melindungi semua pemanggil trainStep.
+    
+    
+    
     const maxLen = model.config.model.maxContextLength;
     if (tokenIds.length > maxLen) {
         tokenIds = tokenIds.slice(0, maxLen);
@@ -506,15 +506,15 @@ function trainStep(model, tokenIds, learningRate, maxGradNorm, options) {
     const { loss, dLogits } = crossEntropyLossAndGrad(logits, targetIds);
     const grads = clipGradientsByGlobalNorm(backward(cache, dLogits, model, model.config.model), maxGradNorm);
 
-    // WEIGHT TYING — outputProjection = transpose(embeddingMatrix),
-    // jadi loss punya 2 JALUR pengaruh ke embeddingMatrix yang SAMA:
-    // (1) lookup token langsung → grads.dEmbeddingMatrix, (2) lewat
-    // proyeksi ke logits (outputProjection) → grads.dOutputProjection.
-    // Gradien totalnya adalah JUMLAH keduanya (dOutputProjection
-    // ditranspos dulu, karena arah pengaruhnya lewat matriks yang
-    // ditranspos) — BUKAN diperbarui 2x terpisah, itu salah secara
-    // matematis untuk parameter yang diikat. Diverifikasi lewat
-    // gradient checking numerik (finite-difference vs analitik).
+    
+    
+    
+    
+    
+    
+    
+    
+    
     const combinedEmbeddingGrad = E.addMatrices(grads.dEmbeddingMatrix, E.transpose(grads.dOutputProjection));
     model.embeddingMatrix = update(model.embeddingMatrix, combinedEmbeddingGrad, adamState && adamState.embeddingMatrix);
 
@@ -537,48 +537,48 @@ function trainStep(model, tokenIds, learningRate, maxGradNorm, options) {
 
     model.decoderWeights.finalNorm.gamma = update(model.decoderWeights.finalNorm.gamma, grads.dFinalNorm.gamma, adamState && adamState.finalNorm.gamma);
     model.decoderWeights.finalNorm.beta = update(model.decoderWeights.finalNorm.beta, grads.dFinalNorm.beta, adamState && adamState.finalNorm.beta);
-    // Sinkronkan ulang (BUKAN update kedua terpisah — itu salah,
-    // sudah digabung di gradien embeddingMatrix di atas). outputProjection
-    // harus selalu = transpose(embeddingMatrix TERBARU) supaya forward
-    // pass langkah berikutnya tetap konsisten dengan bobot yang baru.
+    
+    
+    
+    
     model.decoderWeights.outputProjection = E.transpose(model.embeddingMatrix);
 
     return loss;
 }
 
-// ============================================================
-// TRAIN DI ATAS KORPUS — loop epoch × kalimat, pakai scheduler kalau ada
-// ============================================================
-// 🔧 FIX (root cause "layar macet" — bagian ke-2, lihat juga
-// llm-tokenizer.js/llm-runtime.js untuk bagian ke-1/trainBPE): trainOnCorpus()
-// menjalankan epochs × jumlah kalimat forward+backward LENGKAP secara
-// sinkron — tiap panggilan trainStep() jauh lebih berat daripada 1
-// iterasi merge BPE (melibatkan seluruh transformer, bukan cuma
-// hitung pasangan simbol). Sekarang async, yield ke event loop tiap
-// `yieldEvery` langkah (default 3 — lebih sering dari trainBPE karena
-// tiap langkah di sini jauh lebih mahal) supaya auto-training di
-// llm-core.js initialize() tidak mengunci render/input.
+
+
+
+
+
+
+
+
+
+
+
+
 async function trainOnCorpus(model, tokenizedSequences, options) {
     options = options || {};
     const epochs = options.epochs || 1;
     const baseLearningRate = options.learningRate || 1e-3;
     const schedule = options.schedule || null;
-    // 🔧 FIX (macet di HP sungguhan): default diturunkan dari 3 ke 1 —
-    // yield ANTAR langkah tidak membantu kalau 1 langkah itu sendiri
-    // sudah berat (lihat fix panjang sekuens di trainStep()); yield
-    // tiap langkah adalah margin aman untuk perangkat mobile yang jauh
-    // lebih lambat dari mesin pengembangan.
+    
+    
+    
+    
+    
     const yieldEvery = Number.isInteger(options.yieldEvery) && options.yieldEvery > 0 ? options.yieldEvery : 1;
     const onProgress = typeof options.onProgress === 'function' ? options.onProgress : null;
 
-    // 🔧 FIX PERTAHANAN BERLAPIS: yield SEGERA di sini, sebelum
-    // trainStep() PERTAMA — supaya SIAPA PUN pemanggil trainOnCorpus()
-    // (baik yang meng-await maupun yang sengaja tidak, seperti
-    // trainInBackgroundThenSave() di workflow.js) TIDAK PERNAH secara
-    // tidak sengaja menjalankan 1 langkah training penuh (berat)
-    // secara sinkron sebagai bagian dari tick/task pemanggilnya
-    // sendiri. Lihat catatan lengkap di workflow.js untuk kronologi
-    // bug ini.
+    
+    
+    
+    
+    
+    
+    
+    
     await new Promise(function (resolve) { setTimeout(resolve, 0); });
 
     const history = [];
@@ -602,10 +602,10 @@ async function trainOnCorpus(model, tokenizedSequences, options) {
             count += 1;
             history.push({ step: step, epoch: epoch, loss: loss, learningRate: lr });
 
-            // 🆕 Progres terlihat (opsional) — supaya training yang
-            // makan waktu lama tidak terlihat seperti macet/hang di
-            // mata pengguna. Tidak wajib dipakai pemanggil (default
-            // no-op), jadi tidak mengubah perilaku kalau tidak diminta.
+            
+            
+            
+            
             if (onProgress) {
                 onProgress({ step: step, totalSteps: totalSteps, epoch: epoch, loss: loss });
             }

@@ -1,11 +1,11 @@
 const KESEMPATAN = window.KESEMPATAN || {};
 window.KESEMPATAN = KESEMPATAN;
 
-// KESEMPATAN.Agents.Bisnis/Science/General/Politics/Global are populated
-// asynchronously by agents-config.js/agent-science.js/agents-general.js/
-// agents-politics.js/agents-global.js's extendXAgents() calls (triggered
-// during boot) — read live at call time, not imported, since the values
-// don't exist yet at module-evaluation time.
+
+
+
+
+
 function getAgentsFromConfig() {
     const agents = {
         bisnis: [],

@@ -281,7 +281,7 @@ AICore.prototype._save = function() {
         modelVersion: this._modelVersion
     };
     localStorage.setItem('kes_ai_core_knowledge', JSON.stringify(snapshot));
-    // Durable backup in IndexedDB — localStorage stays the source of truth.
+    
     if (window.KESEMPATAN?.KesDatabase?.mirrorSnapshot) {
         window.KESEMPATAN.KesDatabase.mirrorSnapshot('ai_core_knowledge', snapshot);
     }
@@ -322,7 +322,7 @@ OptimizationEngine.prototype.optimize = function() {
             const entry = { worker: worker.id, workerName: worker.name, optimizations: optimizations, timestamp: Date.now() };
             optimized.push(entry);
             self._optimizations.push(entry);
-            // Durable backup in IndexedDB — localStorage stays the source of truth.
+            
             if (window.KESEMPATAN?.KesDatabase?.mirrorHistoryItem) {
                 window.KESEMPATAN.KesDatabase.mirrorHistoryItem('optimizations', entry);
             }
@@ -480,7 +480,7 @@ PredictionEngine.prototype._save = function() {
         correct: this._correctPredictions
     };
     localStorage.setItem('kes_predictions', JSON.stringify(snapshot));
-    // Durable backup in IndexedDB — localStorage stays the source of truth.
+    
     if (window.KESEMPATAN?.KesDatabase?.mirrorSnapshot) {
         window.KESEMPATAN.KesDatabase.mirrorSnapshot('predictions', snapshot);
     }
@@ -550,8 +550,8 @@ const AIWorkersCore = function() {
     this._initPerformanceMonitor();
     this._initAutoOptimize();
     this._initLogAutoRefresh();
-    // Kept as a real global (not KESEMPATAN-only): offline-mode.js reads/replaces
-    // window.AIWorkers directly to patch in an offline task hook.
+    
+    
     window.AIWorkers = this;
 };
 AIWorkersCore.prototype.saveWorkers = function() { state.saveWorkers(); };
@@ -786,7 +786,7 @@ AIWorkersCore.prototype._addLog = function(worker, message) {
     this.logs.unshift(entry);
     if (this.logs.length > 200) this.logs.pop();
     this.saveLogs();
-    // Durable backup in IndexedDB — localStorage stays the source of truth.
+    
     if (window.KESEMPATAN?.KesDatabase?.mirrorHistoryItem) {
         window.KESEMPATAN.KesDatabase.mirrorHistoryItem('worker_logs', entry);
     }

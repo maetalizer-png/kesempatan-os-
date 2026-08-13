@@ -13,21 +13,21 @@ const { Logger, RetryEngine, KnowledgeBase, safeParseResponse, escapeHtml, showT
 const { updateChart } = ChartManager;
 const { autoApproveResults, hidePanel: hideHitlPanel } = HITL;
 const { setData: setExportData } = ExportManager;
-// WorkflowParallel is read live via KESEMPATAN.WorkflowParallel (not imported):
-// workflow-parallel.js also reads KESEMPATAN.WorkflowEngine (defined below)
-// lazily at call time, so the two modules stay mutually referential without
-// a real circular import between them.
+
+
+
+
 
 const WORKFLOW_CONFIG = Object.freeze({
     maxRetries: 3,
-    // Dulu sampai 10 agen berjalan bersamaan di perangkat RAM/core tinggi
-    // (detectOptimalBatchSize() di workflow-parallel.js) — termasuk banyak
-    // HP modern yang sekarang melaporkan navigator.deviceMemory>=8 dan
-    // hardwareConcurrency>=8. Setiap agen paralel = 1 panggilan generate()
-    // (lokal atau eksternal) berjalan bersamaan; 10 sekaligus berisiko
-    // memori Worker/GPU overflow atau HP kepanasan. Dibatasi ke 3-5 sesuai
-    // permintaan eksplisit — getOptimalBatchSize() tetap mendeteksi
-    // kapasitas perangkat, cuma clamp-nya sekarang lebih ketat.
+    
+    
+    
+    
+    
+    
+    
+    
     maxBatchSize: 5,
     minBatchSize: 3,
     enablePriorityQueue: true,
@@ -966,21 +966,21 @@ export const WorkflowEngine = {
     setDatabase: function(db) { appDatabase = db; },
     setKnowledgeGraph: function(kg) { knowledgeGraph = kg; },
 
-    // Headless entry point for callers outside the dashboard (e.g. ai-agent/
-    // workflow-engine.js) that need to run one analysis agent without going
-    // through start()'s DOM scan (.agent-checkbox:checked, #apiKeyInput) or
-    // its workflowLock/UI progress bookkeeping. Reuses the exact same
-    // prompt-building, caching, retry and memory-save path start() itself
-    // uses per agent — highlightAgent/markAgentCompleted inside it already
-    // no-op safely when there's no matching .agent-badge in the DOM.
+    
+    
+    
+    
+    
+    
+    
     async runSingleAgent(agentName, topic, instruction, uploadedData) {
         const context = { topic: topic, instruction: instruction || 'Analisis peluang dan berikan rekomendasi.' };
         return executeAgentWithRetrySequential(agentName, context, uploadedData || null, 0);
     },
 
-    // Exposed for test.js (Fase 0 roadmap: unit test scoring engine) — pure
-    // function, no DOM/network access, so it's safe to call directly outside
-    // a real workflow run.
+    
+    
+    
     aggregateResults: aggregateResults
 };
 

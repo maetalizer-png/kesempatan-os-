@@ -1,7 +1,7 @@
 const data = [
-    // ==========================================================
-    // 🇵🇱 POLANDIA
-    // ==========================================================
+    
+    
+    
     {
         text: 'Polandia - Negara terbesar di Eropa Tengah dengan ekonomi berkembang pesat. Ibu kota: Warsawa. Populasi: 37 juta jiwa. Mata uang: Zloty (PLN). Bahasa: Polandia. Sistem pemerintahan: Republik Parlementer. Anggota UE dan NATO. Negara dengan sejarah panjang dan budaya kaya. Rumah bagi kastil-kastil megah, kota-kota bersejarah, dan industri otomotif yang berkembang. Pusat manufaktur dan logistik Eropa.',
         metadata: {
@@ -138,9 +138,9 @@ const data = [
             tags: ['negara', 'eropan-tengah', 'ue', 'nato', 'otomotif']
         }
     },
-    // ==========================================================
-    // 🇨🇿 CEKO
-    // ==========================================================
+    
+    
+    
     {
         text: 'Ceko - Negara di Eropa Tengah dengan industri maju dan Praha yang indah. Ibu kota: Praha. Populasi: 10.5 juta jiwa. Mata uang: Koruna (CZK). Bahasa: Ceko. Sistem pemerintahan: Republik Parlementer. Anggota UE dan NATO. Negara dengan arsitektur indah, bir terbaik dunia, dan sejarah panjang. Praha salah satu kota terindah di Eropa. Pusat manufaktur dan pariwisata Eropa.',
         metadata: {
@@ -279,9 +279,9 @@ const data = [
             tags: ['negara', 'eropan-tengah', 'ue', 'nato', 'bir']
         }
     },
-    // ==========================================================
-    // 🇭🇺 HUNGARIA
-    // ==========================================================
+    
+    
+    
     {
         text: 'Hungaria - Negara di Eropa Tengah dengan Budapest yang ikonik. Ibu kota: Budapest. Populasi: 9.6 juta jiwa. Mata uang: Forint (HUF). Bahasa: Hungaria. Sistem pemerintahan: Republik Parlementer. Anggota UE dan NATO. Negara dengan arsitektur Art Nouveau, pemandian air panas, dan Danube yang memukau. Budapest salah satu kota terindah di Eropa.',
         metadata: {
@@ -420,9 +420,9 @@ const data = [
             tags: ['negara', 'eropan-tengah', 'ue', 'nato', 'pemandian']
         }
     },
-    // ==========================================================
-    // 🇸🇰 SLOWAKIA
-    // ==========================================================
+    
+    
+    
     {
         text: 'Slowakia - Negara di Eropa Tengah dengan pegunungan Tatra. Ibu kota: Bratislava. Populasi: 5.4 juta jiwa. Mata uang: Euro (EUR). Bahasa: Slowakia. Sistem pemerintahan: Republik Parlementer. Anggota UE dan NATO. Negara dengan pegunungan Tatra yang indah dan kastil-kastil megah. Pusat manufaktur otomotif Eropa. Bratislava kota yang indah di tepi Danube.',
         metadata: {
@@ -562,9 +562,9 @@ const data = [
             tags: ['negara', 'eropan-tengah', 'ue', 'nato', 'otomotif']
         }
     },
-    // ==========================================================
-    // 🇦🇹 AUSTRIA
-    // ==========================================================
+    
+    
+    
     {
         text: 'Austria - Negara di Eropa Tengah dengan Alpen dan musik klasik. Ibu kota: Wina. Populasi: 9 juta jiwa. Mata uang: Euro (EUR). Bahasa: Jerman. Sistem pemerintahan: Republik Federal Parlementer. Anggota UE. Negara dengan musik klasik, arsitektur indah, dan alam pegunungan. Rumah bagi Mozart, Beethoven, dan Strauss. Wina kota dengan kafe-kafe klasik dan istana-istana megah. Negara dengan kualitas hidup tertinggi di Eropa.',
         metadata: {
@@ -704,9 +704,9 @@ const data = [
             tags: ['negara', 'eropan-tengah', 'alpen', 'musik', 'budaya']
         }
     },
-    // ==========================================================
-    // 🇨🇭 SWISS
-    // ==========================================================
+    
+    
+    
     {
         text: 'Swiss - Negara di Eropa Tengah dengan netralitas dan keuangan global. Ibu kota: Bern. Populasi: 8.7 juta jiwa. Mata uang: Franc Swiss (CHF). Bahasa: Jerman, Prancis, Italia, Romansh. Sistem pemerintahan: Republik Federal. Negara dengan kualitas hidup tertinggi di dunia. Rumah bagi cokelat, jam, dan Alpen Swiss. Pusat perbankan dan keuangan global. Negara dengan inovasi dan pendidikan terbaik. Salah satu negara paling stabil dan makmur di dunia.',
         metadata: {
@@ -851,9 +851,9 @@ const data = [
 
 export const DATA = data;
 
-// ============================================================
-// LOGGER
-// ============================================================
+
+
+
 if (window.InternalLogger) {
     window.InternalLogger.info('CountryEropanTengah', '✅ Loaded ' + data.length + ' countries (SUPER LENGKAP - 6 NEGARA!)');
 }

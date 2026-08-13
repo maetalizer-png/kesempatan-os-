@@ -1,12 +1,4 @@
-/* ============================================================
-COMPONENTS/HITL.CSS — Human-in-the-Loop Panel (BENTUK A/B)
-Panel & kartu agen = BENTUK A (chamfer simetris + rim neon 1px
-nyambung, inner gelap). Tombol = BENTUK B (chamfer asimetris).
-Baris aksi: Cancel + Process Aggregation SEJAJAR sampingan
-(flex berbagi baris, tinggi sama, rata kanan). Glow hanya saat
-hover; hover dibungkus media-query (HP tidak lengket).
-Mandiri: definisi clip lokal, tidak numpang forms.css.
-============================================================ */
+
 :root {
 --hl-clip: polygon(
 0 10px, 10px 0, calc(100% - 10px) 0, 100% 10px,
@@ -28,7 +20,7 @@ Mandiri: definisi clip lokal, tidak numpang forms.css.
 from { opacity: 0; transform: translateY(16px); }
 to   { opacity: 1; transform: none; }
 }
-/* ---- panel utama = BENTUK A (rim nyambung) ---- */
+
 #hitlReportPanel {
 position: relative;
 isolation: isolate;
@@ -50,7 +42,7 @@ clip-path: var(--hl-clip);
 background: #05080c;
 z-index: -1;
 }
-/* ---- header ---- */
+
 .hitl-header {
 display: flex;
 justify-content: space-between;
@@ -105,7 +97,7 @@ clip-path: var(--hl-clip-asym);
 background: #0a1218;
 z-index: -1;
 }
-/* ---- infobar = kotak A kecil ---- */
+
 .hitl-infobar {
 clip-path: var(--hl-clip-sm);
 background: rgba(0,255,163,0.08);
@@ -151,7 +143,7 @@ clip-path: var(--hl-clip-asym);
 background: #160608;
 z-index: -1;
 }
-/* ---- list + scrollbar tipis ---- */
+
 .hitl-list {
 max-height: 400px;
 overflow-y: auto;
@@ -161,7 +153,7 @@ scrollbar-color: rgba(26,255,156,.45) transparent;
 }
 .hitl-list::-webkit-scrollbar { width: 2px; }
 .hitl-list::-webkit-scrollbar-thumb { background: rgba(26,255,156,.45); border-radius: 10px; }
-/* ---- kartu agen = BENTUK A kecil ---- */
+
 .hitl-report-item {
 position: relative;
 isolation: isolate;
@@ -230,11 +222,7 @@ width: 18px;
 height: 18px;
 margin: 0;
 }
-/* ============================================================
-BARIS AKSI — Cancel & Process Aggregation SEJAJAR sampingan.
-Keduanya flex berbagi baris (tinggi sama via stretch), rata
-kanan; hanya melipat ke bawah di layar sangat sempit.
-============================================================ */
+
 .hitl-actions-row {
 display: flex;
 justify-content: flex-end;
@@ -249,8 +237,8 @@ display: inline-flex;
 align-items: center;
 justify-content: center;
 text-align: center;
-flex: 1 1 140px;      /* berbagi baris yang sama */
-max-width: 280px;     /* biar tidak melar aneh di layar lebar */
+flex: 1 1 140px;      
+max-width: 280px;     
 }
 .hitl-cancel {
 position: relative;
@@ -299,7 +287,7 @@ transform: translateX(-160%);
 transition: transform .6s ease;
 pointer-events: none;
 }
-/* ---- tombol ungu "Review & Approve" = BENTUK B ---- */
+
 .hitl-report-button-wrap {
 margin-top: 16px;
 display: flex;
@@ -331,7 +319,7 @@ transform: translateX(-160%);
 transition: transform .6s ease;
 pointer-events: none;
 }
-/* ---- jalur legacy (#hitlPanel) ---- */
+
 .hitl-legacy-title {
 color: var(--primary);
 text-shadow: 0 0 10px var(--primary-glow);
@@ -413,7 +401,7 @@ cursor: pointer;
 font-size: 14px;
 width: 100%;
 }
-/* ---- hover hanya perangkat berkursor ---- */
+
 @media (hover: hover) and (pointer: fine) {
 #hitlReportPanel:hover { background: rgba(26,255,156,.5); filter: drop-shadow(0 0 7px var(--primary-glow)); }
 .hitl-report-item:hover { background: rgba(26,255,156,.55); filter: drop-shadow(0 0 6px var(--primary-glow)); }
@@ -427,7 +415,7 @@ width: 100%;
 #hitlShowPanelBtn:hover { transform: translateY(-2px); filter: drop-shadow(0 0 14px rgba(155,89,182,.5)); }
 #hitlShowPanelBtn:hover::after { transform: translateX(260%); }
 }
-/* ---- responsive ---- */
+
 @media (max-width: 768px) {
 #hitlReportPanel { padding: 12px; }
 .hitl-item, .hitl-report-item { padding: 10px 12px; }
@@ -435,6 +423,6 @@ width: 100%;
 .hitl-cancel, .hitl-confirm { max-width: none; }
 }
 @media (max-width: 360px) {
-/* layar sangat sempit: baru boleh menumpuk */
+
 .hitl-cancel, .hitl-confirm { flex: 1 1 100%; }
 }

@@ -8,10 +8,10 @@ import './workers-ui-events.js';
 const KESEMPATAN = window.KESEMPATAN || {};
 window.KESEMPATAN = KESEMPATAN;
 
-// Kept as a real global: offline-mode.js reads/replaces window.AIWorkers
-// directly, and workers-core.js's AIWorkersCore constructor also assigns
-// itself to window.AIWorkers once instantiated (this proxy is only the
-// early-available shape before that happens).
+
+
+
+
 window.AIWorkers = {
     get workers() {
         const core = WorkersRenderer.getCore();

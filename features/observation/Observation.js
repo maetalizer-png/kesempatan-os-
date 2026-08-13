@@ -1,7 +1,7 @@
-// Static imports (in dependency order) replace the old runtime
-// document.createElement('script') loader: the ES module graph itself now
-// guarantees observ-config.js -> observ-state.js -> ... -> renderer.js finish
-// evaluating, in this order, before any code below runs.
+
+
+
+
 import './observ-config.js';
 import './observ-state.js';
 import './fetcher.js';

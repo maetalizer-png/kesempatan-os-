@@ -13,13 +13,13 @@ const sanitizeHtml = renderer.sanitizeHtml;
 let lastGenerateTime = 0;
 const GENERATE_COOLDOWN = 2000;
 
-// ============================================================
-// 🔥 FUNGSI BANTU AMBIL TOPIK
-// ============================================================
-// 🆕 Normalisasi kode bahasa dropdown (18 pilihan) ke kunci konten yang
-// benar-benar didukung penuh oleh generateText() (id/en/de). Varian
-// English (en_uk/en_au) dipetakan ke 'en'. Bahasa lain fallback ke 'id'
-// - jujur, bukan pura-pura semua 18 bahasa punya naskah asli.
+
+
+
+
+
+
+
 let langFallbackWarned = {};
 function contentLangKey(currentLang) {
     if (currentLang === 'en' || currentLang === 'en_uk' || currentLang === 'en_au') return 'en';
@@ -41,12 +41,12 @@ function getTopic() {
         ? podcastInput.value.trim()
         : (dashboardInput ? dashboardInput.value.trim() : '');
     if (!topic) {
-        // FIX UX: sebelumnya string placeholder "Topik tidak disebutkan"
-        // dipakai LANGSUNG sebagai kata benda topik di kalimat template
-        // ("Peluang Topik tidak disebutkan sangat menjanjikan..."), bikin
-        // gramatikal rusak dan kelihatan seperti bug AI. Sekarang pakai
-        // topik umum yang tetap masuk akal secara bahasa, plus kasih tahu
-        // user kenapa - bukan diam-diam menghasilkan kalimat aneh.
+        
+        
+        
+        
+        
+        
         if (renderer.showToast) {
             renderer.showToast('💡 Belum ada topik diisi - pakai topik umum. Isi kolom Topik di atas untuk hasil yang lebih relevan.', 'info');
         }
@@ -55,9 +55,9 @@ function getTopic() {
     return topic;
 }
 
-// ============================================================
-// 🔥 AMBIL DATA STATIS DARI WORLD.JS
-// ============================================================
+
+
+
 function fetchStaticData(topic) {
     const staticData = window.__STATIC_DATA || [];
     if (staticData.length === 0) return [];
@@ -84,12 +84,12 @@ function fetchStaticData(topic) {
     return results.slice(0, 5);
 }
 
-// ============================================================
-// 🔥 BARU: OBSERVATION ENGINE + NOISE FILTERING — konteks sentimen
-// pasar/berita real-time dan pengecekan kredibilitas dasar topik,
-// meniru pola fetchStaticData di atas. Dibuat toleran kalau modulnya
-// belum termuat (tidak boleh menggagalkan generate podcast).
-// ============================================================
+
+
+
+
+
+
 function fetchObservationContext(topic) {
     let marketInsight = '';
     let credibilityNote = '';
@@ -113,9 +113,9 @@ function fetchObservationContext(topic) {
     return { marketInsight: marketInsight, credibilityNote: credibilityNote };
 }
 
-// ============================================================
-// 🔥 AMBIL DARI VECTOR MEMORY
-// ============================================================
+
+
+
 async function fetchFromVectorMemory(topic, topK) {
     const memory = window.KESEMPATAN?.VectorMemory || window.VectorMemory || window.VectorMemoryV5;
     if (!memory || typeof memory.search !== 'function') return [];
@@ -128,9 +128,9 @@ async function fetchFromVectorMemory(topic, topK) {
     }
 }
 
-// ============================================================
-// 🔥 AMBIL DARI KES DATABASE
-// ============================================================
+
+
+
 async function fetchFromDatabase(topic, limit) {
     const db = window.KESDatabase || window.getDatabaseV10;
     if (!db) return [];
@@ -154,16 +154,16 @@ async function fetchFromDatabase(topic, limit) {
     }
 }
 
-// ============================================================
-// 🔥 GENERATE PODCAST (DENGAN SEMUA DATA)
-// ============================================================
+
+
+
 async function generatePodcastText() {
     const topic = getTopic();
-    // FIX: kalau user mengisi kolom topik manual DENGAN topik yang BEDA dari
-    // topik Dashboard, ini harus jadi "podcast mandiri" sesuai janji di UI
-    // ("Isi di sini untuk podcast mandiri") - artinya TIDAK boleh dicampur
-    // dengan skor/insight/strategi dari analisis Dashboard yang topiknya lain,
-    // karena itu bikin naskah gak nyambung (judul topik A tapi isinya insight topik B).
+    
+    
+    
+    
+    
     const podcastInputEl = document.getElementById('podcastTopicInput');
     const manualTopic = podcastInputEl ? podcastInputEl.value.trim() : '';
     const dashboardInputEl = document.getElementById('topicInput');
@@ -179,15 +179,15 @@ async function generatePodcastText() {
     const userHistory = state.podcastHistory.length;
     const historyInfo = userHistory > 0 ? 'Sudah ada ' + userHistory + ' episode sebelumnya. ' : '';
 
-    // ============================================================
-    // 🔥🔥🔥 AMBIL DATA DARI 3 SUMBER 🔥🔥🔥
-    // ============================================================
+    
+    
+    
     let staticData = [];
     let memoryData = [];
     let dbData = [];
 
     try {
-        // 1. DATA STATIS DARI WORLD.JS
+        
         staticData = fetchStaticData(topic);
         if (staticData.length > 0) {
             showToast('📚 Data World: ' + staticData.length + ' item', 'info');
@@ -195,7 +195,7 @@ async function generatePodcastText() {
     } catch (_) { console.warn('[Podcast] Non-fatal error:', _.message); }
 
     try {
-        // 2. DATA DINAMIS DARI VECTOR MEMORY
+        
         memoryData = await fetchFromVectorMemory(topic, 3);
         if (memoryData.length > 0) {
             showToast('🧠 Data Memory: ' + memoryData.length + ' item', 'info');
@@ -203,23 +203,23 @@ async function generatePodcastText() {
     } catch (_) { console.warn('[Podcast] Non-fatal error:', _.message); }
 
     try {
-        // 3. DATA HISTORIS DARI KES DATABASE
+        
         dbData = await fetchFromDatabase(topic, 3);
         if (dbData.length > 0) {
             showToast('📊 Data Database: ' + dbData.length + ' item', 'info');
         }
     } catch (_) { console.warn('[Podcast] Non-fatal error:', _.message); }
 
-    // ============================================================
-    // 🔥 BUILD PROMPT DENGAN SEMUA DATA
-    // ============================================================
+    
+    
+    
     let text;
 
-    // FIX: cek mode Debat/Diskusi LEBIH DULU - kedua fungsi itu sudah toleran
-    // terhadap lastAggregated null/undefined (pakai optional chaining `?.`),
-    // jadi tetap harus jalan walau podcast ini independen (tanpa data Dashboard).
-    // Sebelumnya urutan terbalik menyebabkan mode Debat/Diskusi diam-diam
-    // diabaikan setiap kali podcast dibuat independen dari topik Dashboard.
+    
+    
+    
+    
+    
     if (state.speakerMode === 'debate') {
         text = generateDebateScript(topic, lastAggregated, staticData, memoryData, dbData);
     } else if (state.speakerMode === 'discussion') {
@@ -232,7 +232,7 @@ async function generatePodcastText() {
             historyInfo + contextInfo +
             'Gunakan bahasa yang profesional namun santai, mudah dicerna, dan memotivasi.';
 
-        // 🔥 TAMBAHKAN DATA STATIS DARI WORLD.JS
+        
         if (staticData && staticData.length > 0) {
             enhancedPrompt += '\n\n📚 DATA & FAKTA DARI WORLD:\n';
             staticData.forEach(function(item, i) {
@@ -242,7 +242,7 @@ async function generatePodcastText() {
             enhancedPrompt += '\nGunakan data di atas untuk memperkaya konten podcast!\n';
         }
 
-        // 🔥 TAMBAHKAN DATA DINAMIS DARI VECTOR MEMORY
+        
         if (memoryData && memoryData.length > 0) {
             enhancedPrompt += '\n\n🧠 INSPIRASI DARI MEMORY:\n';
             memoryData.forEach(function(item, i) {
@@ -252,7 +252,7 @@ async function generatePodcastText() {
             enhancedPrompt += '\nGunakan inspirasi ini untuk membuat podcast yang lebih kaya!\n';
         }
 
-        // 🔥 TAMBAHKAN DATA DARI KES DATABASE
+        
         if (dbData && dbData.length > 0) {
             enhancedPrompt += '\n\n📊 DATA DARI DATABASE:\n';
             dbData.forEach(function(item, i) {
@@ -298,7 +298,7 @@ async function generatePodcastText() {
             prompt += 'Executive summary: ' + executiveSummary + '. ';
         }
 
-        // 🔥 TAMBAHKAN SEMUA DATA KE PROMPT
+        
         if (staticData && staticData.length > 0) {
             prompt += '\n📚 DATA DARI WORLD:\n';
             staticData.forEach(function(item, i) {
@@ -329,9 +329,9 @@ async function generatePodcastText() {
         text = ai.generateText(prompt, 800, 0.7, contentLangKey(state.currentLang));
     }
 
-    // ============================================================
-    // 🔥 TAMBAHKAN SUBSCRIBE TEXT & SIMPAN
-    // ============================================================
+    
+    
+    
     const subscribeText = '\n\n📢 Jangan lupa SUBSCRIBE KESEMPATAN OS! 🔔\n' +
         '👉 Subscribe: youtube.com/@KESEMPATANOS\n' +
         '📱 Follow: @kesempatanos\n' +
@@ -363,7 +363,7 @@ async function generatePodcastText() {
         recommendation: lastAggregated ? lastAggregated.recommendation : ''
     });
 
-    // 🔥 SIMPAN KE MEMORY + DATABASE
+    
     try {
         await core.savePodcastToExternalModules({
             topic: topic,
@@ -377,9 +377,9 @@ async function generatePodcastText() {
         });
     } catch (_) { console.warn('[Podcast] Non-fatal error:', _.message); }
 
-    // 🆕 SIMPAN STATUS SUMBER AI INTERNAL KE STATE (dipakai badge di
-    // Podcast Room supaya integrasi AI Internal/World/Memory/Database
-    // terlihat nyata, bukan cuma toast sekilas yang cepat hilang)
+    
+    
+    
     state.aiSourcesUsed = {
         world: staticData.length,
         memory: memoryData.length,
@@ -387,7 +387,7 @@ async function generatePodcastText() {
         internal: true
     };
 
-    // 🔥 TAMPILKAN STATUS INTEGRASI
+    
     const totalData = staticData.length + memoryData.length + dbData.length;
     if (totalData > 0) {
         showToast('📊 Podcast menggunakan ' + totalData + ' data dari World/Memory/Database!', 'success');
@@ -396,9 +396,9 @@ async function generatePodcastText() {
     return text;
 }
 
-// ============================================================
-// 🔥 GENERATE DEBATE SCRIPT (DENGAN DATA)
-// ============================================================
+
+
+
 function generateDebateScript(topic, lastAggregated, staticData, memoryData, dbData) {
     const ai = core.ai;
     const score = lastAggregated.score || 0;
@@ -412,7 +412,7 @@ function generateDebateScript(topic, lastAggregated, staticData, memoryData, dbD
     const agentRoles = ['(PRO)', '(KONTRA)', '(MEDIATOR)', '(ANALIS)', '(MODERATOR)'];
     let script = '🎙️ DEBAT: ' + topic + '\n\n📊 SKOR: ' + score + '/100\n\n📝 TOPIK: ' + (summary || 'Analisis peluang') + '\n\n👥 PESERTA: ' + agentNames.join(' vs ') + '\n\n═══════════════════════════════════\n\n';
 
-    // 🔥 TAMBAHKAN DATA KE PROMPT
+    
     let dataContext = '';
     if (staticData && staticData.length > 0) {
         dataContext += '\n📚 DATA DARI WORLD:\n';
@@ -463,10 +463,10 @@ function generateDebateScript(topic, lastAggregated, staticData, memoryData, dbD
     return script;
 }
 
-// ============================================================
-// 🔥 GENERATE DISCUSSION SCRIPT (DENGAN DATA)
-// ============================================================
-// 🆕 Kamus dialog Diskusi multi-bahasa (id/en/de) - lihat contentLangKey()
+
+
+
+
 const DISCUSSION_PHRASES = {
     id: {
         coldOpen: function(topic, score) { return score > 0 ? ('Bayangin, dari 100 skor peluang, ' + topic + ' dapet ' + score + '. Penasaran gak kenapa?') : ('Ada satu hal soal ' + topic + ' yang menurut saya wajib banget kita bahas hari ini.'); },
@@ -534,14 +534,14 @@ const DISCUSSION_PHRASES = {
 };
 
 function generateDiscussionScript(topic, lastAggregated, staticData, memoryData, dbData) {
-    // FIX AKAR MASALAH: sebelumnya fungsi ini menyusun instruksi format
-    // "[Host]/[Expert]/[Storyteller]/[Skeptic]" lalu menyerahkannya ke
-    // ai.generateText() - padahal generateText() adalah mesin template,
-    // BUKAN LLM yang bisa mengikuti instruksi format bahasa natural.
-    // Hasilnya: teks yang keluar TIDAK PERNAH punya tag pembicara, dan
-    // playDiscussion() di ui-player.js selalu gagal mem-parsingnya lalu
-    // diam-diam fallback ke mode single voice. Sekarang dialog disusun
-    // langsung secara deterministik di sini - tag selalu benar 100%.
+    
+    
+    
+    
+    
+    
+    
+    
     const P = DISCUSSION_PHRASES[contentLangKey(state.currentLang)] || DISCUSSION_PHRASES.id;
     const score = lastAggregated ? (lastAggregated.score || 0) : 0;
     const summary = lastAggregated ? (lastAggregated.summary || '') : '';
@@ -609,9 +609,9 @@ function generateDiscussionScript(topic, lastAggregated, staticData, memoryData,
     return lines.join('\n');
 }
 
-// ============================================================
-// 🔥 GENERATE CHAPTERS
-// ============================================================
+
+
+
 function generateChapters(text) {
     const sentences = text.match(/[^.!?]+[.!?]+/g) || [text];
     const chapters = [];
@@ -637,9 +637,9 @@ function generateChapters(text) {
     return chapters;
 }
 
-// ============================================================
-// 🔥 UPDATE SCRIPT
-// ============================================================
+
+
+
 async function updateScript() {
     const now = Date.now();
     if (state.isGenerating || (now - lastGenerateTime < GENERATE_COOLDOWN)) {
@@ -647,7 +647,7 @@ async function updateScript() {
     }
     state.isGenerating = true;
     lastGenerateTime = now;
-    const genStart = Date.now(); // 🆕 waktu generate REAL, buat status bar
+    const genStart = Date.now(); 
     try {
         state.originalPodcastText = await generatePodcastText();
         state.podcastText = state.originalPodcastText;
@@ -660,9 +660,9 @@ async function updateScript() {
     }
 }
 
-// ============================================================
-// 🔥 UPDATE SCRIPT DENGAN AI
-// ============================================================
+
+
+
 async function updateScriptWithAI() {
     const now = Date.now();
     if (state.isGenerating || (now - lastGenerateTime < GENERATE_COOLDOWN)) {
@@ -678,7 +678,7 @@ async function updateScriptWithAI() {
         const lastTopics = previousContexts.map(function(c) { return c.topic; }).filter(Boolean).join(', ');
         const contextInfo = lastTopics ? 'Topik sebelumnya: ' + lastTopics + '. ' : '';
 
-        // 🔥 AMBIL DATA DARI WORLD + MEMORY
+        
         const staticData = fetchStaticData(topic);
         const memoryData = await fetchFromVectorMemory(topic, 3);
         const obsContext = fetchObservationContext(topic);
@@ -723,12 +723,12 @@ async function updateScriptWithAI() {
     }
 }
 
-// ============================================================
-// 🔥 UPDATE AI CONTEXT
-// ============================================================
-// 🆕 HOOK ANALYZER — menilai kalimat pembuka podcast layaknya produser
-// berpengalaman: apakah cukup singkat buat nangkep perhatian, ada unsur
-// engagement (pertanyaan/seru), dan relevan sama topik.
+
+
+
+
+
+
 function analyzeHook(text, topic) {
     const firstSentenceMatch = text.match(/[^.!?]+[.!?]/);
     const firstSentence = firstSentenceMatch ? firstSentenceMatch[0].trim() : text.substring(0, 80);

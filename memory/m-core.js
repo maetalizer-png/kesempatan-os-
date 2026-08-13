@@ -16,17 +16,17 @@ KESEMPATAN.Memory = KESEMPATAN.Memory || {};
 const Config = MemoryConfig;
 const Logger = Utils.Logger;
 
-// ============================================================
-// KONTRAK PENYIMPANAN — FROZEN
-// JANGAN rename STORAGE_KEY. Evolusi format data dilakukan
-// lewat SCHEMA_VERSION di DALAM payload, bukan ganti nama kunci.
-// ============================================================
+
+
+
+
+
 const STORAGE_KEY = 'kes_vector_memory';
 const SCHEMA_VERSION = 1;
 
-// ============================================================
-// MAIN CLASS
-// ============================================================
+
+
+
 class VectorMemoryCore {
     constructor() {
         this.wasm = typeof WASMEngine === 'function'
@@ -156,9 +156,9 @@ class VectorMemoryCore {
         this._readyPromise = this._init();
     }
 
-    // ============================================================
-    // INIT
-    // ============================================================
+    
+    
+    
     async _init() {
         try {
             await this.wasm.load();
@@ -190,9 +190,9 @@ class VectorMemoryCore {
         }
     }
 
-    // ============================================================
-    // REBUILD INDEX
-    // ============================================================
+    
+    
+    
     _rebuildIndex() {
         if (this._indexRebuilt) {
             return;
@@ -223,9 +223,9 @@ class VectorMemoryCore {
         Logger.info('VectorMemoryCore', 'Index rebuilt in ' + elapsed + 'ms');
     }
 
-    // ============================================================
-    // STORAGE
-    // ============================================================
+    
+    
+    
     async _loadFromStorage() {
         const data = MemoryUtils.loadFromStorage
             ? MemoryUtils.loadFromStorage(STORAGE_KEY)
@@ -287,9 +287,9 @@ class VectorMemoryCore {
         }
     }
 
-    // ============================================================
-    // ID GENERATOR
-    // ============================================================
+    
+    
+    
     _generateId() {
         if (MemoryUtils.generateId) {
             return MemoryUtils.generateId();
@@ -298,9 +298,9 @@ class VectorMemoryCore {
         return Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 10);
     }
 
-    // ============================================================
-    // SIMPLE EMBEDDING
-    // ============================================================
+    
+    
+    
     async _simpleEmbed(text) {
         if (MemoryUtils.simpleEmbed) {
             return MemoryUtils.simpleEmbed(text);
@@ -352,9 +352,9 @@ class VectorMemoryCore {
         return vec;
     }
 
-    // ============================================================
-    // SAVE
-    // ============================================================
+    
+    
+    
     async save(text, metadata, image, audio) {
         metadata = metadata || {};
 
@@ -407,9 +407,9 @@ class VectorMemoryCore {
         return vector;
     }
 
-    // ============================================================
-    // SEARCH
-    // ============================================================
+    
+    
+    
     async search(query, options) {
         if (!this._indexRebuilt && this.vectors.length > 0) {
             this._rebuildIndex();
@@ -641,9 +641,9 @@ class VectorMemoryCore {
         return dot / (Math.sqrt(norm1) * Math.sqrt(norm2));
     }
 
-    // ============================================================
-    // PUBLIC METHODS
-    // ============================================================
+    
+    
+    
     async get(id) {
         const vector = this.vectors.find(function (item) {
             return item.id === id;
@@ -895,7 +895,7 @@ export { VectorMemoryCore };
 KESEMPATAN.Memory.VectorMemoryCore = VectorMemoryCore;
 KESEMPATAN.Memory.VectorMemoryEngine = VectorMemoryCore;
 
-// Bridge for consumers not yet migrated to import { VectorMemoryCore } from './m-core.js'.
+
 window._memoryClass = VectorMemoryCore;
 
 if (window._memoryModules) {

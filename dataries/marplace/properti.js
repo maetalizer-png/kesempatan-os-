@@ -1,9 +1,9 @@
 const KESEMPATAN = window.KESEMPATAN || {};
 window.KESEMPATAN = KESEMPATAN;
 
-// ==========================================================
-// 2. INTERNAL LOGGER (Zero console.log)
-// ==========================================================
+
+
+
 const InternalLogger = window.InternalLogger || {
     _logs: [],
     _maxLogs: 1000,
@@ -24,12 +24,12 @@ const InternalLogger = window.InternalLogger || {
     error: function(module, message) { this.log(this._levels.ERROR, module, message); }
 };
 
-// ==========================================================
-// 3. REGISTER DATA
-// ==========================================================
-// ==========================================================
-// 4. CACHE SYSTEM
-// ==========================================================
+
+
+
+
+
+
 const DataCache = {
     _cache: new Map(),
     _maxSize: 100,
@@ -56,9 +56,9 @@ const DataCache = {
     getStats: function() { return { size: this._cache.size, maxSize: this._maxSize, ttl: this._ttl }; }
 };
 
-// ==========================================================
-// 5. VALIDATION
-// ==========================================================
+
+
+
 const validatePlatform = function(item) {
     if (!item || typeof item !== 'object') return false;
     if (!item.metadata || typeof item.metadata !== 'object') return false;
@@ -67,14 +67,14 @@ const validatePlatform = function(item) {
     return true;
 };
 
-// ==========================================================
-// 6. PLATFORM DATA — 60+ GLOBAL!
-// ==========================================================
+
+
+
 
 const data = [
-    // ==========================================================
-    // 🇺🇸 AMERIKA (6)
-    // ==========================================================
+    
+    
+    
     {
         text: 'Zillow - Platform properti terbesar AS. Didirikan 2006. Fitur Zestimate estimasi nilai rumah.',
         metadata: {
@@ -166,9 +166,9 @@ const data = [
         }
     },
     
-    // ==========================================================
-    // 🇬🇧 INGGRIS (3)
-    // ==========================================================
+    
+    
+    
     {
         text: 'Rightmove - Platform properti terbesar Inggris. Didirikan 2000. 1 juta+ listing properti.',
         metadata: {
@@ -215,9 +215,9 @@ const data = [
         }
     },
     
-    // ==========================================================
-    // 🇩🇪 JERMAN (2)
-    // ==========================================================
+    
+    
+    
     {
         text: 'ImmobilienScout24 - Platform properti terbesar Jerman. Didirikan 1998. Jutaan listing.',
         metadata: {
@@ -249,9 +249,9 @@ const data = [
         }
     },
     
-    // ==========================================================
-    // 🇫🇷 PRANCIS (2)
-    // ==========================================================
+    
+    
+    
     {
         text: 'Seloger - Platform properti terbesar Prancis. Didirikan 2000. Portal utama properti Prancis.',
         metadata: {
@@ -283,9 +283,9 @@ const data = [
         }
     },
     
-    // ==========================================================
-    // 🇪🇸 SPANYOL (2)
-    // ==========================================================
+    
+    
+    
     {
         text: 'Fotocasa - Platform properti terbesar Spanyol. Didirikan 2002. Jutaan listing properti.',
         metadata: {
@@ -317,9 +317,9 @@ const data = [
         }
     },
     
-    // ==========================================================
-    // 🇮🇹 ITALIA (2)
-    // ==========================================================
+    
+    
+    
     {
         text: 'Immobiliare.it - Platform properti terbesar Italia. Didirikan 1999. Jutaan listing properti.',
         metadata: {
@@ -351,9 +351,9 @@ const data = [
         }
     },
     
-    // ==========================================================
-    // 🇳🇱 BELANDA (2)
-    // ==========================================================
+    
+    
+    
     {
         text: 'Funda - Platform properti terbesar Belanda. Didirikan 2001. Jutaan listing properti.',
         metadata: {
@@ -385,9 +385,9 @@ const data = [
         }
     },
     
-    // ==========================================================
-    // 🇨🇳 CHINA (3)
-    // ==========================================================
+    
+    
+    
     {
         text: 'Beike (KE Holdings) - Platform properti terbesar China. Didirikan 2018. AI & big data.',
         metadata: {
@@ -434,9 +434,9 @@ const data = [
         }
     },
     
-    // ==========================================================
-    // 🇯🇵 JEPANG (2)
-    // ==========================================================
+    
+    
+    
     {
         text: 'SUUMO - Platform properti terbesar Jepang. Didirikan 2003. Jutaan listing properti.',
         metadata: {
@@ -468,9 +468,9 @@ const data = [
         }
     },
     
-    // ==========================================================
-    // 🇮🇳 INDIA (3)
-    // ==========================================================
+    
+    
+    
     {
         text: 'Magicbricks - Platform properti terbesar India. Didirikan 2006. Jutaan listing properti.',
         metadata: {
@@ -517,9 +517,9 @@ const data = [
         }
     },
     
-    // ==========================================================
-    // 🇦🇪 UEA (2)
-    // ==========================================================
+    
+    
+    
     {
         text: 'Property Finder - Platform properti terbesar Timur Tengah. Didirikan 2007. 50+ negara.',
         metadata: {
@@ -551,9 +551,9 @@ const data = [
         }
     },
     
-    // ==========================================================
-    // 🇧🇷 BRAZIL (2)
-    // ==========================================================
+    
+    
+    
     {
         text: 'Zap Imóveis - Platform properti terbesar Brazil. Didirikan 2005. Jutaan listing properti.',
         metadata: {
@@ -585,9 +585,9 @@ const data = [
         }
     },
     
-    // ==========================================================
-    // 🇦🇺 AUSTRALIA (2)
-    // ==========================================================
+    
+    
+    
     {
         text: 'Realestate.com.au - Platform properti terbesar Australia. Didirikan 1995. Acuan harga nasional.',
         metadata: {
@@ -619,9 +619,9 @@ const data = [
         }
     },
     
-    // ==========================================================
-    // 🇨🇦 KANADA (2)
-    // ==========================================================
+    
+    
+    
     {
         text: 'Realtor.ca - Platform properti terbesar Kanada. Didirikan 1995. Data resmi.',
         metadata: {
@@ -653,9 +653,9 @@ const data = [
         }
     },
     
-    // ==========================================================
-    // 🇸🇬 SINGAPURA (2)
-    // ==========================================================
+    
+    
+    
     {
         text: 'PropertyGuru SG - Platform properti terbesar Singapura. Didirikan 2006.',
         metadata: {
@@ -687,9 +687,9 @@ const data = [
         }
     },
     
-    // ==========================================================
-    // 🇮🇩 INDONESIA (6)
-    // ==========================================================
+    
+    
+    
     {
         text: 'Rumah.com - Platform properti terbesar Indonesia. Didirikan 2007. 500K+ listing.',
         metadata: {
@@ -781,9 +781,9 @@ const data = [
         }
     },
     
-    // ==========================================================
-    // 🇿🇦 AFRIKA SELATAN (2)
-    // ==========================================================
+    
+    
+    
     {
         text: 'Property24 - Platform properti terbesar Afrika Selatan. Didirikan 2005.',
         metadata: {
@@ -815,9 +815,9 @@ const data = [
         }
     },
     
-    // ==========================================================
-    // 🇵🇹 PORTUGAL (2) — BARU!
-    // ==========================================================
+    
+    
+    
     {
         text: 'Idealista Portugal - Platform properti terbesar Portugal. Didirikan 2000.',
         metadata: {
@@ -849,9 +849,9 @@ const data = [
         }
     },
     
-    // ==========================================================
-    // 🇸🇪 SWEDIA (2) — BARU!
-    // ==========================================================
+    
+    
+    
     {
         text: 'Hemnet - Platform properti terbesar Swedia. Didirikan 1998. Jutaan listing properti.',
         metadata: {
@@ -883,9 +883,9 @@ const data = [
         }
     },
     
-    // ==========================================================
-    // 🇳🇴 NORWEGIA (2) — BARU!
-    // ==========================================================
+    
+    
+    
     {
         text: 'Finn Eiendom - Platform properti terbesar Norwegia. Didirikan 2000.',
         metadata: {
@@ -917,9 +917,9 @@ const data = [
         }
     },
     
-    // ==========================================================
-    // 🇩🇰 DENMARK (2) — BARU!
-    // ==========================================================
+    
+    
+    
     {
         text: 'Boligsiden - Platform properti terbesar Denmark. Didirikan 1999.',
         metadata: {
@@ -951,9 +951,9 @@ const data = [
         }
     },
     
-    // ==========================================================
-    // 🇹🇷 TURKI (2) — BARU!
-    // ==========================================================
+    
+    
+    
     {
         text: 'Sahibinden Emlak - Platform properti terbesar Turki. Didirikan 2000.',
         metadata: {
@@ -985,9 +985,9 @@ const data = [
         }
     },
     
-    // ==========================================================
-    // 🇻🇳 VIETNAM (2) — BARU!
-    // ==========================================================
+    
+    
+    
     {
         text: 'Batdongsan - Platform properti terbesar Vietnam. Didirikan 2007.',
         metadata: {
@@ -1019,9 +1019,9 @@ const data = [
         }
     },
     
-    // ==========================================================
-    // 🇹🇭 THAILAND (2) — BARU!
-    // ==========================================================
+    
+    
+    
     {
         text: 'DDproperty - Platform properti terbesar Thailand. Didirikan 2008.',
         metadata: {
@@ -1053,9 +1053,9 @@ const data = [
         }
     },
     
-    // ==========================================================
-    // 🇲🇾 MALAYSIA (2) — BARU!
-    // ==========================================================
+    
+    
+    
     {
         text: 'PropertyGuru MY - Platform properti terbesar Malaysia. Didirikan 2006.',
         metadata: {
@@ -1088,16 +1088,16 @@ const data = [
     }
 ];
 
-// ==========================================================
-// 7. VALIDASI & REGISTER
-// ==========================================================
+
+
+
 const validData = data.filter(validatePlatform);
 
 export const DATA = validData;
 
-// ==========================================================
-// 8. AI PRICE PREDICTION MODULE
-// ==========================================================
+
+
+
 const AIProperty = {
     predictPrice: function(propertyData) {
         const basePrice = propertyData.basePrice || 300000;
@@ -1161,9 +1161,9 @@ const AIProperty = {
     }
 };
 
-// ==========================================================
-// 9. REAL-TIME PROPERTY DATA
-// ==========================================================
+
+
+
 const RealTimeProperty = {
     getLivePrices: function(platform, location) {
         const basePrice = 200000 + Math.floor(Math.random() * 300000);
@@ -1236,9 +1236,9 @@ const RealTimeProperty = {
     }
 };
 
-// ==========================================================
-// 10. MORTGAGE CALCULATOR
-// ==========================================================
+
+
+
 const MortgageCalculator = {
     calculate: function(data) {
         const price = data.price || 500000;
@@ -1308,9 +1308,9 @@ const MortgageCalculator = {
     }
 };
 
-// ==========================================================
-// 11. PROPERTY VALUATION
-// ==========================================================
+
+
+
 const PropertyValuation = {
     compareValue: function(property) {
         const size = property.size || 150;
@@ -1360,9 +1360,9 @@ const PropertyValuation = {
     }
 };
 
-// ==========================================================
-// 12. NEIGHBORHOOD ANALYTICS
-// ==========================================================
+
+
+
 const NeighborhoodAnalytics = {
     analyzeNeighborhood: function(location) {
         return {
@@ -1407,9 +1407,9 @@ const NeighborhoodAnalytics = {
     }
 };
 
-// ==========================================================
-// 13. CHART VISUALISATION MODULE
-// ==========================================================
+
+
+
 const PropertyChart = {
     renderCountryChart: function(containerId) {
         const data = MarplacePropertiAPI.getCountryDistribution();
@@ -1468,12 +1468,12 @@ const PropertyChart = {
     }
 };
 
-// ==========================================================
-// 14. API FUNCTIONS
-// ==========================================================
+
+
+
 if (typeof KESEMPATAN.MarplacePropertiAPI === 'undefined') {
     KESEMPATAN.MarplacePropertiAPI = {
-        // SEARCH (5)
+        
         getPropertyPlatforms: function(query) {
             const cacheKey = 'getPropertyPlatforms_' + (query || 'all');
             const cached = DataCache.get(cacheKey);
@@ -1725,7 +1725,7 @@ if (typeof KESEMPATAN.MarplacePropertiAPI === 'undefined') {
             return DataCache.getStats();
         },
         
-        // AI PREDICTION FUNCTIONS (3)
+        
         predictPrice: function(propertyData) {
             return AIProperty.predictPrice(propertyData);
         },
@@ -1738,7 +1738,7 @@ if (typeof KESEMPATAN.MarplacePropertiAPI === 'undefined') {
             return AIProperty.recommendPlatform(userPrefs);
         },
         
-        // REAL-TIME PROPERTY DATA (4)
+        
         getLivePrices: function(platform, location) {
             return RealTimeProperty.getLivePrices(platform, location);
         },
@@ -1755,7 +1755,7 @@ if (typeof KESEMPATAN.MarplacePropertiAPI === 'undefined') {
             return RealTimeProperty.getMarketData(platform);
         },
         
-        // MORTGAGE CALCULATOR (3)
+        
         calculateMortgage: function(data) {
             return MortgageCalculator.calculate(data);
         },
@@ -1768,7 +1768,7 @@ if (typeof KESEMPATAN.MarplacePropertiAPI === 'undefined') {
             return MortgageCalculator.calculateAffordability(income, expenses);
         },
         
-        // PROPERTY VALUATION (2)
+        
         compareValue: function(property) {
             return PropertyValuation.compareValue(property);
         },
@@ -1777,7 +1777,7 @@ if (typeof KESEMPATAN.MarplacePropertiAPI === 'undefined') {
             return PropertyValuation.calculateROI(property);
         },
         
-        // NEIGHBORHOOD ANALYTICS (2)
+        
         analyzeNeighborhood: function(location) {
             return NeighborhoodAnalytics.analyzeNeighborhood(location);
         },
@@ -1786,7 +1786,7 @@ if (typeof KESEMPATAN.MarplacePropertiAPI === 'undefined') {
             return NeighborhoodAnalytics.compareNeighborhoods(locationA, locationB);
         },
         
-        // CHART FUNCTIONS (5)
+        
         renderCountryChart: function(containerId) {
             return PropertyChart.renderCountryChart(containerId);
         },
@@ -1811,9 +1811,9 @@ if (typeof KESEMPATAN.MarplacePropertiAPI === 'undefined') {
     InternalLogger.info('MarplacePropertiAPI', '✅ API ready — 35+ functions!');
 }
 
-// ==========================================================
-// 15. LOG
-// ==========================================================
+
+
+
 const logCount = validData.length;
 const countryCount = new Set(validData.map(function(d) { return d.metadata.country; })).size;
 const regionCount = new Set(validData.map(function(d) { return d.metadata.region; })).size;

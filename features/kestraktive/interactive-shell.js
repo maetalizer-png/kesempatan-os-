@@ -1,25 +1,4 @@
-/* ============================================================
-   interactive/interactive-shell.js
-   SHELL HALAMAN FITUR INTERAKTIF (Chat AI/Chat Agent/Forum/
-   Debat/Turnamen) — judul, 5 tombol switch mode, 5 kontainer
-   panel kosong, tombol kembali ke dashboard.
 
-   Bukan milik satu fitur manapun (bukan chat-ai/chat-agent/forum/
-   debate/tournament) — ini cuma "bingkai" bersama, makanya taruh
-   di sini, sejajar folder 5 fitur, bukan awalan cai-/cag-/for-/
-   deb-/tor- yang mana pun.
-
-   WAJIB dimuat SEBELUM kelima loader fitur (cai-chat-ai.js dst)
-   di index.html — masing-masing loader langsung
-   document.getElementById('interactiveXPanel') begitu jalan, jadi
-   elemen itu HARUS sudah ada di DOM lebih dulu. Dirender sinkron
-   (bukan nunggu DOMContentLoaded) persis spt loader2 fitur, supaya
-   selalu lebih dulu selesai drpd loader pertama (chat-ai) mulai
-   jalan.
-
-   index.html sekarang cuma <div id="interactivePage"></div> kosong
-   — markup ini (dulu inline di sana) dipindah ke sini.
-   ============================================================ */
 const container = document.getElementById('interactivePage');
 if (container && container.dataset.rendered !== 'true') {
     container.dataset.rendered = 'true';

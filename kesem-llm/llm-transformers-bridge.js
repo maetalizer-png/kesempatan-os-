@@ -1,17 +1,17 @@
-// Core Engine v2 entry point (Web Worker bridge) — message bridge to
-// llm-transformers-worker.js (module Worker running a real pretrained
-// model via @huggingface/transformers). Same pattern as kesem-llm.js
-// (id-based request/response, lazy Worker, destroy() to free RAM/VRAM).
-//
-// window.KesempatanLLM2 is used by workflow-llm-bridge.js as the
-// primary path (Core Engine v2) — window.KesempatanLLM (v1, the
-// hand-rolled ~50M-parameter transformer) stays available as the
-// second fallback that works fully offline, before finally falling
-// back to an external API provider.
+
+
+
+
+
+
+
+
+
+
 
 const Logger = window.Utils?.Logger || {
-    info: function () { /* silent */ },
-    warn: function () { /* silent */ },
+    info: function () {  },
+    warn: function () {  },
     error: function (mod, msg) { console.error('[ERROR] [' + mod + '] ' + msg); }
 };
 
@@ -35,13 +35,13 @@ function emitProgress(data) {
     window.KESEMPATAN = window.KESEMPATAN || {};
     window.KESEMPATAN.ModelDownloadProgress = Object.assign({ updatedAt: Date.now() }, data);
     progressListeners.forEach(function (listener) {
-        try { listener(data); } catch (e) { /* listener error tidak boleh mematikan worker */ }
+        try { listener(data); } catch (e) {  }
     });
 }
 
-// Idle cleanup — sama seperti kesem-llm.js: model pretrained ini bisa
-// menempati RAM/VRAM signifikan (puluhan-ratusan MB tergantung dtype),
-// bebaskan otomatis kalau tidak dipakai lama.
+
+
+
 let lastActivityAt = Date.now();
 const IDLE_DESTROY_MS = 10 * 60 * 1000;
 let idleWatcherInterval = null;
@@ -74,8 +74,8 @@ function ensureIdleWatcher() {
 
 function ensureWorker() {
     if (worker) return worker;
-    // { type: 'module' } wajib -- llm-transformers-worker.js pakai
-    // dynamic import() untuk memuat @huggingface/transformers dari CDN.
+    
+    
     worker = new Worker('kesem-llm/llm-transformers-worker.js', { type: 'module' });
     ensureIdleWatcher();
     worker.onmessage = function (e) {
@@ -117,10 +117,10 @@ function callWorker(type, payload) {
 
 let lastKnownModelKey = null;
 
-// modelKey: 'smollm2-135m' (default) | 'qwen2.5-0.5b' — lihat
-// MODEL_REGISTRY di llm-transformers-worker.js. Kalau berbeda dari
-// model yang sedang aktif, Worker otomatis lepas pipeline lama dan
-// muat yang baru (lihat initializeEngine() di worker).
+
+
+
+
 async function initialize(modelKey) {
     const result = await callWorker('initialize', { modelKey: modelKey });
     engineReady = true;
@@ -139,7 +139,7 @@ function getDeviceInfo() {
     return { device: lastKnownDevice, modelId: lastKnownModelId, modelKey: lastKnownModelKey, ready: engineReady };
 }
 
-// options: { systemPrompt, maxNewTokens, temperature, topP, repetitionPenalty }
+
 async function generate(prompt, options) {
     const result = await callWorker('generate', { prompt: prompt, options: options || {} });
     return result.text;

@@ -1,8 +1,8 @@
-// KESEMPATAN OS - DATASET: POLITIK
-// Selaras dengan 5 agent di agents/agents-politics.js. Lihat dataset/bisnis.js
-// untuk catatan desain lengkap folder ini.
+
+
+
 const data = [
-    // ================= POLITIK DALAM NEGERI =================
+    
     {
         text: 'Sistem pemilu proporsional terbuka yang dipakai di Indonesia memungkinkan pemilih memilih langsung calon legislatif, bukan hanya partai, sehingga popularitas individu kandidat bisa mengalahkan urutan nomor yang ditetapkan partai.',
         metadata: { category: 'dataset', domain: 'politik', agent: 'PolitikDalamNegeri', topic: 'sistem pemilu', tags: ['pemilu', 'sistem politik'] }
@@ -16,7 +16,7 @@ const data = [
         metadata: { category: 'dataset', domain: 'politik', agent: 'PolitikDalamNegeri', topic: 'koalisi parlemen', tags: ['parlemen', 'koalisi'] }
     },
 
-    // ================= HUBUNGAN INTERNASIONAL =================
+    
     {
         text: 'Diplomasi jalur kedua yang melibatkan akademisi, LSM, dan tokoh masyarakat sipil sering membuka ruang dialog yang tidak bisa dijangkau diplomasi resmi antarnegara, terutama dalam konflik yang sensitif secara politik.',
         metadata: { category: 'dataset', domain: 'politik', agent: 'HubunganInternasional', topic: 'diplomasi jalur kedua', tags: ['diplomasi', 'hubungan internasional'] }
@@ -30,7 +30,7 @@ const data = [
         metadata: { category: 'dataset', domain: 'politik', agent: 'HubunganInternasional', topic: 'politik luar negeri bebas aktif', tags: ['kebijakan luar negeri', 'indonesia'] }
     },
 
-    // ================= KEBIJAKAN PUBLIK =================
+    
     {
         text: 'Kebijakan publik yang efektif melewati siklus penyusunan agenda, formulasi, implementasi, dan evaluasi — kebijakan yang bagus di atas kertas sering gagal karena tahap implementasi diabaikan atau tidak dianggarkan memadai.',
         metadata: { category: 'dataset', domain: 'politik', agent: 'KebijakanPublik', topic: 'siklus kebijakan', tags: ['kebijakan publik', 'implementasi'] }
@@ -44,7 +44,7 @@ const data = [
         metadata: { category: 'dataset', domain: 'politik', agent: 'KebijakanPublik', topic: 'evaluasi berbasis bukti', tags: ['evaluasi kebijakan', 'metodologi'] }
     },
 
-    // ================= GEOPOLITIK =================
+    
     {
         text: 'Selat Malaka menjadi salah satu jalur pelayaran tersibuk dan paling strategis di dunia karena menghubungkan Samudra Hindia dan Pasifik, menjadikan kawasan ini titik krusial dalam persaingan pengaruh kekuatan besar di Asia.',
         metadata: { category: 'dataset', domain: 'politik', agent: 'Geopolitik', topic: 'selat malaka', tags: ['geopolitik maritim', 'asia tenggara'] }
@@ -58,7 +58,7 @@ const data = [
         metadata: { category: 'dataset', domain: 'politik', agent: 'Geopolitik', topic: 'strategi hedging', tags: ['geopolitik', 'indo-pasifik'] }
     },
 
-    // ================= KOMUNIKASI POLITIK =================
+    
     {
         text: 'Framing dalam komunikasi politik menentukan bagaimana suatu isu dipersepsikan publik — isu yang sama bisa dibingkai sebagai "kebebasan individu" oleh satu pihak dan "tanggung jawab kolektif" oleh pihak lain, menghasilkan reaksi publik yang sangat berbeda.',
         metadata: { category: 'dataset', domain: 'politik', agent: 'KomunikasiPolitik', topic: 'framing politik', tags: ['komunikasi politik', 'persepsi publik'] }

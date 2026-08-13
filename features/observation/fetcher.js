@@ -116,7 +116,7 @@ function extractRssUrl(apiUrl) {
 
 async function fetchRSSDirect(rssUrl) {
     const proxies = [
-        'https://corsproxy.io/?url=',        // terbukti berhasil untuk ANTARA
+        'https://corsproxy.io/?url=',        
         'https://api.allorigins.win/raw?url=',
         'https://api.codetabs.com/v1/proxy?quest='
     ];

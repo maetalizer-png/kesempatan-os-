@@ -93,5 +93,5 @@ const tryConnect = setInterval(function() {
 window.KESEMPATAN = window.KESEMPATAN || {};
 window.KESEMPATAN.CacheDB = cacheDb;
 
-// Bridge for consumers not yet migrated to import { cacheDb } from './cache-db-bridge.js'.
+
 window.KesCacheDB = cacheDb;

@@ -20,7 +20,7 @@
             width: 100%;
         }
         
-        /* SIDEBAR */
+        
         .sidebar-left {
             width: 280px;
             background: rgba(10, 15, 28, 0.97);
@@ -261,7 +261,7 @@
             color: #00FFA3;
         }
         
-        /* MAIN CHAT */
+        
         .main-chat {
             flex: 1;
             display: flex;
@@ -317,7 +317,7 @@
             color: #00FFA3;
         }
         
-        /* SEARCH BAR */
+        
         #searchBar {
             display: none;
             padding: 8px 20px;
@@ -368,7 +368,7 @@
             margin-top: 4px;
         }
         
-        /* MESSAGES — KOSONG! */
+        
         .messages-container {
             flex: 1;
             overflow-y: auto;
@@ -419,7 +419,7 @@
             font-size: 13px;
         }
         
-        /* TYPING INDICATOR */
+        
         .typing {
             display: flex;
             gap: 4px;
@@ -439,7 +439,7 @@
             30% { transform: translateY(-8px); opacity: 1; }
         }
         
-        /* INPUT AREA */
+        
         .input-container {
             max-width: 800px;
             margin: 0 auto 20px auto;
@@ -531,12 +531,12 @@
             margin-top: 8px;
         }
         
-        /* SCROLLBAR */
+        
         ::-webkit-scrollbar { width: 4px; }
         ::-webkit-scrollbar-track { background: #0a0f1c; }
         ::-webkit-scrollbar-thumb { background: #00FFA3; border-radius: 4px; }
         
-        /* TOAST */
+        
         .toast-custom {
             position: fixed;
             bottom: 80px;
@@ -568,7 +568,7 @@
             100% { opacity: 0; transform: translateX(-50%) translateY(-20px); }
         }
         
-        /* RESPONSIVE */
+        
         @media (min-width: 769px) {
             .sidebar-left {
                 position: relative;
@@ -599,7 +599,7 @@
             .input-wrapper button { padding: 4px 12px; font-size: 10px; }
         }
     </style>
-    <!-- Vercel Web Analytics -->
+    
     <script>
       window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
     </script>
@@ -610,7 +610,7 @@
     <button class="menu-toggle" id="menuToggle">☰</button>
     <div class="sidebar-overlay" id="sidebarOverlay"></div>
     
-    <!-- SIDEBAR -->
+    
     <div class="sidebar-left" id="sidebarLeft">
         <div class="logo-area">
             <h2> KESEMPATAN OS</h2>
@@ -659,7 +659,7 @@
         </div>
     </div>
     
-    <!-- MAIN CHAT -->
+    
     <div class="main-chat">
         <div class="chat-header">
             <h2>Chat with <span>KESEMPATAN OS</span></h2>
@@ -670,7 +670,7 @@
             </div>
         </div>
         
-        <!-- SEARCH BAR -->
+        
         <div id="searchBar">
             <div class="search-inner">
                 <input type="text" id="searchInput" placeholder="Cari pesan...">
@@ -680,7 +680,7 @@
             <div id="searchResults"></div>
         </div>
         
-        <!-- MESSAGES — KOSONG! -->
+        
         <div class="messages-container" id="messagesContainer"></div>
         
         <div class="input-container">
@@ -702,8 +702,8 @@
 </div>
 
 <script>
-    // ========== KESEMPATAN OS ==========
-    // DEITY EDITION — LAYAR CHAT BERSIH + TANPA QUICK REPLY
+    
+    
     
     (function() {
         "use strict";
@@ -838,7 +838,7 @@
             robot: { name: 'Robot', pitch: 0.7, rate: 1.2 }
         };
         
-        // QUICK REPLY DIHAPUS!
+        
         let QUICK_REPLIES = [];
         
         let isLoading = false;

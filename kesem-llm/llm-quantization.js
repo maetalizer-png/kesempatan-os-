@@ -1,18 +1,18 @@
 const Logger = window.Utils?.Logger || {
-    info: function () { /* silent */ },
-    warn: function () { /* silent */ },
+    info: function () {  },
+    warn: function () {  },
     error: function (mod, msg) { console.error('[ERROR] [' + mod + '] ' + msg); }
 };
 
-// ============================================================
-// AFFINE QUANTIZATION (int8, rentang -127..127)
-// ============================================================
-// Rumus: quantized = round((value - zeroPoint) / scale)
-//        value ≈ quantized * scale + zeroPoint
-// scale dihitung dari rentang aktual nilai matriks (min-max),
-// jadi tiap matriks punya scale/zeroPoint sendiri (per-tensor
-// quantization — lebih akurat daripada 1 scale global untuk
-// semua bobot model, karena tiap layer punya distribusi beda).
+
+
+
+
+
+
+
+
+
 function quantizeMatrix(matrix) {
     const rows = matrix.length;
     const cols = matrix[0] ? matrix[0].length : 0;
@@ -28,8 +28,8 @@ function quantizeMatrix(matrix) {
     }
 
     if (min === max) {
-        // Matriks konstan (edge case, mis. bias awal 0 semua) —
-        // scale 1 supaya tidak dibagi nol.
+        
+        
         min -= 0.5;
         max += 0.5;
     }
@@ -61,9 +61,9 @@ function dequantizeMatrix(quantized) {
     return matrix;
 }
 
-// ============================================================
-// KUANTISASI SELURUH MODEL
-// ============================================================
+
+
+
 function quantizeModel(model) {
     function quantizeLayer(layer) {
         return {
@@ -75,11 +75,11 @@ function quantizeModel(model) {
             },
             ffn: {
                 W1: quantizeMatrix(layer.ffn.W1),
-                b1: layer.ffn.b1,  // vektor bias dibiarkan float — kecil, dampak kompresi minim
+                b1: layer.ffn.b1,  
                 W2: quantizeMatrix(layer.ffn.W2),
                 b2: layer.ffn.b2
             },
-            ln1: layer.ln1, // LayerNorm gamma/beta dibiarkan float — sensitif presisi
+            ln1: layer.ln1, 
             ln2: layer.ln2
         };
     }
@@ -120,11 +120,11 @@ function dequantizeModel(quantizedModel) {
         decoderWeights: {
             layers: quantizedModel.decoderWeights.layers.map(dequantizeLayer),
             finalNorm: quantizedModel.decoderWeights.finalNorm,
-            // outputProjection OPSIONAL (v3+ checkpoint tidak
-            // menyimpannya lagi — weight tying, direkonstruksi via
-            // transpose oleh pemanggil di llm-checkpoint.js). Kalau
-            // ADA (mis. dipanggil dari jalur lain yang masih kirim
-            // model utuh), tetap didequantisasi seperti biasa.
+            
+            
+            
+            
+            
             outputProjection: quantizedModel.decoderWeights.outputProjection
                 ? dequantizeMatrix(quantizedModel.decoderWeights.outputProjection)
                 : undefined

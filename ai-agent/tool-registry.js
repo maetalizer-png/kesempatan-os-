@@ -1,14 +1,4 @@
-/* ============================================================
-   ai-agent/tool-registry.js
-   Capability registration/lookup for the Orchestrator. Only real,
-   already-existing capabilities are registered — nothing here
-   reimplements a system, and nothing fakes a system that doesn't
-   exist yet (Supabase, WebSocket, Public API are registered as
-   explicit NOT_IMPLEMENTED stubs, confirmed via repo audit: no
-   real Supabase client, no WebSocket connect/send/subscribe
-   anywhere, and the Public API server is a separate Node process
-   not reachable from browser code without a deployed URL).
-   ============================================================ */
+
 
 import { MemoryBridge } from './memory-bridge.js';
 import { ObservationLoop } from './observation-loop.js';
@@ -50,7 +40,7 @@ function list() {
     });
 }
 
-// --- memory.* (memory/m-index.js via memory-bridge.js) ---
+
 register('memory.save', {
     run: function(args) { return MemoryBridge.save(args.text, args.metadata); }
 });
@@ -58,7 +48,7 @@ register('memory.search', {
     run: function(args) { return MemoryBridge.search(args.query, args.options); }
 });
 
-// --- observation.* (observ/ via observation-loop.js) ---
+
 register('observation.getSignals', {
     run: function() { return ObservationLoop.getSignals(); }
 });
@@ -69,7 +59,7 @@ register('observation.contextForTopic', {
     run: function(args) { return ObservationLoop.getContextForTopic(args.topic, args.limit); }
 });
 
-// --- worker.run (55 KESWORKER via window.AIWorkers) ---
+
 register('worker.run', {
     run: async function(args) {
         const workerEntry = AgentRegistry.getWorker(args.workerId);
@@ -81,7 +71,7 @@ register('worker.run', {
     }
 });
 
-// --- socialShare.share (js/social-share.js's real SuperSocialShare.shareToPlatform) ---
+
 register('socialShare.share', {
     run: async function(args) {
         if (!window.SuperSocialShare || typeof window.SuperSocialShare.shareToPlatform !== 'function') {
@@ -91,8 +81,8 @@ register('socialShare.share', {
     }
 });
 
-// --- editor.* (js/ai-editor-ultimate.js — UI panel renderers only, no
-//     programmatic content-edit API exists to wrap) ---
+
+
 register('editor.renderEditFoto', {
     run: function() {
         if (KESEMPATAN.AIEditor && typeof KESEMPATAN.AIEditor.renderEditFoto === 'function') {
@@ -112,7 +102,7 @@ register('editor.renderEditVideo', {
     }
 });
 
-// --- crypto.* (js/live-crypto.js's real LiveCrypto) ---
+
 register('crypto.getPrices', {
     run: async function() {
         if (!window.LiveCrypto || typeof window.LiveCrypto.fetchCryptoPrices !== 'function') {
@@ -130,11 +120,11 @@ register('crypto.marketSummary', {
     }
 });
 
-// --- news.fetch (js/news-aggregator.js's real NewsAggregator instance —
-//     fetchNews/fetchLokalNews, BUKAN getNews: getNews dipanggil secara
-//     guarded di noise/noise-core.js tapi tidak pernah didefinisikan di
-//     manapun, jadi itu no-op laten yang sudah ada sebelum AI Agent ini
-//     dibangun; adapter ini sengaja memanggil method yang benar-benar ada) ---
+
+
+
+
+
 register('news.fetch', {
     run: async function(args) {
         if (!window.NewsAggregator || typeof window.NewsAggregator.fetchNews !== 'function') {
@@ -144,7 +134,7 @@ register('news.fetch', {
     }
 });
 
-// --- podcast.generateScript (podcast/podcast-main.js's real PodcastGenerator) ---
+
 register('podcast.generateScript', {
     run: function(args) {
         if (!KESEMPATAN.PodcastGenerator || typeof KESEMPATAN.PodcastGenerator.generate !== 'function') {
@@ -154,7 +144,7 @@ register('podcast.generateScript', {
     }
 });
 
-// --- Confirmed-unavailable capabilities (repo audit, see file header) ---
+
 register('supabase.read', notImplementedTool('Tidak ada Supabase client nyata di codebase ini (initSupabase() tidak pernah didefinisikan; panel Settings adalah demo UI).'));
 register('supabase.query', notImplementedTool('Sama seperti supabase.read.'));
 register('supabase.insert', notImplementedTool('Sama seperti supabase.read.'));

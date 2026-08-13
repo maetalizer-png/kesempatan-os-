@@ -11,9 +11,9 @@ const Logger = InternalLogger;
 
 const Notify = NotificationSystem;
 
-// ============================================================
-// VECTOR SEARCH
-// ============================================================
+
+
+
 class VectorSearch {
     constructor(db) {
         this._db = db;
@@ -155,9 +155,9 @@ class VectorSearch {
     }
 }
 
-// ============================================================
-// GRAPH QUERY
-// ============================================================
+
+
+
 class GraphQuery {
     constructor(db) {
         this._db = db;
@@ -289,9 +289,9 @@ class GraphQuery {
     }
 }
 
-// ============================================================
-// FULL-TEXT SEARCH
-// ============================================================
+
+
+
 class FullTextSearch {
     constructor(db) {
         this._db = db;
@@ -560,9 +560,9 @@ class FullTextSearch {
     }
 }
 
-// ============================================================
-// GEOSPATIAL QUERY
-// ============================================================
+
+
+
 class GeospatialQuery {
     constructor(db, storeName) {
         this._db = db;
@@ -644,9 +644,9 @@ class GeospatialQuery {
     }
 }
 
-// ============================================================
-// TIME-SERIES ANALYTICS
-// ============================================================
+
+
+
 class TimeSeriesAnalytics {
     constructor(db) {
         this._db = db;
@@ -855,9 +855,9 @@ class TimeSeriesAnalytics {
     }
 }
 
-// ============================================================
-// QUERY PARSER
-// ============================================================
+
+
+
 class QueryParser {
     constructor(db) {
         this._db = db;
@@ -1350,9 +1350,9 @@ class QueryParser {
     }
 }
 
-// ============================================================
-// AI QUERY OPTIMIZER
-// ============================================================
+
+
+
 class AIQueryOptimizer {
     constructor(db) {
         this._db = db;
@@ -1465,9 +1465,9 @@ class AIQueryOptimizer {
     }
 }
 
-// ============================================================
-// SELF-OPTIMIZING INDEXES
-// ============================================================
+
+
+
 class IndexOptimizer {
     constructor(db) {
         this._db = db;
@@ -1546,9 +1546,9 @@ class IndexOptimizer {
     }
 }
 
-// ============================================================
-// QUERY STREAMING
-// ============================================================
+
+
+
 class QueryStream {
     constructor(db) {
         this._db = db;

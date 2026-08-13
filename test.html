@@ -17,12 +17,7 @@
 <div id="summary">Menjalankan test...</div>
 <div id="rows"></div>
 
-<!--
-    Dev-only harness (tidak dimuat oleh index.html/chat-kesempatan.html).
-    Import HANYA modul yang benar-benar dibutuhkan test.js
-    (RealAssertions di test.js), bukan seluruh aplikasi — supaya test
-    jalan cepat dan tidak bergantung ke DOM/network yang tidak relevan.
--->
+
 <script type="module">
     import { AGENTS_CONFIG, extendBisnisAgents } from './agents/agents-config.js';
     import { extendGeneralAgents } from './agents/agents-general.js';
@@ -30,12 +25,12 @@
     import { extendPoliticsAgents } from './agents/agents-politics.js';
     import { extendScienceAgents } from './agents/agent-science.js';
     import './kesem-llm/llm-sampler.js';
-    import './js/workflow/workflow.js'; // menempel window.KESEMPATAN.WorkflowEngine
+    import './js/workflow/workflow.js'; 
 
-    // Kategori agen di-populate async (masing-masing await loadPrompt() ->
-    // fetch prompts/*.txt) — tunggu semuanya beres dulu supaya
-    // AGENTS_CONFIG benar-benar lengkap sebelum test jalan, alih-alih
-    // menebak durasi lewat setTimeout.
+    
+    
+    
+    
     await Promise.all([
         extendBisnisAgents(),
         extendGeneralAgents(),
@@ -47,9 +42,7 @@
     window.dispatchEvent(new CustomEvent('test-deps-ready'));
 </script>
 
-<!-- test.js sendiri classic script (bukan module) supaya konsisten dengan
-     cara ia sudah ditulis — dimuat setelah modul-modul di atas terdaftar
-     ke window/window.KESEMPATAN. -->
+
 <script src="./test.js"></script>
 <script>
     window.addEventListener('test-deps-ready', async function () {
@@ -61,7 +54,7 @@
         rowsEl.innerHTML = report.results.map(function (r) {
             return '<div class="row ' + (r.pass ? 'pass' : 'fail') + '">' + (r.pass ? '[OK] ' : '[FAIL] ') + r.name + '</div>';
         }).join('');
-        window.__testReport = report; // dibaca Playwright/automation lain
+        window.__testReport = report; 
     });
 </script>
 </body>

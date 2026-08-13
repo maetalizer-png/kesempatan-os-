@@ -1,13 +1,4 @@
-/* ============================================================
-COMPONENTS/LOG.CSS — Log Eksekusi (chamfer Varian A + napas)
-Bentuk = chamfer simetris (--kl-clip), garis tipis redup, glow
-hanya saat hover. log-box = inner gelap POLOS (tanpa grip) +
-scroll. Scrollbar TIPIS 2px, redup saat diam. Tanpa LIVE.
-BARU: GARIS PEMBATS di atas KES LOG via #logPanelContainer::before
-(full-width, sejajar garis pembatas panel input; napas atas
-supaya tidak nempel panel di atasnya). Mandiri (tidak numpang
-forms.css). #systemLog tetap container scroll isi workflow.js.
-============================================================ */
+
 :root {
     --kl-clip: polygon(
         0 10px, 10px 0, calc(100% - 10px) 0, 100% 10px,
@@ -17,10 +8,10 @@ forms.css). #systemLog tetap container scroll isi workflow.js.
 }
 .kl-wrap, .kl-wrap * { box-sizing: border-box; }
 
-/* ---- GARIS PEMBATS atas KES LOG (full-width container) ---- */
+
 #logPanelContainer {
     position: relative;
-    padding: 16px 0 0;     /* napas atas = jarak panel-atas -> garis -> judul */
+    padding: 16px 0 0;     
     margin: 8px 0 0;
 }
 #logPanelContainer::before {
@@ -33,14 +24,14 @@ forms.css). #systemLog tetap container scroll isi workflow.js.
     background: rgba(224, 230, 237, 0.14);
 }
 
-/* napas horizontal log (vertikal 0 -> diatur #logPanelContainer) */
+
 .kl-wrap {
     width: 100%;
     margin: 0;
     padding: 0 12px;
 }
 
-/* ---- judul: ikon + teks (tanpa LIVE) ---- */
+
 .kl-title {
     display: flex;
     align-items: center;
@@ -67,7 +58,7 @@ forms.css). #systemLog tetap container scroll isi workflow.js.
     text-shadow: 0 0 10px var(--primary-glow);
 }
 
-/* ---- rim outer: garis neon redup, chamfer mulus ---- */
+
 .kl-rim {
     position: relative;
     clip-path: var(--kl-clip);
@@ -81,7 +72,7 @@ forms.css). #systemLog tetap container scroll isi workflow.js.
     filter: drop-shadow(0 0 7px var(--primary-glow));
 }
 
-/* ---- log-box = inner rim: gelap POLOS + scroll ---- */
+
 .log-box {
     clip-path: var(--kl-clip);
     background: #05080c;
@@ -99,7 +90,7 @@ forms.css). #systemLog tetap container scroll isi workflow.js.
 }
 .log-box:hover { scrollbar-color: var(--primary) transparent; }
 
-/* scrollbar TIPIS (2px) + redup saat diam */
+
 .log-box::-webkit-scrollbar { width: 2px; }
 .log-box::-webkit-scrollbar-track { background: transparent; }
 .log-box::-webkit-scrollbar-thumb {

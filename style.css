@@ -1,11 +1,6 @@
-/* ============================================================
-   STYLE.CSS — CORE FOUNDATION (WAJIB DIMUAT PERTAMA)
-   🔥 Hanya variabel, reset, base, keyframes, & global utilities.
-   ============================================================ */
 
-/* ============================================================
-   1. ROOT VARIABLES
-   ============================================================ */
+
+
 :root {
   --primary: #00FFA3;
   --primary-dark: #00AA6E;
@@ -43,9 +38,7 @@
   --primary-tint-30: rgba(0, 255, 163, 0.3);
 }
 
-/* ============================================================
-   2. RESET & BASE
-   ============================================================ */
+
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
 html, body {
@@ -63,12 +56,10 @@ body {
   font-size: var(--font-base);
   padding: 20px;
   min-height: 100vh;
-  text-shadow: 0 1px 10px rgba(0, 0, 0, 0.5); /* 🆕 Teks selalu terbaca */
+  text-shadow: 0 1px 10px rgba(0, 0, 0, 0.5); 
 }
 
-/* ============================================================
-   3. KEYFRAMES (GLOBAL)
-   ============================================================ */
+
 @keyframes fadeIn {
   from { opacity: 0; }
   to { opacity: 1; }
@@ -95,9 +86,7 @@ body {
   to { opacity: 1; transform: translateY(0); }
 }
 
-/* ============================================================
-   4. GLOBAL UTILITIES + MIKRO-INTERAKSI
-   ============================================================ */
+
 .execute-btn {
   width: 100%;
   padding: 10px;
@@ -110,14 +99,14 @@ body {
   letter-spacing: 1px;
   cursor: pointer;
   text-transform: uppercase;
-  transition: transform 0.1s ease, box-shadow 0.2s ease; /* 🆕 Transisi lebih cepat */
+  transition: transform 0.1s ease, box-shadow 0.2s ease; 
 }
 .execute-btn:hover {
   transform: translateY(-2px);
   box-shadow: 0 4px 15px var(--primary-glow);
 }
 .execute-btn:active {
-  transform: scale(0.96) !important; /* 🆕 Efek "ditekan" seperti aplikasi native */
+  transform: scale(0.96) !important; 
   box-shadow: none;
 }
 .execute-btn.secondary {
@@ -129,24 +118,18 @@ body {
   background: var(--primary-dark);
 }
 
-/* ============================================================
-   5. SCROLLBAR (GLOBAL)
-   ============================================================ */
+
 ::-webkit-scrollbar { width: 5px; }
 ::-webkit-scrollbar-track { background: #0a0f1c; border-radius: 8px; }
 ::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 8px; }
 
-/* ============================================================
-   6. LIGHT MODE DASAR
-   ============================================================ */
+
 body.light {
   background: #E8EDF5;
   color: #1A2A3A;
 }
 
-/* ============================================================
-   7. RESULT CONTAINER (ATURAN UTAMA) — TANPA BORDER
-   ============================================================ */
+
 .result-container {
   background: transparent !important;
   border-radius: 20px;

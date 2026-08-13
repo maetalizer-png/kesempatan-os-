@@ -1,38 +1,33 @@
-/* ============================================================
-   interactive/debate/deb-voice-engine.js
-   MESIN SUARA DEBAT — antrean ucapan, profil suara per-agen,
-   pemecahan kalimat & jeda alami (lihat KESEMPATAN_OS_REORG_NOTES.md
-   ronde ke-9 untuk detail perbaikan bug suara).
-   ============================================================ */
+
 import { DEB_CONFIG } from './deb-config.js';
 import { DEB_State } from './deb-state.js';
-// Impor sirkular yang disengaja: deb-classes.js sendiri mengimpor
-// DEB_speakText/DEB_stopAllSpeech dari file ini. Aman karena kedua sisi
-// hanya memakai bindingnya di DALAM function/method body (dipanggil
-// belakangan saat runtime, setelah user memulai debat), bukan di
-// top-level module saat evaluasi.
+
+
+
+
+
 import { DEB_SecurityManager } from './deb-classes.js';
 
-    // ============================================================
-    // MESIN SUARA DEBAT — diperbaiki total.
-    // Masalah lama: setiap panggilan DEB_speakText() langsung
-    // window.speechSynthesis.cancel() tanpa menunggu ucapan
-    // sebelumnya selesai → kalimat lawan bicara terpotong di
-    // tengah kata. Ditambah teks dipotong paksa .substring(0,500)
-    // SEBELUM sampai sini, dan satu suara/pitch/rate yang sama
-    // dipakai untuk kedua agen → terdengar datar & identik.
-    //
-    // Perbaikan:
-    // 1. Antrean (queue) — ucapan baru menunggu ucapan sebelumnya
-    //    benar-benar selesai, tidak saling memotong.
-    // 2. Setiap agen dapat "profil suara" sendiri (pitch/rate/
-    //    pilihan voice Indonesia yang berbeda kalau tersedia lebih
-    //    dari satu) — konsisten per agen berdasarkan nama, supaya
-    //    Agen A selalu terdengar beda dari Agen B sepanjang debat.
-    // 3. Teks dipecah per kalimat & diberi jeda alami antar kalimat
-    //    (bukan satu blok panjang datar), dan TIDAK dipotong paksa —
-    //    argumen lengkap sampai selesai.
-    // ============================================================
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     export function DEB_hashAgentKey(key) {
         let hash = 0;
         const str = String(key || '');
@@ -43,10 +38,10 @@ import { DEB_SecurityManager } from './deb-classes.js';
     }
 
     export function DEB_getVoiceProfile(agentKey) {
-        // Dua profil kontras: satu lebih rendah & tenang, satu lebih
-        // tinggi & cepat — supaya dua agen yang bicara bergantian
-        // benar-benar terasa seperti dua orang berbeda, bukan gema
-        // dari suara yang sama.
+        
+        
+        
+        
         const PROFILES = [
             { pitch: 0.82, rate: 0.93, voiceIndex: 0 },
             { pitch: 1.22, rate: 1.05, voiceIndex: 1 }
@@ -98,7 +93,7 @@ import { DEB_SecurityManager } from './deb-classes.js';
                 }
                 utterance.onend = function() {
                     i++;
-                    setTimeout(speakNext, 130); // jeda alami antar kalimat
+                    setTimeout(speakNext, 130); 
                 };
                 utterance.onerror = function() {
                     i++;
@@ -114,27 +109,27 @@ import { DEB_SecurityManager } from './deb-classes.js';
         if (!DEB_State.speechEnabled || !text || text.length === 0) {
             return Promise.resolve();
         }
-        // FIX (laporan user: kata "asterisk asterisk" terdengar diucapkan
-        // mesin TTS saat debat berjalan) — sebelumnya cleanText di sini
-        // cuma buang tag HTML+&nbsp;, TIDAK membuang sintaks markdown
-        // (**tebal**, *miring*, dst) yang sering muncul di argumen AI.
-        // Browser membacakan tanda "*" secara harfiah sebagai kata
-        // "asterisk" — makin sering AI menebalkan kata, makin sering
-        // kedengaran berulang. addMessage()/showResult() di debate-arena.js
-        // SUDAH benar pakai DEB_SecurityManager.stripMarkdown() utk
-        // TAMPILAN teks, tapi jalur SUARA ini terlewat. Dibersihkan di
-        // sini juga, pakai fungsi yang SAMA PERSIS (satu sumber kebenaran,
-        // bukan regex duplikat) — classes.js (yang mendefinisikan
-        // DEB_SecurityManager) sudah pasti termuat duluan di titik INI
-        // dipanggil (baru jalan saat user klik "Mulai Debat", jauh
-        // setelah seluruh rantai modul selesai dimuat).
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
         const stripped = DEB_SecurityManager.stripMarkdown(text);
         const cleanText = stripped.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ').trim();
         if (!cleanText) {
             return Promise.resolve();
         }
         const profile = DEB_getVoiceProfile(agentKey);
-        // Antre di belakang ucapan sebelumnya — tidak lagi memotongnya.
+        
         DEB_State.speechQueue = DEB_State.speechQueue.then(function() {
             return DEB_speakUtteranceChain(cleanText, profile);
         }).catch(function() {
@@ -149,4 +144,4 @@ import { DEB_SecurityManager } from './deb-classes.js';
             window.speechSynthesis.cancel();
         }
     }
-    // ============================================================
+    

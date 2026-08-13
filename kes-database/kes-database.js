@@ -1,7 +1,7 @@
-// Static imports (in dependency order) replace the old runtime
-// document.createElement('script') loader: the ES module graph itself now
-// guarantees kes-dbconfig.js -> kes-helpers.js -> ... -> kes-api-playground.js
-// finish evaluating, in this order, before any code below runs.
+
+
+
+
 import './kes-dbconfig.js';
 import './kes-helpers.js';
 import './kes-security.js';
@@ -74,9 +74,9 @@ function createFallbackDatabase() {
     };
 }
 
-// ============================================================
-// DATABASE READY HANDLER
-// ============================================================
+
+
+
 function handleDatabaseReady(dbInstance) {
     const safeDb = dbInstance || createFallbackDatabase();
 
@@ -97,9 +97,9 @@ function handleDatabaseReady(dbInstance) {
     Logger.info('DatabaseEntry', 'Database instance exposed');
 }
 
-// ============================================================
-// DATABASE ERROR HANDLER
-// ============================================================
+
+
+
 function handleBootstrapError(error) {
     Logger.error('DatabaseEntry', 'Database bootstrap failed: ' + error.message);
 

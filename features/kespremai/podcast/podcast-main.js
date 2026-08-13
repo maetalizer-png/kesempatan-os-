@@ -8,9 +8,9 @@ KESEMPATAN.PodcastMain = {};
 
 const state = core.state;
 
-// ============================================================
-// 🔥 STATUS INTEGRASI EKSTERNAL
-// ============================================================
+
+
+
 let externalReady = {
     memory: false,
     database: false,
@@ -38,11 +38,11 @@ function updateExternalStatus() {
     externalReady.world = checkWorldReady();
 }
 
-// ============================================================
-// 🔥 LISTENER DARI EXTERNAL MODULES
-// ============================================================
 
-// Memory.js ready
+
+
+
+
 document.addEventListener('memory-ready', function() {
     externalReady.memory = true;
     if (window.VectorMemoryV5 && KESEMPATAN.Podcast && KESEMPATAN.Podcast.state) {
@@ -53,7 +53,7 @@ document.addEventListener('memory-ready', function() {
     }
 });
 
-// KES Database ready
+
 document.addEventListener('database-ready', function(event) {
     externalReady.database = true;
     const db = event.detail || window.KESDatabase || window.db || window.Database;
@@ -65,7 +65,7 @@ document.addEventListener('database-ready', function(event) {
     }
 });
 
-// World.js ready
+
 document.addEventListener('world-ready', function() {
     externalReady.world = true;
     if (KESEMPATAN.Podcast.uiRenderer && KESEMPATAN.Podcast.uiRenderer.showToast) {
@@ -73,13 +73,13 @@ document.addEventListener('world-ready', function() {
     }
 });
 
-// ============================================================
-// 🔥 CEK LANGSUNG (jika sudah terload sebelum listener dipasang)
-// ============================================================
+
+
+
 (function checkExternalReady() {
     updateExternalStatus();
     
-    // Cek Memory
+    
     if (window.VectorMemoryV5 && !externalReady.memory) {
         externalReady.memory = true;
         if (KESEMPATAN.Podcast && KESEMPATAN.Podcast.state) {
@@ -87,7 +87,7 @@ document.addEventListener('world-ready', function() {
         }
     }
     
-    // Cek Database
+    
     const db = window.KESDatabase || window.db || window.Database;
     if (db && !externalReady.database) {
         externalReady.database = true;
@@ -96,15 +96,15 @@ document.addEventListener('world-ready', function() {
         }
     }
     
-    // Cek World
+    
     if (window.__STATIC_DATA && window.__STATIC_DATA.length > 0 && !externalReady.world) {
         externalReady.world = true;
     }
 })();
 
-// ============================================================
-// 🔥 INIT
-// ============================================================
+
+
+
 function init() {
     try {
         core.loadHistory();
@@ -119,7 +119,7 @@ function init() {
             ui.render();
         }
         
-        // 🔥 Update status integrasi di UI
+        
         if (KESEMPATAN.Podcast.uiRenderer && KESEMPATAN.Podcast.uiRenderer.showToast) {
             const status = PodcastGenerator.getIntegrationStatus();
             const ready = [];
@@ -135,7 +135,7 @@ function init() {
             Notification.requestPermission();
         }
         
-        // 🔥 Auto-generate jika ada data di dashboard
+        
         if (window.lastAggregated && ui.updateScript) {
             setTimeout(function() {
                 ui.updateScript();
@@ -150,12 +150,12 @@ function init() {
     }
 }
 
-// ============================================================
-// 🆕 TAHAP 2.1 — VOICE LIBRARY WORKFLOW (Filter/Search/Favorite)
-// Murni DOM manipulation, tanpa render() ulang, tanpa menyentuh
-// ui-handlers.js. Dipanggil lewat onclick/oninput di HTML (pola yang
-// sama seperti applyTheme), konsisten dengan konvensi yang sudah ada.
-// ============================================================
+
+
+
+
+
+
 function applyVoiceLibraryFilters() {
     const container = document.getElementById('voiceLibraryList');
     if (!container) return;
@@ -219,35 +219,35 @@ export const PodcastGenerator = {
     init: init,
     render: ui.render || function() {},
     
-    // ===== CONTROL =====
+    
     play: ui.togglePlay || function() {},
     stop: ui.stopPodcast || function() {},
     generate: ui.updateScript || function() {},
     export: ui.exportAudio || function() {},
     
-    // ===== THEME & EMOTION =====
+    
     applyTheme: ui.applyTheme || function() {},
     setEmotion: ui.setEmotion || function() {},
     applyVoice: ui.applyVoice || function() {},
 
-    // ===== 🆕 VOICE LIBRARY WORKFLOW (Tahap 2.1) =====
+    
     filterVoiceBooth: filterVoiceBooth,
     searchVoiceBooth: searchVoiceBooth,
     toggleFavoriteVoice: toggleFavoriteVoice,
     
-    // ===== NAVIGATION =====
+    
     skipTime: ui.skipTime || function() {},
     setSpeed: ui.setSpeed || function() {},
     togglePlayerMode: ui.togglePlayerMode || function() {},
     
-    // ===== BOOKMARKS =====
+    
     addBookmark: ui.addBookmark || function() {},
     jumpToBookmark: ui.jumpToBookmark || function() {},
     
-    // ===== HISTORY =====
+    
     loadHistoryItem: ui.loadHistoryItem || function() {},
     
-    // ===== OTHER =====
+    
     jumpToChapter: ui.jumpToChapter || function() {},
     generatePodcastText: ui.generatePodcastText || function() {},
     previewVoice: ui.previewVoice || function() {},
@@ -257,7 +257,7 @@ export const PodcastGenerator = {
     downloadScript: ui.downloadScript || function() {},
     sharePodcast: ui.sharePodcast || function() {},
     
-    // ===== INTERNAL (ADVANCED) =====
+    
     realMP3Exporter: core.exporter,
     realLiveStreamer: core.live,
     realCollaborative: core.collab,
@@ -266,9 +266,9 @@ export const PodcastGenerator = {
     trackAnalytics: core.trackAnalytics || function() {},
     cleanupEventListeners: ui.cleanupEventListeners || function() {},
     
-    // ============================================================
-    // 🔥🔥🔥 STATUS INTEGRASI EKSTERNAL 🔥🔥🔥
-    // ============================================================
+    
+    
+    
     
     isMemoryReady: function() {
         return checkMemoryReady();
@@ -296,9 +296,9 @@ export const PodcastGenerator = {
         };
     },
     
-    // ============================================================
-    // 🔥🔥🔥 AKSES DATA LANGSUNG 🔥🔥🔥
-    // ============================================================
+    
+    
+    
     
     getStaticData: function() {
         return core.getStaticData ? core.getStaticData() : [];
@@ -312,9 +312,9 @@ export const PodcastGenerator = {
         return core.getDatabaseInstance ? core.getDatabaseInstance() : null;
     },
     
-    // ============================================================
-    // 🔥🔥🔥 FETCH DATA DARI EXTERNAL SOURCES 🔥🔥🔥
-    // ============================================================
+    
+    
+    
     
     fetchStaticData: function(topic) {
         return core.fetchStaticData ? core.fetchStaticData(topic) : [];
@@ -328,17 +328,17 @@ export const PodcastGenerator = {
         return core.fetchFromDatabase ? core.fetchFromDatabase(topic, limit) : Promise.resolve([]);
     },
     
-    // ============================================================
-    // 🔥🔥🔥 SIMPAN KE EXTERNAL SOURCES 🔥🔥🔥
-    // ============================================================
+    
+    
+    
     
     savePodcast: function(data) {
         return core.savePodcastToMemory ? core.savePodcastToMemory(data) : Promise.resolve();
     },
     
-    // ============================================================
-    // 🔥🔥🔥 GET ALL CONTEXT UNTUK PODCAST 🔥🔥🔥
-    // ============================================================
+    
+    
+    
     
     getAllContext: async function(topic) {
         const [staticData, memoryData, dbData] = await Promise.all([
@@ -361,9 +361,9 @@ export const PodcastGenerator = {
         };
     },
     
-    // ============================================================
-    // 🔥🔥🔥 GENERATE PODCAST DENGAN SEMUA KONTEKS 🔥🔥🔥
-    // ============================================================
+    
+    
+    
     
     generateWithContext: async function(topic) {
         const context = await this.getAllContext(topic);
@@ -371,7 +371,7 @@ export const PodcastGenerator = {
         const memoryData = context.memory;
         const dbData = context.database;
         
-        // Bangun prompt dengan semua data
+        
         let prompt = 'Buat podcast profesional tentang "' + topic + '" untuk pengusaha dan pebisnis. ';
         prompt += 'Gaya: informatif, inspiratif, dan mudah dipahami. ';
         prompt += 'Struktur: Pembukaan menarik → Analisis utama → Tips praktis → Penutup. ';
@@ -407,10 +407,10 @@ export const PodcastGenerator = {
         
         prompt += '📝 BUAT PODCAST DENGAN KONTEN DI ATAS!';
         
-        // Generate dengan AI
+        
         const text = core.ai.generateText(prompt, 800, 0.7);
         
-        // 🔥 Simpan hasil ke Memory & Database
+        
         await this.savePodcast({
             topic: topic,
             script: text,

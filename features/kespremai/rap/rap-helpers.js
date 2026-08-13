@@ -1,7 +1,4 @@
-/* ============================================================
-   📁 rap/helpers.js
-   🔥 HELPER FUNCTIONS
-   ============================================================ */
+
 
 const KESEMPATAN = window.KESEMPATAN || {};
 window.KESEMPATAN = KESEMPATAN;

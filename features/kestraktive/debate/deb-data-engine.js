@@ -1,8 +1,4 @@
-/* ============================================================
-   interactive/debate/deb-data-engine.js
-   OTAK DEBAT — cache, smart search, integrasi World/Memory/
-   Database, simpan hasil debat ke memory.
-   ============================================================ */
+
 import { DEB_CONFIG } from './deb-config.js';
 import { DEB_State } from './deb-state.js';
 
@@ -41,9 +37,9 @@ import { DEB_State } from './deb-state.js';
         };
     }
 
-    // ============================================================
-    // 4. SMART SEARCH — 6 FAKTOR SCORING!
-    // ============================================================
+    
+    
+    
 
     export function DEB_smartSearch(query, data, threshold) {
         threshold = threshold || DEB_CONFIG.SEARCH_THRESHOLD;
@@ -60,7 +56,7 @@ import { DEB_State } from './deb-state.js';
             let score = 0;
             let matchCount = 0;
 
-            // FAKTOR 1: Keyword match (weighted)
+            
             for (const kw of keywords) {
                 if (text.includes(kw)) {
                     matchCount++;
@@ -68,7 +64,7 @@ import { DEB_State } from './deb-state.js';
                 }
             }
 
-            // FAKTOR 2: Semantic similarity
+            
             if (item.embedding) {
                 const queryEmbedding = window.KESEMPATAN?.Memory?.MemoryUtils?.simpleEmbed ?
                     window.KESEMPATAN.Memory.MemoryUtils.simpleEmbed(query) : null;
@@ -78,7 +74,7 @@ import { DEB_State } from './deb-state.js';
                 }
             }
 
-            // FAKTOR 3: Metadata boost
+            
             if (item.metadata) {
                 if (item.metadata.type === 'country' || item.metadata.type === 'language') {
                     score += 5;
@@ -94,7 +90,7 @@ import { DEB_State } from './deb-state.js';
                 }
             }
 
-            // FAKTOR 4: Recency boost
+            
             if (item.timestamp) {
                 const age = Date.now() - item.timestamp;
                 const days = age / (1000 * 60 * 60 * 24);
@@ -107,7 +103,7 @@ import { DEB_State } from './deb-state.js';
                 }
             }
 
-            // FAKTOR 5: Length boost
+            
             if (text.length > 100) {
                 score += 2;
             }
@@ -115,7 +111,7 @@ import { DEB_State } from './deb-state.js';
                 score += 3;
             }
 
-            // FAKTOR 6: Keyword density
+            
             const wordCount = text.split(' ').length || 1;
             const density = matchCount / wordCount;
             score += density * 10;
@@ -139,9 +135,9 @@ import { DEB_State } from './deb-state.js';
         return filtered.slice(0, DEB_CONFIG.MAX_RESULTS);
     }
 
-    // ============================================================
-    // 5. SIMILARITY CALCULATOR
-    // ============================================================
+    
+    
+    
     export function DEB_calculateSimilarity(vec1, vec2) {
         if (!vec1 || !vec2) {
             return 0;
@@ -161,9 +157,9 @@ import { DEB_State } from './deb-state.js';
         return dot / (Math.sqrt(norm1) * Math.sqrt(norm2));
     }
 
-    // ============================================================
-    // 6. FUNGSI INTEGRASI EKSTERNAL
-    // ============================================================
+    
+    
+    
 
     export function DEB_getMemoryInstance() {
         return window.KESEMPATAN?.VectorMemory || window.VectorMemory || window.VectorMemoryV5 || null;
@@ -177,7 +173,7 @@ import { DEB_State } from './deb-state.js';
         return window.KESDatabase || window.getDatabaseV10 || null;
     }
 
-    // DARI WORLD.JS (STATIS) — PAKAI SMART SEARCH
+    
     export function DEB_fetchStaticData(topic) {
         const staticData = DEB_getStaticData();
         if (staticData.length === 0) {
@@ -193,7 +189,7 @@ import { DEB_State } from './deb-state.js';
         return results;
     }
 
-    // DARI VECTOR MEMORY (DINAMIS)
+    
     export async function DEB_fetchFromVectorMemory(topic, topK) {
         const memory = DEB_getMemoryInstance();
         if (!memory || typeof memory.search !== 'function') {
@@ -218,7 +214,7 @@ import { DEB_State } from './deb-state.js';
         }
     }
 
-    // DARI KES DATABASE
+    
     export async function DEB_fetchFromDatabase(topic, limit) {
         const db = DEB_getDatabaseInstance();
         if (!db) {
@@ -226,12 +222,12 @@ import { DEB_State } from './deb-state.js';
         }
         const maxResults = limit || DEB_CONFIG.DB_LIMIT;
 
-        // KESDatabase (kes-database.js) mengekspos API generik: query/get/
-        // find/add/insert/save — bukan queryParser.parseAndExecute atau
-        // executeQuery (API itu tidak pernah ada di implementasi sungguhan,
-        // jadi lapisan Database selama ini selalu kosong). database/search.js
-        // kemungkinan menambah method .search() — dicoba lebih dulu, lalu
-        // fallback ke find/query yang memang ada di instance KESDatabase.
+        
+        
+        
+        
+        
+        
         const attempts = [
             function() { return db.search ? db.search(topic, { limit: maxResults }) : null; },
             function() { return db.find ? db.find({ text: topic, limit: maxResults }) : null; },
@@ -251,13 +247,13 @@ import { DEB_State } from './deb-state.js';
                     return result.slice(0, maxResults);
                 }
             } catch (_) {
-                // Coba strategi API berikutnya
+                
             }
         }
         return [];
     }
 
-    // GABUNGKAN SEMUA DARI 3 SUMBER — DENGAN CACHE & PARALLEL!
+    
     export async function DEB_getAllContext(topic, options) {
         options = options || {};
         const cacheKey = topic + '|' + JSON.stringify(options);
@@ -284,7 +280,7 @@ import { DEB_State } from './deb-state.js';
         const combined = [];
         const seenIds = new Set();
 
-        // PRIORITAS 1: STATIC DATA (World)
+        
         for (const item of staticData) {
             const id = item.id || item.text?.substring(0, 50);
             if (!seenIds.has(id)) {
@@ -293,7 +289,7 @@ import { DEB_State } from './deb-state.js';
             }
         }
 
-        // PRIORITAS 2: MEMORY DATA
+        
         for (const item of memoryData) {
             const id = item.id || item.text?.substring(0, 50);
             if (!seenIds.has(id)) {
@@ -302,7 +298,7 @@ import { DEB_State } from './deb-state.js';
             }
         }
 
-        // PRIORITAS 3: DATABASE
+        
         for (const item of dbData) {
             const id = item.id || item.text?.substring(0, 50);
             if (!seenIds.has(id)) {
@@ -311,7 +307,7 @@ import { DEB_State } from './deb-state.js';
             }
         }
 
-        // SORT BY PRIORITY + SCORE
+        
         combined.sort(function(a, b) {
             if (a._priority !== b._priority) {
                 return a._priority - b._priority;
@@ -319,7 +315,7 @@ import { DEB_State } from './deb-state.js';
             return (b._score || 0) - (a._score || 0);
         });
 
-        // BARU: OBSERVATION ENGINE + NOISE FILTERING
+        
         let obsContext = { marketInsight: '', credibilityNote: '' };
         try {
             if (window.KESEMPATAN?.Observation && typeof window.KESEMPATAN?.Observation.getSignals === 'function' && typeof window.KESEMPATAN?.Observation.generateAIInsight === 'function') {

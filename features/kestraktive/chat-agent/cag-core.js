@@ -1,8 +1,4 @@
-/* ============================================================
-   interactive/chat-agent/cag-core.js
-   INTI CHAT AGENT — kirim pesan, render panel, init, ekspor
-   window.ChatModule. Dimuat PALING TERAKHIR.
-   ============================================================ */
+
 import { CAG_CONFIG, CAG_PROMPT_SAPAN } from './cag-config.js';
 import { CAG_State } from './cag-state.js';
 import {
@@ -15,11 +11,11 @@ import {
     CAG_speakText, CAG_streamTextToElement
 } from './cag-ui-render.js';
 
-// Jalur eksekusi tugas otonom (spec 18: entry point AI Agent lewat chat,
-// bukan halaman baru) — dipicu HANYA saat #chatAgentAutoModeToggle
-// dicentang user, jadi jalur tanya-jawab satu putaran yang sudah ada di
-// CAG_sendChatToAgent() di bawah tetap berjalan persis seperti sebelumnya
-// saat toggle mati (default).
+
+
+
+
+
 async function CAG_runAutonomousAgentTask(message, container, displayName) {
     const runtime = window.KESEMPATAN && window.KESEMPATAN.AIAgent;
     if (!runtime || typeof runtime.runAgentTask !== 'function') {
@@ -54,7 +50,7 @@ async function CAG_runAutonomousAgentTask(message, container, displayName) {
 }
 
 async function CAG_sendChatToAgent() {
-        // FIX: penjaga anti-panggil-ganda yang sama seperti sendChatToAI().
+        
         if (CAG_State.isSendingToAgent) {
             return;
         }
@@ -133,13 +129,13 @@ async function CAG_sendChatToAgent() {
             let prompt = CAG_PROMPT_SAPAN;
 
             if (agentSystemPrompt) {
-                // FIX KUALITAS: sebelumnya cuma pakai roleDesc (1 kalimat
-                // singkat, mis. "Senior Business Strategist"). Sekarang
-                // inject PROFIL KEAHLIAN LENGKAP dari prompts/*.json (sama
-                // yg dipakai Dashboard) — instruksi analisis, gaya
-                // berpikir, dan disiplin per-agen ikut terpakai di sini.
-                // Instruksi format JSON di ujung prompt asli DIABAIKAN
-                // (chat butuh jawaban natural, bukan laporan terstruktur).
+                
+                
+                
+                
+                
+                
+                
                 prompt += '\nPROFIL & KEAHLIAN ANDA (' + displayName + '):\n' + agentSystemPrompt + '\n';
                 prompt += '\nCATATAN: instruksi "Output dalam format JSON" di atas TIDAK berlaku di percakapan ini — jawab dengan bahasa natural percakapan biasa, TAPI tetap terapkan cara berpikir, ketajaman analisis, dan disiplin dari profil di atas.\n';
             }
@@ -203,8 +199,8 @@ function CAG_renderChatAgentPanel() {
         container.innerHTML = "<select id=\"chatAgentSelect\" style=\"width:100%; margin-bottom:12px;\"></select><div id=\"chatAgentMessages\" class=\"chat-messages\" style=\"height:300px; background:rgba(0,0,0,0.3); border-radius:16px; padding:12px; overflow-y:auto;\"></div><label style=\"display:flex; align-items:center; gap:8px; margin-top:10px; font-size:13px; color:#A0B3C9; cursor:pointer;\"><input type=\"checkbox\" id=\"chatAgentAutoModeToggle\"> Mode Agent Otonom (rencana &amp; eksekusi multi-langkah otomatis, pakai kapabilitas AI Agent)</label><div style=\"display:flex; gap:10px; margin-top:12px;\"><input type=\"text\" id=\"chatAgentInput\" placeholder=\"Ketik pesan untuk agen...\" style=\"flex:1;\"><button id=\"chatAgentSendBtn\" class=\"execute-btn secondary\">Kirim</button></div>";
         CAG_populateAgentSelect(document.getElementById('chatAgentSelect'));
 
-        // Roster agen dashboard bisa selesai dirender SETELAH panel ini
-        // pertama kali tampil. Coba isi ulang beberapa kali di awal.
+        
+        
         [500, 1500, 3000].forEach(function(delay) {
             setTimeout(function() {
                 const sel = document.getElementById('chatAgentSelect');

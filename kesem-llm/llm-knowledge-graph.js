@@ -1,16 +1,16 @@
 const Logger = window.Utils?.Logger || {
-    info: function () { /* silent */ },
-    warn: function () { /* silent */ },
+    info: function () {  },
+    warn: function () {  },
     error: function (mod, msg) { console.error('[ERROR] [' + mod + '] ' + msg); }
 };
 
-// ============================================================
-// GRAPH DASAR
-// ============================================================
+
+
+
 function createGraph() {
     return {
-        nodes: new Map(),  // id -> { id, type, label, meta }
-        edges: []          // { from, to, relation, weight }
+        nodes: new Map(),  
+        edges: []          
     };
 }
 
@@ -18,7 +18,7 @@ function addNode(graph, id, type, label, meta) {
     if (!graph.nodes.has(id)) {
         graph.nodes.set(id, { id: id, type: type, label: label, meta: meta || {} });
     } else {
-        // Node sudah ada — perbarui label/meta tapi jangan bikin duplikat
+        
         const existing = graph.nodes.get(id);
         existing.label = label || existing.label;
         existing.meta = Object.assign({}, existing.meta, meta || {});
@@ -42,8 +42,8 @@ function getNeighbors(graph, id) {
         });
 }
 
-// BFS terbatas kedalaman — dipakai buat ambil "sekitar" 1 topik/agent
-// tanpa menelusuri seluruh graph (bisa besar seiring waktu).
+
+
 function getSubgraph(graph, startId, depth) {
     depth = Number.isInteger(depth) ? depth : 1;
     const visited = new Set([startId]);
@@ -67,9 +67,9 @@ function getSubgraph(graph, startId, depth) {
     return { nodes: subNodes, edges: subEdges };
 }
 
-// ============================================================
-// RINGKASAN TEKS (dipakai llm-context-builder.js buat masuk ke prompt)
-// ============================================================
+
+
+
 function toSummaryText(graph, startId, depth) {
     const sub = getSubgraph(graph, startId, depth || 1);
     if (sub.edges.length === 0) {
@@ -87,10 +87,10 @@ function getStats(graph) {
     return { nodeCount: graph.nodes.size, edgeCount: graph.edges.length };
 }
 
-// ============================================================
-// SERIALISASI (Map tidak JSON-safe langsung — sama seperti
-// vocabulary di llm-checkpoint.js)
-// ============================================================
+
+
+
+
 function serializeGraph(graph) {
     return {
         nodes: Array.from(graph.nodes.entries()),

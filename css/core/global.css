@@ -1,23 +1,6 @@
-/* ============================================================
-FILE    : css/core/global.css
-KEGUNAAN: Komponen UI global — heatmap, history, signal, 3D viz
-          (BENTUK A rim tersambung + judul tengah), kolaborasi,
-          notifikasi (+ napas + tombol TEST Bentuk B), voice,
-          editor misc, badge, cache stats (+ napas), fieldset,
-          napas + inner laporan. Dimuat SETELAH style.css.
-============================================================ */
-/* ============================================================
-CHAT STYLES
-Sudah dipindah: styling chat AI/Agen/Forum sekarang sepenuhnya
-dikelola masing-masing modul (interactive/chat-ai.js, chat-agent.js,
-forum.js — tiap file menyuntik <style id="chat-complete-style">
-sendiri dengan kelas ber-akhiran "-modern"). Blok lama di sini
-memakai nama kelas TANPA "-modern" yang sudah tidak pernah dipakai
-kode manapun — CSS mati, dihapus.
-============================================================ */
-/* ============================================================
-HEATMAP
-============================================================ */
+
+
+
 .heatmap-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
@@ -48,9 +31,7 @@ HEATMAP
     font-size: 9px;
     margin-left: 4px;
 }
-/* ============================================================
-HISTORY PANEL
-============================================================ */
+
 #historyPanel {
     background: rgba(12, 18, 32, 0.85);
     backdrop-filter: blur(12px);
@@ -84,9 +65,7 @@ HISTORY PANEL
 }
 .history-item-score { color: var(--primary); font-weight: bold; }
 .history-item-date { font-family: monospace; }
-/* ============================================================
-SIGNAL & FILTER
-============================================================ */
+
 .signal-item {
     background: var(--primary-tint-05);
     border-radius: 14px;
@@ -116,10 +95,7 @@ SIGNAL & FILTER
     letter-spacing: -0.5px;
     color: var(--primary);
 }
-/* ============================================================
-3D VISUALIZATION (BENTUK A — rim chamfer tersambung penuh,
-glow hanya saat hover; judul di TENGAH, toggle tetap kanan)
-============================================================ */
+
 .viz-3d-container {
     position: relative;
     isolation: isolate;
@@ -128,7 +104,7 @@ glow hanya saat hover; judul di TENGAH, toggle tetap kanan)
     border: 0;
     border-radius: 0;
     background: rgba(26, 255, 156, .3);
-    padding: 1px; /* konten mundur 1px supaya rim kiri-kanan kelihatan */
+    padding: 1px; 
     overflow: hidden;
     transition: background .25s ease, filter .3s ease;
 }
@@ -193,9 +169,7 @@ glow hanya saat hover; judul di TENGAH, toggle tetap kanan)
     height: 380px !important;
     display: block;
 }
-/* ============================================================
-COLLABORATION
-============================================================ */
+
 .collab-section {
     margin-top: 16px;
     border-top: 1px solid var(--primary-tint-20);
@@ -225,9 +199,7 @@ COLLABORATION
 .chat-input { display: flex; gap: 8px; }
 .chat-input input { flex: 1; margin-bottom: 0; }
 .chat-input button { width: auto; padding: 8px 12px; }
-/* ============================================================
-NOTIFICATION (napas 12px kiri-kanan, sejajar panel lain)
-============================================================ */
+
 .notif-section {
     display: flex;
     align-items: center;
@@ -253,9 +225,7 @@ NOTIFICATION (napas 12px kiri-kanan, sejajar panel lain)
 .notif-section .execute-btn.secondary {
     width: auto;
 }
-/* ============================================================
-VOICE INPUT
-============================================================ */
+
 #voiceInputBtn, #stopVoiceBtn {
     font-weight: bold !important;
     transition: var(--transition);
@@ -263,9 +233,7 @@ VOICE INPUT
 #voiceInputBtn:hover, #stopVoiceBtn:hover {
     transform: scale(1.02);
 }
-/* ============================================================
-EDITOR MISC
-============================================================ */
+
 .editor-container {
     display: flex;
     flex-direction: column;
@@ -315,9 +283,7 @@ EDITOR MISC
     height: 4px;
     border-radius: 2px;
 }
-/* ============================================================
-FILTER BADGE, CAMERA, BADGES
-============================================================ */
+
 .filter-badge {
     background: var(--primary-tint-10);
     border-radius: 20px;
@@ -359,16 +325,8 @@ FILTER BADGE, CAMERA, BADGES
     margin-left: 6px;
     font-weight: bold;
 }
-/* ============================================================
-WORKFLOW BADGE
-Sudah dipindah ke js/workflow.js (disuntik lewat
-renderWorkflowModeSelector(), konsisten dengan pola "self
-contained" — index.html & global.css tidak lagi menyimpan
-apa pun yang berkaitan dengan workflow).
-============================================================ */
-/* ============================================================
-CACHE STATS (napas 12px kiri-kanan, sejajar panel lain)
-============================================================ */
+
+
 .cache-stats {
     font-size: 10px;
     color: var(--primary);
@@ -383,9 +341,7 @@ CACHE STATS (napas 12px kiri-kanan, sejajar panel lain)
     width: auto !important;
     margin: 8px 12px 0 !important;
 }
-/* ============================================================
-FIELDSET & LEGEND
-============================================================ */
+
 fieldset {
     border: none !important;
     padding: 24px 0 10px 0 !important;
@@ -402,19 +358,13 @@ legend {
     float: none !important;
     display: inline-block !important;
 }
-/* ============================================================
-NAPAS PANEL LAPORAN — sejajar 12px dengan panel lain
-============================================================ */
+
 #reportPanelContainer {
     box-sizing: border-box !important;
     padding-left: 12px !important;
     padding-right: 12px !important;
 }
-/* ============================================================
-LAPORAN INTELIJEN — inner transparan (bingkai chamfer kini dari
-.chart-container di charts.css, jadi di sini tidak boleh ada
-border ganda)
-============================================================ */
+
 #reportContainer {
     border: 0;
     border-radius: 0;
@@ -422,11 +372,7 @@ border ganda)
     padding: 0;
     text-align: left;
 }
-/* ============================================================
-TOMBOL TEST (notifikasi) = BENTUK B — chamfer asimetris + rim
-nyambung + shine sweep, satu keluarga dengan tombol eksekusi,
-tab kategori, dan Select All/Deselect
-============================================================ */
+
 .notif-section .execute-btn.secondary {
     position: relative;
     isolation: isolate;
@@ -469,17 +415,7 @@ tab kategori, dan Select All/Deselect
 .notif-section .execute-btn.secondary:hover::after { transform: translateX(260%); }
 .notif-section .execute-btn.secondary:active { transform: scale(.97); }
 
-/* ============================================================
-   SKELETON LOADING — dipakai pada container dashboard yang
-   dipopulasi JS async (contenDasboard, workflow-mode,
-   agent-control/pool, dst). Tanpa ini, container kosong tampak
-   seperti celah kosong/patah di layout selama JS-nya belum sempat
-   render — terutama di device/koneksi lambat.
-   Sengaja pakai selector :empty, BUKAN dilepas manual oleh tiap
-   modul: begitu renderUI() mengisi container.innerHTML, container
-   otomatis punya child element dan :empty berhenti match — shimmer
-   hilang sendiri tanpa perlu menyentuh 4 file render terpisah.
-   ============================================================ */
+
 .skeleton-loading:empty {
     min-height: 64px;
     display: block;

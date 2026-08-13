@@ -15,7 +15,7 @@ function sanitizeHtml(text) {
     return div.innerHTML;
 }
 
-// ===== PERBAIKAN: toast cleanup =====
+
 function showToast(msg, type) {
     const existingToasts = document.querySelectorAll('.toast, .toast-custom');
     existingToasts.forEach(function(el) { el.remove(); });
@@ -56,7 +56,7 @@ function cleanupEventListeners() {
     eventListeners.length = 0;
 }
 
-// ========== SINKRONISASI INPUT TOPIK ==========
+
 function syncTopicInput() {
     const podcastInput = document.getElementById('podcastTopicInput');
     const dashboardInput = document.getElementById('topicInput');
@@ -70,7 +70,7 @@ function syncTopicInput() {
     }
 }
 
-// ========== RENDER PREVIEW ==========
+
 function renderPreview() {
     const previewDiv = document.getElementById('superPreview');
     if (!previewDiv) return;
@@ -139,11 +139,11 @@ function renderPreview() {
     }
 }
 
-// ========== PODCAST ROOM: SPEAKER AKTIF ==========
-// Dipanggil oleh ui-player.js saat setiap baris dialog mulai/selesai
-// diucapkan. Sengaja memanipulasi DOM langsung (bukan render() ulang)
-// supaya animasi kursi/caption mulus dan tidak memutus audio yang
-// sedang berjalan.
+
+
+
+
+
 function setActiveSpeaker(seatKey, line) {
     const theme = THEMES[state.currentTheme] || THEMES.dark;
     const seats = document.querySelectorAll('.podcast-seat');
@@ -181,10 +181,10 @@ function setActiveSpeaker(seatKey, line) {
     }
 }
 
-// 🆕 KARAOKE LIVE CAPTIONS — highlight kata yang sedang diucapkan
-// real-time (mirip Descript/Riverside). Dipanggil oleh ui-player.js
-// lewat event `onboundary` dari SpeechSynthesisUtterance yang memberi
-// posisi karakter kata yang baru mulai diucapkan.
+
+
+
+
 let currentCaptionLine = '';
 let currentCaptionSpeaker = '';
 function highlightSpokenWord(charIndex, charLength) {
@@ -227,9 +227,9 @@ function clearActiveSpeaker() {
     }
 }
 
-// ========== RENDER UTAMA ==========
+
 let isRendering = false;
-let initialRenderDone = false; // 🔥 hanya generate otomatis sekali
+let initialRenderDone = false; 
 
 function render() {
     if (isRendering) {
@@ -253,30 +253,30 @@ function render() {
             }
         }
 
-        // 🔥 FIX: dulu setiap klik (ganti Tema, pindah tab Debat/Single/
-        // Diskusi, pilih Cast) memicu render() yang membongkar-ulang
-        // SELURUH innerHTML panel — halaman jadi ter-reflow dan posisi
-        // scroll ikut reset/lompat. Ini yang terlihat seperti panel
-        // "menutup sendiri" (Tema) atau tombol "melayang/bergerak"
-        // (tab & cast) — padahal sebenarnya scroll position yang
-        // hilang, bukan animasi yang disengaja. Simpan dulu posisi
-        // scroll SEBELUM dibongkar, pulihkan SETELAH selesai — struktur
-        // render() sendiri tidak diubah sama sekali.
+        
+        
+        
+        
+        
+        
+        
+        
+        
         const scrollContainer = container.closest('.result-container') || container;
         const savedScrollY = window.scrollY;
         const savedContainerScrollTop = scrollContainer.scrollTop;
 
-        // 🔥 FIX UTAMA: dulu di sini TIDAK ADA penyimpanan status buka/
-        // tutup panel <details> (Voice Library, Pengaturan Suara+Tema,
-        // Cast Summary, More Tools). Atribut `open` bawaan HTML itu
-        // cuma status sesaat di DOM — begitu innerHTML dibongkar total,
-        // <details> yang baru selalu lahir dalam kondisi TERTUTUP
-        // (sesuai default template), walau user baru saja membukanya.
-        // Ini penyebab SEBENARNYA dari "panel menutup sendiri" setelah
-        // pilih Tema atau pilih karakter suara — bukan soal scroll.
-        // Sekarang: cek satu-satu <details> yang lagi terbuka SEBELUM
-        // dibongkar, simpan ID-nya, lalu buka lagi persis yang sama
-        // SETELAH DOM baru terpasang.
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
         const openDetailsIds = Array.from(container.querySelectorAll('details[id]'))
             .filter(function(d) { return d.open; })
             .map(function(d) { return d.id; });
@@ -286,10 +286,10 @@ function render() {
         openDetailsIds.forEach(function(id) {
             const el = document.getElementById(id);
             if (el && el.tagName === 'DETAILS') {
-                // 🔥 FIX: tandai ini sebagai pemulihan status (bukan
-                // genuinely baru dibuka user) supaya animasi reveal
-                // tidak replay dan bikin flash — lihat CSS
-                // `.no-reveal-anim` di ui-layout.js.
+                
+                
+                
+                
                 el.classList.add('no-reveal-anim');
                 el.open = true;
             }
@@ -315,12 +315,12 @@ function render() {
             KESEMPATAN.Podcast.uiHandlers.attachEvents();
         }
 
-        // Pulihkan posisi scroll setelah DOM baru selesai dipasang —
-        // dipakai DOUBLE requestAnimationFrame (bukan cuma sekali)
-        // supaya browser benar-benar selesai menghitung ulang layout
-        // sebelum posisi dipulihkan — RAF tunggal kadang masih terlalu
-        // dini kalau ada konten yang tinggi/lebarnya berubah, sehingga
-        // masih terasa sedikit "pergerakan" sesaat.
+        
+        
+        
+        
+        
+        
         requestAnimationFrame(function() {
             requestAnimationFrame(function() {
                 window.scrollTo(0, savedScrollY);
@@ -330,18 +330,18 @@ function render() {
             });
         });
 
-        // 🔥 HANYA SEKALI: generate otomatis jika ada lastAggregated
+        
         if (!initialRenderDone) {
             initialRenderDone = true;
             if (window.lastAggregated && KESEMPATAN.Podcast.uiHandlers) {
-                // Panggil updateScript setelah render selesai, tapi hanya sekali
+                
                 setTimeout(function() {
                     KESEMPATAN.Podcast.uiHandlers.updateScript();
                 }, 500);
             }
         }
 
-        // Update gallery saja (tidak memicu generate)
+        
         setTimeout(function() {
             updateGallery();
         }, 300);
@@ -350,7 +350,7 @@ function render() {
     }
 }
 
-// ========== UPDATE FUNCTIONS ==========
+
 function updateStatus() {
     const topicInput = document.getElementById('topicInput');
     const topic = topicInput ? topicInput.value : '-';
@@ -400,7 +400,7 @@ function updateGallery() {
     let itemsHtml = '';
     for (let i = 0; i < items.length; i++) {
         const p = items[i];
-        const isActive = i === 0; // project paling baru = "aktif", sisanya redup
+        const isActive = i === 0; 
         const idx = state.podcastHistory.indexOf(p);
         itemsHtml += `<div class="desk-channel" style="cursor:pointer; ${isActive ? 'background:' + theme.primary + '0d;' : ''}" onclick="window.KESEMPATAN.PodcastGenerator.loadHistoryItem(${idx})">
             <span class="desk-indicator ${isActive ? 'on' : ''}" style="background:${isActive ? theme.primary : 'rgba(255,255,255,0.15)'};"></span>

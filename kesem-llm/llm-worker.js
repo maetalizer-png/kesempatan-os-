@@ -1,23 +1,23 @@
-// KESEMPATAN LLM Web Worker — menjalankan seluruh engine KESEMPATAN LLM
-// (25 modul) di dalam thread terpisah dari UI, lewat static import,
-// sehingga komputasi berat (forward+backward transformer, BPE merge
-// korpus besar, dst) tidak pernah membekukan thread utama.
-//
-// BATASAN YANG PERLU DIKETAHUI:
-// 1. localStorage TIDAK ADA di dalam Worker (beda dari window) — save/
-//    load checkpoint karena itu dipecah: worker cuma membangun/memulihkan
-//    OBJEK checkpoint (murni komputasi), penyimpanan ke localStorage
-//    dilakukan thread utama (lihat kesem-llm.js) lewat pesan.
-// 2. Retriever RAG (llm-retriever.js) mencari window.VectorMemory/
-//    KESDatabase/World — semua itu hidup di thread utama, TIDAK bisa
-//    diakses dari dalam worker (scope global benar-benar terpisah).
-//    Guard di retriever.js sudah aman (return array kosong, tidak
-//    throw), jadi RAG otomatis nonaktif di dalam worker untuk saat ini
-//    — perlu jembatan pesan terpisah kalau mau diaktifkan lagi.
 
-// Shim (self.window = self) di-import PALING PERTAMA — lihat
-// llm-worker-shim.js untuk kenapa ini harus jadi modul terpisah tanpa
-// dependensi, bukan pernyataan biasa di file ini.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 import './llm-worker-shim.js';
 
 import './llm-config.js';
@@ -50,14 +50,14 @@ import { KesempatanLLM } from './llm-index.js';
 
 self.postMessage({ type: 'progress', loaded: 1, total: 1 });
 
-// stopSignal BERSAMA untuk panggilan 'generate' yang sedang berjalan —
-// pesan 'stop' dari thread utama meng-aktifkannya, menghentikan loop
-// generate() SUNGGUHAN (bukan cuma berhenti ditunggu).
-// Peta stopSignal per-id request — SEBELUMNYA satu variabel dipakai
-// bersama semua request 'generate', menyebabkan sinyal timeout salah
-// sasaran kalau 2+ request diproses berdekatan (persis situasi mode
-// paralel: beberapa agen kirim 'generate' hampir bersamaan). Sekarang
-// tiap request generate dilacak dengan id-nya sendiri.
+
+
+
+
+
+
+
+
 const stopSignals = new Map();
 
 self.onmessage = async function (e) {
@@ -74,9 +74,9 @@ self.onmessage = async function (e) {
 
             case 'initialize': {
                 const model = await self.KesempatanLLM.initialize(payload);
-                // Objek model (Map, closure, dll) tidak bisa di-postMessage
-                // utuh — cukup kirim ringkasan, model asli tetap tersimpan
-                // di dalam worker (di closure llm-core.js).
+                
+                
+                
                 result = { vocabSize: model.vocab.size };
                 break;
             }
@@ -97,8 +97,8 @@ self.onmessage = async function (e) {
                 if (payload.targetId && stopSignals.has(payload.targetId)) {
                     stopSignals.get(payload.targetId).stopped = true;
                 } else if (!payload.targetId) {
-                    // Tidak ada target spesifik — hentikan semua yang sedang
-                    // jalan (fallback aman utk pemanggil lama/generik).
+                    
+                    
                     stopSignals.forEach(function (s) { s.stopped = true; });
                 }
                 result = { stopped: true };
@@ -109,9 +109,9 @@ self.onmessage = async function (e) {
                 break;
 
             case 'buildCheckpoint':
-                // Bagian PENYIMPANAN (localStorage) sengaja TIDAK di sini —
-                // lihat catatan batasan di atas. Ini cuma membangun objek
-                // checkpoint (murni komputasi); thread utama yang menyimpan.
+                
+                
+                
                 result = self.KesempatanLLM.core.buildCheckpointObject(payload.metadata);
                 break;
 

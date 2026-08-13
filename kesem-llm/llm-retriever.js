@@ -1,15 +1,15 @@
 const Logger = window.Utils?.Logger || {
-    info: function () { /* silent */ },
-    warn: function () { /* silent */ },
+    info: function () {  },
+    warn: function () {  },
     error: function (mod, msg) { console.error('[ERROR] [' + mod + '] ' + msg); }
 };
 
-// ============================================================
-// SKOR RELEVANSI — word-overlap sederhana (BUKAN semantic
-// embedding — bobot KESEMPATAN LLM belum dilatih, jadi jujur
-// pakai heuristik leksikal dulu daripada pura-pura "semantic
-// search" yang sebenarnya belum bisa diandalkan)
-// ============================================================
+
+
+
+
+
+
 function tokenizeSimple(text) {
     return String(text).toLowerCase().match(/[\p{L}\p{N}]+/gu) || [];
 }
@@ -37,11 +37,11 @@ function rankAndTrim(candidates, query, topK) {
         .slice(0, topK);
 }
 
-// ============================================================
-// SUMBER 1: VECTOR MEMORY
-// ============================================================
-// API dikonfirmasi dari memory/m-core.js + m-index.js (window.VectorMemory):
-// search(query, options) dengan options.topK — BUKAN angka mentah.
+
+
+
+
+
 async function retrieveFromVectorMemory(query, topK) {
     const VM = window.VectorMemory;
     if (!VM || typeof VM.search !== 'function') return [];
@@ -59,9 +59,9 @@ async function retrieveFromVectorMemory(query, topK) {
     }
 }
 
-// ============================================================
-// SUMBER 2: KESDATABASE
-// ============================================================
+
+
+
 async function retrieveFromDatabase(query, topK) {
     const DB = window.KESDatabase || window.db || window.Database;
     if (!DB) return [];
@@ -87,9 +87,9 @@ async function retrieveFromDatabase(query, topK) {
     }
 }
 
-// ============================================================
-// SUMBER 3: WORLD.JS __STATIC_DATA (data statis dunia)
-// ============================================================
+
+
+
 function retrieveFromWorldData(query, topK) {
     const staticData = window.__STATIC_DATA;
     if (!Array.isArray(staticData) || staticData.length === 0) return [];
@@ -103,10 +103,10 @@ function retrieveFromWorldData(query, topK) {
     return rankAndTrim(candidates, query, topK);
 }
 
-// ============================================================
-// GABUNGAN — panggil semua sumber yang tersedia PARALEL, gabung,
-// ranking ulang lintas-sumber, kembalikan topK keseluruhan.
-// ============================================================
+
+
+
+
 async function retrieveAll(query, options) {
     options = options || {};
     const topKPerSource = options.topKPerSource || 5;

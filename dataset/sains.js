@@ -1,8 +1,8 @@
-// KESEMPATAN OS - DATASET: SAINS & TEKNIK
-// Selaras dengan 14 agent di agents/agent-science.js. Lihat dataset/bisnis.js
-// untuk catatan desain lengkap folder ini.
+
+
+
 const data = [
-    // ================= MATEMATIKA =================
+    
     {
         text: 'Bilangan prima adalah fondasi kriptografi modern — algoritma seperti RSA mengandalkan kesulitan memfaktorkan bilangan besar hasil perkalian dua bilangan prima, sebuah masalah yang secara komputasi sangat berat untuk dipecahkan tanpa kunci yang tepat.',
         metadata: { category: 'dataset', domain: 'sains', agent: 'Matematika', topic: 'bilangan prima dan kriptografi', tags: ['teori bilangan', 'kriptografi'] }
@@ -16,7 +16,7 @@ const data = [
         metadata: { category: 'dataset', domain: 'sains', agent: 'Matematika', topic: 'probabilitas bersyarat', tags: ['statistik', 'probabilitas'] }
     },
 
-    // ================= BIOLOGI =================
+    
     {
         text: 'Seleksi alam bekerja pada variasi genetik yang sudah ada dalam populasi — individu dengan sifat yang lebih menguntungkan untuk bertahan dan bereproduksi di lingkungan tertentu cenderung mewariskan sifat itu lebih banyak ke generasi berikutnya.',
         metadata: { category: 'dataset', domain: 'sains', agent: 'Biologi', topic: 'seleksi alam', tags: ['evolusi', 'genetika populasi'] }
@@ -30,7 +30,7 @@ const data = [
         metadata: { category: 'dataset', domain: 'sains', agent: 'Biologi', topic: 'keanekaragaman hayati', tags: ['ekologi', 'konservasi'] }
     },
 
-    // ================= FISIKA =================
+    
     {
         text: 'Hukum kekekalan energi menyatakan energi tidak bisa diciptakan atau dimusnahkan, hanya berubah bentuk — prinsip ini menjadi dasar analisis semua sistem fisis, dari mesin sederhana hingga reaktor nuklir yang mengubah massa menjadi energi.',
         metadata: { category: 'dataset', domain: 'sains', agent: 'Fisika', topic: 'kekekalan energi', tags: ['fisika klasik', 'termodinamika'] }
@@ -44,7 +44,7 @@ const data = [
         metadata: { category: 'dataset', domain: 'sains', agent: 'Fisika', topic: 'relativitas umum', tags: ['fisika modern', 'gravitasi'] }
     },
 
-    // ================= SAINS (umum) =================
+    
     {
         text: 'Metode ilmiah dimulai dari observasi, perumusan hipotesis yang bisa diuji, eksperimen terkontrol, dan analisis hasil — sebuah hipotesis yang tidak bisa difalsifikasi lewat eksperimen apa pun tidak dianggap sebagai klaim ilmiah yang valid.',
         metadata: { category: 'dataset', domain: 'sains', agent: 'Sains', topic: 'metode ilmiah', tags: ['filsafat sains', 'metodologi'] }
@@ -58,7 +58,7 @@ const data = [
         metadata: { category: 'dataset', domain: 'sains', agent: 'Sains', topic: 'interdisiplinaritas', tags: ['filsafat sains', 'kolaborasi ilmiah'] }
     },
 
-    // ================= ASTRONOMI =================
+    
     {
         text: 'Bintang menghasilkan energinya melalui fusi nuklir yang mengubah hidrogen menjadi helium di intinya — ketika bahan bakar hidrogen habis, nasib akhir bintang bergantung pada massanya, mulai dari katai putih hingga lubang hitam untuk bintang paling masif.',
         metadata: { category: 'dataset', domain: 'sains', agent: 'Astronomi', topic: 'siklus hidup bintang', tags: ['astrofisika', 'evolusi bintang'] }
@@ -72,7 +72,7 @@ const data = [
         metadata: { category: 'dataset', domain: 'sains', agent: 'Astronomi', topic: 'zona layak huni', tags: ['eksoplanet', 'astrobiologi'] }
     },
 
-    // ================= KEDOKTERAN =================
+    
     {
         text: 'Resistensi antibiotik terjadi ketika bakteri berevolusi mengembangkan mekanisme pertahanan terhadap obat akibat penggunaan yang berlebihan atau tidak tuntas — fenomena ini menjadi salah satu ancaman kesehatan global paling serius di abad ini.',
         metadata: { category: 'dataset', domain: 'sains', agent: 'Kedokteran', topic: 'resistensi antibiotik', tags: ['mikrobiologi', 'kesehatan masyarakat'] }
@@ -86,7 +86,7 @@ const data = [
         metadata: { category: 'dataset', domain: 'sains', agent: 'Kedokteran', topic: 'pencegahan penyakit tidak menular', tags: ['kesehatan masyarakat', 'pencegahan'] }
     },
 
-    // ================= TEKNIK =================
+    
     {
         text: 'Faktor keamanan dalam desain struktur bangunan memastikan konstruksi mampu menahan beban jauh melampaui beban maksimum yang diperkirakan, mengantisipasi ketidakpastian material, kesalahan konstruksi, dan kondisi ekstrem yang tidak terduga.',
         metadata: { category: 'dataset', domain: 'sains', agent: 'Teknik', topic: 'faktor keamanan struktur', tags: ['teknik sipil', 'keselamatan'] }
@@ -100,7 +100,7 @@ const data = [
         metadata: { category: 'dataset', domain: 'sains', agent: 'Teknik', topic: 'toleransi kegagalan', tags: ['rekayasa sistem', 'keandalan'] }
     },
 
-    // ================= KIMIA =================
+    
     {
         text: 'Ikatan kovalen terbentuk ketika dua atom berbagi pasangan elektron untuk mencapai konfigurasi elektron yang stabil, berbeda dengan ikatan ion yang terbentuk dari transfer elektron penuh antara atom bermuatan berlawanan.',
         metadata: { category: 'dataset', domain: 'sains', agent: 'Kimia', topic: 'ikatan kovalen vs ion', tags: ['kimia dasar', 'struktur molekul'] }
@@ -114,7 +114,7 @@ const data = [
         metadata: { category: 'dataset', domain: 'sains', agent: 'Kimia', topic: 'skala ph', tags: ['kimia larutan', 'asam basa'] }
     },
 
-    // ================= ROBOTIKA =================
+    
     {
         text: 'Kontrol umpan balik dalam robotika menggunakan sensor untuk terus memantau kondisi aktual dan menyesuaikan gerakan aktuator secara real-time, memungkinkan robot beradaptasi terhadap gangguan lingkungan yang tidak bisa diprediksi sebelumnya.',
         metadata: { category: 'dataset', domain: 'sains', agent: 'Robotika', topic: 'kontrol umpan balik', tags: ['sistem kontrol', 'robotika'] }
@@ -128,7 +128,7 @@ const data = [
         metadata: { category: 'dataset', domain: 'sains', agent: 'Robotika', topic: 'robot kolaboratif', tags: ['robotika industri', 'keselamatan kerja'] }
     },
 
-    // ================= CODING =================
+    
     {
         text: 'Kompleksitas algoritma yang dinyatakan dalam notasi Big O menggambarkan bagaimana waktu eksekusi atau kebutuhan memori tumbuh seiring bertambahnya ukuran input — algoritma dengan kompleksitas O(n log n) jauh lebih skalabel dibanding O(n²) untuk data besar.',
         metadata: { category: 'dataset', domain: 'sains', agent: 'Coding', topic: 'kompleksitas algoritma', tags: ['ilmu komputer', 'struktur data'] }
@@ -142,7 +142,7 @@ const data = [
         metadata: { category: 'dataset', domain: 'sains', agent: 'Coding', topic: 'pengujian unit', tags: ['rekayasa perangkat lunak', 'testing'] }
     },
 
-    // ================= CYBER (Keamanan Siber) =================
+    
     {
         text: 'Serangan phishing tetap menjadi vektor serangan siber paling umum karena menargetkan kelemahan manusia, bukan kelemahan teknis — pelatihan kesadaran keamanan bagi karyawan sering lebih efektif dibanding investasi tambahan pada perangkat keamanan teknis semata.',
         metadata: { category: 'dataset', domain: 'sains', agent: 'Cyber', topic: 'phishing', tags: ['keamanan siber', 'rekayasa sosial'] }
@@ -156,7 +156,7 @@ const data = [
         metadata: { category: 'dataset', domain: 'sains', agent: 'Cyber', topic: 'enkripsi ujung ke ujung', tags: ['keamanan siber', 'kriptografi'] }
     },
 
-    // ================= ILMU KOMPUTER =================
+    
     {
         text: 'Masalah P versus NP adalah salah satu pertanyaan terbuka paling penting dalam ilmu komputer teoretis — ia mempertanyakan apakah setiap masalah yang solusinya mudah diverifikasi juga pasti mudah dipecahkan, sebuah pertanyaan yang berdampak luas pada kriptografi dan optimasi.',
         metadata: { category: 'dataset', domain: 'sains', agent: 'IlmuKomputer', topic: 'p versus np', tags: ['teori komputasi', 'kompleksitas'] }
@@ -170,7 +170,7 @@ const data = [
         metadata: { category: 'dataset', domain: 'sains', agent: 'IlmuKomputer', topic: 'jaringan saraf tiruan', tags: ['machine learning', 'kecerdasan buatan'] }
     },
 
-    // ================= ARSITEKTUR =================
+    
     {
         text: 'Arsitektur berkelanjutan mengoptimalkan orientasi bangunan, ventilasi alami, dan material lokal untuk mengurangi kebutuhan energi buatan — pendekatan pasif ini sering lebih efektif jangka panjang dibanding sekadar menambahkan panel surya pada desain yang boros energi.',
         metadata: { category: 'dataset', domain: 'sains', agent: 'Arsitektur', topic: 'arsitektur berkelanjutan', tags: ['arsitektur hijau', 'efisiensi energi'] }
@@ -184,7 +184,7 @@ const data = [
         metadata: { category: 'dataset', domain: 'sains', agent: 'Arsitektur', topic: 'form follows function', tags: ['teori arsitektur', 'modernisme'] }
     },
 
-    // ================= STATISTIKA =================
+    
     {
         text: 'Nilai p dalam uji hipotesis mengukur seberapa besar kemungkinan hasil yang diamati (atau lebih ekstrem) muncul semata karena kebetulan jika hipotesis nol benar — nilai p kecil bukan berarti hipotesis penelitian pasti benar, hanya bahwa data tidak konsisten dengan hipotesis nol.',
         metadata: { category: 'dataset', domain: 'sains', agent: 'Statistika', topic: 'nilai p', tags: ['statistik inferensial', 'uji hipotesis'] }

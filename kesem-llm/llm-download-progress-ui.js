@@ -1,9 +1,9 @@
-// Core Engine v2 download progress UI — floating progress bar with
-// real-time percentage while Core Engine v2 (llm-transformers-bridge.js)
-// downloads model files the first time. Purely presentational — never
-// touches download/cache logic, just subscribes to KesempatanLLM2.onProgress().
-// Once files are cached in IndexedDB, subsequent initializations are
-// near-instant so this bar almost never appears again.
+
+
+
+
+
+
 
 import { KesempatanLLM2 } from './llm-transformers-bridge.js';
 

@@ -1,16 +1,11 @@
-/* ============================================================
-   📁 rap/engine/optimizer.js
-   🔥 OPTIMIZER ENGINE — LEARNING + VERSE OPTIMIZER + QUALITY GATE
-   🔥 BELAJAR DARI BATTLE SEBELUMNYA & OPTIMASI VERSE
-   🔥 ENHANCE: Teknik + Ekspresi — optimasi hanya jika variasi ekstrem (>4)
-   ============================================================ */
+
 
 const KESEMPATAN = window.KESEMPATAN || {};
 window.KESEMPATAN = KESEMPATAN;
 
-// ============================================================
-// 0. UTILITY — SUKU KATA BAHASA INDONESIA (DENGAN PENGECUALIAN)
-// ============================================================
+
+
+
 
 const SYLLABLE_OVERRIDES = {
     'yang': 1,
@@ -103,9 +98,9 @@ function analyzeRhythm(verse) {
     };
 }
 
-// ============================================================
-// 1. QUALITY GATE — CEK KUALITAS VERSE (TEKNIK + EKSPRESI)
-// ============================================================
+
+
+
 
 let targetSyllables = 11;
 let syllableTolerance = 4;
@@ -179,7 +174,7 @@ function checkQuality(verse) {
     const issues = [];
     const strengths = [];
     
-    // Panjang
+    
     if (words.length < QUALITY_RULES.minWords) {
         issues.push('Terlalu pendek (' + words.length + ' kata)');
     } else if (words.length > QUALITY_RULES.maxWords) {
@@ -188,21 +183,21 @@ function checkQuality(verse) {
         strengths.push('Panjang ideal (' + words.length + ' kata)');
     }
     
-    // Rima — WAJIB!
+    
     if (rhymes < QUALITY_RULES.minRhymes) {
         issues.push('Kurang rima (' + rhymes + ' rima)');
     } else {
         strengths.push('Rima bagus (' + rhymes + ' rima)');
     }
     
-    // Punchline
+    
     if (punchlines.length < QUALITY_RULES.minPunchlines) {
         issues.push('Tidak ada punchline kuat');
     } else {
         strengths.push(punchlines.length + ' punchline kuat');
     }
     
-    // Variasi panjang baris (teks)
+    
     if (lines.length >= 4) {
         const lens = lines.map(function(l) { return l.trim().split(/\s+/).length; });
         const mean = lens.reduce(function(a, b) { return a + b; }, 0) / lens.length;
@@ -214,8 +209,8 @@ function checkQuality(verse) {
         }
     }
     
-    // 🔥 RITME — cek, tapi tidak memaksa (TIDAK masuk ke `issues`/skor,
-    // supaya tidak diam-diam memicu percobaan ulang AI yang bikin lama).
+    
+    
     const notes = [];
     if (rhythm.isConsistent) {
         strengths.push('Ritme konsisten (avg ' + rhythm.avg.toFixed(1) + ' suku kata/baris)');
@@ -230,7 +225,7 @@ function checkQuality(verse) {
         }
     }
     
-    // Klise
+    
     const cliches = ['aku yang terbaik', 'yo yo', 'siapkan mental', 'kau cuma bayang'];
     let foundCliche = false;
     cliches.forEach(function(c) {
@@ -257,13 +252,13 @@ function checkQuality(verse) {
         rhymes: rhymes,
         punchlines: punchlines,
         rhythm: rhythm,
-        isProfessional: score >= 75 && strengths.length >= 2  // tidak wajib ritme konsisten
+        isProfessional: score >= 75 && strengths.length >= 2  
     };
 }
 
-// ============================================================
-// 2. VERSE OPTIMIZER — PERBAIKI VERSE (HANYA KASUS EKSTREM)
-// ============================================================
+
+
+
 
 const SYNONYM_DICT = {
     'aku': 'ku',
@@ -447,7 +442,7 @@ function optimizeVerse(verse, issues) {
     let optimized = verse;
     const lines = optimized.split('\n').filter(function(l) { return l.trim().length > 0; });
     
-    // 1. Perbaiki panjang baris (kata) — hanya jika ekstrem
+    
     if (issues.some(function(i) { return i.includes('panjang'); })) {
         const newLines = [];
         for (const line of lines) {
@@ -463,7 +458,7 @@ function optimizeVerse(verse, issues) {
         optimized = newLines.join('\n');
     }
     
-    // 2. Perkuat punchline
+    
     if (issues.some(function(i) { return i.includes('punchline'); })) {
         const lastLine = lines[lines.length - 1];
         if (!lastLine.includes('!')) {
@@ -472,7 +467,7 @@ function optimizeVerse(verse, issues) {
         optimized = lines.join('\n');
     }
     
-    // 3. Tambah rima jika kurang
+    
     if (issues.some(function(i) { return i.includes('rima'); })) {
         const rhymeWords = ['bang', 'lang', 'tang', 'rang', 'dang', 'sang'];
         const newLines = lines.map(function(line, i) {
@@ -485,7 +480,7 @@ function optimizeVerse(verse, issues) {
         optimized = newLines.join('\n');
     }
 
-    // 4. 🔥 OPTIMASI RITME — HANYA JIKA VARIASI SANGAT EKSTREM (>4)
+    
     const rhythmIssues = issues.some(function(i) { 
         return i.includes('jauh dari target') || i.includes('stdDev'); 
     });
@@ -494,7 +489,7 @@ function optimizeVerse(verse, issues) {
         const newLines = optimized.split('\n').filter(function(l) { return l.trim().length > 0; });
         const adjusted = newLines.map(function(line) {
             const current = countSyllablesInLine(line);
-            // Hanya optimasi jika deviasi > toleransi + 1 (misal: 4+1=5)
+            
             if (Math.abs(current - target) > QUALITY_RULES.syllableTolerance + 1) {
                 return adjustSyllables(line, target);
             }
@@ -506,9 +501,9 @@ function optimizeVerse(verse, issues) {
     return optimized;
 }
 
-// ============================================================
-// 3. LEARNING ENGINE
-// ============================================================
+
+
+
 
 const LearningEngine = {
     _history: [],
@@ -601,9 +596,9 @@ const LearningEngine = {
 
 LearningEngine._init();
 
-// ============================================================
-// 4. EXPOSE
-// ============================================================
+
+
+
 
 export const RapOptimizerEngine = {
     LearningEngine: LearningEngine,

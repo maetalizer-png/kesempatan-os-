@@ -313,9 +313,9 @@ KESEMPATAN.Utils = Utils;
 KESEMPATAN.Logger = Logger;
 KESEMPATAN.InternalLogger = InternalLogger;
 
-// Bridge for the ~90 files not yet migrated to `import { Utils } from './utils.js'`.
-// Remove once every consumer reads window.KESEMPATAN.Utils.* (or imports directly)
-// instead of this bare global.
+
+
+
 window.Utils = Utils;
 window.escapeHtml = escapeHtml;
 window.showToast = showToast;

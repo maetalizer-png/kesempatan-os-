@@ -1,15 +1,4 @@
-/* ============================================================
-   ai-agent/workflow-engine.js
-   Adapter between the Orchestrator and the existing analysis
-   pipeline in js/workflow/workflow.js. Not a second workflow engine —
-   WorkflowEngine.start() itself stays untouched (still reads the
-   dashboard's checked checkboxes); this only drives the same
-   per-agent path (WorkflowEngine.runSingleAgent, added alongside
-   start() specifically for headless callers) with an agent list
-   the Agent Runtime already decided on, and reuses
-   WorkflowParallel's existing batch-size heuristic for parallel
-   runs instead of reimplementing one.
-   ============================================================ */
+
 
 import { WorkflowEngine } from '../js/workflow/workflow.js';
 import { WorkflowParallel } from '../js/workflow/workflow-parallel.js';
@@ -44,8 +33,8 @@ async function runParallel(agentNames, topic, instruction, uploadedData) {
     return results;
 }
 
-// mode: 'sequential' | 'parallel' | undefined (auto, via WorkflowParallel.selectMode
-// when available — the same heuristic the dashboard itself uses).
+
+
 async function runAnalysisAgents(agentNames, topic, instruction, uploadedData, mode) {
     let resolvedMode = mode;
     if (!resolvedMode) {

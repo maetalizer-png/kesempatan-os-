@@ -8,9 +8,9 @@ const Logger = Utils.Logger;
 let attempts = 0;
 const MAX_ATTEMPTS = 100;
 
-// ============================================================
-// WAIT FOR CORE
-// ============================================================
+
+
+
 function waitForCore() {
     attempts++;
 
@@ -29,9 +29,9 @@ function waitForCore() {
     setTimeout(waitForCore, 50);
 }
 
-// ============================================================
-// INIT API
-// ============================================================
+
+
+
 async function initAPI() {
     try {
         const CoreClass = window._memoryClass;
@@ -98,16 +98,16 @@ async function initAPI() {
             }
         };
 
-        // window.VectorMemory/VectorMemoryV5/MemoryAPI are kept as real
-        // globals (not KESEMPATAN-only): 18+ files across Podcast, Rap
-        // Battle, Debate, Chat AI, Chat Agent, Forum, Tournament, Workflow,
-        // Memory Manager and the LLM retriever read (and rap-battle.js also
-        // writes) them directly. KESEMPATAN.VectorMemory is the same object,
-        // added as the namespaced access point for new code.
+        
+        
+        
+        
+        
+        
         window.VectorMemory = api;
         window.MemoryAPI = api;
-        // COMPAT ALIAS — hapus setelah grep seluruh proyek (pages/agent/
-        // inline) memastikan tidak ada lagi yang memanggil VectorMemoryV5.
+        
+        
         window.VectorMemoryV5 = api;
         KESEMPATAN.VectorMemory = api;
         KESEMPATAN.MemoryAPI = api;
@@ -127,9 +127,9 @@ async function initAPI() {
     }
 }
 
-// ============================================================
-// FALLBACK API
-// ============================================================
+
+
+
 function createFallbackAPI() {
     Logger.warn('MemoryAPI', 'Creating fallback API');
 
@@ -198,7 +198,7 @@ function createFallbackAPI() {
 
     window.VectorMemory = fallback;
     window.MemoryAPI = fallback;
-    window.VectorMemoryV5 = fallback; // COMPAT ALIAS
+    window.VectorMemoryV5 = fallback; 
     KESEMPATAN.VectorMemory = fallback;
     KESEMPATAN.MemoryAPI = fallback;
 
@@ -209,9 +209,9 @@ function createFallbackAPI() {
     Logger.warn('MemoryAPI', 'Fallback API ready');
 }
 
-// ============================================================
-// START
-// ============================================================
+
+
+
 Logger.info('MemoryAPI', 'Waiting for core');
 
 waitForCore();

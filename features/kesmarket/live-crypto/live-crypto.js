@@ -436,7 +436,7 @@ function trackPrediction(prediction, actual) {
         predictionHistory.shift();
     }
     localStorage.setItem('kes_prediction_history', JSON.stringify(predictionHistory));
-    // Durable backup in IndexedDB — localStorage stays the source of truth.
+    
     if (window.KESEMPATAN?.KesDatabase?.mirrorHistoryItem) {
         window.KESEMPATAN.KesDatabase.mirrorHistoryItem('prediction_history', entry);
     }
@@ -1512,9 +1512,9 @@ export const LiveCrypto = {
 
 KESEMPATAN.LiveCrypto = LiveCrypto;
 
-// window.LiveCrypto stays the primary bridge: offline-mode.js's
-// hookLiveCryptoOffline() reassigns it wholesale (Object.assign with a
-// wrapped fetchCryptoPrices) to hook into offline fallback behavior,
-// and router.js's getModule() reads it fresh at page-navigation time.
+
+
+
+
 window.LiveCrypto = LiveCrypto;
 

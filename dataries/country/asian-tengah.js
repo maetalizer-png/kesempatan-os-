@@ -1,7 +1,7 @@
 const data = [
-    // ==========================================================
-    // 🇰🇿 KAZAKHSTAN
-    // ==========================================================
+    
+    
+    
     {
         text: 'Kazakhstan - Negara terbesar di Asia Tengah dengan ekonomi maju dan sumber daya alam melimpah. Ibu kota: Astana. Populasi: 19 juta jiwa. Mata uang: Tenge (KZT). Bahasa: Kazakh, Rusia. Sistem pemerintahan: Republik Presidensial. Ekonomi terbesar di Asia Tengah. Cadangan minyak, gas, dan mineral besar. Anggota Uni Eurasia. Negara dengan stepa luas dan kota modern. Rumah bagi kosmodrom Baikonur dan keindahan alam Altai.',
         metadata: {
@@ -140,9 +140,9 @@ const data = [
             tags: ['negara', 'asian-tengah', 'minyak', 'gas', 'ekonomi-terbesar']
         }
     },
-    // ==========================================================
-    // 🇺🇿 UZBEKISTAN
-    // ==========================================================
+    
+    
+    
     {
         text: 'Uzbekistan - Negara di Asia Tengah dengan sejarah Jalur Sutra dan budaya kaya. Ibu kota: Tashkent. Populasi: 35 juta jiwa. Mata uang: Som Uzbekistan (UZS). Bahasa: Uzbek. Sistem pemerintahan: Republik Presidensial. Populasi terbesar di Asia Tengah. Warisan arsitektur Islam yang kaya. Penghasil kapas terbesar. Negara dengan kota-kota kuno Samarkand, Bukhara, dan Khiva yang memukau.',
         metadata: {
@@ -281,9 +281,9 @@ const data = [
             tags: ['negara', 'asian-tengah', 'jalur-sutra', 'kapas', 'arsitektur-islam']
         }
     },
-    // ==========================================================
-    // 🇹🇲 TURKMENISTAN
-    // ==========================================================
+    
+    
+    
     {
         text: 'Turkmenistan - Negara di Asia Tengah dengan cadangan gas alam besar. Ibu kota: Ashgabat. Populasi: 6 juta jiwa. Mata uang: Manat Turkmen (TMT). Bahasa: Turkmen. Sistem pemerintahan: Republik Presidensial. Salah satu cadangan gas alam terbesar dunia. Negara dengan kebijakan netralitas permanen. Arsitektur marmer putih di Ashgabat. Negara dengan sumber daya gas yang melimpah dan budaya nomaden.',
         metadata: {
@@ -421,9 +421,9 @@ const data = [
             tags: ['negara', 'asian-tengah', 'gas-alam', 'netralitas', 'arsitektur']
         }
     },
-    // ==========================================================
-    // 🇰🇬 KIRGISTAN
-    // ==========================================================
+    
+    
+    
     {
         text: 'Kirgistan - Negara di Asia Tengah dengan pegunungan dan alam indah. Ibu kota: Bishkek. Populasi: 6.5 juta jiwa. Mata uang: Som Kirgistan (KGS). Bahasa: Kirgiz, Rusia. Sistem pemerintahan: Republik Parlementer. Negara dengan demokrasi paling maju di Asia Tengah. Destinasi trekking dan wisata alam. Anggota Uni Eurasia. Rumah bagi Danau Issyk-Kul dan Pegunungan Tian Shan yang memukau.',
         metadata: {
@@ -562,9 +562,9 @@ const data = [
             tags: ['negara', 'asian-tengah', 'pegunungan', 'trekking', 'demokrasi']
         }
     },
-    // ==========================================================
-    // 🇹🇯 TAJIKISTAN
-    // ==========================================================
+    
+    
+    
     {
         text: 'Tajikistan - Negara di Asia Tengah dengan pegunungan Pamir dan budaya Persia. Ibu kota: Dushanbe. Populasi: 9.5 juta jiwa. Mata uang: Somoni (TJS). Bahasa: Tajik, Rusia. Sistem pemerintahan: Republik Presidensial. Negara dengan pegunungan tertinggi di Asia Tengah. Kaya akan air dan energi hidro. Budaya Persia yang kuat. Rumah bagi Pamir Highway dan keindahan alam yang spektakuler.',
         metadata: {
@@ -707,9 +707,9 @@ const data = [
 
 export const DATA = data;
 
-// ============================================================
-// LOGGER
-// ============================================================
+
+
+
 if (window.InternalLogger) {
     window.InternalLogger.info('CountryAsianTengah', '✅ Loaded ' + data.length + ' countries (SUPER LENGKAP - 5 NEGARA!)');
 }

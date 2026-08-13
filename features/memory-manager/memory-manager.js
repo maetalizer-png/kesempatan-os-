@@ -332,10 +332,10 @@ async function render() {
                 return;
             }
 
-            // Debounce the actual search (250ms) so rapid typing doesn't fire a full
-            // vector scan per keystroke, and tag each search with a request id so a
-            // slow, stale response can never overwrite a newer one's results (only
-            // the most recently-started request is allowed to update the DOM).
+            
+            
+            
+            
             _state.searchDebounceId = setTimeout(async function() {
                 const requestId = ++_state.searchRequestId;
                 const results = await searchMemory(query);

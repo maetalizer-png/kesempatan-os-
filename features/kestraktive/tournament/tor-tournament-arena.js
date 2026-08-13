@@ -1,9 +1,4 @@
-/* ============================================================
-   interactive/tournament/tor-tournament-arena.js
-   KELAS UTAMA TRN_DebateArena — dipakai sebagai mesin "satu
-   pertandingan" di dalam bracket turnamen (dipanggil berkali-kali
-   oleh TRN_runTournamentBracket di core.js).
-   ============================================================ */
+
 import { TRN_showToast, TRN_getAgentProfile, TRN_getAgentLabel } from './tor-config.js';
 import { TRN_fetchStaticData, TRN_fetchFromVectorMemory, TRN_fetchFromDatabase } from './tor-data-engine.js';
 import {
@@ -46,14 +41,14 @@ import {
             }.bind(this), { once: true });
         }
 
-        // ===== AMBIL SEMUA DATA DARI 3 SUMBER =====
+        
         async fetchAllData(topic) {
             const staticData = TRN_fetchStaticData(topic);
             const memoryData = await TRN_fetchFromVectorMemory(topic, 3);
             const dbData = await TRN_fetchFromDatabase(topic, 3);
 
-            // BARU: OBSERVATION ENGINE + NOISE FILTERING — sama seperti
-            // yang sudah diintegrasikan ke Debate/Podcast/Rap Battle/Chat.
+            
+            
             let obsContext = { marketInsight: '', credibilityNote: '' };
             try {
                 if (window.KESEMPATAN?.Observation && typeof window.KESEMPATAN?.Observation.getSignals === 'function' && typeof window.KESEMPATAN?.Observation.generateAIInsight === 'function') {
@@ -87,7 +82,7 @@ import {
             };
         }
 
-        // ===== UPDATE DASHBOARD =====
+        
         updateDashboard() {
             const scoreA = this.analytics.getScore('agentA');
             const scoreB = this.analytics.getScore('agentB');
@@ -133,7 +128,7 @@ import {
             }.bind(this), 1000);
         }
 
-        // ===== BUILD PROMPT DENGAN DATA =====
+        
         buildPromptWithData(agent, topic, type, options) {
             options = options || {};
             let prompt = '';
@@ -205,7 +200,7 @@ import {
             return prompt;
         }
 
-        // ===== START DEBATE =====
+        
         async startDebate(options) {
             try {
                 const topic = this.security.validateTopic(options.topic);
@@ -438,7 +433,7 @@ import {
             }
         }
 
-        // ===== AI RESPONSE =====
+        
         async getAIResponse(agent, topic, type, model, options) {
             options = options || {};
             const prompt = this.buildPromptWithData(agent, topic, type, options);
@@ -450,7 +445,7 @@ import {
             }
         }
 
-        // ===== CALL AI =====
+        
         async callAI(prompt, model) {
             model = model || 'deepseek';
             try {
@@ -488,7 +483,7 @@ import {
             }
         }
 
-        // ===== JUDGE =====
+        
         async judge(topic, agentA, agentB, openingA, openingB, rebuttalA, rebuttalB, closingA, closingB, mode, model) {
             let dataContext = '';
             if (this.state.staticData && this.state.staticData.length > 0) {
@@ -533,7 +528,7 @@ import {
             }
         }
 
-        // ===== UI METHODS =====
+        
         addMessage(sender, message) {
             const container = document.getElementById('tournamentContainer');
             if (!container) {
@@ -759,6 +754,6 @@ import {
         }
     }
 
-    // ============================================================
-    // 10. UI UPGRADE
-    // ============================================================
+    
+    
+    

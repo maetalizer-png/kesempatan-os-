@@ -1,32 +1,28 @@
-/* ============================================================
-   interactive/debate/deb-config.js
-   KONFIGURASI DEBAT — constants, util agen (roster dinamis,
-   nama tampilan, populate dropdown).
-   ============================================================ */
-// FIX: window.Utils punya property "showToast" (bukan "DEB_showToast")
-// — destructuring lama `const { DEB_showToast } = window.Utils` SELALU
-// menghasilkan undefined krn nama propertinya tidak cocok, jadi semua
-// notifikasi toast di Debat (voice ON/OFF, error, dst — 8 titik panggil
-// di core.js/debate-arena.js) diam-diam tidak pernah muncul (dijaga
-// `if (DEB_showToast)` yang selalu false, jadi tidak pernah error/
-// ketahuan). Diperbaiki jadi rename saat destructure.
+
+
+
+
+
+
+
+
 export const { showToast: DEB_showToast } = window.Utils || {};
 
-    // ============================================================
-    // RESOLVER DATA AGEN — TIDAK ADA ROSTER/NAMA HARDCODE.
-    // Sumber tunggal kebenaran: window.getAgentConfig() (registry pusat
-    // agents-config.js/world.js) dan elemen .agent-checkbox yang
-    // dirender dashboard dari roster pusat yang sama. DEB_humanizeAgentName()
-    // hanya jaring pengaman terakhir kalau registry tidak tersedia.
-    // ============================================================
+    
+    
+    
+    
+    
+    
+    
 
 export function DEB_getFullAgentPool() {
         let boxes = document.querySelectorAll('.agent-checkbox[data-agent]');
         if (boxes.length === 0 && window.KESEMPATAN?.AgentRenderer?.renderAllAgents) {
-            // Dashboard belum sempat dibuka sesi ini -> checkbox agen belum
-            // ter-render ke DOM sama sekali. Render paksa sekali di sini
-            // supaya roster lengkap tetap tersedia tanpa user harus buka
-            // Dashboard dulu sebelum masuk Debat.
+            
+            
+            
+            
             window.KESEMPATAN?.AgentRenderer?.renderAllAgents();
             boxes = document.querySelectorAll('.agent-checkbox[data-agent]');
         }
@@ -87,9 +83,9 @@ export function DEB_populateAgentSelect(selectEl, preferredIndex) {
         }
     }
 
-    // ============================================================
-    // 1. KONFIGURASI
-    // ============================================================
+    
+    
+    
 
 export const DEB_CONFIG = {
         STORAGE_KEY: 'debate_history_v12',

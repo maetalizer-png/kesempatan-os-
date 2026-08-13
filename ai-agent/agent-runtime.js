@@ -1,16 +1,4 @@
-/* ============================================================
-   ai-agent/agent-runtime.js
-   Top-level lifecycle state machine for the AI Agent subsystem
-   and its single public entry point, runAgentTask(goal, context,
-   options). Owns IDLE -> PLANNING -> WAITING_APPROVAL -> EXECUTING
-   -> OBSERVING -> EVALUATING -> REPLANNING/COMPLETED/FAILED (spec
-   section 3) — orchestrator.js only executes one plan at a time
-   and reports back whether to replan.
 
-   This file mounts window.KESEMPATAN.AIAgent, the namespace every
-   other ai-agent/ module also assembles onto, but renders no UI
-   of its own (spec: "Jangan membuat halaman UI baru").
-   ============================================================ */
 
 import { TaskManager } from './task-manager.js';
 import { Planner } from './planner.js';
@@ -30,9 +18,9 @@ window.KESEMPATAN = KESEMPATAN;
 
 const MAX_REPLANS = 2;
 
-// goal: string task description (from Chat KESEMPATAN OS or any future
-// caller). context: { topic, instruction, uploadedData, ... }. options:
-// { executionMode: 'AUTO'|'SEQUENTIAL'|'PARALLEL'|'HITL' }.
+
+
+
 async function runAgentTask(goal, context, options) {
     context = context || {};
     options = options || {};
@@ -59,8 +47,8 @@ async function runAgentTask(goal, context, options) {
     const finalStatus = outcome.evaluation.decision === 'COMPLETE' ? 'COMPLETED' : 'FAILED';
     TaskManager.updateTask(task.id, { status: finalStatus });
 
-    // Best-effort: save the task outcome to VectorMemory, same as every
-    // other analysis result in this app. Never blocks task completion.
+    
+    
     try {
         await MemoryBridge.save('AI Agent task: ' + goal, {
             agent: 'AIAgentRuntime',
@@ -69,7 +57,7 @@ async function runAgentTask(goal, context, options) {
             taskId: task.id,
             status: finalStatus
         });
-    } catch (e) { /* memory save is best-effort */ }
+    } catch (e) {  }
 
     return TaskManager.getTask(task.id);
 }
@@ -94,6 +82,6 @@ KESEMPATAN.AIAgent = {
     ObservationLoop: ObservationLoop,
     MemoryBridge: MemoryBridge,
     WorkflowEngineAdapter: WorkflowEngineAdapter,
-    // Chat KESEMPATAN OS entry point (spec section 18).
+    
     runAgentTask: runAgentTask
 };

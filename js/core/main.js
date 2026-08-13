@@ -85,8 +85,8 @@ function saveReportToHistory(aggregated, topic) {
     if (history.length > 50) history.pop();
     localStorage.setItem('kes_report_history', JSON.stringify(history));
     renderHistoryPanel();
-    // Durable backup in IndexedDB (existing encrypted 'reports' store) —
-    // localStorage stays the source of truth for the fast/synchronous path.
+    
+    
     if (window.KESEMPATAN?.KesDatabase && window.KESDatabase && !window.KESDatabase._isDummy) {
         window.KESDatabase.saveReport(report.topic, report.score, report).catch(function (error) {
             Logger.warn('REPORT', 'IndexedDB report backup failed: ' + error.message);
@@ -410,12 +410,12 @@ function initUI() {
     }
 }
 
-// CONFIG/Utils/AIClients/ResponseCacheManager/ChartManager/HITL/ExportManager/
-// WorkflowEngine are real static imports above, so they're guaranteed ready
-// by the time this file's own top-level code runs — only VectorMemory and
-// AutoLearning are still genuinely uncertain (populated asynchronously by
-// memory/m-index.js and js/threshold-learning.js, neither of which is an ES
-// module yet), so those are the only ones still worth polling for.
+
+
+
+
+
+
 function waitForModules() {
     const required = ['VectorMemory', 'AutoLearning'];
     const allLoaded = required.every(function(moduleName) {
@@ -453,7 +453,7 @@ async function initApp() {
             if (window.setLearningDatabase) window.setLearningDatabase(db);
             WorkflowEngine.setDatabase(db);
 
-            // One-time durable backup of pre-existing report history.
+            
             if (!db._isDummy) {
                 const flagKey = 'kes_idb_migrated_reports';
                 if (!localStorage.getItem(flagKey)) {

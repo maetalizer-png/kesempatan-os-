@@ -1,11 +1,4 @@
-/* ============================================================
-   📁 rap/engine.js
-   🔥 RAP ENGINE v5.0 — INTEGRATOR 3 ENGINE!
-   🔥 FIX: persona.vibe → persona.signature (bug fix)
-   🔥 ENHANCE: Prompt dengan CONTOH RAPPER ASLI + STORYTELLING
-   🔥 ENHANCE: Temperature lebih tinggi untuk kreativitas maksimal
-   🔥 ENHANCE: Fokus ke CERITA & EMOSI, bukan teknis
-   ============================================================ */
+
 
 import { RapCharacterEngine as CharacterEngine } from './rap-character.js';
 import { RapIntelligenceEngine as IntelligenceEngine } from './rap-intelligence.js';
@@ -15,9 +8,9 @@ const KESEMPATAN = window.KESEMPATAN || {};
 window.KESEMPATAN = KESEMPATAN;
 
 export const RapEngine = {
-    // ============================================================
-    // 🔥 CHARACTER ENGINE
-    // ============================================================
+    
+    
+    
     
     getPersona: function(agent) {
         return CharacterEngine.getPersona(agent);
@@ -35,7 +28,7 @@ export const RapEngine = {
         return CharacterEngine.getAllPersonas();
     },
 
-    // 🔥 BARU: roster lengkap untuk UI "Cypher Lounge" & profil suara
+    
     getAllPersonaCards: function() {
         return CharacterEngine.getAllPersonaCards ? CharacterEngine.getAllPersonaCards() : [];
     },
@@ -44,9 +37,9 @@ export const RapEngine = {
         return CharacterEngine.getVoiceProfile ? CharacterEngine.getVoiceProfile(agent) : null;
     },
     
-    // ============================================================
-    // 🔥 INTELLIGENCE ENGINE
-    // ============================================================
+    
+    
+    
     
     getAgents: function() {
         return IntelligenceEngine.AGENTS;
@@ -68,9 +61,9 @@ export const RapEngine = {
         return IntelligenceEngine.getBattlePlan(round, totalRounds);
     },
     
-    // ============================================================
-    // 🔥 OPTIMIZER ENGINE
-    // ============================================================
+    
+    
+    
     
     learn: function(battleResult) {
         return OptimizerEngine.LearningEngine.learn(battleResult);
@@ -88,19 +81,19 @@ export const RapEngine = {
         return OptimizerEngine.checkQuality(verse);
     },
     
-    // ============================================================
-    // 🔥 AI CALL — DENGAN TEMPERATURE LEBIH TINGGI
-    // ============================================================
+    
+    
+    
     
     callAI: async function(prompt, apiKey) {
         const controller = new AbortController();
-        // 🔥 Timeout dipangkas 30s → 18s. Bersama fix di optimizer.js
-        // (ritme tidak lagi memaksa retry), ini memangkas jeda mulai
-        // battle secara signifikan — sebelumnya worst-case bisa nunggu
-        // 3× percobaan × 30 detik sebelum baris pertama muncul.
+        
+        
+        
+        
         const timeoutId = setTimeout(() => controller.abort(), 18000);
 
-        // 🔥 Ambil temperature & max_tokens dari CONFIG
+        
         let temperature = 1.0;
         let maxTokens = 800;
         try {
@@ -122,7 +115,7 @@ export const RapEngine = {
                     model: 'deepseek/deepseek-chat',
                     messages: [{ role: 'user', content: prompt }],
                     max_tokens: maxTokens,
-                    temperature: temperature    // 🔥 Lebih tinggi = lebih kreatif
+                    temperature: temperature    
                 }),
                 signal: controller.signal
             });
@@ -142,15 +135,15 @@ export const RapEngine = {
         }
     },
     
-    // ============================================================
-    // 🔥 GET RAP — GENERATE DENGAN QUALITY CONTROL
-    // ============================================================
+    
+    
+    
     
     getRap: async function(agent, topic, opponentRap, round, totalRounds, apiKey, memory, memoryContext, songContext) {
-        // 🔥 3 → 2 percobaan maksimal. Dulu tiap verse bisa memicu
-        // sampai 3 panggilan AI berurutan (worst-case ~90 detik cuma
-        // untuk 1 baris pertama). Bersama fix optimizer.js, mayoritas
-        // verse sekarang lolos di percobaan pertama.
+        
+        
+        
+        
         const MAX_GEN_ATTEMPTS = 2;
         
         let correction = null;
@@ -188,9 +181,9 @@ export const RapEngine = {
         return best ? best.verse : 'Yo! Aku ' + agent + ', yang terbaik di sini! 🎤';
     },
     
-    // ============================================================
-    // 🔥 JUDGE — PENILAIAN PROFESIONAL DENGAN BREAKDOWN
-    // ============================================================
+    
+    
+    
     
     judgeRap: async function(topic, agentA, agentB, rapA, rapB, apiKey) {
         const qualityA = this.checkQuality(rapA);
@@ -249,9 +242,9 @@ export const RapEngine = {
         }
     },
     
-    // ============================================================
-    // 🔥 BUILD PROMPT — DENGAN CONTOH RAPPER & STORYTELLING
-    // ============================================================
+    
+    
+    
     
     buildRapPrompt: function(agent, topic, opponentRap, round, totalRounds, memory, correction, memoryContext, songContext) {
         const persona = this.getPersona(agent);
@@ -261,7 +254,7 @@ export const RapEngine = {
         const staticData = this._fetchRelevantData(topic);
         const opponentAnalysis = opponentRap ? this._analyzeOpponent(opponentRap) : null;
 
-        // 🔥 BUILD CONTOH GAYA dari persona
+        
         let styleExamples = '';
         if (persona.styleExample && persona.styleExample.length > 0) {
             styleExamples = '\n🎤 CONTOH GAYA RAP KAMU (pelajari ini!):\n';
@@ -276,12 +269,12 @@ export const RapEngine = {
             vibeWords = '🎯 KATA-KATA VIBE KAMU: ' + persona.vibeWords.join(', ') + '\n\n';
         }
 
-        // 🔥 LAGU/BEAT AKTIF — supaya verse terasa MENYATU dengan lagu
-        // yang sedang diputar (fitur lagu), bukan sekadar dibacakan
-        // di atasnya. Kalau ronde ini kebetulan ronde "Callback"
-        // (lihat BATTLE_PLANS di intelligence.js), rapper didorong
-        // secara eksplisit menyanyikan ulang/memelesetkan hook lagu —
-        // momen "hook callback" seperti di panggung battle internasional.
+        
+        
+        
+        
+        
+        
         let songSection = '';
         if (songContext && songContext.hook) {
             songSection = '🎵 LAGU/BEAT SAAT INI: "' + songContext.title + '" (' + songContext.genre +
@@ -296,7 +289,7 @@ export const RapEngine = {
             songSection += '\n';
         }
 
-        // 🔥 PROMPT — FOKUS CERITA & EMOSI
+        
         let prompt = '🔥 KAMU ADALAH RAPPER PROFESIONAL KELAS DUNIA — INI PANGGUNG INTERNASIONAL!\n\n' +
             'Nama: ' + agent + '\n' +
             'Persona: ' + persona.archetype + '\n' +
@@ -339,7 +332,7 @@ export const RapEngine = {
             '  - Akhiri dengan "mic drop!"\n' +
             '  - ⚠️ JANGAN PAKAI MARKDOWN: tanpa tanda bintang (**tebal**, *miring*), tanpa tanda pagar (#), tanpa list bernomor. Tulis PLAIN TEXT murni — verse ini akan dibacakan lewat suara (text-to-speech), tanda baca markdown akan ikut terbaca aneh.\n\n';
 
-        // Tambahan data & fakta
+        
         if (staticData.length > 0) {
             prompt += '📊 DATA & FAKTA (bisa dipakai untuk memperkuat argumen):\n';
             staticData.slice(0, 3).forEach(function(item, i) {
@@ -356,7 +349,7 @@ export const RapEngine = {
             prompt += obsContext.credibilityNote + '\n\n';
         }
 
-        // Analisis kelemahan lawan
+        
         if (opponentAnalysis && opponentAnalysis.weaknesses.length > 0) {
             prompt += '🎯 KELEMAHAN LAWAN (manfaatkan ini!):\n';
             opponentAnalysis.weaknesses.forEach(function(w) {
@@ -365,7 +358,7 @@ export const RapEngine = {
             prompt += '\n';
         }
 
-        // Inspirasi battle sebelumnya
+        
         if (memoryContext && memoryContext.length > 0) {
             prompt += '🔮 INSPIRASI DARI BATTLE SEBELUMNYA:\n';
             memoryContext.slice(0, 2).forEach(function(item, i) {
@@ -374,12 +367,12 @@ export const RapEngine = {
             prompt += '\n';
         }
 
-        // Verse lawan (untuk dibalas)
+        
         if (opponentRap) {
             prompt += '🗣️ VERSE LAWAN (balas ini!):\n' + opponentRap.substring(0, 400) + '\n\n';
         }
 
-        // Koreksi dari percobaan sebelumnya
+        
         if (correction) {
             prompt += '⚠️ PERBAIKAN DARI PERCOBAAN SEBELUMNYA: ' + correction + '\n\n';
         }
@@ -391,9 +384,9 @@ export const RapEngine = {
         return prompt;
     },
     
-    // ============================================================
-    // 🔥 PRIVATE METHODS (TETAP SAMA)
-    // ============================================================
+    
+    
+    
     
     _fetchRelevantData: function(topic) {
         const staticData = window.__STATIC_DATA || [];
@@ -419,9 +412,9 @@ export const RapEngine = {
         return results.slice(0, 5);
     },
 
-    // 🔥 BARU: OBSERVATION ENGINE + NOISE FILTERING — sentimen pasar/
-    // berita real-time & cek kredibilitas dasar topik, meniru pola
-    // _fetchRelevantData di atas. Toleran kalau modul belum termuat.
+    
+    
+    
     _fetchObservationContext: function(topic) {
         let marketInsight = '';
         let credibilityNote = '';
@@ -498,8 +491,8 @@ export const RapEngine = {
     }
 };
 
-// ============================================================
-// 3. EXPOSE
-// ============================================================
+
+
+
 
 KESEMPATAN.RapEngine = RapEngine;

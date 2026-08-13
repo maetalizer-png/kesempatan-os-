@@ -1,5 +1,5 @@
 const RSS_FEEDS = [
-    // DETIK (8)
+    
     { name: 'Detik News', category: 'news', url: 'https://news.detik.com/rss', icon: '📰' },
     { name: 'Detik Finance', category: 'business', url: 'https://finance.detik.com/rss', icon: '💰' },
     { name: 'Detik Inet', category: 'technology', url: 'https://inet.detik.com/index.rss', icon: '💻' },
@@ -9,7 +9,7 @@ const RSS_FEEDS = [
     { name: 'Detik Food', category: 'lifestyle', url: 'https://food.detik.com/rss', icon: '🍽️' },
     { name: 'Detik Otomotif', category: 'automotive', url: 'https://oto.detik.com/rss', icon: '🚗' },
     
-    // KOMPAS (8)
+    
     { name: 'Kompas News', category: 'news', url: 'https://news.kompas.com/rss', icon: '📰' },
     { name: 'Kompas Bisnis', category: 'business', url: 'https://bisnis.kompas.com/rss', icon: '💼' },
     { name: 'Kompas Tekno', category: 'technology', url: 'https://tekno.kompas.com/rss', icon: '🤖' },
@@ -19,28 +19,28 @@ const RSS_FEEDS = [
     { name: 'Kompas Property', category: 'property', url: 'https://properti.kompas.com/rss', icon: '🏠' },
     { name: 'Kompas Edukasi', category: 'education', url: 'https://edukasi.kompas.com/rss', icon: '🎓' },
     
-    // CNBC (4)
+    
     { name: 'CNBC Indonesia News', category: 'news', url: 'https://www.cnbcindonesia.com/news/rss', icon: '📈' },
     { name: 'CNBC Indonesia Market', category: 'business', url: 'https://www.cnbcindonesia.com/market/rss', icon: '📊' },
     { name: 'CNBC Indonesia Tech', category: 'technology', url: 'https://www.cnbcindonesia.com/technology/rss', icon: '💻' },
     { name: 'CNBC Indonesia Lifestyle', category: 'lifestyle', url: 'https://www.cnbcindonesia.com/lifestyle/rss', icon: '🌟' },
     
-    // LIPUTAN6 (4)
+    
     { name: 'Liputan6 News', category: 'news', url: 'https://www.liputan6.com/feeds/1', icon: '📺' },
     { name: 'Liputan6 Bisnis', category: 'business', url: 'https://www.liputan6.com/feeds/6', icon: '💼' },
     { name: 'Liputan6 Tekno', category: 'technology', url: 'https://www.liputan6.com/feeds/7', icon: '🤖' },
     { name: 'Liputan6 Sport', category: 'sports', url: 'https://www.liputan6.com/feeds/3', icon: '⚽' },
     
-    // CNN (1)
+    
     { name: 'CNN Indonesia', category: 'news', url: 'https://www.cnnindonesia.com/rss', icon: '🌐' },
     
-    // TEMPO (4)
+    
     { name: 'Tempo News', category: 'news', url: 'https://nasional.tempo.co/rss', icon: '📰' },
     { name: 'Tempo Bisnis', category: 'business', url: 'https://bisnis.tempo.co/rss', icon: '💼' },
     { name: 'Tempo Tekno', category: 'technology', url: 'https://tekno.tempo.co/rss', icon: '💻' },
     { name: 'Tempo Sport', category: 'sports', url: 'https://sport.tempo.co/rss', icon: '⚽' },
     
-    // LAINNYA (30+)
+    
     { name: 'Tribun News', category: 'news', url: 'https://www.tribunnews.com/rss', icon: '📰' },
     { name: 'Medcom News', category: 'news', url: 'https://www.medcom.id/feeds/berita', icon: '📰' },
     { name: 'Republika News', category: 'news', url: 'https://www.republika.co.id/rss', icon: '📰' },
@@ -133,7 +133,7 @@ const loadRegionalNews = async function() {
             successCount++;
             
         } catch (error) {
-            // skip
+            
         }
         
         await new Promise(resolve => setTimeout(resolve, 100));

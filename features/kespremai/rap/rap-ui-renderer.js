@@ -1,10 +1,4 @@
-/* ============================================================
-   📁 rap/ui-renderer/ui-renderer.js
-   🔥 ORCHESTRATOR — memanggil ui-layout.js (markup) dan
-   ui-style.js (CSS). Tidak lagi berisi HTML/CSS panjang.
-   Public API KESEMPATAN.RapUIRenderer TIDAK berubah bentuknya,
-   supaya ui-events.js dan file lain tetap bekerja tanpa perubahan.
-   ============================================================ */
+
 
 import { RapUILayout } from './rap-ui-layout.js';
 import { RapUIStyle } from './rap-ui-style.js';
@@ -32,7 +26,7 @@ function showToast(msg, type) {
     setTimeout(function() { toast.remove(); }, 3500);
 }
 
-// ========== ENSURE CONTAINER ==========
+
 function ensureContainer() {
     let container = document.getElementById('rapBattlePanel');
     if (!container) {
@@ -46,7 +40,7 @@ function ensureContainer() {
     return container;
 }
 
-// ========== RENDER (orchestrator) ==========
+
 function render() {
     const container = ensureContainer();
     if (container.dataset.rendered === 'true') return;
@@ -54,18 +48,18 @@ function render() {
 
     container.innerHTML = RapUILayout.buildHTML();
 
-    // Isi Cypher Lounge (roster semua rapper) & daftar lagu — data ini
-    // baru tersedia saat runtime (dari character.js/soundbank.js).
+    
+    
     RapUILayout.renderCypherLounge(container);
     RapUILayout.renderSongSelect(container);
 
     RapUIStyle.inject();
 }
 
-// ========== EKSPOS ==========
-// Bentuk objek publik TIDAK berubah - semua key sama persis seperti
-// sebelum refactor, cuma implementasinya sekarang didelegasikan ke
-// ui-layout.js. ui-events.js dan pemanggil lain tidak perlu diubah.
+
+
+
+
 export const RapUIRenderer = {
     render: render,
     ensureContainer: ensureContainer,

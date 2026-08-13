@@ -1,15 +1,11 @@
-/* ============================================================
-   📁 rap/engine/intelligence.js
-   🔥 INTELLIGENCE ENGINE — MULTI-AGEN + STRATEGI + CROWD
-   🔥 11 AGEN SPESIALIS DISKUSI + BATTLE PLANNER 7 RONDE
-   ============================================================ */
+
 
 const KESEMPATAN = window.KESEMPATAN || {};
 window.KESEMPATAN = KESEMPATAN;
 
-// ============================================================
-// 1. REACTIONS — PREDIKSI REAKSI CROWD
-// ============================================================
+
+
+
 
 const REACTIONS = {
     laugh: { emoji: '😂', name: 'Laugh', trigger: 'humor' },
@@ -32,9 +28,9 @@ function predictCrowdReaction(verse) {
     return REACTIONS.roomShaker;
 }
 
-// ============================================================
-// 2. AGEN SPESIALIS (11 AGEN)
-// ============================================================
+
+
+
 
 const AGENTS = {
     strategist: {
@@ -116,9 +112,9 @@ const AGENTS = {
     }
 };
 
-// ============================================================
-// 3. BATTLE PLANNER — RENCANA 7 RONDE
-// ============================================================
+
+
+
 
 const BATTLE_PLANS = [
     { round: 1, strategy: 'Perkenalan', emotion: 'Santai', goal: 'Tunjukkan identitas' },
@@ -132,23 +128,23 @@ const BATTLE_PLANS = [
 
 function getBattlePlan(round, totalRounds) {
     totalRounds = totalRounds || BATTLE_PLANS.length;
-    // Sebelumnya: index = min(round-1, BATTLE_PLANS.length-1) — totalRounds
-    // sama sekali tidak dipakai. Akibatnya battle 3 ronde (default UI)
-    // cuma pernah kebagian plan index 0,1,2 ("Perkenalan","Serang Balik",
-    // "Serang Ego") dan TIDAK PERNAH sampai ke "Haymaker"/"Callback"/
-    // "Closer" — arc emosional battle jadi flat & terasa monoton.
-    // Sekarang: posisi round diskalakan proporsional ke rentang 0..1
-    // (round pertama = 0, round terakhir = 1), lalu dipetakan ke 7 tahap
-    // arc battle. Jadi battle 3 ronde tetap dapat Perkenalan → tengah →
-    // Closer, sama seperti battle 7 ronde, hanya lebih padat.
+    
+    
+    
+    
+    
+    
+    
+    
+    
     const ratio = (round - 1) / Math.max(1, totalRounds - 1);
     const index = Math.min(BATTLE_PLANS.length - 1, Math.round(ratio * (BATTLE_PLANS.length - 1)));
     return BATTLE_PLANS[index] || BATTLE_PLANS[0];
 }
 
-// ============================================================
-// 4. BATTLE DIRECTOR — KONDUKTOR
-// ============================================================
+
+
+
 
 function BattleDirector(topic, agentA, agentB, rounds) {
     this.topic = topic;
@@ -198,9 +194,9 @@ BattleDirector.prototype.getStrategicAdvice = function() {
     return advice;
 };
 
-// ============================================================
-// 5. EXPOSE
-// ============================================================
+
+
+
 
 export const RapIntelligenceEngine = {
     AGENTS: AGENTS,

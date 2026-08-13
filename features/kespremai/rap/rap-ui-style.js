@@ -1,9 +1,4 @@
-/* ============================================================
-   📁 rap/ui-renderer/ui-style.js
-   🔥 STYLE LAYER — seluruh CSS Rap Battle Arena.
-   Dipindahkan apa adanya dari ui-renderer.js (byte-identik),
-   tidak ada desain/warna/class/selector yang diubah.
-   ============================================================ */
+
 
 const KESEMPATAN = window.KESEMPATAN || {};
 window.KESEMPATAN = KESEMPATAN;

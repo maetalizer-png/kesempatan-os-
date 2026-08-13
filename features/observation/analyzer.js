@@ -189,7 +189,7 @@ function saveTriggerHistory(signal, analyzed) {
         history.unshift(entry);
         if (history.length > 20) history.pop();
         localStorage.setItem('kes_obs_trigger_history', JSON.stringify(history));
-        // Durable backup in IndexedDB — localStorage stays the source of truth.
+        
         if (window.KESEMPATAN?.KesDatabase?.mirrorHistoryItem) {
             window.KESEMPATAN.KesDatabase.mirrorHistoryItem('obs_trigger_history', entry);
         }

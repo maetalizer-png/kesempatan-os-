@@ -94,8 +94,8 @@ function cropRatio(ratio) {
 }
 
 function sharpenSync(ctx, w, h) {
-    // Synchronous fallback for environments without Worker support — identical
-    // loop to what used to run unconditionally on the main thread.
+    
+    
     try {
         const d = ctx.getImageData(0, 0, w, h);
         const src = new Uint8ClampedArray(d.data);
@@ -142,9 +142,9 @@ function enhance2x() {
         return;
     }
 
-    // Offload the 3x3 sharpen convolution (O(w*h*9*3) — multi-second freeze on a
-    // modest photo when run synchronously) to a Web Worker so the tab stays
-    // responsive while it runs.
+    
+    
+    
     try {
         const d = ctx.getImageData(0, 0, w, h);
         const worker = new Worker('features/kesmedia/editor/ai-editor-worker.js');

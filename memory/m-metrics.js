@@ -19,9 +19,9 @@ const Metrics = Object.freeze({
     CHEBYSHEV: 'chebyshev'
 });
 
-// ============================================================
-// SAFE HELPERS
-// ============================================================
+
+
+
 function isValidVector(vec) {
     return Array.isArray(vec) && vec.length > 0;
 }
@@ -34,9 +34,9 @@ function getSharedLength(vec1, vec2) {
     return Math.min(vec1.length, vec2.length);
 }
 
-// ============================================================
-// METRIC FUNCTIONS
-// ============================================================
+
+
+
 function cosineSimilarity(vec1, vec2) {
     const len = getSharedLength(vec1, vec2);
 
