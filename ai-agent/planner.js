@@ -10,13 +10,22 @@ import { ProviderRouter } from './provider-router.js';
 import { ToolRegistry } from './tool-registry.js';
 import { AgentRegistry } from './agent-registry.js';
 
+// Roster inti (13 agen pertama di agents/agents-config.js, sebelum
+// digabung dengan file kategori general/politics/global/science) dipakai
+// sebagai contoh nyata di prompt planner, bukan nama karangan — LLM boleh
+// juga memakai agen lain dari ~200 total lewat AgentRegistry.findAgent()
+// (dipanggil oleh execution-engine.js saat nama tidak cocok persis).
 function describeCapabilities() {
     const tools = ToolRegistry.list().filter(function(t) { return t.available; }).map(function(t) { return t.name; });
     const workerCategories = AgentRegistry.listWorkerCategories();
+    const coreAgents = AgentRegistry.listAnalysisAgents().slice(0, 13).map(function(a) {
+        return a.id + ' (' + a.role + ')';
+    });
     return {
         tools: tools,
         workerCategories: workerCategories,
-        note: 'Untuk kind="agent", gunakan nama agen analisis yang persis (mis. "RahmadRaharjo", "Analyst", "Researcher"). Untuk kind="worker", gunakan id KESWORKER yang persis dan kategori di atas sebagai panduan (mis. "bitcoin_trader" untuk kategori crypto).'
+        coreAgents: coreAgents,
+        note: 'Untuk kind="agent", pilih dari daftar agen analisis di atas kalau cocok (mis. "Researcher" untuk riset, "Analyst" untuk analisis data, "Copywriter" untuk menulis, "Verifier" untuk verifikasi akhir). Kalau perlu spesialisasi lain di luar daftar itu (mis. bidang tertentu), tetap boleh sebut nama agen yang masuk akal secara role — sistem akan mencarinya di roster lengkap (~200 agen) lewat pencocokan role/kata kunci. Untuk kind="worker", gunakan id KESWORKER yang persis dan kategori di atas sebagai panduan (mis. "bitcoin_trader" untuk kategori crypto).'
     };
 }
 
@@ -27,6 +36,7 @@ function buildPlanningPrompt(goal, context, capabilities) {
         context && context.topic ? 'Topik: ' + context.topic : '',
         '',
         'Kapabilitas yang TERSEDIA SEKARANG (jangan buat kapabilitas di luar daftar ini):',
+        'Agen analisis (contoh peran umum): ' + capabilities.coreAgents.join(', '),
         'Tools: ' + capabilities.tools.join(', '),
         'Kategori KESWORKER: ' + capabilities.workerCategories.join(', '),
         capabilities.note,

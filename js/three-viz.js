@@ -306,11 +306,11 @@ class KES3DViz {
             this.targetRotationX += deltaY * 0.005;
             this.lastMouseX = e.touches[0].clientX;
             this.lastMouseY = e.touches[0].clientY;
-        }.bind(this));
+        }.bind(this), { passive: true });
 
         window.addEventListener('touchend', function() {
             this.isDragging = false;
-        }.bind(this));
+        }.bind(this), { passive: true });
 
         this.container.style.cursor = 'grab';
     }

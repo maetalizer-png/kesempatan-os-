@@ -44,7 +44,13 @@
     <link rel="preconnect" href="https://cdn.jsdelivr.net">
     <link rel="preconnect" href="https://cdnjs.cloudflare.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Font Awesome (ikon dekoratif, bukan penentu layout) dimuat non-render-blocking:
+         browser mengambilnya di background lewat media="print", lalu media
+         di-swap ke "all" begitu selesai. noscript menjaga ikon tetap tampil
+         kalau JS mati. Ikon sendiri tidak hilang — cuma tidak lagi memblokir
+         first paint. -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" media="print" onload="this.media='all'">
+    <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"></noscript>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js" crossorigin="anonymous" defer></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" crossorigin="anonymous" defer></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" crossorigin="anonymous" defer></script>
@@ -197,7 +203,17 @@
     <script type="module" src="js/response-cache.js"></script>
     <script type="module" src="js/cache-db-bridge.js"></script>
     <script type="module" src="memory/m-memory.js"></script>
-    <script type="module" src="dataries/world.js"></script>
+    <script type="module">
+        // dataries/world.js (~1.6MB, ~33% of total JS payload) hanya berisi
+        // data referensi statis (country/greeting/news) untuk konteks RAG —
+        // semua consumer (searchWorldData, TRN_getStaticData, dst di
+        // interactive/*, podcast/*, kesem-llm/*, rap/*) sudah defensif
+        // terhadap window.__STATIC_DATA kosong/belum ada (return [] / || []),
+        // jadi aman ditunda sampai browser idle tanpa memblokir render awal.
+        const loadWorldData = () => import('./dataries/world.js');
+        if ('requestIdleCallback' in window) requestIdleCallback(loadWorldData, { timeout: 3000 });
+        else setTimeout(loadWorldData, 500);
+    </script>
     <script type="module" src="js/threshold-learning.js"></script>
     <script type="module" src="js/conten-dasboard.js"></script>
     <script type="module" src="js/agent-control.js"></script>
@@ -243,7 +259,8 @@
     <script type="module" src="js/reaction-learning.js"></script>
     <script type="module" src="js/api-public.js"></script>
     <script type="module" src="observ/Observation.js"></script>
-    <script type="module" src="noise/noise-filtering.js"></script>
+    <!-- noise/noise-filtering.js: dimuat on-demand oleh js/router.js saat
+         halaman Noise dibuka (lihat fallback import() di PAGE_HANDLERS.noise) -->
     <script type="module" src="pages/pages.js"></script>
     <script type="module" src="js/ui-handlers.js"></script>
     <script type="module" src="js/collab.js"></script>
