@@ -113,8 +113,6 @@
                     </div>
                     <button data-page="websocket" style="margin-top:8px; border-color:rgba(0,255,163,0.4);">WebSocket</button>
                     <button data-page="publicapi" style="margin-top:8px; border-color:rgba(0,255,163,0.4);">Public API</button>
-                    <hr style="margin:8px 0; border-color:rgba(0,255,163,0.2);">
-                    <a href="chat-kesempatan.html" style="display:block; margin-top:4px; padding:10px 12px; border-radius:12px; background: linear-gradient(135deg, #00FFA3, #00AA6E); color:#03050A; font-weight: bold; text-align:center; text-decoration:none; font-size:13px;">CHAT KESEMPATAN OS</a>
                 </div>
                 <div class="sidebar-footer">
                     <div class="sidebar-footer-controls">
@@ -145,10 +143,10 @@
                 </div>
                 <div id="dashboardGrid" class="dashboard-grid">
                     <div class="card full-width">
-                        <div id="contenDasboardContainer"></div>
-                        <div id="workflowModeContainer"></div>
-                        <div id="agentControlContainer"></div>
-                        <div id="agentPoolContainer"></div>
+                        <div id="contenDasboardContainer" class="skeleton-loading"></div>
+                        <div id="workflowModeContainer" class="skeleton-loading" style="margin-top:10px;"></div>
+                        <div id="agentControlContainer" class="skeleton-loading" style="margin-top:10px;"></div>
+                        <div id="agentPoolContainer" class="skeleton-loading" style="margin-top:10px;"></div>
                         <div id="logPanelContainer" style="margin-top:10px;"></div>
                         <div id="executePanelContainer"></div>
                         <div id="thresholdContainer"></div>

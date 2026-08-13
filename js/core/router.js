@@ -253,9 +253,6 @@ const PAGE_HANDLERS = {
             }
         }
     },
-    keschat: function() {
-        window.location.href = 'chat-kesempatan.html';
-    },
     cache: function() {
         const cachePage = document.getElementById('cachePage');
         if (cachePage) {
