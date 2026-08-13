@@ -1,8 +1,8 @@
-import './memory-manager.js';
-import './report.js';
-import './telemetry.js';
-import './auto-learning.js';
-import './settings.js';
+import './memory-manager/memory-manager.js';
+import './monitoring/report/report.js';
+import './monitoring/telemetry/telemetry.js';
+import './monitoring/learning/auto-learning.js';
+import './settings/settings.js';
 
 const KESEMPATAN = window.KESEMPATAN || {};
 window.KESEMPATAN = KESEMPATAN;
