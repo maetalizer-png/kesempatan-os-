@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KESEMPATAN OS Live Simulator</title>
+<style>
+    :root {
+        --bg: #05070c;
+        --panel: #0d1420;
+        --border: rgba(0,255,163,0.18);
+        --accent: #00FFA3;
+        --text: #E0E6ED;
+        --dim: #7c8a99;
+        --danger: #FF6B6B;
+    }
+    * { box-sizing: border-box; }
+    html, body {
+        margin: 0; height: 100%;
+        background: var(--bg); color: var(--text);
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    }
+    body { display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+
+    /* ---- Toolbar ---- */
+    .toolbar {
+        display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+        padding: 10px 14px; background: var(--panel); border-bottom: 1px solid var(--border);
+        flex-shrink: 0;
+    }
+    .brand { font-weight: 800; font-size: 13px; letter-spacing: 0.5px; color: var(--accent); white-space: nowrap; }
+    .live-indicator { display: flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 700; letter-spacing: 1px; }
+    .live-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 8px var(--accent); }
+    .live-dot.off { background: var(--danger); box-shadow: 0 0 8px var(--danger); animation: none; }
+    .live-dot.pulse { animation: pulse 0.6s ease; }
+    @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.6); } 100% { transform: scale(1); } }
+
+    .viewport-group { display: flex; gap: 4px; background: rgba(255,255,255,0.04); border-radius: 8px; padding: 3px; }
+    .viewport-btn {
+        background: transparent; border: none; color: var(--dim); padding: 6px 10px;
+        border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 600;
+    }
+    .viewport-btn.active { background: var(--accent); color: #03050A; }
+
+    .url-bar {
+        flex: 1; min-width: 160px; display: flex; align-items: center; gap: 6px;
+        background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08);
+        border-radius: 8px; padding: 4px 10px;
+    }
+    .url-bar input {
+        flex: 1; background: transparent; border: none; outline: none; color: var(--text);
+        font-size: 12px; font-family: ui-monospace, monospace;
+    }
+    select#pagePicker {
+        background: rgba(255,255,255,0.04); color: var(--text); border: 1px solid rgba(255,255,255,0.08);
+        border-radius: 8px; padding: 6px 8px; font-size: 12px; max-width: 180px;
+    }
+    button.icon-btn {
+        background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); color: var(--text);
+        border-radius: 8px; padding: 6px 10px; cursor: pointer; font-size: 12px; font-weight: 600;
+        white-space: nowrap;
+    }
+    button.icon-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+    /* ---- Stage ---- */
+    .stage {
+        flex: 1; display: flex; align-items: center; justify-content: center;
+        overflow: auto; padding: 24px; position: relative;
+        background:
+            radial-gradient(circle at 20% 20%, rgba(0,255,163,0.05), transparent 40%),
+            radial-gradient(circle at 80% 80%, rgba(0,255,163,0.04), transparent 40%);
+    }
+    .device-frame {
+        position: relative;
+        background: #000;
+        border-radius: 4px;
+        box-shadow: 0 0 0 1px rgba(255,255,255,0.06), 0 20px 60px rgba(0,0,0,0.6);
+        transition: width 0.25s ease, height 0.25s ease;
+        overflow: hidden;
+    }
+    .device-frame.mode-mobile { width: 412px; height: 915px; border-radius: 28px; border: 8px solid #14181f; }
+    .device-frame.mode-tablet { width: 768px; height: 1024px; border-radius: 18px; border: 10px solid #14181f; }
+    .device-frame.mode-desktop { width: min(1280px, 90vw); height: min(800px, 80vh); border-radius: 4px; border: 1px solid rgba(255,255,255,0.08); }
+
+    iframe#previewFrame { width: 100%; height: 100%; border: none; background: #fff; display: block; }
+
+    /* ---- Error overlay ---- */
+    .error-overlay {
+        position: absolute; inset: 0; background: rgba(5,7,12,0.96);
+        display: none; flex-direction: column; align-items: center; justify-content: center;
+        gap: 14px; padding: 30px; text-align: center; z-index: 5;
+    }
+    .error-overlay.show { display: flex; }
+    .error-overlay .code { font-size: 42px; font-weight: 800; color: var(--danger); }
+    .error-overlay .msg { color: var(--dim); font-size: 13px; max-width: 320px; line-height: 1.5; }
+    .error-overlay button {
+        background: var(--accent); color: #03050A; border: none; border-radius: 8px;
+        padding: 8px 20px; font-weight: 700; cursor: pointer; font-size: 12px;
+    }
+
+    .statusbar {
+        flex-shrink: 0; padding: 6px 14px; background: var(--panel); border-top: 1px solid var(--border);
+        font-size: 10px; color: var(--dim); font-family: ui-monospace, monospace;
+        display: flex; justify-content: space-between; gap: 10px; flex-wrap: wrap;
+    }
+</style>
+</head>
+<body>
+    <div class="toolbar">
+        <span class="brand">KESEMPATAN OS Live Simulator</span>
+        <span class="live-indicator"><span id="liveDot" class="live-dot"></span><span id="liveText">LIVE</span></span>
+
+        <div class="viewport-group">
+            <button class="viewport-btn" data-mode="mobile">Android</button>
+            <button class="viewport-btn" data-mode="tablet">Tablet</button>
+            <button class="viewport-btn active" data-mode="desktop">Desktop</button>
+        </div>
+        <button class="icon-btn" id="rotateBtn" title="Putar orientasi (mobile/tablet)">⟳ Rotate</button>
+
+        <select id="pagePicker"><option value="">Halaman…</option></select>
+
+        <div class="url-bar">
+            <span style="color:var(--dim);font-size:11px;">/</span>
+            <input id="urlInput" type="text" value="index.html" spellcheck="false">
+        </div>
+
+        <button class="icon-btn" id="goBtn">Buka</button>
+        <button class="icon-btn" id="refreshBtn">⟲ Refresh</button>
+        <button class="icon-btn" id="fullscreenBtn">⛶ Fullscreen</button>
+    </div>
+
+    <div class="stage">
+        <div class="device-frame mode-desktop" id="deviceFrame">
+            <iframe id="previewFrame" title="KESEMPATAN OS preview"></iframe>
+            <div class="error-overlay" id="errorOverlay">
+                <div class="code" id="errorCode">404</div>
+                <div class="msg" id="errorMsg">Halaman tidak ditemukan.</div>
+                <button id="errorRetryBtn">Coba Lagi</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="statusbar">
+        <span id="statusUrl">/index.html</span>
+        <span id="statusReload">belum ada reload</span>
+    </div>
+
+<script>
+(function () {
+    const iframe = document.getElementById('previewFrame');
+    const deviceFrame = document.getElementById('deviceFrame');
+    const urlInput = document.getElementById('urlInput');
+    const pagePicker = document.getElementById('pagePicker');
+    const liveDot = document.getElementById('liveDot');
+    const liveText = document.getElementById('liveText');
+    const errorOverlay = document.getElementById('errorOverlay');
+    const errorCode = document.getElementById('errorCode');
+    const errorMsg = document.getElementById('errorMsg');
+    const statusUrl = document.getElementById('statusUrl');
+    const statusReload = document.getElementById('statusReload');
+
+    let rotated = false;
+
+    function currentPath() {
+        let p = urlInput.value.trim().replace(/^\/+/, '');
+        return p || 'index.html';
+    }
+
+    async function navigate(pathToLoad) {
+        errorOverlay.classList.remove('show');
+        const target = '/' + pathToLoad.replace(/^\/+/, '');
+        try {
+            const check = await fetch(target, { cache: 'no-store' });
+            if (!check.ok) {
+                errorCode.textContent = String(check.status);
+                errorMsg.textContent = 'Gagal memuat "' + target + '" — server membalas HTTP ' + check.status + '. Cek apakah file itu benar-benar ada di working tree.';
+                errorOverlay.classList.add('show');
+                return;
+            }
+        } catch (e) {
+            errorCode.textContent = 'ERR';
+            errorMsg.textContent = 'Tidak bisa menghubungi dev-simulator server. Pastikan "node dev-simulator/server.js" masih berjalan.';
+            errorOverlay.classList.add('show');
+            return;
+        }
+        iframe.src = target + (target.includes('?') ? '&' : '?') + '_lr=' + Date.now();
+        statusUrl.textContent = target;
+        urlInput.value = pathToLoad.replace(/^\/+/, '');
+    }
+
+    iframe.addEventListener('load', function () {
+        try {
+            const liveHref = iframe.contentWindow.location.href;
+            const u = new URL(liveHref);
+            statusUrl.textContent = u.pathname;
+        } catch (e) { /* cross-origin edge case, ignore */ }
+    });
+    iframe.addEventListener('error', function () {
+        errorCode.textContent = 'ERR';
+        errorMsg.textContent = 'iframe gagal memuat halaman.';
+        errorOverlay.classList.add('show');
+    });
+
+    document.getElementById('goBtn').addEventListener('click', function () { navigate(currentPath()); });
+    urlInput.addEventListener('keydown', function (e) { if (e.key === 'Enter') navigate(currentPath()); });
+    document.getElementById('refreshBtn').addEventListener('click', function () {
+        try { iframe.contentWindow.location.reload(); } catch (e) { navigate(currentPath()); }
+    });
+    document.getElementById('errorRetryBtn').addEventListener('click', function () { navigate(currentPath()); });
+    document.getElementById('fullscreenBtn').addEventListener('click', function () {
+        if (deviceFrame.requestFullscreen) deviceFrame.requestFullscreen();
+    });
+
+    document.querySelectorAll('.viewport-btn').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+            document.querySelectorAll('.viewport-btn').forEach(function (b) { b.classList.remove('active'); });
+            btn.classList.add('active');
+            deviceFrame.className = 'device-frame mode-' + btn.dataset.mode;
+            rotated = false;
+        });
+    });
+    document.getElementById('rotateBtn').addEventListener('click', function () {
+        const active = document.querySelector('.viewport-btn.active').dataset.mode;
+        if (active === 'desktop') return;
+        rotated = !rotated;
+        const w = getComputedStyle(deviceFrame).width;
+        const h = getComputedStyle(deviceFrame).height;
+        deviceFrame.style.width = h;
+        deviceFrame.style.height = w;
+    });
+
+    // Page picker, populated from the server's live directory scan.
+    fetch('/__dev-simulator/pages').then(function (r) { return r.json(); }).then(function (data) {
+        (data.pages || []).forEach(function (p) {
+            const opt = document.createElement('option');
+            opt.value = p.replace(/^\/+/, '');
+            opt.textContent = p;
+            pagePicker.appendChild(opt);
+        });
+    }).catch(function () { /* page list is a convenience, not required */ });
+    pagePicker.addEventListener('change', function () {
+        if (pagePicker.value) navigate(pagePicker.value);
+    });
+
+    // ---- Live reload via SSE ----
+    function connectLiveReload() {
+        const es = new EventSource('/__dev-simulator/events');
+        es.onopen = function () {
+            liveDot.classList.remove('off');
+            liveText.textContent = 'LIVE';
+        };
+        es.onerror = function () {
+            liveDot.classList.add('off');
+            liveText.textContent = 'DISCONNECTED';
+        };
+        es.onmessage = function (evt) {
+            let data;
+            try { data = JSON.parse(evt.data); } catch (e) { return; }
+            liveDot.classList.remove('pulse');
+            void liveDot.offsetWidth; // restart animation
+            liveDot.classList.add('pulse');
+            statusReload.textContent = 'reload terakhir: ' + (data.path || '?') + ' @ ' + new Date(data.ts).toLocaleTimeString();
+            try { iframe.contentWindow.location.reload(); } catch (e) { navigate(currentPath()); }
+        };
+    }
+    connectLiveReload();
+
+    navigate('index.html');
+})();
+</script>
+</body>
+</html>
