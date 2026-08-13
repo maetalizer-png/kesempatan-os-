@@ -2,7 +2,17 @@
 
 *Dokumen ini menggabungkan roadmap strategis awal (Fase 0-5) dengan hasil kerja nyata yang sudah dieksekusi dan diverifikasi di codebase. Statusnya bukan rencana di atas kertas — setiap item "Selesai" di bawah ini sudah diverifikasi lewat Playwright (regresi 25 halaman + unit test) dan sudah live di `main`.*
 
-*Terakhir diperbarui: setelah reorganisasi struktur folder + perbaikan delay awal aplikasi.*
+*Terakhir diperbarui: setelah pages/ dipindah ke features/, assets/icons+svg dirapikan, threshold-learning.js dimodularisasi, dan seluruh kode (.js/.css/.html) dibersihkan dari komentar.*
+
+### Item yang diminta tapi SENGAJA belum dikerjakan (tercatat, bukan terlewat)
+
+| Item | Alasan ditunda |
+|---|---|
+| Modularisasi `reaction-learning.js` (1531 baris) | Beda dari threshold-learning.js yang punya batas modul jelas (const `Object.freeze` terpisah per engine), file ini ~30 fungsi top-level dengan shared state lebih implisit. Memecahnya tergesa-gesa berisiko regresi di kode yang sedang jalan. Sudah dipindah ke `features/monitoring/learning/reaction-learning.js` tanpa dipecah. |
+| Fase 2 (tool-calling standar, agent-to-agent evaluation, dynamic routing) | Belum dimulai — kapasitas sesi ini habis untuk item struktural (comment removal 227 file, 3 migrasi folder besar, modularisasi) yang masing-masing butuh verifikasi penuh. |
+| 3D Intelligence Sphere / Opportunity Radar / Score Trend jadi mode slide (carousel) | Perubahan UI/UX murni, belum disentuh. |
+| Konsolidasi 57 tag `<script type="module">` di index.html jadi lebih sedikit entry point | Ini mengubah URUTAN EKSEKUSI boot seluruh app sekaligus (bukan satu fitur terisolasi) — kesalahan di sini berdampak ke SEMUA halaman, bukan satu fitur. Butuh sesi pengerjaan tersendiri dengan pengujian boot yang sangat teliti, bukan diselipkan di akhir sesi yang sudah panjang. |
+| Perbaikan lanjutan delay awal aplikasi (skeleton shimmer sudah ditambahkan, tapi user melaporkan masih terasa) | Skeleton shimmer (commit sebelumnya) memperbaiki KESAN patah/kosong saat loading, tapi tidak mengatasi actual root cause kalau ternyata ada di sisi device pengguna (cache lama, jaringan). Butuh info lebih lanjut dari device nyata pengguna untuk didiagnosis lebih jauh — lihat catatan di bawah. |
 
 ---
 
@@ -60,15 +70,19 @@ kesempatan-os-/
 │   ├── workflow/                — mesin orkestrasi 55 agen (workflow, parallel, state, llm-bridge)
 │   ├── ai-io/                   — jalur keluar-masuk AI: ai-clients (21 provider), response-cache, cache-db-bridge
 │   ├── agent-runtime/           — kontrol & render 55 agen (agent-control, agent-pool, agent-renderer)
-│   ├── dashboard/                — widget dashboard utama (chart, hitl, export, metrics-panel,
-│   │                                time-analytics-panel, log-panel, report-panel/dock,
-│   │                                execute-panel, threshold, three-viz, conten-dasboard)
-│   └── (12 file fitur sidebar tetap di sini — lihat A.3)
+│   └── dashboard/                — widget dashboard utama (chart, hitl, export, metrics-panel,
+│                                    time-analytics-panel, log-panel, report-panel/dock,
+│                                    execute-panel, threshold, three-viz, conten-dasboard)
+│                                    (semua file fitur sidebar SUDAH pindah ke features/ — lihat A.3)
 │
 ├── css/                          — mengikuti nama folder js/ PERSIS
 │   ├── core/                     — global, layout, sidebar, responsive, brand, checkbox, light-mode
 │   ├── agent-runtime/            — agent-grid.css
 │   └── dashboard/                — card-headings, charts, export-social, forms, hitl, log, metrics, toast
+│
+├── assets/
+│   ├── svg/                      — logo-kesempatan, brand-logo, brand-subtitle
+│   └── icons/                    — 9 ukuran icon PWA (72px-512px)
 │
 ├── agents/                       — definisi 55 agen (agents-config/general/politics/global,
 │                                    agent-science.js) + prompt-loader.js (loader JSON bersama)
@@ -82,9 +96,8 @@ kesempatan-os-/
 ├── kes-database/, memory/         — persistensi terenkripsi (IndexedDB) + vector memory
 ├── ai-agent/                      — orkestrasi agent-to-agent (planner, orchestrator, tool-registry,
 │                                    result-evaluator, provider-router, dst.)
-├── pages/                         — Telemetry, Settings, Report, Auto-Learning, Memory Manager
-├── features/                      — SEMUA fitur sidebar, dikelompokkan PERSIS
-│   │                                mengikuti struktur menu sidebar (lihat A.3)
+├── features/                      — SEMUA fitur sidebar (termasuk yang dulu di pages/),
+│   │                                dikelompokkan PERSIS mengikuti struktur menu sidebar (lihat A.3)
 │   ├── kestraktive/                — Chat AI, Chat Agent, Forum, Debat, Turnamen (34 file)
 │   ├── kespremai/
 │   │   ├── podcast/, voice/, rap/, visual/, custom-auto/, offline/
@@ -93,9 +106,15 @@ kesempatan-os-/
 │   ├── kesmedia/
 │   │   ├── social-share/, theme/, editor/
 │   ├── kesworker/                  — 55 AI Worker otonom (ai-worker.js dkk)
-│   ├── observation/, noise/, websocket/, publicapi/
-│   │                                — tanpa submenu, langsung di features/
-│   └── (2 file SENGAJA tidak dipindah — lihat A.3)
+│   ├── monitoring/
+│   │   ├── report/, telemetry/, learning/
+│   │   │        learning/ berisi auto-learning.js (halaman UI) +
+│   │   │        threshold-learning.js (dipecah jadi 6 modul di
+│   │   │        learning/threshold/) + reaction-learning.js
+│   ├── memory-manager/             — halaman UI Memory Manager (BUKAN memory/ engine di atas)
+│   ├── settings/
+│   └── observation/, noise/, websocket/, publicapi/
+│                                    — tanpa submenu, langsung di features/
 └── dev-simulator/                 — tool live-preview lokal (bukan bagian app produksi)
 ```
 
@@ -103,12 +122,10 @@ kesempatan-os-/
 
 **Pemetaan folder ↔ menu sidebar** persis 1:1 — grup dengan submenu (▼)
 jadi sub-folder `features/<grup>/<item>/`, item tanpa submenu langsung di
-`features/<item>/`. `threshold-learning.js` dan `reaction-learning.js`
-(halaman Auto-Learning) SENGAJA masih di `js/` root, bukan `features/` —
-keduanya monkey-patch `WorkflowEngine.start`/`recordFeedback` secara
-global saat modul dievaluasi, jadi bukan fitur yang benar-benar mandiri
-(memindahkannya tanpa mengaudit dampak monkey-patch itu berisiko, di luar
-scope reorganisasi folder murni).
+`features/<item>/`. Semua file fitur (termasuk yang tadinya lepas di `js/`
+root dan `pages/`) sudah dipindah ke `features/` — lihat Bagian B untuk
+detail modularisasi `threshold-learning.js` jadi 6 file di
+`features/monitoring/learning/threshold/`.
 
 **Analisis: apakah setiap fitur bisa punya CSS & HTML sendiri?**
 
