@@ -1,5 +1,8 @@
 import { Utils } from './utils.js';
-import { getDatasetTexts } from '../dataset/index.js';
+// dataset/ (~165 entri, ~77KB) diimpor DINAMIS di dalam buildBootstrapCorpus(),
+// bukan statis di sini — file ini eager-loaded lewat index.html, jadi import
+// statis akan memaksa dataset/ ikut ter-parse di SETIAP boot aplikasi padahal
+// isinya cuma dipakai saat model lokal benar-benar diinisialisasi.
 
 const KESEMPATAN = window.KESEMPATAN || {};
 window.KESEMPATAN = KESEMPATAN;
@@ -205,7 +208,7 @@ const MAX_BOOTSTRAP_TEXT_LENGTH = 800;
 const MAX_DATASET_ENTRIES = 120;
 const MAX_DATASET_TEXT_LENGTH = 500;
 
-function buildBootstrapCorpus() {
+async function buildBootstrapCorpus() {
     const texts = [];
     if (window.AGENTS_CONFIG) {
         const names = Object.keys(window.AGENTS_CONFIG).slice(0, MAX_BOOTSTRAP_AGENTS);
@@ -228,6 +231,7 @@ function buildBootstrapCorpus() {
         });
     }
     try {
+        const { getDatasetTexts } = await import('../dataset/index.js');
         const datasetTexts = getDatasetTexts(MAX_DATASET_ENTRIES, MAX_DATASET_TEXT_LENGTH);
         texts.push.apply(texts, datasetTexts);
     } catch (e) {
@@ -402,7 +406,7 @@ async function ensureKesempatanLLMReady() {
             Logger.warn('KesempatanLLM', 'Pemulihan checkpoint ' + e.message + ', lanjut coba bikin model baru');
         }
     }
-    const corpus = buildBootstrapCorpus();
+    const corpus = await buildBootstrapCorpus();
     if (corpus.length === 0) {
         return false;
     }

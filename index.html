@@ -43,7 +43,13 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="preconnect" href="https://cdn.jsdelivr.net">
     <link rel="preconnect" href="https://cdnjs.cloudflare.com">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Google Fonts (Inter) dimuat non-render-blocking dengan pola sama
+         seperti Font Awesome di bawah: kalau fonts.googleapis.com lambat
+         atau tidak terjangkau (jaringan HP/firewall tertentu), first paint
+         TIDAK ikut menunggu — teks tampil pakai fallback font sistem dari
+         @font-face di CSS sampai Inter selesai dimuat di background. -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700;800&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+    <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700;800&display=swap" rel="stylesheet"></noscript>
     <!-- Font Awesome (ikon dekoratif, bukan penentu layout) dimuat non-render-blocking:
          browser mengambilnya di background lewat media="print", lalu media
          di-swap ke "all" begitu selesai. noscript menjaga ikon tetap tampil
