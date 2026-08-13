@@ -5,6 +5,7 @@ BENTUK A/B TERSAMBUNG (teknik rim: outer warna garis + 1px,
 inner ::before gelap opaque).
 */
 import { Utils } from '../js/utils.js';
+import { WorkflowLLMBridge } from '../js/workflow-llm-bridge.js';
 
 const KESEMPATAN = window.KESEMPATAN || {};
 window.KESEMPATAN = KESEMPATAN;
@@ -146,6 +147,35 @@ function renderHeatmap(container, heatmapData) {
     }).join('');
 }
 
+// ========== LLM ENGINE HEALTH (Fase 0 observability: local vs fallback) ==========
+function renderEngineHealth(container, summary) {
+    if (!container) return;
+    const fallbackColor = summary.fallbackRate < 20 ? '#00FFA3' : summary.fallbackRate < 50 ? '#FFD700' : '#FF6B6B';
+    const engineRows = [
+        { key: 'localV2', label: 'Core Engine v2 (pretrained)' },
+        { key: 'local', label: 'Core Engine v1 (custom)' },
+        { key: 'external', label: 'Provider Eksternal' }
+    ].map(function(row) {
+        const b = summary[row.key];
+        const share = summary.totalCalls > 0 ? Math.round((b.calls / summary.totalCalls) * 100) : 0;
+        return '<div class="tl-heat-row">' +
+            '<span class="tl-heat-name">' + escapeHtml(row.label) + '</span>' +
+            '<span class="tl-dots" style="flex:1;">' +
+                '<span style="font-size:10px;color:#7c8a99;">' + b.calls + ' panggilan (' + share + '%) &middot; ' + b.successRate + '% sukses</span>' +
+            '</span>' +
+            '<span class="tl-ms">' + b.avgLatencyMs + 'ms</span></div>';
+    }).join('');
+    container.innerHTML = '<div class="tl-b"><span class="tl-in"><h4>Kesehatan Engine LLM &mdash; Local-First Check</h4>' +
+        '<div class="tl-strip" style="margin-bottom:10px;">' +
+            '<div class="tl-cell"><div class="tl-num">' + summary.totalCalls + '</div><div class="tl-lbl">Total Panggilan</div></div>' +
+            '<div class="tl-cell"><div class="tl-num" style="color:' + fallbackColor + ';">' + summary.fallbackRate + '%</div><div class="tl-lbl">Fallback Eksternal</div></div>' +
+            '<div class="tl-cell"><div class="tl-num" style="color:#00FFA3;">' + summary.localV2.calls + '</div><div class="tl-lbl">Core v2 Calls</div></div>' +
+            '<div class="tl-cell"><div class="tl-num" style="color:#4FC3F7;">' + summary.local.calls + '</div><div class="tl-lbl">Core v1 Calls</div></div>' +
+        '</div>' +
+        (summary.totalCalls > 0 ? engineRows : '<div style="text-align:center;color:#5a6a7a;font-size:11px;padding:8px;">Belum ada panggilan LLM tercatat di sesi ini.</div>') +
+        '</span></div>';
+}
+
 // ========== METRICS STRIP ==========
 function renderMetrics(container, records, avgLatency, agentsActive) {
     if (!container) return;
@@ -179,6 +209,7 @@ function render() {
         '<button id="refreshTelemetryBtn" class="tl-ba">Refresh</button>' +
         '<button id="resetTelemetryBtn" class="tl-ba danger">Reset</button></div></div>' +
         '<div id="telemetryMetricsContainer"></div>' +
+        '<div id="telemetryEngineHealthContainer"></div>' +
         '<div class="tl-b"><span class="tl-in"><h4>Latency per Agent</h4>' +
         '<div style="position:relative;width:100%;height:200px;"><canvas id="telemetryDetailChart" style="width:100%;height:100%;"></canvas></div></span></div>' +
         '<div class="tl-b"><span class="tl-in"><h4>Performance Heatmap</h4><div id="telemetryHeatmap"></div></span></div>' +
@@ -186,6 +217,7 @@ function render() {
         '</div>';
 
     renderMetrics(document.getElementById('telemetryMetricsContainer'), records, avgLatency, heatmapData.length);
+    renderEngineHealth(document.getElementById('telemetryEngineHealthContainer'), WorkflowLLMBridge.getTelemetrySummary());
     renderHeatmap(document.getElementById('telemetryHeatmap'), heatmapData);
     setTimeout(function() { renderChart(document.getElementById('telemetryDetailChart'), latByAgent); }, 50);
 

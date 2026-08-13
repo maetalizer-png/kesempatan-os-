@@ -54,6 +54,7 @@ let __activeGenerateCount = 0;
 // ============================================================
 const LLM_TELEMETRY = window.KESEMPATAN.LLMTelemetry || (function() {
     const store = {
+        localV2: { calls: 0, failures: 0, totalLatencyMs: 0, totalCharsGenerated: 0 },
         local: { calls: 0, failures: 0, totalLatencyMs: 0, totalCharsGenerated: 0 },
         external: { calls: 0, failures: 0, totalLatencyMs: 0 },
         recent: []
@@ -62,12 +63,21 @@ const LLM_TELEMETRY = window.KESEMPATAN.LLMTelemetry || (function() {
     return store;
 })();
 
+// FIX: dulu bucket dipilih dengan `engine === 'local' ? local : external`,
+// jadi setiap panggilan 'local-v2' (Core Engine v2 — jalur PERTAMA yang
+// dicoba, dan yang paling sering dipakai) salah masuk ke bucket
+// `external`, membuat rasio fallback yang dilaporkan jauh lebih buruk
+// dari kenyataan. localV2/local/external sekarang masing-masing punya
+// bucket sendiri sesuai nilai `engine` yang sebenarnya dikembalikan
+// callGenerativeEngine().
 function recordLLMTelemetry(engine, latencyMs, success, extra) {
-    const bucket = engine === 'local' ? LLM_TELEMETRY.local : LLM_TELEMETRY.external;
+    const bucket = engine === 'local-v2' ? LLM_TELEMETRY.localV2
+        : engine === 'local' ? LLM_TELEMETRY.local
+        : LLM_TELEMETRY.external;
     bucket.calls++;
     if (!success) bucket.failures++;
     bucket.totalLatencyMs += latencyMs;
-    if (engine === 'local' && extra && typeof extra.chars === 'number') {
+    if ((engine === 'local' || engine === 'local-v2') && extra && typeof extra.chars === 'number') {
         bucket.totalCharsGenerated += extra.chars;
     }
     LLM_TELEMETRY.recent.push(Object.assign({ engine: engine, latencyMs: latencyMs, success: success, ts: Date.now() }, extra || {}));
@@ -496,8 +506,36 @@ async function cacheAgentResultIfValid(agent, model, prompt, parsed) {
     }
 }
 
+// Ringkasan siap-pakai untuk dashboard "kesehatan sistem" (pages/telemetry.js):
+// per-engine call count/failure/avg latency, plus fallbackRate = porsi
+// panggilan yang berakhir di provider eksternal dari total panggilan LLM.
+// Roadmap Fase 0 "Observability dasar" secara eksplisit minta metrik ini
+// ("rasio fallback ke provider eksternal turun terukur") — sebelumnya data
+// ini SUDAH direkam (LLM_TELEMETRY) tapi tidak pernah ditampilkan di UI
+// manapun.
+function getTelemetrySummary() {
+    function summarizeBucket(bucket) {
+        return {
+            calls: bucket.calls,
+            failures: bucket.failures,
+            avgLatencyMs: bucket.calls > 0 ? Math.round(bucket.totalLatencyMs / bucket.calls) : 0,
+            successRate: bucket.calls > 0 ? Math.round(((bucket.calls - bucket.failures) / bucket.calls) * 100) : 100
+        };
+    }
+    const totalCalls = LLM_TELEMETRY.localV2.calls + LLM_TELEMETRY.local.calls + LLM_TELEMETRY.external.calls;
+    return {
+        localV2: summarizeBucket(LLM_TELEMETRY.localV2),
+        local: summarizeBucket(LLM_TELEMETRY.local),
+        external: summarizeBucket(LLM_TELEMETRY.external),
+        totalCalls: totalCalls,
+        fallbackRate: totalCalls > 0 ? Math.round((LLM_TELEMETRY.external.calls / totalCalls) * 100) : 0,
+        recent: LLM_TELEMETRY.recent.slice(-15).reverse()
+    };
+}
+
 export const WorkflowLLMBridge = Object.freeze({
     callGenerativeEngine: callGenerativeEngine,
+    getTelemetrySummary: getTelemetrySummary,
     ensureKesempatanLLMReady: ensureKesempatanLLMReady,
     ensureKesempatanLLMv2Ready: ensureKesempatanLLMv2Ready,
     searchWorldData: searchWorldData,
