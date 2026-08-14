@@ -10,6 +10,7 @@ import {
     CAG_loadTheme, CAG_playTypingSound, CAG_saveMessageToHistory, CAG_showTypingIndicator,
     CAG_speakText, CAG_streamTextToElement
 } from './cag-ui-render.js';
+import { QuickTools } from '../../../ai-agent/quick-tools.js';
 
 
 
@@ -94,6 +95,15 @@ async function CAG_sendChatToAgent() {
             CAG_addMessage(container, displayName, message, true);
             input.value = '';
             CAG_playTypingSound();
+
+            const quickAnswer = QuickTools.tryQuickAnswer(message);
+            if (quickAnswer) {
+                CAG_addMessage(container, displayName, quickAnswer.answer, false);
+                CAG_saveMessageToHistory(container.id, displayName, quickAnswer.answer, false);
+                CAG_saveMessageToMemory(message, quickAnswer.answer, displayName);
+                return;
+            }
+
             const apiKey = CAG_getApiKey();
             const hasFallbackProvider = typeof window.getActiveProviders === 'function' && window.getActiveProviders().length > 0;
             if (!apiKey && !hasFallbackProvider) {

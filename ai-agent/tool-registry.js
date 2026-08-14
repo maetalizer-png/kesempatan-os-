@@ -3,6 +3,7 @@
 import { MemoryBridge } from './memory-bridge.js';
 import { ObservationLoop } from './observation-loop.js';
 import { AgentRegistry } from './agent-registry.js';
+import { QuickTools } from './quick-tools.js';
 
 const KESEMPATAN = window.KESEMPATAN || {};
 window.KESEMPATAN = KESEMPATAN;
@@ -39,6 +40,14 @@ function list() {
         return { name: name, available: tool.available !== false };
     });
 }
+
+
+register('utility.quickAnswer', {
+    run: function(args) {
+        const result = QuickTools.tryQuickAnswer((args && args.text) || '');
+        return result || { notImplemented: true, reason: 'Bukan pertanyaan matematika/tanggal/jam sederhana' };
+    }
+});
 
 
 register('memory.save', {

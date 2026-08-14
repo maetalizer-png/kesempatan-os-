@@ -4,8 +4,6 @@
 .container {
   position: relative;
   z-index: 1;
-  transform: translateZ(0);
-  will-change: transform;
   isolation: isolate;
   animation: fadeIn 0.2s ease-in-out;
   max-width: 1920px;
@@ -13,8 +11,6 @@
   box-sizing: border-box;
   margin: 0 auto;
   background: rgba(10, 15, 26, 0.03) !important;
-  backdrop-filter: blur(0px) !important;
-  -webkit-backdrop-filter: blur(0px) !important;
   border-radius: var(--radius);
   border: none !important;
   padding: 20px;
