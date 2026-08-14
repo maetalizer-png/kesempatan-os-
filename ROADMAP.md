@@ -2,14 +2,13 @@
 
 *Dokumen ini menggabungkan roadmap strategis awal (Fase 0-5) dengan hasil kerja nyata yang sudah dieksekusi dan diverifikasi di codebase. Statusnya bukan rencana di atas kertas — setiap item "Selesai" di bawah ini sudah diverifikasi lewat Playwright (regresi 25 halaman + unit test) dan sudah live di `main`.*
 
-*Terakhir diperbarui: setelah pages/ dipindah ke features/, assets/icons+svg dirapikan, threshold-learning.js dimodularisasi, dan seluruh kode (.js/.css/.html) dibersihkan dari komentar.*
+*Terakhir diperbarui: setelah Fase 2 (tool-registry diperluas, agent-to-agent evaluation loop, confidence-based agent routing, memory-bridge untuk KESWORKER) diimplementasi dan diverifikasi.*
 
 ### Item yang diminta tapi SENGAJA belum dikerjakan (tercatat, bukan terlewat)
 
 | Item | Alasan ditunda |
 |---|---|
 | Modularisasi `reaction-learning.js` (1531 baris) | Beda dari threshold-learning.js yang punya batas modul jelas (const `Object.freeze` terpisah per engine), file ini ~30 fungsi top-level dengan shared state lebih implisit. Memecahnya tergesa-gesa berisiko regresi di kode yang sedang jalan. Sudah dipindah ke `features/monitoring/learning/reaction-learning.js` tanpa dipecah. |
-| Fase 2 (tool-calling standar, agent-to-agent evaluation, dynamic routing) | Belum dimulai — kapasitas sesi ini habis untuk item struktural (comment removal 227 file, 3 migrasi folder besar, modularisasi) yang masing-masing butuh verifikasi penuh. |
 | 3D Intelligence Sphere / Opportunity Radar / Score Trend jadi mode slide (carousel) | Perubahan UI/UX murni, belum disentuh. |
 | Konsolidasi 57 tag `<script type="module">` di index.html jadi lebih sedikit entry point | Ini mengubah URUTAN EKSEKUSI boot seluruh app sekaligus (bukan satu fitur terisolasi) — kesalahan di sini berdampak ke SEMUA halaman, bukan satu fitur. Butuh sesi pengerjaan tersendiri dengan pengujian boot yang sangat teliti, bukan diselipkan di akhir sesi yang sudah panjang. |
 | Perbaikan lanjutan delay awal aplikasi (skeleton shimmer sudah ditambahkan, tapi user melaporkan masih terasa) | Skeleton shimmer (commit sebelumnya) memperbaiki KESAN patah/kosong saat loading, tapi tidak mengatasi actual root cause kalau ternyata ada di sisi device pengguna (cache lama, jaringan). Butuh info lebih lanjut dari device nyata pengguna untuk didiagnosis lebih jauh — lihat catatan di bawah. |
@@ -190,23 +189,57 @@ arsitektur terpisah dan sengaja tidak diambil di sesi ini.
 | Perbaikan delay awal aplikasi | ✅ First paint 13 detik → ~130ms (akar masalah: Google Fonts render-blocking) |
 | Reorganisasi struktur folder `js/`+`css/` | ✅ 27 file backend/dashboard → 5 subfolder bermakna, css/ mengikuti nama yang sama |
 
-### ⏳ Fase 2 — Orkestrasi Multi-Agent 2.0 (BELUM DIMULAI SESI INI)
+### ✅ Fase 2 — Orkestrasi Multi-Agent 2.0 (SELESAI, lingkup `ai-agent/`)
 
 Fondasi `ai-agent/` (planner, orchestrator, tool-registry, result-evaluator,
-provider-router) sudah dibangun di sesi-sesi sebelumnya. Yang tersisa:
+provider-router) dibangun di sesi-sesi sebelumnya. Sesi ini melengkapi 4 item
+yang tersisa:
 
-1. **Tool-calling terstandar** — skema jelas per kapabilitas (cek harga
-   crypto, ambil berita, export dokumen), bukan fungsi yang menempel ke satu
-   fitur. `ai-agent/tool-registry.js` sudah jadi tempatnya, tinggal
-   diperluas cakupannya ke kapabilitas yang belum terdaftar.
-2. **Agent-to-agent evaluation loop** — pakai `result-evaluator.js` supaya
-   agen saling mengaudit (mis. "Risk Manager" mengaudit "Startup Founder")
-   sebelum masuk skor akhir 10 dimensi.
-3. **Dynamic agent routing berbasis confidence** — perluas
-   `provider-router.js` jadi agent-router: sistem otomatis memilih subset
-   agen relevan berdasar jenis pertanyaan, bukan Sequential/Parallel statis.
-4. **Memory-bridge sebagai shared context** — pastikan `memory-bridge.js`
-   benar-benar dipakai lintas 55 agen + 55 worker.
+1. **Tool-calling terstandar** — ✅ `ai-agent/tool-registry.js` diperluas
+   dengan 7 kapabilitas baru: `export.toJSON/toHTML/toCSV/toPDF` (bungkus
+   `ExportManager`), `theme.setTheme/getCurrentTheme` (bungkus
+   `CustomTheme`), `voice.speak` (bungkus `AIVoiceAgents.speakWithAgentVoice`).
+   Semua diverifikasi live lewat Playwright (invoke sungguhan, bukan cuma
+   terdaftar).
+2. **Agent-to-agent evaluation loop** — ✅ `result-evaluator.js` dapat
+   `auditAgentOutput(output, { auditor, topic })`: agen auditor (default
+   `Verifier`, bisa diganti mis. `RiskManager`) menilai wajar-tidaknya klaim
+   skor/confidence agen lain lewat panggilan LLM sungguhan, tanpa mengulang
+   analisis dari nol. `evaluateTaskWithAudit()` menjalankan audit untuk semua
+   step yang menghasilkan output beragen, lalu menambah status `DISPUTED`
+   (memicu re-plan) kalau ada yang tidak disetujui auditor. Diaktifkan lewat
+   opsi `{ auditAgent: 'RiskManager' }` saat memanggil `runAgentTask()` —
+   opt-in, tidak mengubah perilaku default. Diverifikasi live: panggilan
+   audit sungguhan `StartupFounder` diaudit `RiskManager` menghasilkan
+   `agrees: true, auditorConfidence: 73`.
+3. **Dynamic agent routing berbasis confidence** — ✅ `provider-router.js`
+   dapat `selectRelevantAgents(query, allAgents, limit)`: skor tiap agen
+   analisis dari overlap kata kunci antara tugas pengguna dan nama/peran
+   agen, rangking hasil, fallback ke urutan default kalau tidak ada yang
+   cocok. `planner.js` memakai ini di `describeCapabilities(goal)` — daftar
+   agen yang dikirim ke LLM planner sekarang relevan terhadap goal, bukan 13
+   agen pertama secara statis. Diverifikasi: query "startup founder gagasan
+   bisnis baru" → `StartupFounder` rank #1; "risiko hukum kontrak" →
+   `Hukum` rank #1; "strategi pemasaran digital" → `Manager`/`Strategist`
+   rank atas.
+4. **Memory-bridge sebagai shared context** — ✅ Sisi agen analisis (55
+   agen) sudah lama menulis+membaca `window.VectorMemory` langsung di
+   `workflow.js` (RAG top-2 sebelum generate, save sesudah generate) — ini
+   store yang sama persis dengan yang dibungkus `memory-bridge.js`, jadi
+   sudah "shared" secara alami. Sisi KESWORKER (55 worker) TIDAK menulis ke
+   memory sama sekali sebelum sesi ini (workernya menghasilkan string
+   simulasi/sintetis, bukan LLM). Diperbaiki dengan menambah
+   `MemoryBridge.save()` di tool `worker.run` (ai-agent/tool-registry.js),
+   ditandai `source: 'worker'` supaya agen bisa membedakan konteks dari
+   worker vs dari sesama agen analisis. Sengaja hanya di jalur orkestrasi
+   `ai-agent/`, bukan di worker-pool otonom lama (`features/kesworker/`)
+   supaya tidak ada risiko mencampur data acak/sintetis worker ke memori
+   bersama lewat jalur yang tidak diminta.
+
+Catatan lingkup: perluasan ini ada di layer `ai-agent/` (sistem orkestrasi
+AI Agent baru). Dashboard multi-agent lama (`js/workflow/workflow.js`, 55
+agen dengan checkbox manual) tidak disentuh — sudah teruji lama dan berjalan
+di luar lingkup Fase 2 ini.
 
 ### ⏳ Fase 3 — Memory & Retrieval Presisi (BELUM DIMULAI SESI INI)
 
@@ -244,10 +277,9 @@ Diambil dari roadmap asli, urutan dampak/effort realistis untuk solo dev:
    kerja arsitektur baru, modul sudah ada tinggal diaktifkan.
 2. **Feedback HITL → memory berbobot tinggi** (Fase 3) — bikin "auto-learning"
    di README benar-benar terasa, bukan cuma klaim.
-3. **Tool-registry diperluas** (Fase 2) — dampak langsung ke kualitas semua
-   agen sekaligus, fondasinya sudah ada.
-4. **Agent-router berbasis confidence** (Fase 2) — mengurangi jawaban agen
-   yang di luar konteks, salah satu keluhan paling umum di sistem multi-agent.
+3. ~~**Tool-registry diperluas** (Fase 2)~~ — ✅ selesai (lihat Fase 2 di atas).
+4. ~~**Agent-router berbasis confidence** (Fase 2)~~ — ✅ selesai (lihat Fase 2
+   di atas).
 
 ---
 

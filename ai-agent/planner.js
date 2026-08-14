@@ -9,17 +9,18 @@ import { AgentRegistry } from './agent-registry.js';
 
 
 
-function describeCapabilities() {
+function describeCapabilities(goal) {
     const tools = ToolRegistry.list().filter(function(t) { return t.available; }).map(function(t) { return t.name; });
     const workerCategories = AgentRegistry.listWorkerCategories();
-    const coreAgents = AgentRegistry.listAnalysisAgents().slice(0, 13).map(function(a) {
-        return a.id + ' (' + a.role + ')';
+    const relevantAgents = ProviderRouter.selectRelevantAgents(goal || '', AgentRegistry.listAnalysisAgents(), 13);
+    const coreAgents = relevantAgents.map(function(a) {
+        return a.id + ' (' + a.role + ')' + (a.relevance > 0 ? ' [relevansi:' + a.relevance + ']' : '');
     });
     return {
         tools: tools,
         workerCategories: workerCategories,
         coreAgents: coreAgents,
-        note: 'Untuk kind="agent", pilih dari daftar agen analisis di atas kalau cocok (mis. "Researcher" untuk riset, "Analyst" untuk analisis data, "Copywriter" untuk menulis, "Verifier" untuk verifikasi akhir). Kalau perlu spesialisasi lain di luar daftar itu (mis. bidang tertentu), tetap boleh sebut nama agen yang masuk akal secara role — sistem akan mencarinya di roster lengkap (~200 agen) lewat pencocokan role/kata kunci. Untuk kind="worker", gunakan id KESWORKER yang persis dan kategori di atas sebagai panduan (mis. "bitcoin_trader" untuk kategori crypto).'
+        note: 'Daftar agen di atas sudah dirangking berdasar relevansi kata kunci terhadap tugas pengguna (bukan urutan statis). Untuk kind="agent", pilih dari daftar ini kalau cocok. Kalau perlu spesialisasi lain di luar daftar itu (mis. bidang tertentu), tetap boleh sebut nama agen yang masuk akal secara role — sistem akan mencarinya di roster lengkap (~200 agen) lewat pencocokan role/kata kunci. Untuk kind="worker", gunakan id KESWORKER yang persis dan kategori di atas sebagai panduan (mis. "bitcoin_trader" untuk kategori crypto).'
     };
 }
 
@@ -62,7 +63,7 @@ function parsePlanJSON(text) {
 }
 
 async function createPlan(goal, context) {
-    const capabilities = describeCapabilities();
+    const capabilities = describeCapabilities(goal);
     const prompt = buildPlanningPrompt(goal, context, capabilities);
     const { text } = await ProviderRouter.generate(prompt, { agent: 'AIAgentPlanner', topic: (context && context.topic) || goal });
     try {

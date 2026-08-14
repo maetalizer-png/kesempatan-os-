@@ -67,7 +67,13 @@ register('worker.run', {
         if (!window.AIWorkers || typeof window.AIWorkers.runWorker !== 'function') {
             throw new Error('ToolRegistry: window.AIWorkers belum siap');
         }
-        return window.AIWorkers.runWorker(workerEntry.config);
+        const result = await window.AIWorkers.runWorker(workerEntry.config);
+        if (result) {
+            MemoryBridge.save('[KESWORKER:' + workerEntry.id + '] ' + result, {
+                source: 'worker', workerId: workerEntry.id, category: workerEntry.category
+            }).catch(function() {});
+        }
+        return result;
     }
 });
 
@@ -141,6 +147,66 @@ register('podcast.generateScript', {
             throw new Error('ToolRegistry: PodcastGenerator belum siap');
         }
         return KESEMPATAN.PodcastGenerator.generate(args);
+    }
+});
+
+
+register('export.toJSON', {
+    run: function(args) {
+        if (!KESEMPATAN.ExportManager) throw new Error('ToolRegistry: ExportManager belum siap');
+        if (args && args.data) KESEMPATAN.ExportManager.setData(args.data, args.verifierNote);
+        return KESEMPATAN.ExportManager.toJSON();
+    }
+});
+register('export.toHTML', {
+    run: function(args) {
+        if (!KESEMPATAN.ExportManager) throw new Error('ToolRegistry: ExportManager belum siap');
+        if (args && args.data) KESEMPATAN.ExportManager.setData(args.data, args.verifierNote);
+        return KESEMPATAN.ExportManager.toHTML();
+    }
+});
+register('export.toCSV', {
+    run: function(args) {
+        if (!KESEMPATAN.ExportManager) throw new Error('ToolRegistry: ExportManager belum siap');
+        if (args && args.data) KESEMPATAN.ExportManager.setData(args.data, args.verifierNote);
+        return KESEMPATAN.ExportManager.toCSV();
+    }
+});
+register('export.toPDF', {
+    run: async function(args) {
+        if (!KESEMPATAN.ExportManager) throw new Error('ToolRegistry: ExportManager belum siap');
+        if (args && args.data) KESEMPATAN.ExportManager.setData(args.data, args.verifierNote);
+        return KESEMPATAN.ExportManager.toPDF();
+    }
+});
+
+
+register('theme.setTheme', {
+    run: function(args) {
+        if (!KESEMPATAN.CustomTheme || typeof KESEMPATAN.CustomTheme.applyTheme !== 'function') {
+            throw new Error('ToolRegistry: CustomTheme belum siap');
+        }
+        KESEMPATAN.CustomTheme.applyTheme(args.themeId, args.animate !== false);
+        return { applied: args.themeId };
+    }
+});
+register('theme.getCurrentTheme', {
+    run: function() {
+        if (!KESEMPATAN.CustomTheme || typeof KESEMPATAN.CustomTheme.getCurrentTheme !== 'function') {
+            throw new Error('ToolRegistry: CustomTheme belum siap');
+        }
+        return KESEMPATAN.CustomTheme.getCurrentTheme();
+    }
+});
+
+
+register('voice.speak', {
+    run: function(args) {
+        if (!KESEMPATAN.AIVoiceAgents || typeof KESEMPATAN.AIVoiceAgents.speakWithAgentVoice !== 'function') {
+            throw new Error('ToolRegistry: AIVoiceAgents belum siap');
+        }
+        KESEMPATAN.AIVoiceAgents.speakWithAgentVoice(args.text, args.agentName);
+        return { spoken: true };
     }
 });
 

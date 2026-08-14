@@ -66,7 +66,9 @@ async function runTask(task, plan, options) {
     }
 
     TaskManager.updateTask(task.id, { status: 'EVALUATING' });
-    const evaluation = ResultEvaluator.evaluateTask(stepResults);
+    const evaluation = options.auditAgent
+        ? await ResultEvaluator.evaluateTaskWithAudit(stepResults, { auditor: options.auditAgent, topic: task.context && task.context.topic })
+        : ResultEvaluator.evaluateTask(stepResults);
 
     return { stepResults: stepResults, evaluation: evaluation, approvalOutcome: approvalOutcome };
 }
