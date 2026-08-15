@@ -2,7 +2,9 @@
 
 *Dokumen ini menggabungkan roadmap strategis awal (Fase 0-5) dengan hasil kerja nyata yang sudah dieksekusi dan diverifikasi di codebase. Statusnya bukan rencana di atas kertas — setiap item "Selesai" di bawah ini sudah diverifikasi lewat Playwright (regresi 25 halaman + unit test) dan sudah live di `main`.*
 
-*Terakhir diperbarui: Rekonstruksi v3 lanjutan — Fase 1, 2, 5, 6.6, 6.7, 6.8 SELESAI (shell flex-column penuh, 10/22 file hardcode dimigrasi, tombol rekomendasi agen, keputusan 3D Sphere jadi opt-in, rebrand Export Sosial, fondasi components.css). Sisa: Fase 3 (Cockpit dashboard) dan Fase 4 (6 halaman self-contained) — keduanya perubahan arsitektur besar, dievaluasi tapi sengaja belum dieksekusi.*
+*Terakhir diperbarui: Koreksi panel "PARAMETER INPUT" jadi satu kartu tunggal — badge mode (AUTO/SEQUENTIAL/PARALLEL/HITL) jadi tombol yang membuka bottom-sheet, pemilihan agen (Select All/Deselect/rekomendasi otomatis) dipindah penuh ke bottom-sheet terpisah, baris status "Intelligence Loop" dihapus, topbar mobile dipadatkan (~90-96px, dari ~246px) sehingga seluruh kartu PARAMETER INPUT muat dalam satu layar (100dvh) tanpa scroll di 360×640 maupun 412×915 — diverifikasi lewat Playwright assert (`cardBottom ≤ viewportHeight`, tanpa scroll internal kartu), regresi 25 halaman, dan 42/42 unit test.*
+
+*Sebelumnya: Rekonstruksi v3 lanjutan — Fase 1, 2, 5, 6.6, 6.7, 6.8 SELESAI (shell flex-column penuh, 10/22 file hardcode dimigrasi, tombol rekomendasi agen, keputusan 3D Sphere jadi opt-in, rebrand Export Sosial, fondasi components.css). Sisa: Fase 3 (Cockpit dashboard) dan Fase 4 (6 halaman self-contained) — keduanya perubahan arsitektur besar, dievaluasi tapi sengaja belum dieksekusi.*
 
 ### Item yang diminta tapi SENGAJA belum dikerjakan (tercatat, bukan terlewat)
 

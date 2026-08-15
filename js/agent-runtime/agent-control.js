@@ -60,25 +60,40 @@ function applyRecommendation(text) {
     if (recommendBtn) recommendBtn.hidden = false;
 }
 
-function runRecommendation() {
+function buildReason(agent) {
+    if (agent.relevance > 0) return 'Cocok kata kunci perintah (skor ' + agent.relevance + ')';
+    return 'Rekomendasi default (agen inti)';
+}
+
+function updateRecommendCountBadge(count) {
+    const badge = document.getElementById('agentRecommendCount');
+    if (badge) badge.textContent = String(count);
+}
+
+function runRecommendation(silent) {
     const commandInput = document.getElementById('commandInput');
     const topicInput = document.getElementById('topicInput');
     const text = (commandInput && commandInput.value) || (topicInput && topicInput.value) || '';
-    if (!text.trim()) return;
     const allAgents = AgentRegistry.listAnalysisAgents();
     const ranked = ProviderRouter.selectRelevantAgents(text, allAgents, RECOMMEND_COUNT);
     const recommendedIds = ranked.map(function(a) { return a.id; });
+    const reasonById = {};
+    ranked.forEach(function(a) { reasonById[a.id] = buildReason(a); });
     document.querySelectorAll('.agent-checkbox').forEach(function(cb) {
-        cb.checked = recommendedIds.indexOf(cb.dataset.agent) !== -1;
+        const isRecommended = recommendedIds.indexOf(cb.dataset.agent) !== -1;
+        cb.checked = isRecommended;
+        cb.title = isRecommended ? reasonById[cb.dataset.agent] : '';
     });
     updateSelectedCount();
+    updateRecommendCountBadge(ranked.length);
     const noteEl = document.getElementById('recommendAgentsNote');
     if (noteEl) {
         const names = ranked.slice(0, 4).map(function(a) { return a.id; }).join(', ');
         const more = ranked.length > 4 ? ' +' + (ranked.length - 4) + ' lagi' : '';
         noteEl.textContent = 'Dipilih: ' + names + more;
     }
-    if (window.showToast) window.showToast(ranked.length + ' agen relevan dipilih otomatis', 'success');
+    if (!silent && window.showToast) window.showToast(ranked.length + ' agen relevan dipilih otomatis', 'success');
+    return ranked.length;
 }
 
 function wireControls() {
@@ -112,6 +127,9 @@ function wireControls() {
             recommendDebounceTimer = setTimeout(function() { applyRecommendation(value); }, 500);
         }
     });
+    document.addEventListener('agentSheetRequested', function() {
+        runRecommendation(true);
+    });
 }
 
 function renderUI(container) {
@@ -143,7 +161,10 @@ KESEMPATAN.AgentControl = AgentControl;
 document.addEventListener('DOMContentLoaded', function() {
     const controlContainer = document.getElementById('agentControlContainer');
     renderUI(controlContainer);
-    setTimeout(function() { updateSelectedCount(); }, 700);
+    setTimeout(function() {
+        updateSelectedCount();
+        runRecommendation(true);
+    }, 700);
 });
 
 window.addEventListener('load', function() {

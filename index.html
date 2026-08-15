@@ -128,26 +128,16 @@
                 </div>
             </div>
             <div class="main">
-                <div class="topbar" id="mainTopbar">
+                <div class="topbar topbar-compact" id="mainTopbar">
                     <div class="logo-centered">
                         <div class="logo"><div class="logo-top-wrapper"><img src="assets/svg/logo-kesempatan.svg" alt="" class="logo-atom"></div><img src="assets/svg/brand-logo.svg" alt="KESEMPATAN OS"></div>
                         <div class="subtitle"><img src="assets/svg/brand-subtitle.svg" alt="PRECISION INTELLIGENCE — AUTONOMOUS OPPORTUNITY INTELLIGENCE SYSTEM"></div>
-                    </div>
-                    <div class="loop-container">
-                        <div class="loop-status online">
-                            <span class="loop-dot"></span>
-                            <span>INTELLIGENCE LOOP</span>
-                            <span style="color:#00FFA3;">ONLINE</span>
-                        </div>
                     </div>
                 </div>
                 <div id="mainScroll" class="main-scroll">
                 <div id="dashboardGrid" class="dashboard-grid">
                     <div class="card full-width">
                         <div id="contenDasboardContainer" class="skeleton-loading"></div>
-                        <div id="workflowModeContainer" class="skeleton-loading" style="margin-top:10px;"></div>
-                        <div id="agentControlContainer" class="skeleton-loading" style="margin-top:10px;"></div>
-                        <div id="agentPoolContainer" class="skeleton-loading" style="margin-top:10px;"></div>
                         <div id="logPanelContainer" style="margin-top:10px;"></div>
                         <div id="executePanelContainer"></div>
                         <div id="thresholdContainer"></div>
@@ -160,6 +150,25 @@
                     <div id="timeAnalyticsContainer"></div>
                     <div id="reportPanelContainer"></div>
                     <div id="historyPanel" class="card full-width" style="display:none; margin-top:20px;"></div>
+                </div>
+                <div id="modeSheet" class="kos-sheet" aria-hidden="true">
+                    <div class="kos-sheet-backdrop" data-sheet-close></div>
+                    <div class="kos-sheet-panel">
+                        <div class="kos-sheet-head"><span>Mode Eksekusi</span><button type="button" class="kos-sheet-close" data-sheet-close aria-label="Tutup">&times;</button></div>
+                        <div class="kos-sheet-body">
+                            <div id="workflowModeContainer" class="skeleton-loading"></div>
+                        </div>
+                    </div>
+                </div>
+                <div id="agentSheet" class="kos-sheet" aria-hidden="true">
+                    <div class="kos-sheet-backdrop" data-sheet-close></div>
+                    <div class="kos-sheet-panel">
+                        <div class="kos-sheet-head"><span>Pilih Agen</span><button type="button" class="kos-sheet-close" data-sheet-close aria-label="Tutup">&times;</button></div>
+                        <div class="kos-sheet-body">
+                            <div id="agentControlContainer" class="skeleton-loading"></div>
+                            <div id="agentPoolContainer" class="skeleton-loading"></div>
+                        </div>
+                    </div>
                 </div>
                 <div id="interactivePage" class="card full-width" style="display:none; margin-top:16px;"></div>
                 <div id="aiWorkersPage" class="card full-width" style="display:none; margin-top:16px;">
@@ -221,6 +230,8 @@
         else setTimeout(loadWorldData, 500);
     </script>
     <script type="module" src="./features/monitoring/learning/threshold-learning.js"></script>
+    <script type="module" src="./js/dashboard/sheet-controller.js"></script>
+    <script type="module" src="./js/dashboard/info-rotator.js"></script>
     <script type="module" src="./js/dashboard/conten-dasboard.js"></script>
     <script type="module" src="./js/agent-runtime/agent-control.js"></script>
     <script type="module" src="./js/agent-runtime/agent-pool.js"></script>
