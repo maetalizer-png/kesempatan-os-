@@ -263,7 +263,8 @@ function render() {
         
         
         const scrollContainer = container.closest('.result-container') || container;
-        const savedScrollY = window.scrollY;
+        const mainScrollEl = document.getElementById('mainScroll');
+        const savedScrollY = mainScrollEl ? mainScrollEl.scrollTop : window.scrollY;
         const savedContainerScrollTop = scrollContainer.scrollTop;
 
         
@@ -323,7 +324,8 @@ function render() {
         
         requestAnimationFrame(function() {
             requestAnimationFrame(function() {
-                window.scrollTo(0, savedScrollY);
+                if (mainScrollEl) mainScrollEl.scrollTop = savedScrollY;
+                else window.scrollTo(0, savedScrollY);
                 if (scrollContainer && scrollContainer !== window) {
                     scrollContainer.scrollTop = savedContainerScrollTop;
                 }

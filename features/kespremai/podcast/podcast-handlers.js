@@ -744,11 +744,13 @@ function attachEvents() {
             
             
             
-            const savedScrollY_actionBtn = window.scrollY;
+            const mainScrollEl_actionBtn = document.getElementById('mainScroll');
+            const savedScrollY_actionBtn = mainScrollEl_actionBtn ? mainScrollEl_actionBtn.scrollTop : window.scrollY;
             const restoreScroll_actionBtn = function() {
                 requestAnimationFrame(function() {
                     requestAnimationFrame(function() {
-                        window.scrollTo(0, savedScrollY_actionBtn);
+                        if (mainScrollEl_actionBtn) mainScrollEl_actionBtn.scrollTop = savedScrollY_actionBtn;
+                        else window.scrollTo(0, savedScrollY_actionBtn);
                     });
                 });
             };

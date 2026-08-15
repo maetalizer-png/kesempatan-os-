@@ -152,7 +152,9 @@ const updateAgentList = function() {
                 document.getElementById('tempValue').textContent = agent.temperature;
                 document.getElementById('addCustomAgentBtn').textContent = 'UPDATE AGEN';
                 Utils.showToast('Edit mode: ' + agent.name, 'info');
-                window.scrollTo({ top: 0, behavior: 'smooth' });
+                const mainScrollEl = document.getElementById('mainScroll');
+                if (mainScrollEl) mainScrollEl.scrollTo({ top: 0, behavior: 'smooth' });
+                else window.scrollTo({ top: 0, behavior: 'smooth' });
             }
         });
     });
