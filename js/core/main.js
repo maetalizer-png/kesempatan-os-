@@ -350,8 +350,8 @@ function setupEventListeners() {
         const apiKey = document.getElementById('apiKeyInput')?.value || '';
         const topic = document.getElementById('topicInput')?.value || '';
         const instruction = document.getElementById('promptInput')?.value || '';
-        if (!topic || !instruction) {
-            showToast('Isi Topik dan Instruksi!', 'error');
+        if (!topic) {
+            showToast('Isi analisis dulu!', 'error');
             return;
         }
         try {
