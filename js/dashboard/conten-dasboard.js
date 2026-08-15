@@ -2,6 +2,7 @@ const KESEMPATAN = window.KESEMPATAN || {};
 window.KESEMPATAN = KESEMPATAN;
 
 const SVG = {
+    chat: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.5 8.5 0 0 1-12.3 7.6L3 21l1.9-5.7A8.5 8.5 0 1 1 21 11.5z"/><path d="M8.5 11.5h.01M12 11.5h.01M15.5 11.5h.01"/></svg>',
     doc: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M9 13h6M9 17h4"/></svg>',
     upload: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M12 3v12"/><path d="M7 8l5-5 5 5"/></svg>',
     file: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M9.5 13.5l1.8 1.8 3.4-3.6"/></svg>',
@@ -36,11 +37,16 @@ function renderUI(container) {
                 '<span id="workflowModeBadge" class="workflow-mode-badge auto">AUTO</span>' +
             '</h2>' +
             '<div class="kx-grp">' +
-                '<div class="kx-lbl"><span class="kx-lico">' + SVG.doc + '</span>Topic &amp; Instructions</div>' +
+                '<div class="kx-lbl"><span class="kx-lico">' + SVG.chat + '</span>Probability Topic</div>' +
                 '<div class="kx-rim kx-box"><div class="kx-rim-in">' +
-                    '<textarea id="topicInput" rows="6" placeholder="Describe your analysis topic and instructions..."></textarea>' +
+                    '<textarea id="topicInput" rows="2" placeholder="Probability topic..."></textarea>' +
                 '</div></div>' +
-                '<textarea id="promptInput" hidden></textarea>' +
+            '</div>' +
+            '<div class="kx-grp">' +
+                '<div class="kx-lbl"><span class="kx-lico">' + SVG.doc + '</span>Analysis Instructions</div>' +
+                '<div class="kx-rim kx-box"><div class="kx-rim-in">' +
+                    '<textarea id="promptInput" rows="5" placeholder="Analysis instructions..."></textarea>' +
+                '</div></div>' +
             '</div>' +
             '<div class="kx-grp">' +
                 '<div class="kx-lbl"><span class="kx-lico">' + SVG.upload + '</span>Upload Data (CSV/JSON/TXT) max 10MB:</div>' +
@@ -73,14 +79,6 @@ function renderUI(container) {
             const observer = new MutationObserver(function() { stripParens(badge); });
             observer.observe(badge, { childList: true, subtree: true, characterData: true });
         }
-    }
-
-    const topicInput = container.querySelector('#topicInput');
-    const promptInput = container.querySelector('#promptInput');
-    if (topicInput && promptInput) {
-        topicInput.addEventListener('input', function() {
-            promptInput.value = topicInput.value;
-        });
     }
 }
 
