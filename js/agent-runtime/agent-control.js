@@ -1,11 +1,5 @@
-import { ProviderRouter } from '../../ai-agent/provider-router.js';
-import { AgentRegistry } from '../../ai-agent/agent-registry.js';
-
 const KESEMPATAN = window.KESEMPATAN || {};
 window.KESEMPATAN = KESEMPATAN;
-
-const RECOMMEND_COUNT = 8;
-let recommendDebounceTimer = null;
 
 const HEAD_SEG =
     '<span class="ac-stat-head">' +
@@ -49,53 +43,6 @@ function updateSelectedCount() {
     if (totalCountHeaderSpan) totalCountHeaderSpan.textContent = checkboxes.length;
 }
 
-function applyRecommendation(text) {
-    const recommendBtn = document.getElementById('recommendAgentsBtn');
-    const noteEl = document.getElementById('recommendAgentsNote');
-    if (!text || !text.trim()) {
-        if (recommendBtn) recommendBtn.hidden = true;
-        if (noteEl) noteEl.textContent = '';
-        return;
-    }
-    if (recommendBtn) recommendBtn.hidden = false;
-}
-
-function buildReason(agent) {
-    if (agent.relevance > 0) return 'Matches command keywords (score ' + agent.relevance + ')';
-    return 'Default recommendation (core agent)';
-}
-
-function updateRecommendCountBadge(count) {
-    const badge = document.getElementById('agentRecommendCount');
-    if (badge) badge.textContent = String(count);
-}
-
-function runRecommendation(silent) {
-    const commandInput = document.getElementById('commandInput');
-    const topicInput = document.getElementById('topicInput');
-    const text = (commandInput && commandInput.value) || (topicInput && topicInput.value) || '';
-    const allAgents = AgentRegistry.listAnalysisAgents();
-    const ranked = ProviderRouter.selectRelevantAgents(text, allAgents, RECOMMEND_COUNT);
-    const recommendedIds = ranked.map(function(a) { return a.id; });
-    const reasonById = {};
-    ranked.forEach(function(a) { reasonById[a.id] = buildReason(a); });
-    document.querySelectorAll('.agent-checkbox').forEach(function(cb) {
-        const isRecommended = recommendedIds.indexOf(cb.dataset.agent) !== -1;
-        cb.checked = isRecommended;
-        cb.title = isRecommended ? reasonById[cb.dataset.agent] : '';
-    });
-    updateSelectedCount();
-    updateRecommendCountBadge(ranked.length);
-    const noteEl = document.getElementById('recommendAgentsNote');
-    if (noteEl) {
-        const names = ranked.slice(0, 4).map(function(a) { return a.id; }).join(', ');
-        const more = ranked.length > 4 ? ' +' + (ranked.length - 4) + ' more' : '';
-        noteEl.textContent = 'Selected: ' + names + more;
-    }
-    if (!silent && window.showToast) window.showToast(ranked.length + ' relevant agents auto-selected', 'success');
-    return ranked.length;
-}
-
 function wireControls() {
     const selectAllBtn = document.getElementById('selectAllAgentsBtn');
     if (selectAllBtn) {
@@ -111,24 +58,10 @@ function wireControls() {
             updateSelectedCount();
         });
     }
-    const recommendBtn = document.getElementById('recommendAgentsBtn');
-    if (recommendBtn) {
-        recommendBtn.addEventListener('click', runRecommendation);
-    }
     document.addEventListener('change', function(e) {
         if (e.target && e.target.classList && e.target.classList.contains('agent-checkbox')) {
             updateSelectedCount();
         }
-    });
-    document.addEventListener('input', function(e) {
-        if (e.target && e.target.id === 'commandInput') {
-            const value = e.target.value;
-            clearTimeout(recommendDebounceTimer);
-            recommendDebounceTimer = setTimeout(function() { applyRecommendation(value); }, 500);
-        }
-    });
-    document.addEventListener('agentSheetRequested', function() {
-        runRecommendation(true);
     });
 }
 
@@ -139,9 +72,7 @@ function renderUI(container) {
         '<div class="agent-buttons">' +
             '<button id="selectAllAgentsBtn" class="btn-agent-select"><span class="ac-btn-label">Select All</span></button>' +
             '<button id="deselectAllAgentsBtn" class="btn-agent-deselect"><span class="ac-btn-label">Deselect</span></button>' +
-            '<button id="recommendAgentsBtn" class="btn-agent-select" hidden><span class="ac-btn-label">Recommend Agents</span></button>' +
         '</div>' +
-        '<div class="ac-recommend-note" id="recommendAgentsNote"></div>' +
         '<div class="agent-stats">' +
             HEAD_SEG +
             '<span class="ac-stat-num" id="selectedAgentsCount">0/0</span>' +
@@ -161,10 +92,7 @@ KESEMPATAN.AgentControl = AgentControl;
 document.addEventListener('DOMContentLoaded', function() {
     const controlContainer = document.getElementById('agentControlContainer');
     renderUI(controlContainer);
-    setTimeout(function() {
-        updateSelectedCount();
-        runRecommendation(true);
-    }, 700);
+    setTimeout(function() { updateSelectedCount(); }, 700);
 });
 
 window.addEventListener('load', function() {

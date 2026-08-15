@@ -82,7 +82,6 @@ function selectMode(agentCount) {
     const userMode = localStorage.getItem('kes_workflow_mode') || 'auto';
     if (userMode === 'parallel') return 'parallel';
     if (userMode === 'sequential') return 'sequential';
-    if (userMode === 'manual') return 'manual';
     if (userMode === 'auto' || !KESEMPATAN.Runtime.WorkflowConfig.autoMode) {
         return agentCount < KESEMPATAN.Runtime.WorkflowConfig.sequentialThreshold ? 'sequential' : 'parallel';
     }
@@ -161,7 +160,7 @@ function renderParallelPage() {
                 localStorage.setItem('kes_workflow_mode', mode);
             }
             if (showToast) {
-                showToast(e.target.checked ? '⚡ Parallel mode ON' : '🐢 Parallel mode OFF (Auto)', 'info');
+                showToast(e.target.checked ? '⚡ Mode paralel ON' : '🐢 Mode paralel OFF (Auto)', 'info');
             }
         });
     }
@@ -212,10 +211,6 @@ function injectWorkflowBadgeStyle() {
             'background: rgba(255,215,0,.55); color: #FFD700;' +
             'filter: drop-shadow(0 0 6px rgba(255,215,0,.3));' +
         '}' +
-        '#workflowModeContainer .btn-workflow-mode.mode-manual.active {' +
-            'background: rgba(255,157,77,.55); color: #FF9D4D;' +
-            'filter: drop-shadow(0 0 6px rgba(255,157,77,.3));' +
-        '}' +
         '#workflowModeContainer {' +
             'box-sizing: border-box !important;' +
             'padding-left: 12px !important;' +
@@ -246,12 +241,11 @@ function renderWorkflowModeSelector() {
     container.dataset.rendered = 'true';
     container.innerHTML = '<div class="wf-mode-rim">' +
         '<div class="wf-mode-rim-in">' +
-        '<div style="font-size:11px; color:#A0B3C9; font-weight:600; margin-bottom:8px;">Execution Mode:</div>' +
-        '<div style="display:flex; gap:8px; align-items:stretch; flex-wrap:wrap;">' +
+        '<div style="font-size:11px; color:#A0B3C9; font-weight:600; margin-bottom:8px;">Mode Eksekusi:</div>' +
+        '<div style="display:flex; gap:8px; align-items:stretch;">' +
             '<button id="workflowModeAuto" class="execute-btn btn-workflow-mode mode-auto">Auto</button>' +
             '<button id="workflowModeSequential" class="execute-btn btn-workflow-mode mode-sequential">Sequential</button>' +
             '<button id="workflowModeParallel" class="execute-btn btn-workflow-mode mode-parallel">Parallel</button>' +
-            '<button id="workflowModeManual" class="execute-btn btn-workflow-mode mode-manual">HITL</button>' +
         '</div>' +
         '<div id="workflowModeStatus" style="font-size:9px; color:#A0B3C9; margin-top:8px; text-align:right;">Mode: <strong id="workflowModeDisplay">Auto</strong></div>' +
         '</div>' +
@@ -265,13 +259,12 @@ function initWorkflowModeUI() {
         const modeAuto = document.getElementById('workflowModeAuto');
         const modeSeq = document.getElementById('workflowModeSequential');
         const modePar = document.getElementById('workflowModeParallel');
-        const modeManual = document.getElementById('workflowModeManual');
         const modeDisplay = document.getElementById('workflowModeDisplay');
         const modeBadge = document.getElementById('workflowModeBadge');
-        if (!modeAuto && !modeSeq && !modePar && !modeManual) return;
+        if (!modeAuto && !modeSeq && !modePar) return;
 
         function updateWorkflowUI(mode) {
-            [modeAuto, modeSeq, modePar, modeManual].forEach(function(btn) {
+            [modeAuto, modeSeq, modePar].forEach(function(btn) {
                 if (btn) btn.classList.remove('active');
             });
             let label = 'Auto';
@@ -288,15 +281,11 @@ function initWorkflowModeUI() {
                 if (modePar) modePar.classList.add('active');
                 label = 'Parallel';
                 badgeClass = 'parallel';
-            } else if (mode === 'manual') {
-                if (modeManual) modeManual.classList.add('active');
-                label = 'HITL';
-                badgeClass = 'manual';
             }
             if (modeDisplay) modeDisplay.textContent = label;
             if (modeBadge) {
-                modeBadge.textContent = label;
-                modeBadge.className = 'workflow-mode-badge pi-mode-badge ' + badgeClass;
+                modeBadge.textContent = '🔄 ' + label;
+                modeBadge.className = 'workflow-mode-badge ' + badgeClass;
             }
             if (KESEMPATAN.WorkflowEngine && KESEMPATAN.WorkflowEngine.setMode) {
                 KESEMPATAN.WorkflowEngine.setMode(mode);
@@ -314,28 +303,21 @@ function initWorkflowModeUI() {
             modeAuto.addEventListener('click', function(e) {
                 e.preventDefault();
                 updateWorkflowUI('auto');
-                if (showToast) showToast('🔄 Auto mode', 'info');
+                if (showToast) showToast('🔄 Mode Auto', 'info');
             });
         }
         if (modeSeq) {
             modeSeq.addEventListener('click', function(e) {
                 e.preventDefault();
                 updateWorkflowUI('sequential');
-                if (showToast) showToast('🐢 Sequential mode', 'info');
+                if (showToast) showToast('🐢 Mode Sequential', 'info');
             });
         }
         if (modePar) {
             modePar.addEventListener('click', function(e) {
                 e.preventDefault();
                 updateWorkflowUI('parallel');
-                if (showToast) showToast('⚡ Parallel mode ACTIVE!', 'success');
-            });
-        }
-        if (modeManual) {
-            modeManual.addEventListener('click', function(e) {
-                e.preventDefault();
-                updateWorkflowUI('manual');
-                if (showToast) showToast('🙋 HITL mode (manual approval) ACTIVE', 'info');
+                if (showToast) showToast('⚡ Mode Parallel AKTIF!', 'success');
             });
         }
 
@@ -344,7 +326,7 @@ function initWorkflowModeUI() {
     } catch (error) {
         const container = document.getElementById('workflowModeContainer');
         if (container) {
-            container.innerHTML = '<div style="padding:8px 12px; color:#FF6B6B; font-size:11px; border:1px solid #FF6B6B; border-radius:8px;">⚠️ Execution Mode failed to load: ' + error.message + '</div>';
+            container.innerHTML = '<div style="padding:8px 12px; color:#FF6B6B; font-size:11px; border:1px solid #FF6B6B; border-radius:8px;">⚠️ Mode Eksekusi gagal dimuat: ' + error.message + '</div>';
         }
         if (Logger) {
             Logger.error('Workflow', 'initWorkflowModeUI gagal: ' + error.message);

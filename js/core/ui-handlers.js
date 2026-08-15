@@ -80,9 +80,8 @@ function initUIHandlers() {
     (function initVoiceInput() {
         const voiceButton = document.getElementById('voiceInputBtn');
         const stopButton = document.getElementById('stopVoiceBtn');
-        const commandInput = document.getElementById('commandInput');
         const topicInput = document.getElementById('topicInput');
-        if (!voiceButton || (!commandInput && !topicInput)) return;
+        if (!voiceButton || !topicInput) return;
 
         let recognition = null;
         const SpeechRecognitionAPI = window.webkitSpeechRecognition || window.SpeechRecognition;
@@ -96,7 +95,7 @@ function initUIHandlers() {
             recognition.onstart = function() {
                 if (voiceButton) voiceButton.style.display = 'none';
                 if (stopButton) stopButton.style.display = 'block';
-                showToast('Listening...', 'info');
+                showToast('Dengarkan...', 'info');
             };
             recognition.onend = function() {
                 if (voiceButton) voiceButton.style.display = 'block';
@@ -104,16 +103,11 @@ function initUIHandlers() {
             };
             recognition.onresult = function(event) {
                 const transcript = event.results[0][0].transcript;
-                if (commandInput) {
-                    commandInput.value = transcript;
-                    commandInput.dispatchEvent(new Event('input', { bubbles: true }));
-                } else if (topicInput) {
-                    topicInput.value = transcript;
-                }
+                if (topicInput) topicInput.value = transcript;
                 showToast('"' + transcript + '"', 'success');
             };
             recognition.onerror = function() {
-                showToast('Failed', 'error');
+                showToast('Gagal', 'error');
                 if (voiceButton) voiceButton.style.display = 'block';
                 if (stopButton) stopButton.style.display = 'none';
             };

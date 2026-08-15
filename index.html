@@ -20,7 +20,6 @@
     <link rel="stylesheet" href="./css/core/brand.css">
     <link rel="stylesheet" href="./css/core/layout.css">
     <link rel="stylesheet" href="./css/core/sidebar.css">
-    <link rel="stylesheet" href="./css/core/components.css">
     <link rel="stylesheet" href="./css/agent-runtime/agent-grid.css">
     <link rel="stylesheet" href="./css/dashboard/forms.css">
     <link rel="stylesheet" href="./css/dashboard/metrics.css">
@@ -57,64 +56,50 @@
 </head>
 <body>
     <div class="container">
-        <div class="hb-bar" id="hbBar">
-            <button class="hamburger" id="hamburgerBtn" aria-label="Menu"><span style="display:block; width:20px; height:2px; background:currentColor; margin:4px auto; border-radius:1px;"></span><span style="display:block; width:20px; height:2px; background:currentColor; margin:4px auto; border-radius:1px;"></span><span style="display:block; width:20px; height:2px; background:currentColor; margin:4px auto; border-radius:1px;"></span></button>
-        </div>
+        <button class="hamburger" id="hamburgerBtn" aria-label="Menu"><span style="display:block; width:20px; height:2px; background:currentColor; margin:4px auto; border-radius:1px;"></span><span style="display:block; width:20px; height:2px; background:currentColor; margin:4px auto; border-radius:1px;"></span><span style="display:block; width:20px; height:2px; background:currentColor; margin:4px auto; border-radius:1px;"></span></button>
         <div class="layout">
             <div class="sidebar" id="sidebar">
                 <div class="menu">
-                    <div class="menu-section">
-                        <div class="menu-section-label">Analisis</div>
-                        <button data-page="dashboard" class="active">KESBOARD</button>
-                        <button data-page="observation">Observation Engine</button>
-                        <button data-page="noise">Noise Filtering</button>
-                        <button data-page="memory">Memory Manager</button>
-                        <button data-page="cache">Response Cache</button>
-                        <button id="monitoringMenuBtn">Monitoring ▼</button>
-                        <div class="submenu" id="monitoringSubmenu">
-                            <button data-page="report">Report</button>
-                            <button data-page="telemetry">Telemetry</button>
-                            <button data-page="learning">Auto-Learning</button>
-                        </div>
-                        <button data-page="settings">Settings</button>
-                        <button id="aiworkersMenuBtn" style="margin-top:4px; border-color:rgba(0,255,163,0.4);">KESWORKER (55) ▼</button>
-                        <div class="submenu" id="aiworkersSubmenu">
-                            <button data-page="aiworkers">Manajemen Worker</button>
-                            <button data-page="aiworkersdata">Log Aktivitas</button>
-                        </div>
+                    <button data-page="dashboard" class="active">KESBOARD</button>
+                    <button data-page="observation">Observation Engine</button>
+                    <button data-page="noise">Noise Filtering</button>
+                    <button data-page="memory">Memory Manager</button>
+                    <button data-page="cache">Response Cache</button>
+                    <button id="monitoringMenuBtn">Monitoring ▼</button>
+                    <div class="submenu" id="monitoringSubmenu">
+                        <button data-page="report">Report</button>
+                        <button data-page="telemetry">Telemetry</button>
+                        <button data-page="learning">Auto-Learning</button>
                     </div>
-                    <div class="menu-section">
-                        <div class="menu-section-label">Studio</div>
-                        <button data-page="interactive" style="border-color:rgba(0,255,163,0.4);">KESTRAKTIVE</button>
-                        <button id="premiumMenuBtn" style="margin-top:8px; border-color:rgba(0,255,163,0.4);">KESPREMAI ▼</button>
-                        <div class="submenu" id="premiumSubmenu">
-                            <button data-page="podcast">Podcast</button>
-                            <button data-page="voicechatsuara">Voice & Clone</button>
-                            <button data-page="rapbattlearena">Rap Battle</button>
-                            <button data-page="visualagent">Visualisation</button>
-                            <button data-page="customautoagent">Custom & Auto Agen</button>
-                            <button data-page="offline">Mode Offline</button>
-                        </div>
+                    <button data-page="settings">Settings</button>
+                    <button id="aiworkersMenuBtn" style="margin-top:4px; border-color:rgba(0,255,163,0.4);">KESWORKER (55) ▼</button>
+                    <div class="submenu" id="aiworkersSubmenu">
+                        <button data-page="aiworkers">Manajemen Worker</button>
+                        <button data-page="aiworkersdata">Log Aktivitas</button>
                     </div>
-                    <div class="menu-section">
-                        <div class="menu-section-label">Sosial</div>
-                        <button id="marketdataMenuBtn" style="border-color:rgba(0,255,163,0.4);">KESMARKET ▼</button>
-                        <div class="submenu" id="marketdataSubmenu">
-                            <button data-page="livecrypto">Live Crypto</button>
-                            <button data-page="news">News Aggregator</button>
-                        </div>
-                        <button id="kesmediaMenuBtn" style="margin-top:8px; border-color:rgba(0,255,163,0.4);">KESMEDIA ▼</button>
-                        <div class="submenu" id="kesmediaSubmenu">
-                            <button data-page="sharesosmed">Kartu Sosial Media</button>
-                            <button data-page="customtheme">Thema</button>
-                            <button data-page="editfoto">Editor</button>
-                        </div>
+                    <button data-page="interactive" style="margin-top:8px; border-color:rgba(0,255,163,0.4);">KESTRAKTIVE</button>
+                    <button id="premiumMenuBtn" style="margin-top:8px; border-color:rgba(0,255,163,0.4);">KESPREMAI ▼</button>
+                    <div class="submenu" id="premiumSubmenu">
+                        <button data-page="podcast">Podcast</button>
+                        <button data-page="voicechatsuara">Voice & Clone</button>
+                        <button data-page="rapbattlearena">Rap Battle</button>
+                        <button data-page="visualagent">Visualisation</button>
+                        <button data-page="customautoagent">Custom & Auto Agen</button>
+                        <button data-page="offline">Mode Offline</button>
                     </div>
-                    <div class="menu-section">
-                        <div class="menu-section-label">Sistem</div>
-                        <button data-page="websocket" style="border-color:rgba(0,255,163,0.4);">WebSocket</button>
-                        <button data-page="publicapi" style="margin-top:8px; border-color:rgba(0,255,163,0.4);">Public API</button>
+                    <button id="marketdataMenuBtn" style="margin-top:8px; border-color:rgba(0,255,163,0.4);">KESMARKET ▼</button>
+                    <div class="submenu" id="marketdataSubmenu">
+                        <button data-page="livecrypto">Live Crypto</button>
+                        <button data-page="news">News Aggregator</button>
                     </div>
+                    <button id="kesmediaMenuBtn" style="margin-top:8px; border-color:rgba(0,255,163,0.4);">KESMEDIA ▼</button>
+                    <div class="submenu" id="kesmediaSubmenu">
+                        <button data-page="sharesosmed">Social Share</button>
+                        <button data-page="customtheme">Thema</button>
+                        <button data-page="editfoto">Editor</button>
+                    </div>
+                    <button data-page="websocket" style="margin-top:8px; border-color:rgba(0,255,163,0.4);">WebSocket</button>
+                    <button data-page="publicapi" style="margin-top:8px; border-color:rgba(0,255,163,0.4);">Public API</button>
                 </div>
                 <div class="sidebar-footer">
                     <div class="sidebar-footer-controls">
@@ -130,17 +115,25 @@
                 </div>
             </div>
             <div class="main">
-                <div id="mainScroll" class="main-scroll">
-                <div class="topbar" id="mainBrandHeader">
+                <div class="topbar" id="mainTopbar">
                     <div class="logo-centered">
                         <div class="logo"><div class="logo-top-wrapper"><img src="assets/svg/logo-kesempatan.svg" alt="" class="logo-atom"></div><img src="assets/svg/brand-logo.svg" alt="KESEMPATAN OS"></div>
                         <div class="subtitle"><img src="assets/svg/brand-subtitle.svg" alt="PRECISION INTELLIGENCE — AUTONOMOUS OPPORTUNITY INTELLIGENCE SYSTEM"></div>
                     </div>
+                    <div class="loop-container">
+                        <div class="loop-status online">
+                            <span class="loop-dot"></span>
+                            <span>INTELLIGENCE LOOP</span>
+                            <span style="color:#00FFA3;">ONLINE</span>
+                        </div>
+                    </div>
                 </div>
                 <div id="dashboardGrid" class="dashboard-grid">
-                    <h2 class="section-heading">PARAMETER INPUT</h2>
                     <div class="card full-width">
                         <div id="contenDasboardContainer" class="skeleton-loading"></div>
+                        <div id="workflowModeContainer" class="skeleton-loading" style="margin-top:10px;"></div>
+                        <div id="agentControlContainer" class="skeleton-loading" style="margin-top:10px;"></div>
+                        <div id="agentPoolContainer" class="skeleton-loading" style="margin-top:10px;"></div>
                         <div id="logPanelContainer" style="margin-top:10px;"></div>
                         <div id="executePanelContainer"></div>
                         <div id="thresholdContainer"></div>
@@ -153,25 +146,6 @@
                     <div id="timeAnalyticsContainer"></div>
                     <div id="reportPanelContainer"></div>
                     <div id="historyPanel" class="card full-width" style="display:none; margin-top:20px;"></div>
-                </div>
-                <div id="modeSheet" class="kos-sheet" aria-hidden="true">
-                    <div class="kos-sheet-backdrop" data-sheet-close></div>
-                    <div class="kos-sheet-panel">
-                        <div class="kos-sheet-head"><span>Execution Mode</span><button type="button" class="kos-sheet-close" data-sheet-close aria-label="Close">&times;</button></div>
-                        <div class="kos-sheet-body">
-                            <div id="workflowModeContainer" class="skeleton-loading"></div>
-                        </div>
-                    </div>
-                </div>
-                <div id="agentSheet" class="kos-sheet" aria-hidden="true">
-                    <div class="kos-sheet-backdrop" data-sheet-close></div>
-                    <div class="kos-sheet-panel">
-                        <div class="kos-sheet-head"><span>Select Agents</span><button type="button" class="kos-sheet-close" data-sheet-close aria-label="Close">&times;</button></div>
-                        <div class="kos-sheet-body">
-                            <div id="agentControlContainer" class="skeleton-loading"></div>
-                            <div id="agentPoolContainer" class="skeleton-loading"></div>
-                        </div>
-                    </div>
                 </div>
                 <div id="interactivePage" class="card full-width" style="display:none; margin-top:16px;"></div>
                 <div id="aiWorkersPage" class="card full-width" style="display:none; margin-top:16px;">
@@ -203,7 +177,6 @@
                     <div id="pageInner" class="result-container"></div>
                     <button id="backToDashboardBtn" class="execute-btn secondary" onclick="window.showPage('dashboard')">Kembali ke Dasbor</button>
                 </div>
-                </div>
             </div>
         </div>
     </div>
@@ -233,8 +206,6 @@
         else setTimeout(loadWorldData, 500);
     </script>
     <script type="module" src="./features/monitoring/learning/threshold-learning.js"></script>
-    <script type="module" src="./js/dashboard/sheet-controller.js"></script>
-    <script type="module" src="./js/dashboard/info-rotator.js"></script>
     <script type="module" src="./js/dashboard/conten-dasboard.js"></script>
     <script type="module" src="./js/agent-runtime/agent-control.js"></script>
     <script type="module" src="./js/agent-runtime/agent-pool.js"></script>
