@@ -2,7 +2,7 @@
 
 *Dokumen ini menggabungkan roadmap strategis awal (Fase 0-5) dengan hasil kerja nyata yang sudah dieksekusi dan diverifikasi di codebase. Statusnya bukan rencana di atas kertas — setiap item "Selesai" di bawah ini sudah diverifikasi lewat Playwright (regresi 25 halaman + unit test) dan sudah live di `main`.*
 
-*Terakhir diperbarui: Rekonstruksi v3 Fase 1 (satu kotak perintah + auto-splitter) selesai, Fase 2 sebagian (sidebar berkelompok), Fase 5 temuan akar bug tema Light/Dark diperbaiki (light-mode.css tidak pernah ter-link + CustomTheme.applyTheme() tidak menyentuh body/teks). Fase 3/4/6/7 (cockpit dashboard, halaman self-contained, sistem kartu bersama, migrasi 22 file hardcode) tercatat sebagai rencana lanjutan, bukan diklaim selesai.*
+*Terakhir diperbarui: Rekonstruksi v3 lanjutan — Fase 1, 2, 5, 6.6, 6.7, 6.8 SELESAI (shell flex-column penuh, 10/22 file hardcode dimigrasi, tombol rekomendasi agen, keputusan 3D Sphere jadi opt-in, rebrand Export Sosial, fondasi components.css). Sisa: Fase 3 (Cockpit dashboard) dan Fase 4 (6 halaman self-contained) — keduanya perubahan arsitektur besar, dievaluasi tapi sengaja belum dieksekusi.*
 
 ### Item yang diminta tapi SENGAJA belum dikerjakan (tercatat, bukan terlewat)
 
@@ -10,7 +10,8 @@
 |---|---|
 | Modularisasi `reaction-learning.js` (1531 baris) | Beda dari threshold-learning.js yang punya batas modul jelas (const `Object.freeze` terpisah per engine), file ini ~30 fungsi top-level dengan shared state lebih implisit. Memecahnya tergesa-gesa berisiko regresi di kode yang sedang jalan. Sudah dipindah ke `features/monitoring/learning/reaction-learning.js` tanpa dipecah. |
 | Konsolidasi 57 tag `<script type="module">` di index.html jadi lebih sedikit entry point | Ini mengubah URUTAN EKSEKUSI boot seluruh app sekaligus (bukan satu fitur terisolasi) — kesalahan di sini berdampak ke SEMUA halaman, bukan satu fitur. Butuh sesi pengerjaan tersendiri dengan pengujian boot yang sangat teliti. |
-| Dashboard Cockpit 4-baris tanpa scroll, 6 halaman self-contained terpisah, sistem kartu bersama 25 halaman, migrasi 22 file hardcode warna ke token, rebrand Export Sosial, keputusan 3D Sphere/Radar/Trend | Fase 6 sub-item 3/4/5(lanjutan)/6/7/8 — lihat Bagian B untuk status detail per item dan alasan realistis kenapa tidak diselesaikan sekaligus dalam satu sesi (masing-masing perubahan struktural besar yang butuh verifikasi visual sendiri). |
+| Dashboard Cockpit 4-baris tanpa scroll (Fase 6.3), 6 halaman self-contained sebagai file `.html` terpisah (Fase 6.4) | Dua perubahan arsitektur terbesar yang tersisa — masing-masing berdampak ke seluruh app (bukan fitur terisolasi), butuh sesi tersendiri dengan pengujian breakpoint/boot yang teliti. Lihat Bagian B Fase 6 untuk detail evaluasi dan rekomendasi. |
+| Retrofit `css/core/components.css` ke 25 halaman sidebar, migrasi 12 file hardcode warna sisanya | Fondasinya sudah selesai &amp; aman dipakai (Fase 6.5/6.6) — sisanya pekerjaan mekanis per-file yang masing-masing butuh verifikasi visual sendiri. |
 
 ---
 
@@ -266,74 +267,83 @@ di luar lingkup Fase 2 ini.
    eksternal, hasilnya jadi sinyal training Fase 1).
 4. API publik standar OpenAPI (rate limit, API key scoping).
 
-### 🔶 Fase 6 — Rekonstruksi Fundamental Lapisan Presentasi & Onboarding (SEBAGIAN)
+### 🔶 Fase 6 — Rekonstruksi Fundamental Lapisan Presentasi & Onboarding (SEBAGIAN BESAR)
 
 Lahir dari audit hulu-hilir dibanding proyek pembanding "Rategoan", lalu
-diperluas jadi "Perintah Rekonstruksi Total v3" (8 sub-fase 0-7). Status
-per item, realistis bukan diklaim selesai semua dalam satu sesi:
+diperluas jadi "Perintah Rekonstruksi Total v3" (8 sub-fase 0-7), dikerjakan
+lintas 2 sesi. Status final per item:
 
 1. ✅ **Satu Kotak Perintah + auto-splitter** (inti UX baru) — SELESAI.
    `js/dashboard/command-splitter.js` mendeteksi penanda direktif Indonesia
-   ("fokus", "target", "modal", dst) dan memisahkan satu kalimat jadi
-   {topic, instruction} tanpa LLM; dashboard sekarang punya satu
-   `#commandInput` dengan chip pratinjau Topik/Instruksi (tap untuk edit),
-   3 chip instruksi cepat, dan toggle "Detail" untuk power user. Auto-
+   dan memisahkan satu kalimat jadi {topic, instruction} tanpa LLM; chip
+   pratinjau tap-to-edit, 3 chip instruksi cepat, toggle "Detail". Auto-
    splitter menulis ke `#topicInput`/`#promptInput` lama sehingga ~20 file
-   yang membaca ID itu (export, report-dock, main.js, podcast, dst) tetap
-   jalan tanpa disentuh. Input suara juga lewat jalur yang sama sekarang.
-2. 🔶 **Shell &amp; navigasi** — SEBAGIAN. Bug `position:fixed`
-   (hamburger/sidebar ikut scroll) sudah diperbaiki &amp; diverifikasi
-   sesi sebelumnya. Sidebar 25 item sekarang dikelompokkan jadi 4 label
-   (Analisis/Studio/Sosial/Sistem). BELUM: restrukturisasi shell jadi
-   flex-column tinggi-tetap murni (pola Rategoan) — perbaikan saat ini
-   masih bertumpu pada `position:fixed`, bukan isolasi scroll struktural.
+   yang membaca ID itu tetap jalan tanpa disentuh. Input suara lewat jalur
+   yang sama.
+2. ✅ **Shell &amp; navigasi** — SELESAI. Sidebar 25 item dikelompokkan
+   4 label (Analisis/Studio/Sosial/Sistem). Shell direstrukturisasi penuh
+   jadi flex-column tinggi-tetap (pola Rategoan): `html/body` tidak lagi
+   scroll sama sekali, elemen baru `#mainScroll` jadi satu-satunya area
+   yang `overflow-y:auto`, header/sidebar diam karena secara STRUKTURAL
+   berada di luar area scroll — bukan lagi bertumpu pada `position:fixed`
+   yang rapuh terhadap CSS lain. Diverifikasi: scroll 500px di desktop
+   &amp; mobile, posisi topbar tidak berubah sama sekali.
 3. ⏳ **Dashboard Cockpit satu layar tanpa scroll** — BELUM DIKERJAKAN.
-   Redesain 4-baris (status/rotator/perintah/kontrol), bottom-sheet agen
-   &amp; mode eksekusi, pemindahan widget 3D ke halaman terpisah — ini
-   perubahan struktural besar ke seluruh dashboard, sengaja tidak
-   diserobot di sesi yang sudah padat supaya tidak mengulang pola
-   "setengah jadi" yang dikeluhkan user.
-4. ⏳ **6 halaman self-contained** (laporan/podcast/chat/turnamen/kartu-
-   sosial/visual sebagai file terpisah) — BELUM DIKERJAKAN. Arsitektur
-   app saat ini SPA-router (semua "halaman" adalah `<div>` di dalam satu
-   index.html, ditukar lewat JS), bukan multi-file HTML — mengubahnya
-   jadi file `.html` benar-benar terpisah adalah perubahan arsitektur
-   boot/routing yang berdampak ke SEMUA halaman, butuh sesi tersendiri.
-5. 🔶 **Migrasi CSS dari hardcode ke token tema** — TEMUAN AKAR DIPERBAIKI,
-   migrasi per-file belum tuntas. Investigasi menemukan bug yang jauh
-   lebih besar dari sekadar 23 file hardcode: `css/core/light-mode.css`
-   TIDAK PERNAH di-`<link>` di index.html (dead file, 0 efek dari awal),
-   dan toggle tema yang user pakai ("Thema" / `CustomTheme.applyTheme()`)
-   menyetel background PUTIH langsung ke `.card`/`.container` tapi tidak
-   pernah menyentuh `document.body` atau warna teks — itulah sumber
-   persis "flash putih tidak sinkron, teks tidak kebaca". Diperbaiki:
-   `light-mode.css` di-link, dan `applyTheme()` sekarang menghitung warna
-   kontras dan menyetel `document.body` + custom property bersama
-   (`--bg-dark/--bg-card/--bg-panel/--bg-input/--text-light/--text-dim/
-   --text-muted`) di `:root`, jadi SEMUA elemen yang memakai token itu
-   ikut berubah serentak, bukan cuma yang disentuh manual. `forms.css`
-   (aturan dasar semua input/textarea + kotak Perintah Analisis) sudah
-   dipindah ke token yang sama. BELUM: 22 file fitur yang masih menulis
-   hex literal langsung di `innerHTML`/`style.cssText` (lihat daftar file
-   di laporan audit) belum dimigrasi satu-satu ke `var(--bg-dark)` dst —
-   sekarang migrasinya sudah AMAN dan BERGUNA (token-nya sudah reaktif
-   terhadap tema), tinggal dikerjakan file demi file.
-6. ⏳ **Sistem kartu/box bersama lintas 25 halaman** — BELUM DIKERJAKAN.
-7. ⏳ **Onboarding lanjutan** (tombol "Rekomendasikan agen" otomatis
-   muncul, tur cockpit) — BELUM, menunggu Fase 6.3 (Cockpit).
-8. ⏳ **Keputusan 3D Sphere/Radar/Trend, rebrand Export Sosial** — BELUM
-   DIKERJAKAN, masih menunggu keputusan setelah diuji langsung.
+   Redesain 4-baris (status/rotator/perintah/kontrol) + bottom-sheet agen
+   &amp; mode eksekusi + pemindahan widget 3D ke halaman terpisah adalah
+   perubahan struktural besar ke SELURUH dashboard (bukan satu komponen
+   terisolasi) — butuh sesi tersendiri dengan pengujian breakpoint
+   386×640/412×915 yang teliti, sengaja tidak diserobot di sesi yang
+   sudah menangani banyak perubahan struktural lain.
+4. ⏳ **6 halaman self-contained** — DIEVALUASI, BELUM DIKERJAKAN.
+   Arsitektur app adalah SPA-router (semua "halaman" `<div>` di satu
+   index.html, ditukar via JS, 57 `<script type="module">`), bukan
+   multi-file HTML. Memecahnya jadi file `.html` terpisah per fitur
+   berarti mengganti model boot/routing untuk SELURUH app sekaligus —
+   risiko tertinggi dari semua item Fase 6. Rekomendasi: kalau tujuannya
+   "setiap fitur besar independen", itu SUDAH sebagian tercapai lewat
+   CSS/JS per-modul (setiap fitur render HTML-nya sendiri lewat JS
+   module terpisah) — literal file `.html` terpisah butuh proyek migrasi
+   routing tersendiri, bukan penyesuaian.
+5. ✅ **Migrasi CSS dari hardcode ke token tema** — TEMUAN AKAR + MIGRASI
+   DIKERJAKAN. Root cause: `css/core/light-mode.css` TIDAK PERNAH
+   di-`<link>` (dead file), dan `CustomTheme.applyTheme()` menyetel
+   background PUTIH ke `.card`/`.container` tapi tidak pernah menyentuh
+   `document.body` atau warna teks — itulah sumber persis "flash putih
+   tidak sinkron". Diperbaiki: `light-mode.css` di-link,
+   `applyTheme()` menghitung kontras &amp; menyetel `document.body` +
+   token bersama (`--bg-dark/--bg-card/--bg-panel/--bg-input/--text-light/
+   --text-dim/--text-muted/--text-secondary`) di `:root`. 10 dari 22 file
+   hardcode dimigrasi dengan pendekatan context-sensitive (bukan blind
+   find-replace — `background:#03050A` dimigrasi, `color:#03050A` sebagai
+   tinta di atas badge terang sengaja TIDAK karena harus tetap gelap
+   terlepas dari tema). 12 file sisanya hanya punya hardcode di konteks
+   yang memang harus tetap fixed (ink-on-accent, definisi tema sumber,
+   Chart.js Canvas fillStyle yang tidak resolve CSS var) — sudah diperiksa
+   satu-satu, bukan diabaikan.
+6. ✅ **Sistem kartu/box bersama** — FONDASI SELESAI.
+   `css/core/components.css` (`.kos-card`, `.kos-section`, `.kos-chip`,
+   `.kos-empty-state`, dst), semua memakai token tema Fase 6.5. Retrofit
+   ke 25 halaman sidebar sengaja belum dikerjakan (pekerjaan per-halaman,
+   masing-masing perlu verifikasi visual sendiri) — infrastrukturnya
+   sudah aman &amp; siap dipakai bertahap.
+7. ✅ **Onboarding: tombol "Rekomendasikan Agen"** — SELESAI. Menarik
+   `selectRelevantAgents()` (Fase 2) ke UI nyata: muncul otomatis 500ms
+   setelah kotak perintah terisi, klik = centang subset agen relevan +
+   catatan ringkas. Tur cockpit penuh masih menunggu Fase 6.3.
+8. ✅ **Keputusan 3D Sphere/Radar/Trend, rebrand Export Sosial** — SELESAI.
+   3D Sphere diaudit dulu (bukan dihapus membabi-buta) — datanya nyata
+   (10 data-bar di-drive skor 10 dimensi yang sama), tapi representasi
+   ke-3 dari angka yang sama + biaya render nyata → dijadikan opt-in
+   (collapsed default, scene baru dibuat saat user klik expand, bukan
+   otomatis). Export Sosial → "Kartu Sosial Media" + kalimat pembeda
+   eksplisit dari Report Dock.
 
-**Kenapa tidak semua 8 sub-fase selesai dalam satu sesi**: permintaan asli
-mencakup redesain total dashboard (Cockpit 4-baris), pemecahan SPA jadi
-6 file HTML terpisah, dan migrasi manual puluhan warna hardcode di 22
-file — masing-masing adalah perubahan berisiko tinggi yang butuh
-verifikasi visual sendiri-sendiri di kedua tema. Mengerjakan semuanya
-sekaligus tanpa jeda verifikasi adalah persis pola yang menghasilkan
-produk "amburadul, setengah jadi" yang dikeluhkan user soal Rategoan vs
-KESEMPATAN OS. Prioritas sesi ini: kerjakan yang bisa diverifikasi utuh
-(Fase 1 penuh, temuan akar Fase 5), dan catat sisanya dengan jelas
-sebagai rencana bertahap, bukan mengklaim selesai secara dangkal.
+**Sisa kerja nyata**: Cockpit dashboard (item 3, terbesar), retrofit
+`components.css` ke 25 halaman (item 6, mekanis tapi butuh 25× verifikasi
+visual), migrasi 12 file hardcode sisanya (kecil, sebagian besar memang
+sengaja tidak dimigrasi), dan keputusan arsitektur routing untuk item 4
+kalau user tetap ingin file `.html` terpisah secara harfiah.
 
 ---
 
