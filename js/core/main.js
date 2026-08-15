@@ -308,11 +308,11 @@ function setupFileUpload() {
         const file = e.target.files[0];
         if (!file) return;
         if (file.size > CONFIG.MAX_UPLOAD_SIZE_MB * 1024 * 1024) {
-            statusDiv.innerText = 'File terlalu besar (max ' + CONFIG.MAX_UPLOAD_SIZE_MB + ' MB)';
+            statusDiv.innerText = 'File too large (max ' + CONFIG.MAX_UPLOAD_SIZE_MB + ' MB)';
             fileInput.value = '';
             return;
         }
-        statusDiv.innerText = 'Membaca...';
+        statusDiv.innerText = 'Reading...';
         try {
             const text = await file.text();
             if (file.name.endsWith('.json')) {
@@ -320,13 +320,13 @@ function setupFileUpload() {
             } else if (file.name.endsWith('.csv')) {
                 const firstLine = text.split('\n')[0];
                 if (firstLine.split(',').length < 1) {
-                    throw new Error('CSV tidak valid');
+                    throw new Error('Invalid CSV');
                 }
             }
             window.__uploadedData = text;
-            statusDiv.innerText = '✅ ' + file.name + ' siap (' + Math.round(text.length / 1024) + ' KB)';
+            statusDiv.innerText = '✅ ' + file.name + ' ready (' + Math.round(text.length / 1024) + ' KB)';
         } catch (error) {
-            statusDiv.innerText = 'Gagal baca file: ' + error.message;
+            statusDiv.innerText = 'Failed to read file: ' + error.message;
             fileInput.value = '';
             delete window.__uploadedData;
         }
@@ -343,7 +343,7 @@ function setupEventListeners() {
     let lastStart = 0;
     const startWorkflow = async function() {
         if (Date.now() - lastStart < 2000) {
-            showToast('Tunggu sebentar', 'warn');
+            showToast('Please wait a moment', 'warn');
             return;
         }
         lastStart = Date.now();
@@ -351,7 +351,7 @@ function setupEventListeners() {
         const topic = document.getElementById('topicInput')?.value || '';
         const instruction = document.getElementById('promptInput')?.value || '';
         if (!topic || !instruction) {
-            showToast('Isi Topik dan Instruksi!', 'error');
+            showToast('Write your analysis topic and instruction!', 'error');
             return;
         }
         try {
@@ -366,12 +366,12 @@ function setupEventListeners() {
                 let key = CONFIG.API_KEYS[provider];
                 if (!key && apiKey) key = apiKey;
                 if (!key) {
-                    showToast('API Key untuk ' + CONFIG.PROVIDERS[provider].name + ' belum diisi.', 'error');
+                    showToast('API Key for ' + CONFIG.PROVIDERS[provider].name + ' is not set.', 'error');
                     return;
                 }
                 const isValid = await AIClients.validateApiKey(provider, key);
                 if (!isValid) {
-                    showToast('API Key ' + CONFIG.PROVIDERS[provider].name + ' tidak valid.', 'error');
+                    showToast('API Key for ' + CONFIG.PROVIDERS[provider].name + ' is invalid.', 'error');
                     return;
                 }
                 CONFIG.API_KEYS[provider] = key;
@@ -381,7 +381,7 @@ function setupEventListeners() {
             await WorkflowEngine.start({ topic: topic, instruction: instruction }, uploaded);
         } catch (error) {
             const shortMessage = (error && error.message) ? error.message : String(error);
-            showToast('Gagal memulai eksekusi: ' + shortMessage, 'error');
+            showToast('Failed to start execution: ' + shortMessage, 'error');
             Logger.system('EKSEKUSI', 'Gagal memulai eksekusi: ' + shortMessage);
             if (error && error.stack) {
                 Logger.system('EKSEKUSI-TRACE', error.stack.split('\n').slice(0, 6).join(' ← '));

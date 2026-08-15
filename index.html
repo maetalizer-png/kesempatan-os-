@@ -57,7 +57,9 @@
 </head>
 <body>
     <div class="container">
-        <button class="hamburger" id="hamburgerBtn" aria-label="Menu"><span style="display:block; width:20px; height:2px; background:currentColor; margin:4px auto; border-radius:1px;"></span><span style="display:block; width:20px; height:2px; background:currentColor; margin:4px auto; border-radius:1px;"></span><span style="display:block; width:20px; height:2px; background:currentColor; margin:4px auto; border-radius:1px;"></span></button>
+        <div class="hb-bar" id="hbBar">
+            <button class="hamburger" id="hamburgerBtn" aria-label="Menu"><span style="display:block; width:20px; height:2px; background:currentColor; margin:4px auto; border-radius:1px;"></span><span style="display:block; width:20px; height:2px; background:currentColor; margin:4px auto; border-radius:1px;"></span><span style="display:block; width:20px; height:2px; background:currentColor; margin:4px auto; border-radius:1px;"></span></button>
+        </div>
         <div class="layout">
             <div class="sidebar" id="sidebar">
                 <div class="menu">
@@ -128,14 +130,15 @@
                 </div>
             </div>
             <div class="main">
-                <div class="topbar topbar-compact" id="mainTopbar">
+                <div id="mainScroll" class="main-scroll">
+                <div class="topbar" id="mainBrandHeader">
                     <div class="logo-centered">
                         <div class="logo"><div class="logo-top-wrapper"><img src="assets/svg/logo-kesempatan.svg" alt="" class="logo-atom"></div><img src="assets/svg/brand-logo.svg" alt="KESEMPATAN OS"></div>
                         <div class="subtitle"><img src="assets/svg/brand-subtitle.svg" alt="PRECISION INTELLIGENCE — AUTONOMOUS OPPORTUNITY INTELLIGENCE SYSTEM"></div>
                     </div>
                 </div>
-                <div id="mainScroll" class="main-scroll">
                 <div id="dashboardGrid" class="dashboard-grid">
+                    <h2 class="section-heading">PARAMETER INPUT</h2>
                     <div class="card full-width">
                         <div id="contenDasboardContainer" class="skeleton-loading"></div>
                         <div id="logPanelContainer" style="margin-top:10px;"></div>
@@ -154,7 +157,7 @@
                 <div id="modeSheet" class="kos-sheet" aria-hidden="true">
                     <div class="kos-sheet-backdrop" data-sheet-close></div>
                     <div class="kos-sheet-panel">
-                        <div class="kos-sheet-head"><span>Mode Eksekusi</span><button type="button" class="kos-sheet-close" data-sheet-close aria-label="Tutup">&times;</button></div>
+                        <div class="kos-sheet-head"><span>Execution Mode</span><button type="button" class="kos-sheet-close" data-sheet-close aria-label="Close">&times;</button></div>
                         <div class="kos-sheet-body">
                             <div id="workflowModeContainer" class="skeleton-loading"></div>
                         </div>
@@ -163,7 +166,7 @@
                 <div id="agentSheet" class="kos-sheet" aria-hidden="true">
                     <div class="kos-sheet-backdrop" data-sheet-close></div>
                     <div class="kos-sheet-panel">
-                        <div class="kos-sheet-head"><span>Pilih Agen</span><button type="button" class="kos-sheet-close" data-sheet-close aria-label="Tutup">&times;</button></div>
+                        <div class="kos-sheet-head"><span>Select Agents</span><button type="button" class="kos-sheet-close" data-sheet-close aria-label="Close">&times;</button></div>
                         <div class="kos-sheet-body">
                             <div id="agentControlContainer" class="skeleton-loading"></div>
                             <div id="agentPoolContainer" class="skeleton-loading"></div>

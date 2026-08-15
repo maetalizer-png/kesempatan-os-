@@ -152,19 +152,17 @@
 @media (max-width: 768px) {
   .hamburger {
     display: block !important;
-    position: fixed !important;
-    width: 46px !important;
-    height: 46px !important;
+    position: static !important;
+    width: 42px !important;
+    height: 42px !important;
     font-size: 24px !important;
-    top: 10px !important;
-    left: 10px !important;
     border-radius: 12px !important;
-    z-index: 9999 !important;
+    z-index: 1101 !important;
   }
 
   .sidebar {
     width: 250px !important;
-    padding: 72px 10px 12px 10px !important;
+    padding: 64px 10px 12px 10px !important;
     padding-bottom: 80px !important;
     overflow-y: auto !important;
     height: 100vh !important;

@@ -96,7 +96,7 @@ function initUIHandlers() {
             recognition.onstart = function() {
                 if (voiceButton) voiceButton.style.display = 'none';
                 if (stopButton) stopButton.style.display = 'block';
-                showToast('Dengarkan...', 'info');
+                showToast('Listening...', 'info');
             };
             recognition.onend = function() {
                 if (voiceButton) voiceButton.style.display = 'block';
@@ -113,7 +113,7 @@ function initUIHandlers() {
                 showToast('"' + transcript + '"', 'success');
             };
             recognition.onerror = function() {
-                showToast('Gagal', 'error');
+                showToast('Failed', 'error');
                 if (voiceButton) voiceButton.style.display = 'block';
                 if (stopButton) stopButton.style.display = 'none';
             };

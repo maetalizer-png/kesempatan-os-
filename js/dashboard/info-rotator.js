@@ -1,7 +1,7 @@
 const SLIDES = [
-    { step: '1. Tulis topik & fokus dalam satu kalimat', example: 'analisis warung kopi kontainer di pinggir tol, fokus modal di bawah 50 juta' },
-    { step: '2. Sistem merekomendasikan agen relevan otomatis', example: 'riset kelayakan aplikasi laundry on-demand, target 8 bulan balik modal' },
-    { step: '3. Jalankan dan lihat skor 10 dimensi', example: 'bandingkan peluang kedai kopi vs kedai teh untuk anak muda' }
+    { step: '1. Insert data file (CSV/JSON/TXT)' },
+    { step: '2. Write your analysis topic' },
+    { step: '3. Add instruction (optional)' }
 ];
 
 const ROTATE_MS = 6000;
@@ -19,9 +19,7 @@ function renderSlide(index) {
     const dotsEl = document.getElementById('infoRotatorDots');
     if (!track) return;
     const slide = SLIDES[index];
-    track.innerHTML =
-        '<span class="pi-rotator-step">' + escapeHtml(slide.step) + '</span>' +
-        '<button type="button" class="pi-rotator-example" data-example="' + escapeHtml(slide.example) + '">"' + escapeHtml(slide.example) + '"</button>';
+    track.innerHTML = '<span class="pi-rotator-step">' + escapeHtml(slide.step) + '</span>';
     if (dotsEl) {
         dotsEl.innerHTML = SLIDES.map(function(_, i) {
             return '<span class="pi-dot' + (i === index ? ' active' : '') + '" data-dot-index="' + i + '"></span>';
@@ -43,14 +41,6 @@ function stopRotation() {
     if (rotateTimer) clearInterval(rotateTimer);
 }
 
-function fillCommandInput(text) {
-    const commandInput = document.getElementById('commandInput');
-    if (!commandInput) return;
-    commandInput.value = text;
-    commandInput.dispatchEvent(new Event('input', { bubbles: true }));
-    commandInput.focus();
-}
-
 let wired = false;
 
 function init(attempt) {
@@ -64,12 +54,6 @@ function init(attempt) {
 
     if (wired) return;
     wired = true;
-
-    track.addEventListener('click', function(e) {
-        const btn = e.target.closest('.pi-rotator-example');
-        if (!btn) return;
-        fillCommandInput(btn.dataset.example);
-    });
 
     const dotsEl = document.getElementById('infoRotatorDots');
     if (dotsEl) {

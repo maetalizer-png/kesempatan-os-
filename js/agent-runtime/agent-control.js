@@ -61,8 +61,8 @@ function applyRecommendation(text) {
 }
 
 function buildReason(agent) {
-    if (agent.relevance > 0) return 'Cocok kata kunci perintah (skor ' + agent.relevance + ')';
-    return 'Rekomendasi default (agen inti)';
+    if (agent.relevance > 0) return 'Matches command keywords (score ' + agent.relevance + ')';
+    return 'Default recommendation (core agent)';
 }
 
 function updateRecommendCountBadge(count) {
@@ -89,10 +89,10 @@ function runRecommendation(silent) {
     const noteEl = document.getElementById('recommendAgentsNote');
     if (noteEl) {
         const names = ranked.slice(0, 4).map(function(a) { return a.id; }).join(', ');
-        const more = ranked.length > 4 ? ' +' + (ranked.length - 4) + ' lagi' : '';
-        noteEl.textContent = 'Dipilih: ' + names + more;
+        const more = ranked.length > 4 ? ' +' + (ranked.length - 4) + ' more' : '';
+        noteEl.textContent = 'Selected: ' + names + more;
     }
-    if (!silent && window.showToast) window.showToast(ranked.length + ' agen relevan dipilih otomatis', 'success');
+    if (!silent && window.showToast) window.showToast(ranked.length + ' relevant agents auto-selected', 'success');
     return ranked.length;
 }
 
@@ -139,7 +139,7 @@ function renderUI(container) {
         '<div class="agent-buttons">' +
             '<button id="selectAllAgentsBtn" class="btn-agent-select"><span class="ac-btn-label">Select All</span></button>' +
             '<button id="deselectAllAgentsBtn" class="btn-agent-deselect"><span class="ac-btn-label">Deselect</span></button>' +
-            '<button id="recommendAgentsBtn" class="btn-agent-select" hidden><span class="ac-btn-label">Rekomendasikan Agen</span></button>' +
+            '<button id="recommendAgentsBtn" class="btn-agent-select" hidden><span class="ac-btn-label">Recommend Agents</span></button>' +
         '</div>' +
         '<div class="ac-recommend-note" id="recommendAgentsNote"></div>' +
         '<div class="agent-stats">' +

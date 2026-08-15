@@ -161,7 +161,7 @@ function renderParallelPage() {
                 localStorage.setItem('kes_workflow_mode', mode);
             }
             if (showToast) {
-                showToast(e.target.checked ? '⚡ Mode paralel ON' : '🐢 Mode paralel OFF (Auto)', 'info');
+                showToast(e.target.checked ? '⚡ Parallel mode ON' : '🐢 Parallel mode OFF (Auto)', 'info');
             }
         });
     }
@@ -246,7 +246,7 @@ function renderWorkflowModeSelector() {
     container.dataset.rendered = 'true';
     container.innerHTML = '<div class="wf-mode-rim">' +
         '<div class="wf-mode-rim-in">' +
-        '<div style="font-size:11px; color:#A0B3C9; font-weight:600; margin-bottom:8px;">Mode Eksekusi:</div>' +
+        '<div style="font-size:11px; color:#A0B3C9; font-weight:600; margin-bottom:8px;">Execution Mode:</div>' +
         '<div style="display:flex; gap:8px; align-items:stretch; flex-wrap:wrap;">' +
             '<button id="workflowModeAuto" class="execute-btn btn-workflow-mode mode-auto">Auto</button>' +
             '<button id="workflowModeSequential" class="execute-btn btn-workflow-mode mode-sequential">Sequential</button>' +
@@ -314,28 +314,28 @@ function initWorkflowModeUI() {
             modeAuto.addEventListener('click', function(e) {
                 e.preventDefault();
                 updateWorkflowUI('auto');
-                if (showToast) showToast('🔄 Mode Auto', 'info');
+                if (showToast) showToast('🔄 Auto mode', 'info');
             });
         }
         if (modeSeq) {
             modeSeq.addEventListener('click', function(e) {
                 e.preventDefault();
                 updateWorkflowUI('sequential');
-                if (showToast) showToast('🐢 Mode Sequential', 'info');
+                if (showToast) showToast('🐢 Sequential mode', 'info');
             });
         }
         if (modePar) {
             modePar.addEventListener('click', function(e) {
                 e.preventDefault();
                 updateWorkflowUI('parallel');
-                if (showToast) showToast('⚡ Mode Parallel AKTIF!', 'success');
+                if (showToast) showToast('⚡ Parallel mode ACTIVE!', 'success');
             });
         }
         if (modeManual) {
             modeManual.addEventListener('click', function(e) {
                 e.preventDefault();
                 updateWorkflowUI('manual');
-                if (showToast) showToast('🙋 Mode HITL (persetujuan manual) AKTIF', 'info');
+                if (showToast) showToast('🙋 HITL mode (manual approval) ACTIVE', 'info');
             });
         }
 
@@ -344,7 +344,7 @@ function initWorkflowModeUI() {
     } catch (error) {
         const container = document.getElementById('workflowModeContainer');
         if (container) {
-            container.innerHTML = '<div style="padding:8px 12px; color:#FF6B6B; font-size:11px; border:1px solid #FF6B6B; border-radius:8px;">⚠️ Mode Eksekusi gagal dimuat: ' + error.message + '</div>';
+            container.innerHTML = '<div style="padding:8px 12px; color:#FF6B6B; font-size:11px; border:1px solid #FF6B6B; border-radius:8px;">⚠️ Execution Mode failed to load: ' + error.message + '</div>';
         }
         if (Logger) {
             Logger.error('Workflow', 'initWorkflowModeUI gagal: ' + error.message);
