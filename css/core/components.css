@@ -1,0 +1,59 @@
+.kos-card {
+    background: var(--bg-card);
+    border: 1px solid var(--primary-tint-10, rgba(0,255,163,.1));
+    border-radius: var(--radius-sm, 16px);
+    padding: 16px;
+    box-sizing: border-box;
+}
+
+.kos-section {
+    margin-bottom: 16px;
+}
+.kos-section:last-child {
+    margin-bottom: 0;
+}
+
+.kos-section-label {
+    font-size: 10.5px;
+    font-weight: 700;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    color: var(--text-secondary, var(--text-muted));
+    margin: 0 0 8px;
+}
+
+.kos-divider {
+    border: none;
+    border-top: 1px solid rgba(224, 230, 237, 0.12);
+    margin: 16px 0;
+}
+
+.kos-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 12px;
+    border-radius: var(--radius-pill, 999px);
+    background: var(--primary-tint-10, rgba(0,255,163,.1));
+    border: 1px solid var(--primary-tint-30, rgba(0,255,163,.3));
+    color: var(--text-light);
+    font-size: 12px;
+}
+
+.kos-empty-state {
+    text-align: center;
+    padding: 32px 16px;
+    color: var(--text-secondary, var(--text-muted));
+    font-size: 13px;
+}
+
+.kos-grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+@media (max-width: 560px) {
+    .kos-grid-2 {
+        grid-template-columns: 1fr;
+    }
+}
