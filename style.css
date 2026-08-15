@@ -8,6 +8,8 @@
   --bg-dark: #03050A;
   --bg-card: rgba(12, 18, 32, 0.90);
   --bg-sidebar: rgba(7, 12, 25, 0.85);
+  --bg-panel: #05080c;
+  --bg-input: rgba(3, 5, 10, 0.7);
   --text-light: #E8F0F8;
   --text-dim: #C8D8E8;
   --text-muted: rgba(224, 230, 237, 0.65);

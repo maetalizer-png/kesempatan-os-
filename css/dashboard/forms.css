@@ -3,7 +3,7 @@
 
 input, textarea, select {
     width: 100%;
-    background: rgba(3, 5, 10, 0.7);
+    background: var(--bg-input, rgba(3, 5, 10, 0.7));
     border: 1px solid var(--primary-tint-30);
     color: var(--text-light);
     padding: 10px 14px;
@@ -205,12 +205,12 @@ input:focus, textarea:focus, select:focus {
 .kx-rim-in {
     position: relative;
     clip-path: var(--kx-clip);
-    background: #05080c;
+    background: var(--bg-panel, #05080c);
 }
 .kx-box .kx-rim-in {
     background:
         repeating-linear-gradient(135deg, transparent 0 3px, rgba(26,255,156,.22) 3px 4px) right bottom / 15px 15px no-repeat,
-        #05080c;
+        var(--bg-panel, #05080c);
 }
 .kx-rim.kx-file,
 .kx-rim.kx-vcell,

@@ -1,4 +1,14 @@
 
+body.light {
+  --bg-dark: #E8EDF5;
+  --bg-card: rgba(255, 255, 255, 0.85);
+  --bg-sidebar: rgba(255, 255, 255, 0.92);
+  --bg-panel: #ffffff;
+  --bg-input: rgba(255, 255, 255, 0.7);
+  --text-light: #1A2A3A;
+  --text-dim: #34506B;
+  --text-muted: rgba(26, 42, 58, 0.65);
+}
 body.light .container { background: rgba(255, 255, 255, 0.85); }
 body.light .card { background: rgba(255, 255, 255, 0.85); border: none !important; }
 body.light .app-icon-circle { background: rgba(0, 0, 0, 0.08); border-color: rgba(0, 0, 0, 0.05); }

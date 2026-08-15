@@ -407,6 +407,10 @@ class CustomTheme {
             this.isTransitioning = true;
             document.documentElement.style.transition = 'all ' + this.transitionDuration + 'ms ease';
         }
+        const self = this;
+        const textColor = self.getContrastColor(theme.bg);
+        const mutedTextColor = textColor === '#FFFFFF' ? 'rgba(255,255,255,0.72)' : 'rgba(3,5,10,0.72)';
+
         document.documentElement.style.setProperty('--theme-primary', theme.primary);
         document.documentElement.style.setProperty('--theme-secondary', theme.secondary);
         document.documentElement.style.setProperty('--theme-bg', theme.bg);
@@ -414,15 +418,18 @@ class CustomTheme {
         document.documentElement.style.setProperty('--theme-radius', theme.borderRadius || '24px');
         document.documentElement.style.setProperty('--theme-accent', theme.accent || theme.primary);
         document.documentElement.style.setProperty('--theme-gradient', theme.gradient || 'none');
+        document.documentElement.style.setProperty('--bg-dark', theme.bg);
+        document.documentElement.style.setProperty('--bg-card', 'rgba(' + self.hexToRgb(theme.bg) + ', 0.90)');
+        document.documentElement.style.setProperty('--bg-sidebar', 'rgba(' + self.hexToRgb(theme.bg) + ', 0.85)');
+        document.documentElement.style.setProperty('--bg-panel', theme.bg);
+        document.documentElement.style.setProperty('--bg-input', 'rgba(' + self.hexToRgb(theme.bg) + ', 0.7)');
+        document.documentElement.style.setProperty('--text-light', textColor);
+        document.documentElement.style.setProperty('--text-dim', textColor);
+        document.documentElement.style.setProperty('--text-muted', mutedTextColor);
         document.body.style.fontFamily = theme.fontFamily || 'Inter, sans-serif';
-        const self = this;
-        
-        
-        
-        
-        
-        
-        
+        document.body.style.background = theme.bg;
+        document.body.style.color = textColor;
+
         document.querySelectorAll('.execute-btn:not(.btn-workflow-mode)').forEach(function(btn) {
             if (btn.classList.contains('secondary')) {
                 btn.style.borderColor = theme.primary;
@@ -437,6 +444,7 @@ class CustomTheme {
             card.style.borderColor = 'rgba(' + self.hexToRgb(theme.primary) + ', 0.2)';
             card.style.borderRadius = theme.borderRadius || '24px';
             card.style.background = 'rgba(' + self.hexToRgb(theme.bg) + ', 0.55)';
+            card.style.color = textColor;
         });
         const logo = document.querySelector('.logo');
         if (logo) {
