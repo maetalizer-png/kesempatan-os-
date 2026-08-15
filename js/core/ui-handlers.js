@@ -80,8 +80,9 @@ function initUIHandlers() {
     (function initVoiceInput() {
         const voiceButton = document.getElementById('voiceInputBtn');
         const stopButton = document.getElementById('stopVoiceBtn');
+        const commandInput = document.getElementById('commandInput');
         const topicInput = document.getElementById('topicInput');
-        if (!voiceButton || !topicInput) return;
+        if (!voiceButton || (!commandInput && !topicInput)) return;
 
         let recognition = null;
         const SpeechRecognitionAPI = window.webkitSpeechRecognition || window.SpeechRecognition;
@@ -103,7 +104,12 @@ function initUIHandlers() {
             };
             recognition.onresult = function(event) {
                 const transcript = event.results[0][0].transcript;
-                if (topicInput) topicInput.value = transcript;
+                if (commandInput) {
+                    commandInput.value = transcript;
+                    commandInput.dispatchEvent(new Event('input', { bubbles: true }));
+                } else if (topicInput) {
+                    topicInput.value = transcript;
+                }
                 showToast('"' + transcript + '"', 'success');
             };
             recognition.onerror = function() {

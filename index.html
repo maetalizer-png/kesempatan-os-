@@ -59,46 +59,58 @@
         <div class="layout">
             <div class="sidebar" id="sidebar">
                 <div class="menu">
-                    <button data-page="dashboard" class="active">KESBOARD</button>
-                    <button data-page="observation">Observation Engine</button>
-                    <button data-page="noise">Noise Filtering</button>
-                    <button data-page="memory">Memory Manager</button>
-                    <button data-page="cache">Response Cache</button>
-                    <button id="monitoringMenuBtn">Monitoring ▼</button>
-                    <div class="submenu" id="monitoringSubmenu">
-                        <button data-page="report">Report</button>
-                        <button data-page="telemetry">Telemetry</button>
-                        <button data-page="learning">Auto-Learning</button>
+                    <div class="menu-section">
+                        <div class="menu-section-label">Analisis</div>
+                        <button data-page="dashboard" class="active">KESBOARD</button>
+                        <button data-page="observation">Observation Engine</button>
+                        <button data-page="noise">Noise Filtering</button>
+                        <button data-page="memory">Memory Manager</button>
+                        <button data-page="cache">Response Cache</button>
+                        <button id="monitoringMenuBtn">Monitoring ▼</button>
+                        <div class="submenu" id="monitoringSubmenu">
+                            <button data-page="report">Report</button>
+                            <button data-page="telemetry">Telemetry</button>
+                            <button data-page="learning">Auto-Learning</button>
+                        </div>
+                        <button data-page="settings">Settings</button>
+                        <button id="aiworkersMenuBtn" style="margin-top:4px; border-color:rgba(0,255,163,0.4);">KESWORKER (55) ▼</button>
+                        <div class="submenu" id="aiworkersSubmenu">
+                            <button data-page="aiworkers">Manajemen Worker</button>
+                            <button data-page="aiworkersdata">Log Aktivitas</button>
+                        </div>
                     </div>
-                    <button data-page="settings">Settings</button>
-                    <button id="aiworkersMenuBtn" style="margin-top:4px; border-color:rgba(0,255,163,0.4);">KESWORKER (55) ▼</button>
-                    <div class="submenu" id="aiworkersSubmenu">
-                        <button data-page="aiworkers">Manajemen Worker</button>
-                        <button data-page="aiworkersdata">Log Aktivitas</button>
+                    <div class="menu-section">
+                        <div class="menu-section-label">Studio</div>
+                        <button data-page="interactive" style="border-color:rgba(0,255,163,0.4);">KESTRAKTIVE</button>
+                        <button id="premiumMenuBtn" style="margin-top:8px; border-color:rgba(0,255,163,0.4);">KESPREMAI ▼</button>
+                        <div class="submenu" id="premiumSubmenu">
+                            <button data-page="podcast">Podcast</button>
+                            <button data-page="voicechatsuara">Voice & Clone</button>
+                            <button data-page="rapbattlearena">Rap Battle</button>
+                            <button data-page="visualagent">Visualisation</button>
+                            <button data-page="customautoagent">Custom & Auto Agen</button>
+                            <button data-page="offline">Mode Offline</button>
+                        </div>
                     </div>
-                    <button data-page="interactive" style="margin-top:8px; border-color:rgba(0,255,163,0.4);">KESTRAKTIVE</button>
-                    <button id="premiumMenuBtn" style="margin-top:8px; border-color:rgba(0,255,163,0.4);">KESPREMAI ▼</button>
-                    <div class="submenu" id="premiumSubmenu">
-                        <button data-page="podcast">Podcast</button>
-                        <button data-page="voicechatsuara">Voice & Clone</button>
-                        <button data-page="rapbattlearena">Rap Battle</button>
-                        <button data-page="visualagent">Visualisation</button>
-                        <button data-page="customautoagent">Custom & Auto Agen</button>
-                        <button data-page="offline">Mode Offline</button>
+                    <div class="menu-section">
+                        <div class="menu-section-label">Sosial</div>
+                        <button id="marketdataMenuBtn" style="border-color:rgba(0,255,163,0.4);">KESMARKET ▼</button>
+                        <div class="submenu" id="marketdataSubmenu">
+                            <button data-page="livecrypto">Live Crypto</button>
+                            <button data-page="news">News Aggregator</button>
+                        </div>
+                        <button id="kesmediaMenuBtn" style="margin-top:8px; border-color:rgba(0,255,163,0.4);">KESMEDIA ▼</button>
+                        <div class="submenu" id="kesmediaSubmenu">
+                            <button data-page="sharesosmed">Social Share</button>
+                            <button data-page="customtheme">Thema</button>
+                            <button data-page="editfoto">Editor</button>
+                        </div>
                     </div>
-                    <button id="marketdataMenuBtn" style="margin-top:8px; border-color:rgba(0,255,163,0.4);">KESMARKET ▼</button>
-                    <div class="submenu" id="marketdataSubmenu">
-                        <button data-page="livecrypto">Live Crypto</button>
-                        <button data-page="news">News Aggregator</button>
+                    <div class="menu-section">
+                        <div class="menu-section-label">Sistem</div>
+                        <button data-page="websocket" style="border-color:rgba(0,255,163,0.4);">WebSocket</button>
+                        <button data-page="publicapi" style="margin-top:8px; border-color:rgba(0,255,163,0.4);">Public API</button>
                     </div>
-                    <button id="kesmediaMenuBtn" style="margin-top:8px; border-color:rgba(0,255,163,0.4);">KESMEDIA ▼</button>
-                    <div class="submenu" id="kesmediaSubmenu">
-                        <button data-page="sharesosmed">Social Share</button>
-                        <button data-page="customtheme">Thema</button>
-                        <button data-page="editfoto">Editor</button>
-                    </div>
-                    <button data-page="websocket" style="margin-top:8px; border-color:rgba(0,255,163,0.4);">WebSocket</button>
-                    <button data-page="publicapi" style="margin-top:8px; border-color:rgba(0,255,163,0.4);">Public API</button>
                 </div>
                 <div class="sidebar-footer">
                     <div class="sidebar-footer-controls">

@@ -495,3 +495,91 @@ input:focus, textarea:focus, select:focus {
 .threshold-note { display: none !important; }
 
 @keyframes kxPulse { 0%,100% { opacity: .55; } 50% { opacity: 1; } }
+
+.kx-command-grp #commandInput { min-height: 52px; resize: none; }
+
+.kx-preview {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 10px;
+}
+.kx-chip {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 6px;
+    max-width: 100%;
+    padding: 6px 12px;
+    border-radius: var(--radius-pill, 999px);
+    background: var(--primary-tint-10, rgba(0,255,163,.1));
+    border: 1px solid var(--primary-tint-30, rgba(0,255,163,.3));
+    color: var(--text-light);
+    font-size: 12.5px;
+    cursor: pointer;
+    text-align: left;
+}
+.kx-chip:hover { background: var(--primary-tint-15, rgba(0,255,163,.15)); }
+.kx-chip-key {
+    flex: 0 0 auto;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .5px;
+    font-size: 10px;
+    color: var(--primary);
+}
+.kx-chip-val {
+    flex: 1 1 auto;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    color: var(--text-dim, var(--text-light));
+}
+.kx-chip-edit {
+    flex: 1 1 auto;
+    min-width: 80px;
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid var(--primary);
+    color: var(--text-light);
+    font-size: 12.5px;
+    padding: 0 0 1px;
+}
+.kx-chip-edit:focus { outline: none; }
+
+.kx-quickchips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 10px;
+}
+.kx-quickchip {
+    padding: 5px 11px;
+    border-radius: var(--radius-pill, 999px);
+    background: transparent;
+    border: 1px dashed var(--text-muted);
+    color: var(--text-muted);
+    font-size: 12px;
+    cursor: pointer;
+}
+.kx-quickchip:hover { border-color: var(--primary); color: var(--primary); }
+
+.kx-detail-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 12px;
+    padding: 5px 10px;
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: .3px;
+    cursor: pointer;
+}
+.kx-detail-toggle .kx-lico { width: 14px; height: 14px; filter: none; color: inherit; }
+.kx-detail-toggle:hover, .kx-detail-toggle.active { color: var(--primary); }
+
+.kx-detail-panel { margin-bottom: 16px; }
+.kx-detail-panel[hidden] { display: none; }
