@@ -1003,7 +1003,7 @@ function createAnomalyBadge() {
     }
 }
 
-function renderFeedbackChart(agent, containerId) {
+async function renderFeedbackChart(agent, containerId) {
     const container = document.getElementById(containerId);
     if (!container || !CONFIG.CHART_ENABLED) return;
     const trend = getFeedbackTrend(agent, 30);
@@ -1014,6 +1014,9 @@ function renderFeedbackChart(agent, containerId) {
     if (chartInstances[containerId]) {
         try { chartInstances[containerId].destroy(); } catch(e) { console.warn('[ReactionLearning] chart destroy failed:', e.message); }
         delete chartInstances[containerId];
+    }
+    if (typeof Chart === 'undefined' && window.KESEMPATAN?.ChartManager?.ensureChartLib) {
+        await window.KESEMPATAN.ChartManager.ensureChartLib().catch(function() {});
     }
     if (typeof Chart === 'undefined') {
         container.innerHTML = '<div style="color: #666; font-size: 11px; padding: 10px;">⚠️ Chart.js tidak tersedia</div>';

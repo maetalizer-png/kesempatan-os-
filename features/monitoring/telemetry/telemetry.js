@@ -84,11 +84,14 @@ function showConfirmDialog(title, message, onConfirm) {
 }
 
 
-function renderChart(canvas, data) {
+async function renderChart(canvas, data) {
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
     if (chartInstance) { chartInstance.destroy(); chartInstance = null; }
+    if (typeof Chart === 'undefined' && window.KESEMPATAN?.ChartManager?.ensureChartLib) {
+        await window.KESEMPATAN.ChartManager.ensureChartLib().catch(function() {});
+    }
     if (typeof Chart === 'undefined') {
         ctx.fillStyle = '#5a6a7a'; ctx.font = '12px sans-serif';
         ctx.fillText('Chart.js tidak tersedia', 10, 50);

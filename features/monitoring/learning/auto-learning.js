@@ -56,13 +56,16 @@ const _state = {
     historyData: [], isCompareMode: false, compareAgents: [], isRendering: false
 };
 
-function renderChart(agentRanking) {
+async function renderChart(agentRanking) {
     const canvas = document.getElementById('learningChart');
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
     if (_state.chartInstance) { _state.chartInstance.destroy(); _state.chartInstance = null; }
     if (agentRanking.length === 0) { ctx.fillStyle = '#666'; ctx.font = '12px Inter, sans-serif'; ctx.textAlign = 'center'; ctx.fillText('Belum ada data untuk chart', canvas.width / 2, canvas.height / 2 + 4); return; }
+    if (typeof Chart === 'undefined' && window.KESEMPATAN?.ChartManager?.ensureChartLib) {
+        await window.KESEMPATAN.ChartManager.ensureChartLib().catch(function() {});
+    }
     if (typeof Chart === 'undefined') { ctx.fillStyle = '#666'; ctx.font = '12px Inter, sans-serif'; ctx.textAlign = 'center'; ctx.fillText('Chart.js tidak tersedia', canvas.width / 2, canvas.height / 2 + 4); return; }
     const labels = agentRanking.map(function(a) { return a.agent; });
     const data = agentRanking.map(function(a) { return a.approvalRate || 0; });

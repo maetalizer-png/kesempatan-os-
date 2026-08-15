@@ -85,7 +85,7 @@ function showConfirmDialog(title, message, onConfirm, confirmText) {
     overlay.addEventListener('click', function(e) { if (e.target === overlay) close(); });
 }
 
-function renderChart(metrics) {
+async function renderChart(metrics) {
     const canvas = document.getElementById('reportMetricsChart');
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
@@ -95,6 +95,9 @@ function renderChart(metrics) {
         ctx.fillStyle = '#666'; ctx.font = '12px Inter, sans-serif'; ctx.textAlign = 'center';
         ctx.fillText('Belum ada metrik untuk chart', canvas.width / 2, canvas.height / 2 + 4);
         return;
+    }
+    if (typeof Chart === 'undefined' && window.KESEMPATAN?.ChartManager?.ensureChartLib) {
+        await window.KESEMPATAN.ChartManager.ensureChartLib().catch(function() {});
     }
     if (typeof Chart === 'undefined') {
         ctx.fillStyle = '#666'; ctx.font = '12px Inter, sans-serif'; ctx.textAlign = 'center';

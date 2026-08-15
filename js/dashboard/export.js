@@ -10,6 +10,27 @@ const Logger = Utils.Logger || { system: function() {}, info: function() {}, war
 let lastAggregated = null;
 let lastVerifierNote = "";
 
+let pdfLibsPromise = null;
+function loadScript(src) {
+    return new Promise(function(resolve, reject) {
+        const script = document.createElement("script");
+        script.src = src;
+        script.crossOrigin = "anonymous";
+        script.onload = function() { resolve(); };
+        script.onerror = function() { reject(new Error("Gagal memuat " + src)); };
+        document.head.appendChild(script);
+    });
+}
+function ensurePdfLibs() {
+    if (typeof html2canvas !== "undefined" && typeof window.jspdf !== "undefined") return Promise.resolve();
+    if (pdfLibsPromise) return pdfLibsPromise;
+    pdfLibsPromise = Promise.all([
+        typeof html2canvas === "undefined" ? loadScript("https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js") : Promise.resolve(),
+        typeof window.jspdf === "undefined" ? loadScript("https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js") : Promise.resolve()
+    ]).catch(function(error) { pdfLibsPromise = null; throw error; });
+    return pdfLibsPromise;
+}
+
 function setExportData(aggregated, verifierNote) {
     lastAggregated = aggregated;
     lastVerifierNote = verifierNote || "";
@@ -57,8 +78,10 @@ async function exportToPDF() {
         showToast("Tidak ada laporan", "error");
         return;
     }
-    if (typeof html2canvas === "undefined" || typeof window.jspdf === "undefined") {
-        showToast("Library PDF belum siap", "error");
+    try {
+        await ensurePdfLibs();
+    } catch (error) {
+        showToast("Gagal memuat library PDF", "error");
         return;
     }
     const element = document.getElementById("reportContainer");
@@ -423,8 +446,4 @@ export const ExportManager = Object.freeze({
 });
 
 KESEMPATAN.ExportManager = ExportManager;
-// Kept as a real global (not KESEMPATAN-only): social-share.js reassigns
-// window.ExportManager wholesale (Object.assign with a wrapped setData) to
-// hook into export completion, and this file's own click handlers read
-// window.ExportManager fresh at click-time so they pick up that wrapper.
 window.ExportManager = ExportManager;

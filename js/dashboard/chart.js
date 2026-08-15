@@ -12,9 +12,29 @@ const METRIC_LABELS = [
     'Execution', 'Long-term'
 ];
 
-function updateChart(metrics) {
+let chartLibPromise = null;
+function ensureChartLib() {
+    if (window.Chart) return Promise.resolve();
+    if (chartLibPromise) return chartLibPromise;
+    chartLibPromise = new Promise(function(resolve, reject) {
+        const script = document.createElement('script');
+        script.src = 'https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js';
+        script.crossOrigin = 'anonymous';
+        script.onload = function() { resolve(); };
+        script.onerror = function() { chartLibPromise = null; reject(new Error('Gagal memuat Chart.js')); };
+        document.head.appendChild(script);
+    });
+    return chartLibPromise;
+}
+
+async function updateChart(metrics) {
     const canvas = document.getElementById('opportunityChart');
     if (!canvas) return;
+    try {
+        await ensureChartLib();
+    } catch (error) {
+        return;
+    }
     const ctx = canvas.getContext('2d');
     const data = [
         metrics.demand || 0,
@@ -194,9 +214,14 @@ function loadReportHistory() {
     return history;
 }
 
-function initTimeAnalytics() {
+async function initTimeAnalytics() {
     const canvas = document.getElementById('timeAnalyticsCanvas');
     if (!canvas) return;
+    try {
+        await ensureChartLib();
+    } catch (error) {
+        return;
+    }
 
     let history = loadReportHistory();
 
@@ -421,6 +446,7 @@ export const ChartManager = Object.freeze({
     ScoreEngine: ScoreEngine,
     METRIC_KEYS: METRIC_KEYS,
     METRIC_LABELS: METRIC_LABELS,
+    ensureChartLib: ensureChartLib,
     getChart: () => opportunityChart,
     getTimeChart: () => timeAnalyticsChart
 });
