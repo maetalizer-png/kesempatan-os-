@@ -63,12 +63,6 @@ function buildActiveVoicePanel(state, theme) {
     `;
 }
 
-// ============================================================
-// 🆕 PODCAST ROOM — visual "ruang podcast" dengan kursi pembicara
-// yang menyala saat gilirannya bicara (di-update oleh ui-player.js
-// lewat renderer.setActiveSpeaker / clearActiveSpeaker, bukan lewat
-// render ulang penuh, supaya animasi mulus saat sedang diputar).
-// ============================================================
 function buildPodcastRoom(state, theme) {
     let seats = [];
     if (state.speakerMode === 'discussion') {
@@ -182,13 +176,6 @@ function buildPodcastRoom(state, theme) {
     `;
 }
 
-// ============================================================
-// 🆕 TOP STATUS BAR — pill modern, SEMUA DATA REAL (bukan dummy):
-// Status AI, Episode, Jumlah Kata, Lama Generate, Voice Aktif,
-// Recording Status, Export Status. Fungsi modular baru di dalam file
-// yang sudah ada (tidak membuat file baru), dipanggil dari
-// buildPodcastLayout di bawah.
-// ============================================================
 function buildTopStatusBar(state, theme) {
     const aiStatus = state.isGenerating
         ? { label: 'Generating', icon: '🧠', color: '#FFB020' }

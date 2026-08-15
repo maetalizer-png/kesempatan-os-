@@ -170,7 +170,7 @@ function renderUI() {
             '<div style="background: rgba(0,0,0,0.3); border-radius: 12px; padding: 12px; margin-bottom: 16px;">' +
                 '<div style="color: #00FFA3; font-weight: bold; margin-bottom: 8px;">API Key</div>' +
                 (hasKey ?
-                    '<div style="background: #03050A; padding: 8px; border-radius: 8px; font-family: monospace; font-size: 10px; word-break: break-all; margin-bottom: 8px;">' + currentApiKey.substring(0, 30) + '...</div>' +
+                    '<div style="background: var(--bg-dark); padding: 8px; border-radius: 8px; font-family: monospace; font-size: 10px; word-break: break-all; margin-bottom: 8px;">' + currentApiKey.substring(0, 30) + '...</div>' +
                     '<div style="display: flex; gap: 8px;">' +
                         '<button id="copyApiKeyBtn" class="execute-btn secondary" style="width: auto; padding: 4px 12px;">Copy</button>' +
                         '<button id="regenerateApiKeyBtn" class="execute-btn secondary" style="width: auto; padding: 4px 12px;">Regenerate</button>' +
@@ -199,7 +199,7 @@ function renderUI() {
                     '<button id="testAgentsBtn" class="execute-btn secondary" style="width: auto; padding: 4px 12px;">Test Agents</button>' +
                     '<button id="testAnalyzeBtn" class="execute-btn secondary" style="width: auto; padding: 4px 12px;">Test Analyze</button>' +
                 '</div>' +
-                '<div id="testResult" style="margin-top: 12px; background: #03050A; border-radius: 8px; padding: 8px; font-size: 10px; max-height: 150px; overflow-y: auto; display: none;"></div>' +
+                '<div id="testResult" style="margin-top: 12px; background: var(--bg-dark); border-radius: 8px; padding: 8px; font-size: 10px; max-height: 150px; overflow-y: auto; display: none;"></div>' +
             '</div>' +
         '</div>';
 

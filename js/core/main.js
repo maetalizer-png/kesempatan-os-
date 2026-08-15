@@ -108,7 +108,7 @@ function renderHistoryPanel() {
                 '<span style="font-weight:bold;color:#00FFA3;">' + escapeHtml(item.topic?.substring(0, 50) || 'Untitled') + '</span>' +
                 '<span style="font-size:11px;">' + item.score + '/100</span>' +
             '</div>' +
-            '<div style="font-size:11px;color:#A0B3C9;">' + new Date(item.timestamp).toLocaleString() + '</div>' +
+            '<div style="font-size:11px;color:var(--text-secondary);">' + new Date(item.timestamp).toLocaleString() + '</div>' +
             '<div style="font-size:12px;margin-top:8px;">' + escapeHtml(item.summary?.substring(0, 100) || '') + '...</div>' +
         '</div>';
     }).join('');

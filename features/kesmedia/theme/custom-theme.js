@@ -426,6 +426,7 @@ class CustomTheme {
         document.documentElement.style.setProperty('--text-light', textColor);
         document.documentElement.style.setProperty('--text-dim', textColor);
         document.documentElement.style.setProperty('--text-muted', mutedTextColor);
+        document.documentElement.style.setProperty('--text-secondary', mutedTextColor);
         document.body.style.fontFamily = theme.fontFamily || 'Inter, sans-serif';
         document.body.style.background = theme.bg;
         document.body.style.color = textColor;

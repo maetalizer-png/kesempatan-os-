@@ -33,7 +33,7 @@ function addWorkflowControls(mode) {
         '<span style="color:' + modeColor + ';font-size:11px;font-weight:bold;padding-right:10px;border-right:1px solid rgba(255,255,255,0.1);">' + modeLabel + '</span>' +
         '<button id="workflowPauseBtn" style="background:#FFD700; border:none; border-radius:30px; padding:6px 16px; color:#03050A; font-weight:bold; cursor:pointer; font-size:11px;">⏸️ PAUSE</button>' +
         '<button id="workflowStopBtn" style="background:#ff4444; border:none; border-radius:30px; padding:6px 16px; color:white; font-weight:bold; cursor:pointer; font-size:11px;">⏹️ STOP</button>' +
-        '<button id="workflowModeToggleBtn" style="background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.15); border-radius:30px; padding:6px 12px; color:#A0B3C9; font-size:10px; cursor:pointer; transition:0.2s;">🔄 Mode</button>' +
+        '<button id="workflowModeToggleBtn" style="background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.15); border-radius:30px; padding:6px 12px; color:var(--text-secondary); font-size:10px; cursor:pointer; transition:0.2s;">🔄 Mode</button>' +
         '<span id="workflowStatus" style="color:#00FFA3;font-size:10px;font-weight:bold;padding-left:6px;">● RUNNING</span>';
     document.body.appendChild(panel);
 

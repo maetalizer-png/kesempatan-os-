@@ -8,6 +8,7 @@ body.light {
   --text-light: #1A2A3A;
   --text-dim: #34506B;
   --text-muted: rgba(26, 42, 58, 0.65);
+  --text-secondary: #4A5C70;
 }
 body.light .container { background: rgba(255, 255, 255, 0.85); }
 body.light .card { background: rgba(255, 255, 255, 0.85); border: none !important; }

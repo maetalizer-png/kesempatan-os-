@@ -9,20 +9,13 @@ function inject() {
         const style = document.createElement('style');
         style.id = styleId;
         style.textContent = `
-            /* ================================================================
-               KESEMPATAN OS — RAP BATTLE ARENA (design system diturunkan
-               dari Podcast Studio: hijau = identitas utama, cyan = Agent A,
-               pink/merah = Agent B sebagai warna lawan. Ungu/amber cuma
-               aksen ambient tipis, bukan warna utama.)
-               ================================================================ */
             .rap-modern-wrapper {
                 background: transparent;
                 padding: 12px;
-                color: #E8F0F8;
+                color: var(--text-light);
                 font-family: 'Segoe UI', system-ui, sans-serif;
             }
 
-            /* ===== BATTLE HUD HEADER ===== */
             .rap-header-arena {
                 text-align: center;
                 margin-bottom: 6px;
@@ -73,7 +66,6 @@ function inject() {
                 font-family: 'Courier New', monospace;
             }
 
-            /* ===== STATS (scoreboard readouts) ===== */
             .scoreboard-bar {
                 display: flex;
                 background: rgba(0,0,0,0.22);
@@ -95,8 +87,6 @@ function inject() {
                 min-height: 44px;
                 position: relative;
             }
-            /* Diagonal separator — bukan garis lurus, motif "score strip"
-               broadcast (mengganti border-left rounded-panel biasa) */
             .score-cell:not(:first-child)::before {
                 content: '';
                 position: absolute; left: 0; top: 15%; bottom: 15%;
@@ -140,7 +130,6 @@ function inject() {
                 transition: width 0.6s ease;
             }
 
-            /* ===== BATTLE STAGE — focal point utama halaman ===== */
             .battle-stage {
                 position: relative;
                 display: flex;
@@ -156,8 +145,6 @@ function inject() {
                 border: 1px solid rgba(0,255,163,0.16);
                 box-shadow: inset 0 0 40px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.05), 0 10px 30px rgba(0,0,0,0.3);
             }
-            /* Arena floor — CSS-only, kesan podium berpijak di panggung,
-               bukan gambar. Gradient horizontal + radial lantai. */
             .arena-floor {
                 position: absolute; left: 8%; right: 8%; bottom: 0; height: 40%;
                 background: radial-gradient(ellipse 80% 100% at 50% 100%, rgba(0,255,163,0.1), transparent 75%);
@@ -165,8 +152,6 @@ function inject() {
                 pointer-events: none;
                 z-index: 0;
             }
-            /* Spotlight beam — lighting rig, CSS-only conic-gradient dari
-               sudut atas panggung, bukan glow datar */
             .spotlight-beam {
                 position: absolute; top: -10%; width: 55%; height: 90%;
                 pointer-events: none; z-index: 0; opacity: 0.5;
@@ -206,7 +191,7 @@ function inject() {
             .stage-podium-status {
                 font-size: 7px; letter-spacing: 1.5px; opacity: 0.35;
                 font-family: 'Courier New', monospace;
-                color: #E8F0F8;
+                color: var(--text-light);
             }
             .stage-nameplate {
                 display: inline-block;
@@ -264,13 +249,6 @@ function inject() {
                 margin-top: 2px;
             }
 
-            /* ===== RAP PANEL (Judge Booth / Beat Engine) — shared chassis ===== */
-            /* ============================================================
-               BROADCAST FRAME — bracket sudut tactical HUD. Elemen ini
-               TIDAK ADA padanannya di Podcast Studio sama sekali - murni
-               vocabulary Arena. Dipakai berulang di Stage/Judge/Beat/
-               Bench/Archive supaya jadi signature nyata.
-               ============================================================ */
             .broadcast-frame { position: relative; }
             .broadcast-frame::before, .broadcast-frame::after,
             .broadcast-frame .bf-tr, .broadcast-frame .bf-bl {
@@ -344,7 +322,6 @@ function inject() {
             .judge-col .rap-panel-label { color: #B57EDC; opacity: 0.7; }
             .judge-col .rap-status.on { color: #B57EDC; background: rgba(181,126,220,0.12); }
             .beat-col .rap-panel-label { color: #FFB020; opacity: 0.7; }
-            /* EQ bars — dekoratif, kesan audio hardware, animasi statis ringan */
             .eq-bars { display: inline-flex; align-items: flex-end; gap: 1.5px; height: 8px; opacity: 0.6; }
             .eq-bars span { width: 2px; background: #FFB020; display: block; }
             .eq-bars span:nth-child(1) { height: 40%; animation: eqBounce 0.9s ease-in-out infinite -0.3s; }
@@ -353,8 +330,6 @@ function inject() {
             .eq-bars span:nth-child(4) { height: 90%; animation: eqBounce 0.9s ease-in-out infinite -0.45s; }
             @keyframes eqBounce { 0%, 100% { transform: scaleY(0.5); } 50% { transform: scaleY(1); } }
 
-            /* ===== PLAYER BENCH (Cypher Lounge) — gaya Voice Library:
-               header tetap, isi jadi ROWS yang scroll (bukan grid kartu) ===== */
             .cypher-lounge-header {
                 display: flex;
                 align-items: baseline;
@@ -434,7 +409,7 @@ function inject() {
             .rapper-name {
                 font-weight: 600;
                 font-size: 12px;
-                color: #E8F0F8;
+                color: var(--text-light);
             }
             .rapper-role {
                 font-size: 8px;
@@ -467,7 +442,6 @@ function inject() {
             .rapper-card.role-a .role-badge { background: #00FFA3; display: flex !important; }
             .rapper-card.role-b .role-badge { background: #FF2D75; display: flex !important; }
 
-            /* ===== CROWD METER ===== */
             .audience-row {
                 display: flex;
                 align-items: center;
@@ -500,7 +474,6 @@ function inject() {
                 font-family: 'Courier New', monospace;
             }
 
-            /* ===== VISUALIZER ===== */
             .visualizer-section canvas {
                 border-radius: 6px;
                 background: rgba(0,0,0,0.35);
@@ -513,7 +486,6 @@ function inject() {
                 opacity: 0.4;
             }
 
-            /* ===== TOOLBAR INDUSTRIAL ===== */
             .controls {
                 display: flex;
                 flex-direction: column;
@@ -530,15 +502,6 @@ function inject() {
                 flex-wrap: wrap;
                 align-items: center;
             }
-            /* ============================================================
-               CONSOLE SHELL — perbaikan bug: input/select native Android
-               WebView tetap memaksakan chrome rounded-nya sendiri walau
-               clip-path sudah dipasang langsung di elemen. Solusinya:
-               pisahkan bentuk visual (di wrapper div) dari kontrol native
-               (dibuat transparan total di dalamnya) - bentuk cut-corner
-               sekarang datang dari wrapper yang tidak bisa "dilawan" oleh
-               native chrome apa pun.
-               ============================================================ */
             .console-shell {
                 background: rgba(0,0,0,0.4);
                 border: 1px solid rgba(0,255,163,0.1);
@@ -556,7 +519,7 @@ function inject() {
                 border: none;
                 border-radius: 0;
                 outline: none;
-                color: #E8F0F8;
+                color: var(--text-light);
                 font-size: 11px;
                 font-family: inherit;
                 -webkit-appearance: none;
@@ -579,7 +542,7 @@ function inject() {
                 background: rgba(0,0,0,0.32);
                 border: 1px solid rgba(0,255,163,0.08);
                 clip-path: polygon(8px 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%, 0 8px);
-                color: #E8F0F8;
+                color: var(--text-light);
                 font-size: 11px;
                 outline: none;
             }
@@ -588,7 +551,7 @@ function inject() {
                 background: rgba(0,0,0,0.45);
                 border: 1px solid rgba(0,255,163,0.1);
                 clip-path: polygon(8px 0, 100% 0, 100% 100%, 0 100%, 0 8px);
-                color: #E8F0F8;
+                color: var(--text-light);
                 font-size: 10px;
                 outline: none;
                 cursor: pointer;
@@ -695,7 +658,6 @@ function inject() {
                 cursor: pointer;
             }
 
-            /* ===== BATTLE ARCHIVE (log/result) ===== */
             .battle-log {
                 height: 200px;
                 overflow-y: auto;
@@ -707,13 +669,12 @@ function inject() {
                 font-family: 'Courier New', monospace;
                 font-size: 11px;
                 line-height: 1.5;
-                color: #E8F0F8;
+                color: var(--text-light);
             }
             .battle-log::-webkit-scrollbar { width: 3px; }
             .battle-log::-webkit-scrollbar-track { background: rgba(255,255,255,0.02); }
             .battle-log::-webkit-scrollbar-thumb { background: rgba(0,255,163,0.15); border-radius: 4px; }
 
-            /* ===== BACK BUTTON ===== */
             .back-btn {
                 margin-top: 10px;
                 padding: 5px 14px;
@@ -725,7 +686,6 @@ function inject() {
                 cursor: pointer;
             }
 
-            /* ===== RESPONSIVE ===== */
             @media (max-width: 768px) {
                 .rap-modern-wrapper { padding: 8px; }
                 .arena-title { font-size: 15px; }
@@ -740,7 +700,6 @@ function inject() {
                 .battle-log { height: 180px; }
             }
 
-            /* ===== ANIMATIONS (dipertahankan, motion vocabulary sama) ===== */
             @keyframes reactionPop {
                 0%{transform:scale(0) rotate(0deg); opacity:0}
                 50%{transform:scale(1.5) rotate(20deg); opacity:1}
