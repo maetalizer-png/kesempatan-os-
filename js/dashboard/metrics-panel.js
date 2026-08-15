@@ -41,8 +41,8 @@ function renderUI(container) {
             '<div class="priority-badge" id="priorityDisplay">NO DATA</div>' +
         '</div>' +
         '<div class="chart-container"><h3>Opportunity Radar</h3><canvas id="opportunityChart" width="400" height="200"></canvas></div>' +
-        '<div class="viz-3d-container" id="viz3dContainer">' +
-            '<div class="viz-header"><span>3D Intelligence Sphere</span><button class="viz-toggle" id="vizToggleBtn">−</button></div>' +
+        '<div class="viz-3d-container collapsed" id="viz3dContainer">' +
+            '<div class="viz-header"><span>3D Intelligence Sphere</span><button class="viz-toggle" id="vizToggleBtn">+</button></div>' +
             '<div id="threeCanvas" style="width:100%;height:380px;"></div>' +
             '<div class="viz-footer">Drag to rotate | 90 Particles</div>' +
         '</div>';

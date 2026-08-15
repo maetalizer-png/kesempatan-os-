@@ -488,52 +488,54 @@ function autoInitThreeJS() {
         return typeof window.THREE !== 'undefined' || typeof THREE !== 'undefined';
     }
 
-    function initViz() {
+    function wireToggle() {
         const canvas = document.getElementById('threeCanvas');
-        if (!canvas) {
-            setTimeout(initViz, 200);
+        const toggleBtn = document.getElementById('vizToggleBtn');
+        const vizContainer = document.getElementById('viz3dContainer');
+        if (!canvas || !toggleBtn || !vizContainer) {
+            setTimeout(wireToggle, 200);
             return;
         }
-        if (typeof init3DViz === 'function') {
-            try {
-                const viz = init3DViz('threeCanvas');
-                window._3dVizInstance = viz;
-                const toggleBtn = document.getElementById('vizToggleBtn');
-                const vizContainer = document.getElementById('viz3dContainer');
-                if (toggleBtn && vizContainer) {
-                    let isExpanded = true;
-                    toggleBtn.addEventListener('click', function() {
-                        isExpanded = !isExpanded;
-                        if (isExpanded) {
-                            vizContainer.classList.remove('collapsed');
-                            toggleBtn.textContent = '−';
-                            setTimeout(function() {
-                                if (viz && typeof viz.handleResize === 'function') viz.handleResize();
-                            }, 100);
-                        } else {
-                            vizContainer.classList.add('collapsed');
-                            toggleBtn.textContent = '+';
-                        }
-                    });
+        let isExpanded = false;
+        let viz = null;
+
+        function createSceneWhenReady(attempt) {
+            if (isThreeReady()) {
+                try {
+                    viz = init3DViz('threeCanvas');
+                    window._3dVizInstance = viz;
+                } catch(e) {
+                    canvas.innerHTML = '<div style="color:#666;text-align:center;padding:40px;font-size:13px;">3D Sphere<br><span style="font-size:9px;">(WebGL not available)</span></div>';
+                    return;
                 }
-            } catch(e) {
-                const canvasEl = document.getElementById('threeCanvas');
-                if (canvasEl) {
-                    canvasEl.innerHTML = '<div style="color:#666;text-align:center;padding:40px;font-size:13px;">3D Sphere<br><span style="font-size:9px;">(WebGL not available)</span></div>';
-                }
+                setTimeout(function() {
+                    if (viz && typeof viz.handleResize === 'function') viz.handleResize();
+                }, 100);
+            } else if ((attempt || 0) < 30) {
+                setTimeout(function() { createSceneWhenReady((attempt || 0) + 1); }, 300);
+            } else {
+                canvas.innerHTML = '<div style="color:#666;text-align:center;padding:40px;font-size:13px;">3D Sphere<br><span style="font-size:9px;">(gagal memuat)</span></div>';
             }
-        } else {
-            setTimeout(initViz, 300);
         }
+
+        toggleBtn.addEventListener('click', function() {
+            isExpanded = !isExpanded;
+            if (isExpanded) {
+                vizContainer.classList.remove('collapsed');
+                toggleBtn.textContent = '−';
+                if (!viz) createSceneWhenReady(0);
+                else setTimeout(function() {
+                    if (viz.handleResize) viz.handleResize();
+                }, 100);
+            } else {
+                vizContainer.classList.add('collapsed');
+                toggleBtn.textContent = '+';
+            }
+        });
     }
 
-    function waitForThree() {
-        if (isThreeReady()) setTimeout(initViz, 300);
-        else setTimeout(waitForThree, 200);
-    }
-
-    if (document.readyState === 'complete') waitForThree();
-    else window.addEventListener('load', waitForThree);
+    if (document.readyState === 'complete') wireToggle();
+    else window.addEventListener('load', wireToggle);
 }
 
 export const ThreeViz = Object.freeze({

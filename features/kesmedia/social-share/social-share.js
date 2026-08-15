@@ -386,7 +386,7 @@ class SuperSocialShare {
         const report = this.lastResult || window.lastAggregated;
         const self = this;
         let html = '<div class="ss-wrap">';
-        html += '<div class="ss-head"><div><div class="ss-title">Social Share</div><div class="ss-sub">1 klik → semua platform • auto-generate • scheduled</div></div><button id="refreshShareBtn" class="ss-btn">Refresh</button></div>';
+        html += '<div class="ss-head"><div><div class="ss-title">Kartu Sosial Media</div><div class="ss-sub">Bukan hasil analisis (itu ada di Report Dock) — kartu ringkas siap-bagi ke semua platform, 1 klik • auto-generate • scheduled</div></div><button id="refreshShareBtn" class="ss-btn">Refresh</button></div>';
         html += '<div class="ss-box"><div class="ss-cta-head"><div><div class="ss-cta-title">1 Klik Share</div><div class="ss-cta-sub">' + (report ? (((report.topic || '').substring(0, 40) || 'Laporan siap') + ' | ' + (report.score || 0) + '/100') : 'Jalankan analisis dulu') + '</div></div><div style="display:flex;gap:8px;flex-wrap:wrap;"><button id="shareAllBtn" class="ss-btn ss-primary">Share ke Semua</button><button id="cancelShareBtn" class="ss-btn ss-danger" style="display:none;">Batal</button></div></div><div id="shareStatus" class="ss-status"></div><div class="ss-progress"><div id="shareProgressBar" class="ss-progress-fill"></div></div></div>';
         html += '<div class="ss-box"><div class="ss-box-title">Pilih Platform</div><div class="ss-grid">';
         for (const id in this.platforms) {
