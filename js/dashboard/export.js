@@ -336,7 +336,7 @@ async function exportToNotion() {
 
 function exportToEmail() {
     if (!lastAggregated) {
-        showToast("Tidak ada laporan. Jalankan START ENGINE dulu.", "error");
+        showToast("Tidak ada laporan. Jalankan analisis dan approve hasilnya dulu.", "error");
         return;
     }
     const email = prompt("Masukkan email tujuan:", "");

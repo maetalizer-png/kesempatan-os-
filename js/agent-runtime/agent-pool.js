@@ -6,8 +6,7 @@ const CATEGORIES = [
     { tab: 'sains', label: 'SAINS & TEKNO (14)' },
     { tab: 'umum', label: 'UMUM (12)' },
     { tab: 'politik', label: 'POLITIK (5)' },
-    { tab: 'global', label: 'GLOBAL (10)' },
-    { tab: 'custom', label: 'CUSTOM' }
+    { tab: 'global', label: 'GLOBAL (10)' }
 ];
 
 function buildTabsHTML() {
@@ -18,12 +17,8 @@ function buildTabsHTML() {
 
 function buildPanelsHTML() {
     return CATEGORIES.map(function(category) {
-        const extraId = category.tab === 'custom' ? ' id="customAgentsGrid"' : '';
         const activeClass = category.active ? ' active-panel' : '';
-        const placeholder = category.tab === 'custom'
-            ? '<div class="text-dim" style="grid-column:1/-1;text-align:center;padding:20px;">Agen custom akan muncul di sini</div>'
-            : '';
-        return '<div id="tab-' + category.tab + '" class="agent-tab-panel' + activeClass + '"><div class="agents-grid"' + extraId + '>' + placeholder + '</div></div>';
+        return '<div id="tab-' + category.tab + '" class="agent-tab-panel' + activeClass + '"><div class="agents-grid"></div></div>';
     }).join('');
 }
 

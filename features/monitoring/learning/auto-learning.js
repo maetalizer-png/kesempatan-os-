@@ -287,7 +287,7 @@ function render() {
         if (_state.currentSearch || _state.currentFilter !== 'all') {
             filterNote = '<div style="margin-top:8px;font-size:11px;color:#f39c12;">Filter aktif: ' + (_state.currentSearch ? '"' + _state.currentSearch + '"' : '') + (_state.currentFilter !== 'all' ? ' | ' + _state.currentFilter : '') + ' <button id="clearFiltersBtn" style="background:transparent;border:none;color:#00FFA3;cursor:pointer;text-decoration:underline;font-size:11px;">Hapus filter</button></div>';
         }
-        html += '<div style="color:#666;text-align:center;padding:20px;">Belum ada data pembelajaran. Jalankan analisis dengan HITL terlebih dahulu.<div style="margin-top:12px;font-size:12px;color:#A0B3C9;">Tips: Buka Dashboard → Pilih agen → Jalankan START ENGINE dengan mode HITL</div>' + filterNote + '</div>';
+        html += '<div style="color:#666;text-align:center;padding:20px;">Belum ada data pembelajaran. Jalankan analisis dengan HITL terlebih dahulu.<div style="margin-top:12px;font-size:12px;color:#A0B3C9;">Tips: Buka Dashboard → Pilih agen → Jalankan analisis dengan mode HITL, lalu approve/reject hasilnya</div>' + filterNote + '</div>';
     } else {
         let rows = '';
         agentRanking.forEach(function(a, index) {

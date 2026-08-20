@@ -431,8 +431,12 @@ function renderReport(agg, note) {
     note = note || "";
     const container = document.getElementById("reportContainer");
     if (!container) return;
+    if (agg && !agg.score && agg.failedCount > 0 && agg.validCount === 0) {
+        container.innerHTML = '<p class="text-dim">⚠️ Semua agen (' + agg.failedCount + ') gagal menghasilkan analisis yang valid — biasanya terjadi karena output AI lokal tidak sesuai format yang diharapkan. Coba jalankan ulang, pilih agen lain, atau isi API Key provider eksternal di Settings untuk hasil yang lebih stabil.</p>';
+        return;
+    }
     if (!agg || !agg.score) {
-        container.innerHTML = '<p class="text-dim">Belum ada hasil analisis. Jalankan START ENGINE.</p>';
+        container.innerHTML = '<p class="text-dim">Belum ada laporan final. Kalau baru saja menjalankan analisis, cek panel review agen di bawah — laporan final muncul setelah hasil tiap agen di-approve.</p>';
         return;
     }
     const warningHtml = (agg.failedCount > 0)
@@ -510,10 +514,6 @@ function validateInput(payload) {
     }
     if (!payload.topic.trim()) {
         if (showToast) showToast("❌ Topik tidak boleh kosong!", "error");
-        return false;
-    }
-    if (!payload.instruction || !payload.instruction.trim()) {
-        if (showToast) showToast("❌ Instruksi tidak boleh kosong!", "error");
         return false;
     }
     if (payload.topic.length > 500) {

@@ -308,7 +308,7 @@ function render() {
     } else {
         html += '<div role="region" aria-label="Belum ada laporan" style="color:#666;text-align:center;padding:60px 20px;">' +
             '<h4 style="color:#A0B3C9;margin:0 0 8px 0;">Belum ada laporan</h4>' +
-            '<p style="font-size:13px;margin:0 0 16px 0;max-width:400px;margin-left:auto;margin-right:auto;">Jalankan START ENGINE dengan agen terpilih untuk menghasilkan laporan intelijen.</p>' +
+            '<p style="font-size:13px;margin:0 0 16px 0;max-width:400px;margin-left:auto;margin-right:auto;">Isi kolom analisis di Dashboard, pilih agen, jalankan analisis, lalu approve hasilnya untuk menghasilkan laporan intelijen.</p>' +
             '<div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;">' +
             '<button id="gotoDashboardBtn" class="rp-ba" aria-label="Ke Dashboard">Ke Dashboard</button>' +
             '<button id="refreshReportBtn" class="rp-ba" aria-label="Refresh">Refresh</button></div></div>';
