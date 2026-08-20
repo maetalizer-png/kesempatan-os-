@@ -7,7 +7,7 @@
 </div>
 
 <div align="center">
-  <sub><strong>Dikerjakan 100% dari HP • Hari ke-70 • Masih terus berkembang</strong></sub>
+  <sub><strong>Dikerjakan 100% dari HP • Masih terus berkembang</strong></sub>
   <br>
   <sub><em>"Awalnya cuma gabut. Eh, malah keterusan sampai sekarang."</em></sub>
 </div>
@@ -75,16 +75,15 @@ KESEMPATAN LLM adalah engine bahasa (LLM) yang ditulis dari nol dalam JavaScript
 - AI PODCAST — ubah hasil analisis jadi podcast suara
 - VOICE & CLONE — 19 karakter suara, 14 bahasa, rekam suara sendiri (maks 5 clone), Live Voice Chat dengan agen AI internal
 - VISUALISATION — visualisasi data interaktif
-- CUSTOM & AUTO AGEN — buat agen manual, via AI, atau dari gambar
 - MODE OFFLINE — mode kerja lokal
 
 **Market & Media**
 - KESMARKET: Live Crypto, News Aggregator (sumber lokal via RSS, tanpa API key)
-- KESMEDIA: Social Share, Editor (AI Art Generator, Background Remover, Style Transfer), Thema (warna aksen)
+- KESMEDIA: Social Share, Editor (AI Art Generator, Background Remover, Style Transfer)
 
 **Sistem & Integrasi**
 - 55 AI Workers otonom (Manajemen Worker + Log Aktivitas)
-- WebSocket kolaborasi, Public API server, halaman CHAT KESEMPATAN OS mandiri
+- WebSocket kolaborasi, Public API server
 - Export 10 format: JSON, HTML, PDF, CSV, Excel (XLSX), PowerPoint (PPTX), Google Docs, Google Sheets, Notion, Email
 
 **PWA Support**
@@ -94,8 +93,8 @@ KESEMPATAN LLM adalah engine bahasa (LLM) yang ditulis dari nol dalam JavaScript
 ## Cara Install & Jalankan
 
     # 1. Clone repository
-    git clone https://github.com/username/kesempatan-os.git
-    cd kesempatan-os
+    git clone https://github.com/maetalizer-png/kesempatan-os-.git
+    cd kesempatan-os-
     # 2. Buka index.html di browser (atau live server lokal)
 
 Persyaratan: browser modern dengan WebGL & Web Worker. API key eksternal opsional (KESEMPATAN LLM jalan tanpa API key).
@@ -104,16 +103,24 @@ Persyaratan: browser modern dengan WebGL & Web Worker. API key eksternal opsiona
 
     KESEMPATAN-OS/
      ├── index.html, style.css, manifest.json, sw.js (install-only)
-     ├── chat-kesempatan.html   # Halaman chat mandiri
-     ├── js/                    # Modul inti app shell
-     ├── kesem-llm/             # KESEMPATAN LLM (Web Worker)
-     ├── memory/                # Vector Memory
-     ├── kes-database/          # Database inti (IndexedDB)
-     ├── agents/                # 55 agen, 5 file kategori
-     ├── workers/               # 55 AI Workers otonom
-     ├── voice-ai/              # Voice, Clone, Podcast, Live Chat
-     ├── interactive/           # Chat AI/Agen, Forum, Debat, Turnamen
-     ├── podcast/, rap/, visual-ai/, observ/, noise/, custom-ai/
+     ├── js/                    # Modul inti app shell (main, router, workflow, dashboard)
+     ├── ai-agent/               # Orkestrasi agen (registry, planner, tool-registry, dst.)
+     ├── kesem-llm/              # KESEMPATAN LLM (Web Worker, engine v1 & v2)
+     ├── memory/                 # Vector Memory
+     ├── kes-database/           # Database inti (IndexedDB)
+     ├── agents/                 # 55 agen (5 file kategori) + prompt loader
+     ├── prompts/                # System prompt tiap agen (JSON)
+     ├── dataset/, dataries/     # Dataset pendukung analisis
+     ├── css/                    # Stylesheet per modul
+     ├── features/
+     │    ├── kespremai/         # Podcast, Voice & Clone, Rap Battle, Visualisation, Offline
+     │    ├── kestraktive/       # Chat AI/Agen, Forum, Debat, Turnamen
+     │    ├── kesworker/         # 55 AI Workers otonom
+     │    ├── kesmarket/         # Live Crypto, News Aggregator
+     │    ├── kesmedia/          # Social Share, Editor
+     │    ├── monitoring/        # Telemetry, Report, Learning
+     │    ├── observation/, noise/, memory-manager/, websocket/, publicapi/, settings/
+     ├── dev-simulator/          # Live-preview server untuk pengembangan lokal (dev only)
      └── USER_GUIDE.md, README.md, LICENCE.txt
 
 ## API & Provider AI
@@ -159,7 +166,7 @@ KESEMPATAN OS dilisensikan di bawah **KESEMPATAN OS SOFTWARE LICENSE AGREEMENT V
 
 ## Cerita di Balik Layar
 
-Proyek ini dimulai dari rasa penasaran dan energi "gabut" — coba-coba lihat sejauh apa bisa membangun sesuatu langsung dari HP, tanpa laptop. Ternyata malah keterusan: dari satu fitur ke fitur lain, sampai akhirnya membangun mesin AI sendiri dari nol. Sekarang hari ke-70, dan masih terus berjalan.
+Proyek ini dimulai dari rasa penasaran dan energi "gabut" — coba-coba lihat sejauh apa bisa membangun sesuatu langsung dari HP, tanpa laptop. Ternyata malah keterusan: dari satu fitur ke fitur lain, sampai akhirnya membangun mesin AI sendiri dari nol. Masih terus berjalan dan berkembang sampai sekarang.
 
 Ini adalah pertama kalinya saya membuat sesuatu seperti ini. Saya tidak punya latar belakang di dunia ini — tidak mengerti arsitektur software, tidak paham cara membangun AI, tidak tahu harus mulai dari mana. Semua dipelajari sambil berjalan: coba, gagal, perbaiki, ulangi. Hasilnya mungkin belum maksimal dan masih jauh dari sempurna, tapi ini bukti bahwa kalau mau mulai, bahkan dari nol dan cuma bermodal HP, sesuatu bisa terwujud.
 

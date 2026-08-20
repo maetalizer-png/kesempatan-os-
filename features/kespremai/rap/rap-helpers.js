@@ -19,7 +19,7 @@ function getTimestamp() {
 
 function getDisplayName(agent) {
     const map = {
-        'RahmadRaharjo': '👨 Rahmad Raharjo',
+        'Kesempatan': '👨 Kesempatan',
         'Manager': '📋 Manager',
         'StartupFounder': '🚀 StartupFounder',
         'DevilsAdvocate': '👿 DevilsAdvocate',

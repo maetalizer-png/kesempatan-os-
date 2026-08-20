@@ -11,8 +11,8 @@ const PERSONA_DB = {
     
     
     
-    'RahmadRaharjo': {
-        name: 'Rahmad Raharjo',
+    'Kesempatan': {
+        name: 'Kesempatan',
         archetype: 'Street King',
         thinking: 'Logis, presisi, data-driven, tidak emosional',
         attack: 'Fakta & data, serangan presisi ke titik lemah',
@@ -359,7 +359,7 @@ function getEmotion(round, totalRounds) {
 }
 
 function getPersona(agent) {
-    return PERSONA_DB[agent] || PERSONA_DB['RahmadRaharjo'];
+    return PERSONA_DB[agent] || PERSONA_DB['Kesempatan'];
 }
 
 
@@ -400,7 +400,7 @@ function getEmotionModifier(round, totalRounds) {
 
 
 const VOICE_PROFILES = {
-    'RahmadRaharjo': { rate: 0.95, pitch: 0.92, pauseMs: 420, punchlineBoost: 0.15, volume: 0.92, adlibs: ['Fakta!', 'Buktikan!', 'Uh.'] },
+    'Kesempatan': { rate: 0.95, pitch: 0.92, pauseMs: 420, punchlineBoost: 0.15, volume: 0.92, adlibs: ['Fakta!', 'Buktikan!', 'Uh.'] },
     'Manager':        { rate: 0.90, pitch: 0.88, pauseMs: 380, punchlineBoost: 0.10, volume: 0.90, adlibs: ['Efisien.', 'Next.'] },
     'StartupFounder': { rate: 1.25, pitch: 1.20, pauseMs: 170, punchlineBoost: 0.25, volume: 0.98, adlibs: ['Scale up!', 'Yo!', 'Let\'s go!'] },
     'DevilsAdvocate': { rate: 1.05, pitch: 1.05, pauseMs: 260, punchlineBoost: 0.30, volume: 0.95, adlibs: ['Hah!', 'Twist!'] },
@@ -456,7 +456,7 @@ function pickVoiceForAgent(agent, voices) {
 
 
 const AVATAR_MAP = {
-    'RahmadRaharjo': { emoji: '👨', color1: '#00D4FF', color2: '#0072FF' },
+    'Kesempatan': { emoji: '👨', color1: '#00D4FF', color2: '#0072FF' },
     'Manager':        { emoji: '📋', color1: '#FF6B6B', color2: '#FF2D75' },
     'StartupFounder': { emoji: '🚀', color1: '#FFD700', color2: '#FF8C00' },
     'DevilsAdvocate': { emoji: '😈', color1: '#8B0000', color2: '#FF4500' },

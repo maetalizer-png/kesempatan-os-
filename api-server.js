@@ -389,7 +389,7 @@
         return [
             "Manager", "Researcher", "Hunter", "Analyst", "Strategist", "Copywriter",
             "Script", "Planner", "Distributor", "Optimizer", "Memory", "Verifier",
-            "PromptOptimizer", "RahmadRaharjo", "Matematika", "Biologi", "Fisika",
+            "PromptOptimizer", "Kesempatan", "Matematika", "Biologi", "Fisika",
             "Sains", "Astronomi", "Kedokteran", "Teknik", "Kimia", "Robotika",
             "Coding", "Cyber", "IlmuKomputer", "Arsitektur", "Statistika", "Hukum",
             "Ekonomi", "Psikologi", "Geografi", "Sejarah", "Filsafat", "SeniBudaya",

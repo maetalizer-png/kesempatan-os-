@@ -1,5 +1,5 @@
 const AGENT_VOICES = {
-    'RahmadRaharjo': { pitch: 0.85, rate: 0.9, voiceName: 'male', style: 'wise', greeting: 'Halo Bos, Rahmad Raharjo siap membantu!' },
+    'Kesempatan': { pitch: 0.85, rate: 0.9, voiceName: 'male', style: 'wise', greeting: 'Halo Bos, Kesempatan siap membantu!' },
     'SundanyaAsep': { pitch: 1.2, rate: 1.0, voiceName: 'male', style: 'funny', greeting: 'Aduh aduh, aya nu nyarios? Asep siap!' },
     'DevilsAdvocate': { pitch: 0.9, rate: 0.95, voiceName: 'male', style: 'sarcastic', greeting: 'Hmm, menarik. Tapi apakah itu benar?' },
     'Manager': { pitch: 0.9, rate: 0.92, voiceName: 'male', style: 'professional', greeting: 'Manager siap memberikan analisis strategis.' },
@@ -79,7 +79,7 @@ if (window.ChatModule && window.ChatModule.speakText) {
         }
         if (!agentKey) {
             const displayMap = {
-                'Rahmad Raharjo': 'RahmadRaharjo',
+                'Kesempatan': 'Kesempatan',
                 'Manager': 'Manager',
                 'Startup Founder': 'StartupFounder',
                 'Sundanya Asep': 'SundanyaAsep',
@@ -108,7 +108,7 @@ function addVoiceTestUI() {
     testSection.innerHTML =
         '<div style="margin-bottom:8px;"><span style="color:#9B59B6;">🎤 Test Suara Unik Agen</span></div>' +
         '<div style="display:flex; flex-wrap:wrap; gap:8px;">' +
-            '<button id="testVoiceRahmad" class="btn" style="background:#00FFA3; color:#03050A;">👨 Rahmad</button>' +
+            '<button id="testVoiceKesempatan" class="btn" style="background:#00FFA3; color:#03050A;">👨 Kesempatan</button>' +
             '<button id="testVoiceSunda" class="btn" style="background:#FFD700; color:#03050A;">😂 Asep</button>' +
             '<button id="testVoiceDevil" class="btn" style="border-color:#FF4444;">👿 Devil</button>' +
             '<button id="testVoiceManager" class="btn">📋 Manager</button>' +
@@ -116,8 +116,8 @@ function addVoiceTestUI() {
         '</div>';
     container.appendChild(testSection);
 
-    document.getElementById('testVoiceRahmad')?.addEventListener('click', function() {
-        speakWithAgentVoice('Halo Bos! Ini suara khas Rahmad Raharjo. Bijak, santai, tapi tegas.', 'RahmadRaharjo');
+    document.getElementById('testVoiceKesempatan')?.addEventListener('click', function() {
+        speakWithAgentVoice('Halo Bos! Ini suara khas Kesempatan. Bijak, santai, tapi tegas.', 'Kesempatan');
     });
     document.getElementById('testVoiceSunda')?.addEventListener('click', function() {
         speakWithAgentVoice('Aduh aduuh, aya nu nelepon? Sundanya Asep siap siap! lucu kan?', 'SundanyaAsep');

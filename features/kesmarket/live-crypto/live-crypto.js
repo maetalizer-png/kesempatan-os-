@@ -756,7 +756,7 @@ async function compareAllAgents() {
     entry.innerHTML = 'Agent opinions...';
     logBox.appendChild(entry);
     
-    const topAgents = ['RahmadRaharjo', 'DevilsAdvocate', 'Manager', 'Strategist', 'FinancialPlanner'];
+    const topAgents = ['Kesempatan', 'DevilsAdvocate', 'Manager', 'Strategist', 'FinancialPlanner'];
     const apiKey = document.getElementById('apiKeyInput')?.value;
     for (let i = 0; i < topAgents.length; i++) {
         const agent = topAgents[i];

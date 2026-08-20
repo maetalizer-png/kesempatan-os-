@@ -137,7 +137,7 @@ html += '</span></div>';
 html += '<div class="v-panel" style="margin-bottom:14px;"><span class="v-panel-in">' +
 '<div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;"><span class="v-panel-title" style="margin-bottom:0;">LIVE VOICE CHAT</span><span class="v-premium">AI INTERNAL</span></div>' +
 '<div class="v-chatrow"><span class="v-rim"><select id="liveVoiceAgent">' +
-'<option value="RahmadRaharjo">Rahmad Raharjo</option><option value="Manager">Manager</option>' +
+'<option value="Kesempatan">Kesempatan</option><option value="Manager">Manager</option>' +
 '<option value="StartupFounder">StartupFounder</option><option value="DevilsAdvocate">DevilsAdvocate</option>' +
 '<option value="SundanyaAsep">Sundanya Asep</option></select></span>' +
 '<button id="vChatStartBtn" class="v-btn primary">Mulai Bicara</button>' +

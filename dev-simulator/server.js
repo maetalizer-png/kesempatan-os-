@@ -8,7 +8,7 @@
    What it does:
    - Serves the repo's working tree as static files, exactly as a
      production static host would (no build step, no bundling —
-     the same index.html, chat-kesempatan.html, js/, ai-agent/, etc.
+     the same index.html, js/, ai-agent/, etc.
      files you're editing are served as-is).
    - Watches the whole repo (fs.watch, recursive) and pushes a
      Server-Sent Events "reload" message to dev-simulator/simulator.html

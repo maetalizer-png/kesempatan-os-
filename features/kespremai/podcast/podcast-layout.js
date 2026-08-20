@@ -804,7 +804,7 @@ function buildPodcastLayout(state) {
             <div id="debateAgentsSelector" class="studio-secondary-panel mode-panel-transition" style="${state.speakerMode === 'debate' ? 'max-height:2000px; opacity:1;' : 'max-height:0px; opacity:0; padding-top:0; padding-bottom:0; margin-bottom:0; border-width:0;'} overflow:hidden; padding:10px 0 10px 12px;">
                 ${(function() {
                     const ROLE_BADGE = {
-                        RahmadRaharjo: 'MENTOR', Manager: 'HOST', StartupFounder: 'FOUNDER',
+                        Kesempatan: 'MENTOR', Manager: 'HOST', StartupFounder: 'FOUNDER',
                         SundanyaAsep: 'STORYTELLER', Analyst: 'ANALYST', Moderator: 'MODERATOR',
                         NenekBijak: 'MENTOR', KakekSantai: 'MENTOR', CewekKece: 'STORYTELLER',
                         CowokKalem: 'SKEPTIC', KakakMotivator: 'HOST', TanteBawel: 'STORYTELLER'

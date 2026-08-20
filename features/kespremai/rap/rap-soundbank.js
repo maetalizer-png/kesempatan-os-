@@ -42,7 +42,7 @@ const SONGS = [
 
 
 const PERSONA_SONG_MAP = {
-    'RahmadRaharjo': ['trap-02', 'boom-08', 'drill-03'],
+    'Kesempatan': ['trap-02', 'boom-08', 'drill-03'],
     'Manager': ['trap-04', 'boom-04', 'drill-08'],
     'StartupFounder': ['trap-03', 'drill-02'],
     'DevilsAdvocate': ['trap-07', 'drill-05'],

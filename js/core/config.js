@@ -32,7 +32,7 @@ export const CONFIG = {
     RETRY_BASE_DELAY: 1500,
     MEMORY_LIMIT: 1000,
     CACHE_TTL: 3600000,
-    AGENTS: ['Manager', 'Researcher', 'Hunter', 'Analyst', 'Strategist', 'Copywriter', 'Script', 'Planner', 'Distributor', 'Optimizer', 'Memory', 'Verifier', 'PromptOptimizer', 'RahmadRaharjo'],
+    AGENTS: ['Manager', 'Researcher', 'Hunter', 'Analyst', 'Strategist', 'Copywriter', 'Script', 'Planner', 'Distributor', 'Optimizer', 'Memory', 'Verifier', 'PromptOptimizer', 'Kesempatan'],
     MAX_UPLOAD_SIZE_MB: 10,
     CONCURRENCY: 3,
     AUTO_APPROVE_CONFIDENCE: 70,

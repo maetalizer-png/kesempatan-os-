@@ -1,7 +1,7 @@
 # Panduan Pengguna KESEMPATAN OS v1.0
 
 <div align="center">
-  <sub><strong>Dibuat di HP • 70 hari • 100% energi "gabut"</strong></sub>
+  <sub><strong>Dibuat di HP • 100% energi "gabut"</strong></sub>
   <br>
   <sub><em>"Udah jadi. Tapi saya tambah fitur terus. Gak bisa berhenti."</em></sub>
 </div>
@@ -51,14 +51,13 @@ Setelah terinstall, aplikasi dibuka langsung dari homescreen. Konten analisis te
 | Observation Engine / Noise Filtering | Pemantauan & pembersihan sinyal |
 | Memory Manager / Response Cache | Memori vektor & cache respons |
 | Monitoring | Report, Telemetry, Auto-Learning |
-| Settings | Provider AI, API Key, Cloud Sync, Telemetry, Info Sistem, Thema |
+| Settings | Provider AI, API Key, Cloud Sync, Telemetry, Info Sistem |
 | KESWORKER (55) | Manajemen Worker, Log Aktivitas |
 | KESTRAKTIVE | Chat AI, Chat Agen, Forum, Debat, Turnamen, Rap Battle |
-| KESPREMAI | Podcast, Voice & Clone, Rap Battle, Visualisation, Custom & Auto Agen, Mode Offline |
+| KESPREMAI | Podcast, Voice & Clone, Rap Battle, Visualisation, Mode Offline |
 | KESMARKET | Live Crypto, News Aggregator |
-| KESMEDIA | Social Share, Thema, Editor |
+| KESMEDIA | Social Share, Editor |
 | WebSocket / Public API | Kolaborasi tim & integrasi |
-| CHAT KESEMPATAN OS | Halaman chat mandiri (file terpisah) |
 
 ---
 
@@ -84,7 +83,7 @@ Terdapat 55 agen dalam beberapa kategori (tab). Klik tab, centang agen, atau pak
 
 | Agen | Karakter | Gaya Bicara |
 |---|---|---|
-| Rahmad Raharjo | Senior Business Advisor | Bijak, santai, panggil "Bos" |
+| Kesempatan | Senior Business Advisor | Bijak, santai, panggil "Bos" |
 | Sundanya Asep | Pengusaha Sunda | Lucu, logat sunda, "Aduuh aduuh" |
 | Devils Advocate | Kritikus | Skeptis, suka nantang asumsi |
 
@@ -122,9 +121,8 @@ Mode **Plan** menampilkan panel HITL setelah eksekusi: **Approve / Reject / Edit
 ## AI Tools (KESPREMAI)
 
 - **AI Podcast** — hasil analisis jadi podcast; pilih karakter suara & kecepatan; download naskah.
-- **Voice & Clone** — 19 karakter suara (Profesional, Santai, Energik, Bijak, Lucu, Robot, Tua, Anak, Misterius, Antusias, Tenang, Berwibawa, Berbisik, Dalam, Tinggi, Santa, Chipmunk, Demon, Angel); 14 bahasa; rekam suara 10 detik, simpan (maks 5), agen bicara dengan suara Anda; Live Voice Chat dengan agen AI internal (Rahmad Raharjo, Manager, StartupFounder, DevilsAdvocate, Sundanya Asep).
+- **Voice & Clone** — 19 karakter suara (Profesional, Santai, Energik, Bijak, Lucu, Robot, Tua, Anak, Misterius, Antusias, Tenang, Berwibawa, Berbisik, Dalam, Tinggi, Santa, Chipmunk, Demon, Angel); 14 bahasa; rekam suara 10 detik, simpan (maks 5), agen bicara dengan suara Anda; Live Voice Chat dengan agen AI internal (Kesempatan, Manager, StartupFounder, DevilsAdvocate, Sundanya Asep).
 - **Visualisation** — visualisasi data interaktif.
-- **Custom & Auto Agen** — buat agen manual, via AI dari deskripsi, atau dari gambar.
 - **Mode Offline** — mode kerja lokal.
 
 ---
@@ -180,7 +178,6 @@ Mode **Plan** menampilkan panel HITL setelah eksekusi: **Approve / Reject / Edit
 - **Cloud Sync** — Supabase.
 - **Telemetry** — pemantauan performa sistem.
 - **Info Sistem** — detail teknis.
-- **Thema** — warna aksen: Hijau neon (default), Neon Pink, Sunset, Ocean, Forest, Royal, Blood.
 
 ---
 
@@ -201,7 +198,7 @@ Mode **Plan** menampilkan panel HITL setelah eksekusi: **Approve / Reject / Edit
 
 ## Tentang Pembuat
 
-Dibuat oleh **Rahmad Raharjo**, pengembang tunggal, dikerjakan 100% dari layar HP — 70 hari sejak dimulai, masih terus berkembang. Awalnya iseng gabut; ternyata keterusan sampai membangun mesin AI (KESEMPATAN LLM) sendiri dari nol.
+Dibuat oleh **Rahmad Raharjo**, pengembang tunggal, dikerjakan 100% dari layar HP — masih terus berkembang. Awalnya iseng gabut; ternyata keterusan sampai membangun mesin AI (KESEMPATAN LLM) sendiri dari nol.
 
 Ini adalah pertama kalinya saya membuat sesuatu seperti ini. Saya tidak punya latar belakang di dunia ini — tidak mengerti arsitektur software, tidak paham cara membangun AI, tidak tahu harus mulai dari mana. Semua dipelajari sambil berjalan: coba, gagal, perbaiki, ulangi. Hasilnya mungkin belum maksimal dan masih jauh dari sempurna, tapi ini bukti bahwa kalau mau mulai, bahkan dari nol dan cuma bermodal HP, sesuatu bisa terwujud.
 

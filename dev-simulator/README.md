@@ -58,8 +58,8 @@ perangkat di LAN yang sama yang bisa mengaksesnya.
 
 Dua cara:
 1. Dropdown "Halaman…" di toolbar — otomatis berisi semua file `.html`
-   yang ditemukan di repo (`index.html`, `chat-kesempatan.html`, dst).
-2. Ketik path-nya langsung di kotak URL (mis. `chat-kesempatan.html`),
+   yang ditemukan di repo (`index.html`, dst).
+2. Ketik path-nya langsung di kotak URL (mis. `test.html`),
    lalu tekan Enter atau klik "Buka".
 
 Halaman-halaman yang dirender lewat `js/router.js` di dalam
@@ -91,10 +91,9 @@ untuk satu simpanan.
 
 Server ini hanya menyajikan file apa adanya dari working tree — tidak
 ada build step, tidak ada rewrite path, tidak ada transformasi kode.
-Semua modul ES6 (`js/*`, `ai-agent/*`, `workers/*`, `memory/*`, dst),
-routing SPA di `js/router.js`, dan `chat-kesempatan.html` berjalan
-persis seperti saat dibuka lewat `python3 -m http.server` atau deployment
-statis biasa.
+Semua modul ES6 (`js/*`, `ai-agent/*`, `workers/*`, `memory/*`, dst) dan
+routing SPA di `js/router.js` berjalan persis seperti saat dibuka lewat
+`python3 -m http.server` atau deployment statis biasa.
 
 ## File yang dibuat
 

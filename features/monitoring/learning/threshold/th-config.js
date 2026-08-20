@@ -9,7 +9,7 @@ export const CONFIG = Object.freeze({
 });
 
 export const AGENT_CATEGORIES = Object.freeze({
-    'RahmadRaharjo': 'business', 'Manager': 'business', 'StartupFounder': 'business',
+    'Kesempatan': 'business', 'Manager': 'business', 'StartupFounder': 'business',
     'SundanyaAsep': 'creative', 'DevilsAdvocate': 'critical', 'DataScientist': 'tech',
     'AIEthicsOfficer': 'tech', 'BlockchainExpert': 'tech', 'Statistika': 'tech',
     'Analyst': 'tech', 'Strategist': 'business', 'Hunter': 'business',

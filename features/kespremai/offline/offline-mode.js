@@ -3,7 +3,7 @@ import { Utils } from '../../../js/core/utils.js';
 const KESEMPATAN = window.KESEMPATAN || {};
 window.KESEMPATAN = KESEMPATAN;
 
-const OFFLINE_SAMPLE_AGENTS = ['RahmadRaharjo', 'Manager', 'StartupFounder', 'SundanyaAsep'];
+const OFFLINE_SAMPLE_AGENTS = ['Kesempatan', 'Manager', 'StartupFounder', 'SundanyaAsep'];
 
 function initials(name) {
 const p = String(name || '').replace(/[^A-Za-z0-9]+/g, ' ').trim().split(' ');
@@ -133,11 +133,11 @@ const DEFAULT_KNOWLEDGE_BASE = {
 
 const DEFAULT_KNOWLEDGE = { insights: ['Analisis offline berdasarkan pengetahuan internal', 'Perlu validasi online', 'Sistem siap membantu'], score: 55, demand: 60, competition: 55, monetization: 60, virality: 50, sustainability: 55, scalability: 60, timing: 55, attention: 55, execution: 60, longterm: 55 };
 
-const AGENT_TOPICS = { 'RahmadRaharjo': ['bisnis', 'startup', 'keuangan', 'umum'], 'Manager': ['bisnis', 'manajemen', 'operasional', 'umum'], 'StartupFounder': ['startup', 'bisnis', 'teknologi', 'umum'], 'SundanyaAsep': ['kreatif', 'sosial', 'marketing', 'umum'] };
+const AGENT_TOPICS = { 'Kesempatan': ['bisnis', 'startup', 'keuangan', 'umum'], 'Manager': ['bisnis', 'manajemen', 'operasional', 'umum'], 'StartupFounder': ['startup', 'bisnis', 'teknologi', 'umum'], 'SundanyaAsep': ['kreatif', 'sosial', 'marketing', 'umum'] };
 
 const EVOLUTION_CONFIGS = { 'excellent': { temperature: 0.7, style: 'confident', confidenceBoost: 15 }, 'good': { temperature: 0.6, style: 'professional', confidenceBoost: 8 }, 'average': { temperature: 0.5, style: 'balanced', confidenceBoost: 0 }, 'learning': { temperature: 0.3, style: 'cautious', confidenceBoost: -5 } };
 
-const AGENT_PREFIXES = { 'RahmadRaharjo': { confident: 'Bos, ini analisis saya yang paling mantap! ', cautious: 'Bos, ini analisis awal saya, bisa dikembangkan lebih lanjut. ', default: 'Bos, ini analisis dari ingatan saya. ' }, 'Manager': { confident: 'Berdasarkan data internal terbaik, ', default: 'Berdasarkan data internal yang tersimpan, ' }, 'SundanyaAsep': { confident: 'Aduuh, berdasarkan pengalaman saya yang luar biasa mah... ', default: 'Aduuh, berdasarkan pengalaman saya mah... ' } };
+const AGENT_PREFIXES = { 'Kesempatan': { confident: 'Bos, ini analisis saya yang paling mantap! ', cautious: 'Bos, ini analisis awal saya, bisa dikembangkan lebih lanjut. ', default: 'Bos, ini analisis dari ingatan saya. ' }, 'Manager': { confident: 'Berdasarkan data internal terbaik, ', default: 'Berdasarkan data internal yang tersimpan, ' }, 'SundanyaAsep': { confident: 'Aduuh, berdasarkan pengalaman saya yang luar biasa mah... ', default: 'Aduuh, berdasarkan pengalaman saya mah... ' } };
 
 const POSITIVE_WORDS = ['baik', 'bagus', 'hebat', 'luar biasa', 'unggul', 'berhasil', 'sukses', 'efektif', 'meningkat', 'maju', 'cerah', 'positif', 'optimis', 'menjanjikan'];
 const NEGATIVE_WORDS = ['buruk', 'jelek', 'gagal', 'lemah', 'kurang', 'masalah', 'rugi', 'hancur', 'sulit', 'berat', 'negatif', 'pesimis', 'risiko', 'bahaya'];
@@ -545,7 +545,7 @@ function getOfflineAgentRecommendation(p) {
 const scores = [];
 for (const a of OFFLINE_SAMPLE_AGENTS) { const q = getOfflineAgentQuality(a), perf = predictOfflinePerformance(a), rel = calculateRelevance(a, p); scores.push({ agent: a, quality: q, predictedScore: perf.predictedScore, confidence: perf.confidence, relevance: rel, totalScore: q + perf.predictedScore + rel }); }
 scores.sort(function (x, y) { return y.totalScore - x.totalScore; });
-return scores[0] || { agent: 'RahmadRaharjo', quality: 50, predictedScore: 50, confidence: 50 };
+return scores[0] || { agent: 'Kesempatan', quality: 50, predictedScore: 50, confidence: 50 };
 }
 
 function updateRealtimeRecommendation() {

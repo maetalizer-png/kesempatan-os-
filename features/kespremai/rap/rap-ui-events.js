@@ -56,7 +56,7 @@ function addMessage(sender, message, container) {
     const safeMessage = sanitizeHTML(cleanMessage);
 
     let color = '#FFD700';
-    if (sender.includes('Rahmad') || sender.includes('Agent A')) {
+    if (sender.includes('Kesempatan') || sender.includes('Agent A')) {
         color = '#00FFA3';
     } else if (sender.includes('Manager') || sender.includes('Agent B')) {
         color = '#FF6B6B';
@@ -583,7 +583,7 @@ function attachEvents(container) {
             const grid = container.querySelector('#cypherLoungeGrid') || container;
             const cardA = grid.querySelector('.rapper-card[data-role="A"]');
             const cardB = grid.querySelector('.rapper-card[data-role="B"]');
-            const agentA = cardA?.dataset.agent || 'RahmadRaharjo';
+            const agentA = cardA?.dataset.agent || 'Kesempatan';
             const agentB = cardB?.dataset.agent || 'Manager';
             const rounds = parseInt(container.querySelector('#rapRounds')?.value || 3);
 

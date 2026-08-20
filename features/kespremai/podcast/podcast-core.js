@@ -164,7 +164,7 @@ function findVoiceByGender(voices, gender) {
 
 
 const AGENT_GENDER_MAP = {
-    RahmadRaharjo: 'male', KakekSantai: 'male', CowokKalem: 'male', KakakMotivator: 'male',
+    Kesempatan: 'male', KakekSantai: 'male', CowokKalem: 'male', KakakMotivator: 'male',
     Manager: 'male', StartupFounder: 'male', SundanyaAsep: 'male', Analyst: 'male', Moderator: 'male',
     NenekBijak: 'female', CewekKece: 'female', TanteBawel: 'female'
 };

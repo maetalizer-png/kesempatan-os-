@@ -190,25 +190,6 @@ register('export.toPDF', {
 });
 
 
-register('theme.setTheme', {
-    run: function(args) {
-        if (!KESEMPATAN.CustomTheme || typeof KESEMPATAN.CustomTheme.applyTheme !== 'function') {
-            throw new Error('ToolRegistry: CustomTheme belum siap');
-        }
-        KESEMPATAN.CustomTheme.applyTheme(args.themeId, args.animate !== false);
-        return { applied: args.themeId };
-    }
-});
-register('theme.getCurrentTheme', {
-    run: function() {
-        if (!KESEMPATAN.CustomTheme || typeof KESEMPATAN.CustomTheme.getCurrentTheme !== 'function') {
-            throw new Error('ToolRegistry: CustomTheme belum siap');
-        }
-        return KESEMPATAN.CustomTheme.getCurrentTheme();
-    }
-});
-
-
 register('voice.speak', {
     run: function(args) {
         if (!KESEMPATAN.AIVoiceAgents || typeof KESEMPATAN.AIVoiceAgents.speakWithAgentVoice !== 'function') {

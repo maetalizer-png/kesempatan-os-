@@ -8,15 +8,15 @@ const data = [
     
     {
         text: 'Peluang bisnis terbaik sering muncul di celah antara kebutuhan yang belum terlayani dan sumber daya yang belum dimanfaatkan. Analis peluang yang baik selalu bertanya: siapa yang paling dirugikan oleh kondisi saat ini, dan apa yang bisa dibayar mahal untuk menghilangkan masalah itu.',
-        metadata: { category: 'dataset', domain: 'bisnis', agent: 'RahmadRaharjo', topic: 'identifikasi peluang', tags: ['strategi', 'peluang', 'analisis pasar'] }
+        metadata: { category: 'dataset', domain: 'bisnis', agent: 'Kesempatan', topic: 'identifikasi peluang', tags: ['strategi', 'peluang', 'analisis pasar'] }
     },
     {
         text: 'Sebuah ide bisnis baru sebaiknya diuji dengan tiga pertanyaan: apakah ada yang mau membayar, apakah margin cukup sehat setelah biaya akuisisi pelanggan, dan apakah bisa bertahan ketika pesaing besar masuk. Ide yang gagal di salah satu dari tiga itu perlu dirombak sebelum dieksekusi.',
-        metadata: { category: 'dataset', domain: 'bisnis', agent: 'RahmadRaharjo', topic: 'validasi ide', tags: ['validasi', 'model bisnis'] }
+        metadata: { category: 'dataset', domain: 'bisnis', agent: 'Kesempatan', topic: 'validasi ide', tags: ['validasi', 'model bisnis'] }
     },
     {
         text: 'Pengusaha yang berpengalaman tahu bahwa timing pasar sering lebih menentukan daripada kualitas produk. Masuk terlalu awal berarti mendidik pasar dengan biaya sendiri; masuk terlalu telat berarti berebut sisa margin dengan pemain yang sudah mapan.',
-        metadata: { category: 'dataset', domain: 'bisnis', agent: 'RahmadRaharjo', topic: 'timing pasar', tags: ['timing', 'strategi masuk pasar'] }
+        metadata: { category: 'dataset', domain: 'bisnis', agent: 'Kesempatan', topic: 'timing pasar', tags: ['timing', 'strategi masuk pasar'] }
     },
 
     

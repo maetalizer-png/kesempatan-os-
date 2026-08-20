@@ -1214,8 +1214,8 @@ function addButtonsToMessage(messageDiv) {
         if (strongTag) {
             const text = strongTag.innerText;
             const mapping = {
-                '👨 Rahmad Raharjo': 'RahmadRaharjo',
-                'Rahmad Raharjo': 'RahmadRaharjo',
+                '👨 Kesempatan': 'Kesempatan',
+                'Kesempatan': 'Kesempatan',
                 'Manager': 'Manager',
                 'StartupFounder': 'StartupFounder',
                 '👿 DevilsAdvocate': 'DevilsAdvocate',

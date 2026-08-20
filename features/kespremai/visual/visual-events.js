@@ -296,63 +296,60 @@ function attachEvents() {
                         state.setProgressSphere(null);
                     }, 1500);
                 }
-                if (window.KESEMPATAN?.CustomAutoAgent && window.KESEMPATAN.CustomAutoAgent.add) {
-                    const success = await window.KESEMPATAN.CustomAutoAgent.add(agent.name, agent.role, agent.systemPrompt, 0.7);
-                    if (success) {
-                        const result = {
-                            success: true,
-                            id: Date.now(),
-                            name: agent.name,
-                            role: agent.role,
-                            systemPrompt: agent.systemPrompt,
-                            analysis: 'Gaya: ' + features.style + ', Suasana: ' + features.mood,
-                            description: description,
-                            features: features,
-                            createdAt: new Date().toISOString(),
-                            rating: '',
-                            tags: tags
-                        };
-                        state.setCurrentResult(result);
-                        state.addHistory(result);
-                        const resultDiv = document.getElementById('visualAgentResult');
-                        const contentDiv = document.getElementById('agentResultContent');
-                        if (resultDiv && contentDiv) {
-                            resultDiv.style.display = 'block';
-                            contentDiv.innerHTML =
-                                '<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 12px;">' +
-                                '<div><strong style="color: #00FFA3;">Nama:</strong> ' + result.name + '</div>' +
-                                '<div><strong style="color: #00FFA3;">Role:</strong> ' + result.role + '</div>' +
-                                '<div style="grid-column: 1 / -1;"><strong style="color: #00FFA3;">Tags:</strong> ' +
-                                (result.tags ? result.tags.map(function(t) {
-                                    return '<span style="background: rgba(155,89,182,0.15); padding: 0 6px; border-radius: 8px; font-size: 10px; color: #9B59B6;">' + t + '</span>';
-                                }).join(' ') : '-') + '</div>' +
-                                '<div style="grid-column: 1 / -1;"><strong style="color: #00FFA3;">Deskripsi:</strong>' +
-                                '<div style="font-size: 11px; color: rgba(160,179,201,0.7); margin-top: 4px;">' + result.description + '</div></div>' +
-                                '<div style="grid-column: 1 / -1;"><strong style="color: #00FFA3;">System Prompt:</strong>' +
-                                '<div style="font-size: 10px; color: rgba(160,179,201,0.6); margin-top: 4px; background: rgba(0,0,0,0.2); padding: 8px; border-radius: 8px; max-height: 100px; overflow-y: auto; white-space: pre-wrap;">' + result.systemPrompt + '</div></div>' +
-                                '</div>';
-                        }
-                        const engine = getEngine();
-                        if (engine) {
-                            const dashboard = document.getElementById('visualDashboardContainer');
-                            if (dashboard) engine.createVisualDashboard(result, 'visualDashboardContainer');
-                            engine.createParticleEffect(['#00FFA3', '#9B59B6', '#FFD700', '#FF6B6B'], 100);
-                        }
-                        if (state.getVoice()) {
-                            core.speak('Halo! Saya ' + agent.name + ', agen AI baru dari gambar Anda!');
-                        }
-                        if (engine) {
-                            const timelineContainer = document.getElementById('timelineContainer');
-                            if (timelineContainer) {
-                                engine.createTimeline(state.getHistory(), 'timelineContainer');
-                            }
-                        }
-                        renderer.renderGallery();
-                        if (statusDiv) {
-                            statusDiv.innerHTML = '<span class="status-text" style="color: #00FFA3;">Agen "' + agent.name + '" berhasil dibuat!</span>';
-                        }
-                        showToast('Agen "' + agent.name + '" berhasil dibuat!', 'success');
+                {
+                    const result = {
+                        success: true,
+                        id: Date.now(),
+                        name: agent.name,
+                        role: agent.role,
+                        systemPrompt: agent.systemPrompt,
+                        analysis: 'Gaya: ' + features.style + ', Suasana: ' + features.mood,
+                        description: description,
+                        features: features,
+                        createdAt: new Date().toISOString(),
+                        rating: '',
+                        tags: tags
+                    };
+                    state.setCurrentResult(result);
+                    state.addHistory(result);
+                    const resultDiv = document.getElementById('visualAgentResult');
+                    const contentDiv = document.getElementById('agentResultContent');
+                    if (resultDiv && contentDiv) {
+                        resultDiv.style.display = 'block';
+                        contentDiv.innerHTML =
+                            '<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 12px;">' +
+                            '<div><strong style="color: #00FFA3;">Nama:</strong> ' + result.name + '</div>' +
+                            '<div><strong style="color: #00FFA3;">Role:</strong> ' + result.role + '</div>' +
+                            '<div style="grid-column: 1 / -1;"><strong style="color: #00FFA3;">Tags:</strong> ' +
+                            (result.tags ? result.tags.map(function(t) {
+                                return '<span style="background: rgba(155,89,182,0.15); padding: 0 6px; border-radius: 8px; font-size: 10px; color: #9B59B6;">' + t + '</span>';
+                            }).join(' ') : '-') + '</div>' +
+                            '<div style="grid-column: 1 / -1;"><strong style="color: #00FFA3;">Deskripsi:</strong>' +
+                            '<div style="font-size: 11px; color: rgba(160,179,201,0.7); margin-top: 4px;">' + result.description + '</div></div>' +
+                            '<div style="grid-column: 1 / -1;"><strong style="color: #00FFA3;">System Prompt:</strong>' +
+                            '<div style="font-size: 10px; color: rgba(160,179,201,0.6); margin-top: 4px; background: rgba(0,0,0,0.2); padding: 8px; border-radius: 8px; max-height: 100px; overflow-y: auto; white-space: pre-wrap;">' + result.systemPrompt + '</div></div>' +
+                            '</div>';
                     }
+                    const engine = getEngine();
+                    if (engine) {
+                        const dashboard = document.getElementById('visualDashboardContainer');
+                        if (dashboard) engine.createVisualDashboard(result, 'visualDashboardContainer');
+                        engine.createParticleEffect(['#00FFA3', '#9B59B6', '#FFD700', '#FF6B6B'], 100);
+                    }
+                    if (state.getVoice()) {
+                        core.speak('Halo! Saya ' + agent.name + ', agen AI baru dari gambar Anda!');
+                    }
+                    if (engine) {
+                        const timelineContainer = document.getElementById('timelineContainer');
+                        if (timelineContainer) {
+                            engine.createTimeline(state.getHistory(), 'timelineContainer');
+                        }
+                    }
+                    renderer.renderGallery();
+                    if (statusDiv) {
+                        statusDiv.innerHTML = '<span class="status-text" style="color: #00FFA3;">Agen "' + agent.name + '" berhasil dibuat!</span>';
+                    }
+                    showToast('Agen "' + agent.name + '" berhasil dibuat!', 'success');
                 }
             } catch (error) {
                 if (statusDiv) {
@@ -418,25 +415,20 @@ function attachEvents() {
                     const agent = await ai.generateAgent(features);
                     const tags = await ai.generateTags(features);
                     const description = await ai.generateDescription(features);
-                    if (window.KESEMPATAN?.CustomAutoAgent && window.KESEMPATAN.CustomAutoAgent.add) {
-                        const success = await window.KESEMPATAN.CustomAutoAgent.add(agent.name, agent.role, agent.systemPrompt, 0.7);
-                        if (success) {
-                            const result = {
-                                id: Date.now() + i,
-                                name: agent.name,
-                                role: agent.role,
-                                systemPrompt: agent.systemPrompt,
-                                analysis: 'Gaya: ' + features.style + ', Suasana: ' + features.mood,
-                                description: description,
-                                features: features,
-                                createdAt: new Date().toISOString(),
-                                rating: '',
-                                tags: tags
-                            };
-                            state.addHistory(result);
-                            successCount++;
-                        }
-                    }
+                    const result = {
+                        id: Date.now() + i,
+                        name: agent.name,
+                        role: agent.role,
+                        systemPrompt: agent.systemPrompt,
+                        analysis: 'Gaya: ' + features.style + ', Suasana: ' + features.mood,
+                        description: description,
+                        features: features,
+                        createdAt: new Date().toISOString(),
+                        rating: '',
+                        tags: tags
+                    };
+                    state.addHistory(result);
+                    successCount++;
                 } catch(e) { console.warn('[VisualAI] Batch item failed:', e.message); }
                 const percent = Math.round(((i + 1) / total) * 100);
                 if (progressContainer) {

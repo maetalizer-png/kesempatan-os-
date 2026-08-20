@@ -53,7 +53,7 @@ const state = {
 
     
     speakerMode: 'single',
-    debateAgents: ['RahmadRaharjo', 'Manager', 'Analyst'],
+    debateAgents: ['Kesempatan', 'Manager', 'Analyst'],
 
     
     discussionGenders: { Host: 'pria', Expert: 'wanita', Storyteller: 'pria', Skeptic: 'wanita' },

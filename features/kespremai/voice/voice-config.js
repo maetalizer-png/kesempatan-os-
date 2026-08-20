@@ -76,7 +76,7 @@ const FAVORITES_DEFAULTS = { maxItems: 10 };
 const ANALYTICS_DEFAULTS = { totalSpeaks: 0, totalDuration: 0, favoriteVoice: {}, languageUsage: {}, lastActivity: null };
 
 const AGENT_PERSONALITIES = {
-'RahmadRaharjo': 'Bijak, santai, pengalaman, memberi nasihat',
+'Kesempatan': 'Bijak, santai, pengalaman, memberi nasihat',
 'Manager': 'Tegas, profesional, terstruktur, fokus pada hasil',
 'StartupFounder': 'Energik, optimis, visioner, suka inovasi',
 'DevilsAdvocate': 'Kritis, analitis, suka bertanya, menantang',
@@ -84,7 +84,7 @@ const AGENT_PERSONALITIES = {
 };
 
 const AGENT_DISPLAY = {
-'RahmadRaharjo': 'Rahmad Raharjo',
+'Kesempatan': 'Kesempatan',
 'Manager': 'Manager',
 'StartupFounder': 'StartupFounder',
 'DevilsAdvocate': 'DevilsAdvocate',

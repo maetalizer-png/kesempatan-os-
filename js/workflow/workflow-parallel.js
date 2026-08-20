@@ -26,7 +26,7 @@ function getOptimalBatchSize() {
   return Math.min(KESEMPATAN.Runtime.WorkflowConfig.maxBatchSize, Math.max(KESEMPATAN.Runtime.WorkflowConfig.minBatchSize, detected));
 }
 function getRateLimit(agent) {
-  const priorityAgents = ['RahmadRaharjo', 'Manager', 'StartupFounder', 'Hunter', 'Strategist'];
+  const priorityAgents = ['Kesempatan', 'Manager', 'StartupFounder', 'Hunter', 'Strategist'];
   if (priorityAgents.includes(agent)) return 300;
   const techAgents = ['Analyst', 'Verifier', 'Researcher', 'Optimizer'];
   if (techAgents.includes(agent)) return 500;
@@ -34,7 +34,7 @@ function getRateLimit(agent) {
 }
 function prioritySortAgents(agents) {
   if (!KESEMPATAN.Runtime.WorkflowConfig.enablePriorityQueue) return agents;
-  const priorityAgents = ['RahmadRaharjo', 'Manager', 'StartupFounder', 'Hunter', 'Strategist'];
+  const priorityAgents = ['Kesempatan', 'Manager', 'StartupFounder', 'Hunter', 'Strategist'];
   const sorted = [];
   const remaining = [];
   for (let i = 0; i < agents.length; i++) {

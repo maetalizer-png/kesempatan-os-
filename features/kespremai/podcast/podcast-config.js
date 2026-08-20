@@ -399,7 +399,7 @@ export const BG_MUSIC = {
 
 
 export const AGENT_VOICES = {
-    RahmadRaharjo: { name: "👨 Rahmad Raharjo", pitch: 0.85, rate: 0.88, volume: 0.95, pauseFactor: 1.15, pitchVariance: 0.05, desc: "Bijak, santai, pengalaman" },
+    Kesempatan: { name: "👨 Kesempatan", pitch: 0.85, rate: 0.88, volume: 0.95, pauseFactor: 1.15, pitchVariance: 0.05, desc: "Bijak, santai, pengalaman" },
     NenekBijak: { name: "👵 Nenek Bijak", pitch: 1.1, rate: 0.75, volume: 0.85, pauseFactor: 1.4, pitchVariance: 0.08, desc: "Lembut, penuh pengalaman hidup, bicara pelan-pelan" },
     KakekSantai: { name: "👴 Kakek Santai", pitch: 0.7, rate: 0.78, volume: 0.85, pauseFactor: 1.3, pitchVariance: 0.06, desc: "Tenang, humoris sesekali, kaya nasihat" },
     CewekKece: { name: "👧 Cewek Kece", pitch: 1.3, rate: 1.08, volume: 0.95, pauseFactor: 0.65, pitchVariance: 0.09, desc: "Ceria, gaul, energik, banyak ekspresi" },

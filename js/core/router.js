@@ -85,14 +85,6 @@ const PAGE_HANDLERS = {
             if (typeof KESEMPATAN.WorkersRenderer?.renderLogsPage === 'function') KESEMPATAN.WorkersRenderer.renderLogsPage();
         }
     },
-    customautoagent: function() {
-        const element = document.getElementById('customautoagentPage');
-        if (element) {
-            element.style.display = 'block';
-            const customModule = getModule('CustomAutoAgent');
-            if (customModule && typeof customModule.render === 'function') customModule.render();
-        }
-    },
     rapbattlearena: function() {
         const element = document.getElementById('rapbattlearenaPage');
         if (element) {
@@ -152,14 +144,6 @@ const PAGE_HANDLERS = {
             element.style.display = 'block';
             const socialModule = getModule('SuperSocialShare');
             if (socialModule && typeof socialModule.render === 'function') socialModule.render();
-        }
-    },
-    customtheme: function() {
-        const element = document.getElementById('customthemePage');
-        if (element) {
-            element.style.display = 'block';
-            const themeModule = getModule('CustomTheme');
-            if (themeModule && typeof themeModule.renderUI === 'function') themeModule.renderUI();
         }
     },
     websocket: function() {
@@ -332,8 +316,8 @@ function showPage(pageId) {
 
     const allPageIds = [
         'dashboardGrid', 'pageContent', 'interactivePage', 'aiWorkersPage', 'premiumPage',
-        'aiWorkersDataPage', 'customautoagentPage', 'rapbattlearenaPage', 'voicechatsuaraPage',
-        'livecryptoPage', 'editfotoPage', 'sharesosmedPage', 'customthemePage', 'websocketPage',
+        'aiWorkersDataPage', 'rapbattlearenaPage', 'voicechatsuaraPage',
+        'livecryptoPage', 'editfotoPage', 'sharesosmedPage', 'websocketPage',
         'publicapiPage', 'podcastPage', 'newsPage', 'cachePage', 'noisePage'
     ];
     for (let i = 0; i < allPageIds.length; i++) {

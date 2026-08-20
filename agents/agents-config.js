@@ -9,7 +9,7 @@ async function loadPrompt(agentName) {
 
 export async function extendBisnisAgents() {
     const bisnisAgents = {
-        RahmadRaharjo: { name: "Rahmad Raharjo", role: "Senior Business Strategist & Opportunity Analyst", systemPrompt: await loadPrompt('rahmadraharjo'), temperature: 0.85, maxTokens: 1300, fewShotExamples: [] },
+        Kesempatan: { name: "Kesempatan", role: "Senior Business Strategist & Opportunity Analyst", systemPrompt: await loadPrompt('kesempatan'), temperature: 0.85, maxTokens: 1300, fewShotExamples: [] },
         Manager: { name: "Manager", role: "Strategic Business Coordinator with 15+ years experience", systemPrompt: await loadPrompt('manager'), temperature: 0.5, maxTokens: 1300, fewShotExamples: [] },
         Hunter: { name: "Hunter", role: "Opportunity Seeker & Market Explorer", systemPrompt: await loadPrompt('hunter'), temperature: 0.7, maxTokens: 1300, fewShotExamples: [] },
         Analyst: { name: "Analyst", role: "Quantitative Analyst & Data Expert", systemPrompt: await loadPrompt('analyst'), temperature: 0.3, maxTokens: 1300, fewShotExamples: [] },

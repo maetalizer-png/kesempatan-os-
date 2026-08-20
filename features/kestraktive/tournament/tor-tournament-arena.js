@@ -545,7 +545,7 @@ import {
             const safeSender = this.security.sanitizeHTML(sender);
             const safeMessage = this.security.sanitizeHTML(this.security.stripMarkdown(message));
             let color = '#00FFA3';
-            if (sender.includes('Agent A') || sender.includes('Rahmad')) {
+            if (sender.includes('Agent A') || sender.includes('Kesempatan')) {
                 color = '#00FFA3';
             } else if (sender.includes('Agent B') || sender.includes('Manager')) {
                 color = '#FF6B6B';
