@@ -99,6 +99,18 @@ There are 55 agents across several categories (tabs). Click a tab, check the age
 
 A self-built language engine that runs on your phone with no API key. Once it's ready, it becomes the primary engine; until then, the system automatically falls back to an external provider. Training progress is saved permanently; quality is still improving (it's a small model) — this is an experimental piece aimed at full future independence from external providers.
 
+### Choosing a Local Model
+
+Go to **Settings** → **AI Configuration** → **Local model** to pick which local "brain" runs your analysis. All three options are 100% free, need no API key, and need no Hugging Face login:
+
+| Option | Size | Character |
+|---|---|---|
+| SmolLM2 135M *(default)* | ~90 MB | Light & fast |
+| Qwen2.5 0.5B | ~350 MB | Smarter, a bit slower |
+| Engine 50M | <15 MB | The engine described above — works with zero internet |
+
+SmolLM2 and Qwen2.5 are downloaded once from HuggingFace the first time you use them, then cached on your device — after that they run fully offline too. "Engine 50M" downloads nothing at all and runs instantly. If your chosen model fails to load (e.g. a flaky connection on first download), KESEMPATAN OS automatically falls back to Engine 50M, and then to an external provider if you've configured one.
+
 ---
 
 ## Human-in-the-Loop (HITL)

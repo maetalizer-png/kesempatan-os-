@@ -47,6 +47,18 @@ KESEMPATAN LLM is a language model engine written from scratch in plain JavaScri
 - **Lazy Module Loading** — on-demand modular loading, initial load time under 2 seconds
 - **Web Worker Isolation** — the UI stays responsive during heavy training/inference
 
+### Local Model Picker (Settings → AI Configuration)
+
+Besides the from-scratch engine above, KESEMPATAN OS also lets you pick which local "brain" to run — every option is labeled honestly, with no hidden trade-offs:
+
+| Option | Size | Character | License |
+|---|---|---|---|
+| SmolLM2 135M *(default)* | ~90 MB | Light & fast | Apache 2.0 (HuggingFace) |
+| Qwen2.5 0.5B | ~350 MB | Smarter, slower | Apache 2.0 (Alibaba) |
+| KESEMPATAN Engine 50M | <15 MB | The from-scratch engine described above — the only option that works with zero internet access | KESEMPATAN OS License v1.0 |
+
+SmolLM2 and Qwen2.5 are open-weight pretrained models downloaded on demand from HuggingFace (once, then cached on-device) and run in-browser via [`@huggingface/transformers`](https://github.com/huggingface/transformers.js) (Transformers.js). Picking "KESEMPATAN Engine 50M" skips that download entirely and runs the project's own from-scratch engine instead — the only option that works with no internet connection at all. If your chosen model fails to load, the system automatically falls back to KESEMPATAN Engine 50M, then to an external provider if one is configured.
+
 ## Key Features
 
 **Performance & Optimization**
@@ -138,6 +150,9 @@ KESEMPATAN LLM (local) is the primary path once it's ready — no API key requir
 | lamejs | MP3 export (CDN) | Per its official repository |
 | Font Awesome Free | Icons (CDN) | FA Free License |
 | Inter (Google Fonts) | Font | SIL OFL |
+| @huggingface/transformers (CDN) | In-browser runtime for the SmolLM2 / Qwen2.5 local model options | Apache 2.0 |
+| SmolLM2 135M-Instruct (weights) | Local model option, downloaded from HuggingFace | Apache 2.0 (HuggingFace) |
+| Qwen2.5 0.5B-Instruct (weights) | Local model option, downloaded from HuggingFace | Apache 2.0 (Alibaba) |
 
 External AI services are governed entirely by each provider's own terms — see `LICENSE`, section 6.3.
 
