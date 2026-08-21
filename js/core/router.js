@@ -5,12 +5,6 @@ function getModule(moduleName) {
     return KESEMPATAN[moduleName] || window[moduleName];
 }
 
-
-
-
-
-
-
 const loadedModules = new Set();
 function ensureModuleThenRun(paths, thenFn) {
     const toLoad = paths.filter(function(p) { return !loadedModules.has(p); });
@@ -23,16 +17,6 @@ function ensureModuleThenRun(paths, thenFn) {
     });
 }
 
-
-
-
-
-
-
-
-
-
-
 const PAGE_DESTROY_MAP = {
     memory: 'MemoryPage',
     report: 'ReportPage',
@@ -43,9 +27,6 @@ const PAGE_DESTROY_MAP = {
 };
 let currentPageId = null;
 
-
-
-
 const SIMPLE_RENDER_PAGES = {
     memory: ['MemoryPage', 'Memory Manager'],
     report: ['ReportPage', 'Laporan Final'],
@@ -53,10 +34,6 @@ const SIMPLE_RENDER_PAGES = {
     learning: ['LearningPage', 'Auto-Learning'],
     settings: ['SettingsPage', 'Pengaturan']
 };
-
-
-
-
 
 const PAGE_HANDLERS = {
     dashboard: function() {
@@ -271,11 +248,6 @@ const PAGE_HANDLERS = {
             if (noiseModule && typeof noiseModule.render === 'function') {
                 noiseModule.render();
             } else {
-                
-                
-                
-                
-                
                 import('../../features/noise/noise-filtering.js').then(function() {
                     const loadedNoiseModule = getModule('NoisePage');
                     if (loadedNoiseModule && typeof loadedNoiseModule.render === 'function') loadedNoiseModule.render();
@@ -384,7 +356,5 @@ document.querySelectorAll('#premiumSubmenu button, #marketdataSubmenu button, #k
 export const Router = Object.freeze({ showPage: showPage, getModule: getModule });
 
 KESEMPATAN.Router = Router;
-
-
 
 window.showPage = showPage;

@@ -1,0 +1,65 @@
+# KESEMPATAN OS SOFTWARE LICENSE AGREEMENT
+## Version 1.0 — Professional Edition
+**Copyright © 2026 KESEMPATAN OS. All Rights Reserved.**
+**Creator: Rahmad Raharjo**
+
+## 1. DEFINITIONS
+| Term | Definition |
+|---|---|
+| **"Software"** | All source code, configuration files, prompts, visual assets, documentation, and other components that make up KESEMPATAN OS. |
+| **"Creator"** | Rahmad Raharjo, the creator of this Software, operating under the KESEMPATAN OS brand. |
+| **"User"** | Any individual or entity that accesses, downloads, or uses this Software. |
+| **"Commercial Use"** | Any use intended to generate financial gain, whether direct or indirect. |
+| **"License"** | The permission granted by the Creator to the User under the terms of this document. |
+
+## 2. GRANT OF PERMISSION
+2.1 Personal & Non-Commercial Use: permitted (personal, educational, research purposes).
+2.2 Modification & Development: permitted for non-commercial purposes.
+2.3 Non-Commercial Distribution: permitted, provided attribution to the Creator and this license is included.
+
+## 3. PROHIBITIONS
+3.1 Commercial use without written permission is prohibited.
+3.2 Claiming to be the original creator, removing copyright attribution, or using the "KESEMPATAN OS" name for another product is prohibited.
+3.3 Commercial distribution in any form is prohibited without permission.
+3.4 Use for illegal purposes or harmful content is prohibited.
+
+## 4. COMMERCIAL LICENSING
+4.1 Covers SaaS offerings, product/service sales, internal business use, and commercial distribution.
+4.2 Written permission from the Creator is required (Enterprise / OEM / Distribution).
+4.3 Fees are negotiated separately based on scale, use case, duration, and level of support.
+
+## 5. ATTRIBUTION & CREDIT
+5.1 Attribution is required on every distribution or publication:
+    KESEMPATAN OS © 2026 — created by Rahmad Raharjo
+    License: KESEMPATAN OS License v1.0
+5.2 Optional attribution (appreciated): a link to the repository, the KESEMPATAN OS name/logo, or a social media mention.
+
+## 6. WARRANTY & LIABILITY
+6.1 Provided "AS IS" without any warranty of any kind.
+6.2 The Creator is not liable for any direct or indirect damages; the User assumes all risk.
+6.3 Third-Party Services & Terms: connections to third-party AI services (Groq, Gemini, HuggingFace, DeepSeek, Anthropic, OpenRouter, search/news/image providers, etc.) are governed entirely by each provider's own terms, privacy policy, and pricing; each requires the User's own API key; the Creator does not guarantee their availability or accuracy.
+6.4 Data & Privacy: data is stored locally on the User's device (IndexedDB); any text sent to an external provider is subject to that provider's own privacy policy; the User is responsible for not submitting any third party's data without proper authorization.
+6.5 Open-Source & Third-Party Components: this Software includes open-source libraries (Chart.js, three.js, html2canvas, jsPDF, lamejs, Font Awesome Free, Inter) loaded via CDN, which remain the property of their respective owners and are governed by their original licenses (MIT / SIL OFL / FA Free / equivalent); attribution is listed in the README. The inclusion of these components does not transfer copyright of the Software as a whole, which remains the property of the Creator.
+
+## 7. TERM & TERMINATION
+7.1 This license remains in effect as long as the User complies with its terms.
+7.2 It terminates automatically upon violation; the User must then stop all use and delete all copies of the Software.
+
+## 8. GENERAL PROVISIONS
+8.1 Governing law: Republic of Indonesia.
+8.2 Disputes: to be resolved through good-faith discussion first, then through legal channels if necessary.
+8.3 The Creator reserves the right to amend this license, with notice given for any significant changes.
+8.4 Severability: if any provision is found invalid, the remaining provisions stay in effect.
+
+## 9. CONTACT
+Commercial Licensing / Partnerships / Support:
+Email: maetalizer@gmail.com
+
+## 10. ACKNOWLEDGEMENT
+By using this Software, the User acknowledges having read, understood, and agreed to all terms set out in this document.
+
+**KESEMPATAN OS** — Autonomous Opportunity Intelligence System
+*"It's done. But I keep adding features anyway. Can't seem to stop."*
+
+**Copyright © 2026 KESEMPATAN OS. All Rights Reserved.**
+**Creator: Rahmad Raharjo**
