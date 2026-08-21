@@ -176,7 +176,7 @@ By submitting a contribution (code, documentation, or otherwise), you agree that
 
 KESEMPATAN OS is functional and actively used, but it is a solo-built, evolving project — treat it as such rather than as a polished commercial product.
 
-The Creator's primary focus is shifting toward **Rategoan** (link to be added). Because of that, KESEMPATAN OS is moving toward a more **community-supported maintenance model**: issues and pull requests are welcome, but response times may be slower than before. If you rely on this project, consider forking it or getting involved as a maintainer.
+The Creator's primary focus is shifting toward **RATEGOAN**. Because of that, KESEMPATAN OS is moving toward a more **community-supported maintenance model**: issues and pull requests are welcome, but response times may be slower than before. If you rely on this project, consider forking it or getting involved as a maintainer.
 
 ## License
 
